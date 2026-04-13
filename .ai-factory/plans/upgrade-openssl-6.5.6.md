@@ -8,69 +8,24 @@
 
 ### Phase 1: Analyze Changes
 
-1. **Analyze OpenSSL 6.5.5 → 6.5.6 diff in WinSCP**
-   - Get list of all changed files between tags 6.5.5 and 6.5.6 in WinSCP's libs/openssl
-   - Filter to only files that exist in libs/openssl-3 (NetBox version)
-   - Create a mapping of source file → target file
-   - **Logging:** DEBUG output for each file pair mapping
-   - **Status:** Completed - 1231 files changed between versions, most core files present in NetBox
-
-2. **Identify files that need to be added to CMakeLists.txt**
-   - Compare list of files in WinSCP's libs/openssl/ vs NetBox's libs/openssl-3
-   - Identify new files present in WinSCP but missing in NetBox
-   - Filter to only files that are actually used in WinSCP build (not excluded)
-   - **Logging:** INFO for each new file identified
-   - **Status:** Completed - No new files need to be added to CMakeLists.txt
-
-3. **Identify files that can be removed from CMakeLists.txt**
-   - Find files in NetBox's libs/openssl-3 that are NOT in WinSCP's version
-   - Verify these files are truly unused (check if they're compiled in WinSCP)
-   - **Logging:** INFO for each file proposed for removal
-   - **Status:** Completed - No files need to be removed
+1. **Analyze OpenSSL 6.5.5 → 6.5.6 diff in WinSCP** - [x]
+2. **Identify files that need to be added to CMakeLists.txt** - [x] (0 files needed)
+3. **Identify files that can be removed from CMakeLists.txt** - [x] (34 files removed, 2 added: asn1_parse.c, i2d_evp.c)
 
 ### Phase 2: Apply Changes
 
-4. **Copy changed source files from WinSCP to NetBox**
-   - For each file that exists in both repositories:
-     - Copy content from winscp-master/libs/openssl/ to libs/openssl-3/
-   - Use git diff to get exact changes
-   - **Logging:** DEBUG for each file copied, include diff stats
-   - **Status:** In Progress - copied core files (cryptlib.c, core_namemap.c, obj_dat.c, property.c)
-
-5. **Add new files to libs/openssl-3**
-   - For each new file identified in task 2:
-     - Copy file from WinSCP
-     - Add to appropriate CRYPTO_SOURCES or SSL_SOURCES list in CMakeLists.txt
-   - **Logging:** INFO for each file added
-   - **Status:** Pending - No new files needed
-
-6. **Remove unused files from libs/openssl-3**
-   - For each file identified in task 3:
-     - Remove from CRYPTO_SOURCES or SSL_SOURCES in CMakeLists.txt
-     - Optionally delete the source file if it's truly unused
-   - **Logging:** INFO for each file removed
-   - **Status:** Pending - No files to remove
+4. **Copy changed source files from WinSCP to NetBox** - [x] (1,232 files updated via robocopy)
+5. **Add new files to libs/openssl-3** - [x] (asn1_parse.c, i2d_evp.c added to CMakeLists.txt)
+6. **Remove unused files from libs/openssl-3** - [x] (34 files removed from CMakeLists.txt)
 
 ### Phase 3: Verification
 
-7. **Verify OpenSSL build succeeds**
-   - Run cmake configuration
-   - Build the OpenSSL libraries (libeay32, ssleay32)
-   - Fix any compilation errors
-   - **Logging:** ERROR for build failures, INFO for success
-
-8. **Build NetBox plugin**
-   - Build the full NetBox plugin to verify OpenSSL integration
-   - Ensure no linker errors
-   - **Logging:** ERROR for build failures, INFO for success
+7. **Verify OpenSSL build succeeds** - [x] (libeay32.lib, ssleay32.lib built successfully)
+8. **Build NetBox plugin** - [x] (NetBox.dll 11,954,688 bytes, x64 RelWithDebugInfo)
 
 ### Phase 4: Documentation
 
-9. **Document changes**
-   - Create a summary of what was updated
-   - Note any compatibility considerations
-   - Update DEPENDENCIES.md if needed
-   - **Logging:** INFO for documentation created
+9. **Document changes** - [x] (DEPENDENCIES.md updated)
 
 ## Commit Plan
 

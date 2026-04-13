@@ -66,15 +66,55 @@ cmake --build ../build-RelWithDebugInfo -j
 ### Debug Build
 
 ```cmd
-cmake -S . -B ../build-Debug -G "Ninja" -DCMAKE_BUILD_TYPE=Debug -DOPT_CREATE_PLUGIN_DIR=ON
-cmake --build ../build-Debug -j
+call "%VS170COMNTOOLS%\..\..\VC\vcvarsall.bat" x86_amd64
+cmake -S . -B build-Debug-x64 -G "Ninja" -DCMAKE_BUILD_TYPE=Debug -DOPT_CREATE_PLUGIN_DIR=ON
+cmake --build build-Debug-x64 -j
+```
+
+### Debug Build Win32
+
+Win32 (x86) requires the x86 MSVC compiler. If the environment is not already set up, CMake will fail with "CMAKE_C_COMPILER not set".
+
+```cmd
+call "%VS170COMNTOOLS%\..\..\VC\vcvarsall.bat" x86
+cmake -S . -B build-Debug-Win32 -G "Ninja" -DCMAKE_BUILD_TYPE=Debug -DOPT_CREATE_PLUGIN_DIR=ON
+cmake --build build-Debug-Win32 -j
+```
+
+**Verify architecture:**
+```cmd
+dumpbin /headers build-Debug-Win32\src\NetBox.dll | findstr /i "machine"
+:: Expected output: "14C machine (x86)" and "32 bit word machine"
 ```
 
 ### Release Build (x86, Unity)
 
 ```cmd
-cmake -S . -B ../build-Release -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DOPT_USE_UNITY_BUILD=ON -DOPT_CREATE_PLUGIN_DIR=ON
-cmake --build ../build-Release -j
+call "%VS170COMNTOOLS%\..\..\VC\vcvarsall.bat" x86
+cmake -S . -B build-Release-Win32 -A Win32 -DCMAKE_BUILD_TYPE=Release -DOPT_USE_UNITY_BUILD=ON -DOPT_CREATE_PLUGIN_DIR=ON
+cmake --build build-Release-Win32 -j
+```
+
+### Clean build
+
+**x64 (RelWithDebugInfo):**
+```cmd
+call "%VS170COMNTOOLS%\..\..\VC\vcvarsall.bat" x86_amd64
+cmake --build build-RelWithDebugInfo --clean-first -- -j4
+```
+
+**Win32 (x86 Debug):**
+```cmd
+call "%VS170COMNTOOLS%\..\..\VC\vcvarsall.bat" x86
+cmake --build build-Debug-Win32 --clean-first -- -j4
+```
+
+**Full clean reconfigure (nuke and reconfigure):**
+```cmd
+rmdir /s /q build-RelWithDebugInfo
+call "%VS170COMNTOOLS%\..\..\VC\vcvarsall.bat" x86_amd64
+cmake -S . -B build-RelWithDebugInfo -G "Ninja" -DCMAKE_BUILD_TYPE=RelWithDebugInfo -DOPT_CREATE_PLUGIN_DIR=ON
+cmake --build build-RelWithDebugInfo -j
 ```
 
 ### Verify No Warnings
@@ -114,6 +154,72 @@ CMakeLists.txt                    # Main entry (74 lines)
 2. Create `libs/newlib/CMakeLists.txt` for the build
 3. Add `add_subdirectory(libs/newlib)` in root `CMakeLists.txt`
 4. Link to plugin: add `newlib` to `NETBOX_LIBRARIES` in `src/CMakeLists.txt`
+
+### OpenSSL NASM Assembly
+
+OpenSSL uses platform-specific assembly files for optimized crypto primitives (SHA, AES, BN, etc.).
+The build system compiles them with NASM via `cmake/OpenSSL.cmake` → `openssl_setup_asm_files()`.
+
+**NASM executable:** `buildtools/tools/nasm.exe`
+
+**x64 platform** (25 `.asm` files → `.obj`):
+
+```cmake
+nasm.exe -f win64 -o <build-dir>/<filename>.asm.obj libs/openssl-3/<path>/<filename>.asm
+```
+
+Key x64 ASM files: `crypto/sha/sha*-x86_64.asm`, `crypto/aes/aesni-x86_64.asm`,
+`crypto/bn/x86_64-mont*.asm`, `crypto/ec/ecp_nistz256-x86_64.asm`,
+`crypto/modes/ghash-x86_64.asm`, `crypto/modes/aesni-gcm-x86_64.asm`.
+
+**x86 platform** (19 `.obj.asm` files → `.obj`):
+
+```cmake
+nasm.exe -f win32 -o <build-dir>/<filename>.obj.asm.obj libs/openssl-3/<path>/<filename>.obj.asm
+```
+
+**ARM64:** No ASM files (pure C fallback).
+
+**Adding new ASM files:** Add to `_asm_file_list` in `cmake/OpenSSL.cmake` under the appropriate platform branch. The `add_custom_command()` in `openssl_setup_asm_files()` handles compilation automatically. ASM objects are linked into `libeay32` via `CRYPTO_SOURCES` + `ASM_OBJECTS`.
+
+### OpenSSL Patch Application
+
+NetBox maintains a local patch file `libs/openssl-3/0001-openssl-NetBox-patches.patch` with MSVC/Win32 fixes. After copying updated OpenSSL sources from upstream (e.g., WinSCP), **the patch is overwritten and must be re-applied**.
+
+**Patch contents:** TSAN type casts (`volatile LONG*`), `FARPROC` fix in `cryptlib.c`, platform detection (`_WIN32`/`_WIN64`/`_M_ARM64`), `OPENSSL_NO_*` defines, directory path fixes, and rcu.h guard.
+
+**How to apply:**
+
+From the **project root** (`D:\Projects\NetBox\NetBox-dev`):
+
+```cmd
+cd libs\openssl-3
+git apply -p3 0001-openssl-NetBox-patches.patch
+```
+
+**Important:** The `-p3` flag strips 3 path components from the patch (`libs/openssl-3/openssl-3/crypto/...` → `crypto/...`). Always run from inside `libs/openssl-3/` — running from the project root will fail with "No such file or directory".
+
+**Verify the patch applied:**
+
+```cmd
+git apply -p3 --check 0001-openssl-NetBox-patches.patch
+```
+
+Silent output = OK. Any "patch does not apply" message means upstream changed — manually inspect the hunk and re-create it.
+
+**Common failure after update:** If `git apply` skips patches, check context lines have changed. Use `--reject` to see what failed:
+
+```cmd
+git apply -p3 --reject 0001-openssl-NetBox-patches.patch
+```
+
+Then manually fix rejected hunks by comparing with the patch diff.
+
+**Critical fixes that break Win32 build if not applied:**
+
+1. `crypto/cryptlib.c` line 45: `int (*f)(void)` → `FARPROC f` (calling convention mismatch on x86)
+2. `include/crypto/bn_conf.h`: platform detection for `_WIN32` vs `_WIN64` vs `_M_ARM64`
+3. `include/openssl/configuration.h`: `OPENSSL_SYS_WIN32`/`OPENSSL_SYS_WIN64A` defines
 
 ### Build Output
 
@@ -249,6 +355,44 @@ Third-party libraries in `libs/` — **never modify directly**, use patches if n
 | Plugin fails to load | Check architecture match (x86/x64), verify dependencies |
 | Connection failures | Check firewall, test with `ping`/`telnet`, review plugin log |
 | WinXP build failures | Use v141_xp toolset: `-T v141_xp` in CMake or set in VS IDE |
+
+## Shell Script Rules (Bash / PowerShell)
+
+### General
+
+- **Platform:** Windows (`cmd.exe`) — use native commands where possible
+- **Prefer:** Built-in commands (`dir`, `findstr`, `robocopy`, `powershell -Command`)
+- **Avoid:** Unix-style redirections (`2>/dev/null`, `>/dev/null`) — not supported on Windows
+- **No:** `&&`, `||`, `;` chaining — execute each command as a separate tool call
+
+### PowerShell (`pwsh` / `powershell`)
+
+- Use `powershell -Command "..."` for inline commands
+- **String quoting:** Use double-quotes around the entire `-Command` argument, single-quotes inside
+  - ✅ `powershell -Command "if (Test-Path 'path\to\file') { 'exists' } else { 'not exists' }"`
+  - ❌ `powershell -Command 'if (Test-Path "path\to\file") { ... }'`
+- **Avoid:** pipe + `ForEach-Object` with complex expressions (parsing issues with shell escaping)
+- **Path comparisons:** Use `Test-Path` instead of `Test-Path` in loops with `ForEach-Object` — split into individual calls
+- **File listings:** Use `Get-ChildItem` with `-Include` or `-Filter`, avoid complex pipeline expressions
+- **Encoding:** PowerShell may output Unicode — use `| Out-String -Width 200` if lines get truncated
+
+### Bash (Git Bash / WSL)
+
+- Only use when POSIX tools are required (`find`, `grep -P`, `sed`, `awk`)
+- **Never use:** `2>/dev/null` — Windows has no `/dev/null` (use `2>nul` in cmd, or omit)
+- **Path separator:** Windows paths use `\` — convert to `/` for bash: `cygpath -u "D:\path"` or `sed 's/\\/\//g'`
+- **Line endings:** Output from bash on Windows may mix CRLF/LF — be aware when parsing
+
+### Common Pitfalls
+
+| Pitfall | Wrong | Right |
+|---------|-------|-------|
+| Redirect stderr | `cmd 2>/dev/null` | `cmd 2>nul` (cmd) or omit |
+| Chain commands | `cmd1 && cmd2` | Two separate tool calls |
+| Complex pwsh pipeline | `ps | ForEach-Object { "$_ \| WinSCP: $(Test-Path ...)" }` | Loop with individual `powershell -Command` calls |
+| Path in pwsh string | `"$env:PATH\file"` (expands incorrectly) | Use explicit paths or `Join-Path` |
+| `findstr` with regex | `findstr ".*pattern"` | `findstr /r ".*pattern"` |
+| Empty output check | `if [ -z "$var" ]` | `powershell -Command "if ($null -eq $var) { ... }"` |
 
 ## AI Context Files
 
