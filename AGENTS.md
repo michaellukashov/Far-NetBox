@@ -75,8 +75,8 @@ call "%VS170COMNTOOLS%\..\..\VC\Auxiliary\Build\vcvarsall.bat" <arch>
 
 ```cmd
 call "%VS170COMNTOOLS%\..\..\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64
-cmake -S . -B ../build-RelWithDebugInfo -G "Ninja" -DCMAKE_BUILD_TYPE=RelWithDebugInfo -DOPT_CREATE_PLUGIN_DIR=ON
-cmake --build ../build-RelWithDebugInfo -j
+cmake -S . -B build-RelWithDebugInfo -G "Ninja" -DCMAKE_BUILD_TYPE=RelWithDebugInfo -DOPT_CREATE_PLUGIN_DIR=ON
+cmake --build build-RelWithDebugInfo -j
 ```
 
 ### Debug Build
@@ -136,19 +136,28 @@ cmake --build build-RelWithDebugInfo -j
 ### Verify No Warnings
 
 ```cmd
-cmake --build ../build-RelWithDebugInfo --clean-first -- -j4
+cmake --build build-RelWithDebugInfo --clean-first -- -j4
 ```
 
 ### Verify Build with `act` (GitHub Actions locally)
 
-Use `act` to run GitHub Actions workflows locally on a self-hosted runner.
+Use `act` to run GitHub Actions workflows locally. Two approaches:
 
 **Prerequisites:**
 - `act` installed: `winget install nektos.act`
-- Self-hosted runner configured and available
-- Docker or runner environment ready
+- Docker Desktop installed and running (for container-based approach)
 
-**Test release workflow (create-release job):**
+#### Option A: Docker-based (recommended, no runner setup)
+
+Builds run in a Docker container emulating `windows-2022`:
+
+```cmd
+act -W .github/workflows/release.yml -j build --matrix build:cl_x64_release -P windows-2022=catthehacker/ubuntu:act-latest
+```
+
+#### Option B: Self-hosted runner (faster, uses host compiler)
+
+Requires a self-hosted runner registered on the machine:
 
 ```cmd
 act -W .github/workflows/release.yml -j create-release -P windows-2022=-self-hosted --use-new-action-cache
@@ -158,11 +167,28 @@ act -W .github/workflows/release.yml -j create-release -P windows-2022=-self-hos
 | Flag | Purpose |
 |------|---------|
 | `-W .github/workflows/release.yml` | Workflow file to run |
-| `-j create-release` | Run only the `create-release` job |
-| `-P windows-2022=-self-hosted` | Map `windows-2022` runner label to self-hosted |
+| `-j build` or `-j create-release` | Run only the specified job |
+| `--matrix build:cl_x64_release` | Build only x64 (skip x86/ARM64 for speed) |
+| `-P windows-2022=catthehacker/ubuntu:act-latest` | Map runner label to Docker image |
+| `-P windows-2022=-self-hosted` | Map runner label to self-hosted runner |
 | `--use-new-action-cache` | Use action caching for faster re-runs |
 
-**Verify output:** Look for build success in the workflow logs. If the job completes without error, the build is verified.
+**Known limitation:** `actions/upload-artifact` fails with `Unable to get the ACTIONS_RUNTIME_TOKEN env variable` because `act` doesn't provide the full GitHub Actions runtime token. The build itself completes successfully — only the artifact upload step fails. To work around this, either:
+- Ignore the upload step failure (build output is in `Far3_<platform>/Plugins/NetBox/`)
+- Use `act ... --job build` to skip the `create-release` job which depends on upload
+
+**Verify output:** Look for build success in the workflow logs. If the build job completes without error, the build is verified.
+
+### Note on `%VS170COMNTOOLS%`
+
+If `%VS170COMNTOOLS%` is not set (common on fresh installs), replace:
+```cmd
+call "%VS170COMNTOOLS%\..\..\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64
+```
+with the full path to your VS installation:
+```cmd
+call "C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64
+```
 
 ## Build Configuration
 
