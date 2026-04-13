@@ -55,10 +55,26 @@ When compacting, keep
 
 ## Quick Reference
 
+### Setting Up MSVC Build Environment
+
+All build commands require the MSVC compiler environment. Use `vcvarsall.bat` from your Visual Studio installation.
+
+**Find vcvarsall.bat** — common locations:
+- VS2022 Community: `C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat`
+- VS2022 Professional: `C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvarsall.bat`
+- VS2022 Enterprise: `C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat`
+
+**Or use the environment variable** (if set by installer):
+```cmd
+call "%VS170COMNTOOLS%\..\..\VC\Auxiliary\Build\vcvarsall.bat" <arch>
+```
+
+**Architecture options:** `x86_amd64` (x64), `x86` (Win32), `amd64_arm64` (ARM64)
+
 ### Standard Build (x64 RelWithDebugInfo)
 
 ```cmd
-call "%VS170COMNTOOLS%\..\..\VC\vcvarsall.bat" x86_amd64
+call "%VS170COMNTOOLS%\..\..\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64
 cmake -S . -B ../build-RelWithDebugInfo -G "Ninja" -DCMAKE_BUILD_TYPE=RelWithDebugInfo -DOPT_CREATE_PLUGIN_DIR=ON
 cmake --build ../build-RelWithDebugInfo -j
 ```
@@ -66,7 +82,7 @@ cmake --build ../build-RelWithDebugInfo -j
 ### Debug Build
 
 ```cmd
-call "%VS170COMNTOOLS%\..\..\VC\vcvarsall.bat" x86_amd64
+call "%VS170COMNTOOLS%\..\..\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64
 cmake -S . -B build-Debug-x64 -G "Ninja" -DCMAKE_BUILD_TYPE=Debug -DOPT_CREATE_PLUGIN_DIR=ON
 cmake --build build-Debug-x64 -j
 ```
@@ -76,7 +92,7 @@ cmake --build build-Debug-x64 -j
 Win32 (x86) requires the x86 MSVC compiler. If the environment is not already set up, CMake will fail with "CMAKE_C_COMPILER not set".
 
 ```cmd
-call "%VS170COMNTOOLS%\..\..\VC\vcvarsall.bat" x86
+call "%VS170COMNTOOLS%\..\..\VC\Auxiliary\Build\vcvarsall.bat" x86
 cmake -S . -B build-Debug-Win32 -G "Ninja" -DCMAKE_BUILD_TYPE=Debug -DOPT_CREATE_PLUGIN_DIR=ON
 cmake --build build-Debug-Win32 -j
 ```
@@ -90,7 +106,7 @@ dumpbin /headers build-Debug-Win32\src\NetBox.dll | findstr /i "machine"
 ### Release Build (x86, Unity)
 
 ```cmd
-call "%VS170COMNTOOLS%\..\..\VC\vcvarsall.bat" x86
+call "%VS170COMNTOOLS%\..\..\VC\Auxiliary\Build\vcvarsall.bat" x86
 cmake -S . -B build-Release-Win32 -A Win32 -DCMAKE_BUILD_TYPE=Release -DOPT_USE_UNITY_BUILD=ON -DOPT_CREATE_PLUGIN_DIR=ON
 cmake --build build-Release-Win32 -j
 ```
@@ -99,20 +115,20 @@ cmake --build build-Release-Win32 -j
 
 **x64 (RelWithDebugInfo):**
 ```cmd
-call "%VS170COMNTOOLS%\..\..\VC\vcvarsall.bat" x86_amd64
+call "%VS170COMNTOOLS%\..\..\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64
 cmake --build build-RelWithDebugInfo --clean-first -- -j4
 ```
 
 **Win32 (x86 Debug):**
 ```cmd
-call "%VS170COMNTOOLS%\..\..\VC\vcvarsall.bat" x86
+call "%VS170COMNTOOLS%\..\..\VC\Auxiliary\Build\vcvarsall.bat" x86
 cmake --build build-Debug-Win32 --clean-first -- -j4
 ```
 
 **Full clean reconfigure (nuke and reconfigure):**
 ```cmd
 rmdir /s /q build-RelWithDebugInfo
-call "%VS170COMNTOOLS%\..\..\VC\vcvarsall.bat" x86_amd64
+call "%VS170COMNTOOLS%\..\..\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64
 cmake -S . -B build-RelWithDebugInfo -G "Ninja" -DCMAKE_BUILD_TYPE=RelWithDebugInfo -DOPT_CREATE_PLUGIN_DIR=ON
 cmake --build build-RelWithDebugInfo -j
 ```
@@ -374,7 +390,8 @@ Third-party libraries in `libs/` — **never modify directly**, use patches if n
 
 | Problem | Solution |
 |---------|----------|
-| Missing `vcvarsall.bat` | Install VS2022 with "Desktop development with C++" |
+| `vcvarsall.bat` not found | Install VS2022 with "Desktop development with C++". Check: `C:\Program Files\Microsoft Visual Studio\2022\{Community,Professional,Enterprise}\VC\Auxiliary\Build\vcvarsall.bat` |
+| `CMAKE_C_COMPILER not found` | Run `vcvarsall.bat` first: `call "C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64` |
 | Ninja not found | `winget install Ninja-build.ninja` |
 | Unity build errors | Add `-DOPT_USE_UNITY_BUILD=OFF` |
 | Plugin fails to load | Check architecture match (x86/x64), verify dependencies |
