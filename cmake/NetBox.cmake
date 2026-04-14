@@ -14,6 +14,13 @@
 #===============================================================================
 
 #-------------------------------------------------------------------------------
+# Version and Platform Settings
+#-------------------------------------------------------------------------------
+
+# Windows version target (0x0501 = Windows XP)
+set(NETBOX_WIN32_WINNT "0x0501")
+
+#-------------------------------------------------------------------------------
 # Library-Specific Defines
 #-------------------------------------------------------------------------------
 
@@ -53,7 +60,7 @@ set(NETBOX_DEFS
   -DNO_GZIP
   -DSTRICT
   -DNOCRYPT
-  -D_WIN32_WINNT=0x0501
+  -D_WIN32_WINNT=${NETBOX_WIN32_WINNT}
   -D_LIB
   -D_WINDOWS
   -DWIN32
@@ -319,43 +326,3 @@ function(netbox_get_include_dirs RESULT_VAR)
     PARENT_SCOPE
   )
 endfunction()
-
-#===============================================================================
-# NASM Assembly Support (MSVC only)
-#===============================================================================
-
-if(MSVC)
-
-  # Find NASM executable
-  set(NASM_EXECUTABLE ${CMAKE_CURRENT_SOURCE_DIR}/buildtools/tools/nasm.exe)
-
-  # Compile ASM files using NASM
-  macro(netbox_compile_asm_files RESULT_VAR)
-    cmake_parse_arguments(ARG "" "RESULT" "ASM_FILES" ${ARGN})
-    if(NOT ARG_ASM_FILES)
-      set(ARG_ASM_FILES " ")
-    endif()
-
-    if(PROJECT_PLATFORM STREQUAL "x64")
-      set(_nasm_args win64)
-    else()
-      set(_nasm_args win32)
-    endif()
-
-    set(${ARG_RESULT} "")
-    foreach(_asm_file ${ARG_ASM_FILES})
-      set(_asm_source ${CMAKE_CURRENT_SOURCE_DIR}/${_asm_file})
-      get_filename_component(_asm_source_fn ${_asm_source} NAME)
-      set(_asm_object ${CMAKE_CURRENT_BINARY_DIR}/${_asm_source_fn}.obj)
-
-      add_custom_command(
-        OUTPUT ${_asm_object}
-        COMMAND ${NASM_EXECUTABLE}
-        ARGS -f ${_nasm_args} -o ${_asm_object} ${_asm_source}
-        DEPENDS ${_asm_source}
-      )
-      set(${ARG_RESULT} ${${ARG_RESULT}} ${_asm_object})
-    endforeach(_asm_file)
-  endmacro()
-
-endif()
