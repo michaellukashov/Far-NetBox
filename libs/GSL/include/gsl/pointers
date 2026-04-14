@@ -51,7 +51,7 @@ namespace details
     // Resolves to the more efficient of `const T` or `const T&`, in the context of returning a const-qualified value
     // of type T.
     //
-    // Copied from cppfront's implementation of the CppCoreGuidelines F.16 (https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#Rf-in)
+    // Copied from cppfront's implementation of the CppCoreGuidelines F.16 (https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#rf-in)
     template<typename T>
     using value_or_reference_return_t = std::conditional_t<
                                             sizeof(T) <= 2*sizeof(void*) && std::is_trivially_copy_constructible<T>::value,
@@ -145,14 +145,14 @@ public:
     not_null& operator-=(std::ptrdiff_t) = delete;
     void operator[](std::ptrdiff_t) const = delete;
 
-    void swap(not_null<T>& other) { std::swap(ptr_, other.ptr_); }
+    void swap(not_null<T>& other) noexcept { std::swap(ptr_, other.ptr_); }
 
 private:
     T ptr_;
 };
 
 template <typename T, std::enable_if_t<std::is_move_assignable<T>::value && std::is_move_constructible<T>::value, bool> = true>
-void swap(not_null<T>& a, not_null<T>& b)
+void swap(not_null<T>& a, not_null<T>& b) noexcept
 {
     a.swap(b);
 }
@@ -231,10 +231,11 @@ template <class T>
 not_null<T> operator+(std::ptrdiff_t, const not_null<T>&) = delete;
 
 
-template <class T, class U = decltype(std::declval<const T&>().get()), bool = std::is_default_constructible<std::hash<U>>::value>
+// T is conceptually a pointer so we don't have to worry about it being a reference and violating std::hash requirements
+template <class T, class U = typename T::element_type, bool = std::is_default_constructible<std::hash<U>>::value>
 struct not_null_hash
 {
-    std::size_t operator()(const T& value) const { return std::hash<U>{}(value.get()); }
+    std::size_t operator()(const T& value) const noexcept { return std::hash<U>{}(value.get()); }
 };
 
 template <class T, class U>
