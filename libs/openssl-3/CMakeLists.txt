@@ -5,12 +5,12 @@ include(${CMAKE_SOURCE_DIR}/cmake/OpenSSL.cmake)
 
 # SSL library sources (ssleay32)
 set(SSL_SOURCES
-    ssl/pqueue.c ssl/ssl_rsa_legacy.c ssl/s3_lib.c ssl/s3_enc.c ssl/s3_msg.c
+    ssl/pqueue.c ssl/s3_lib.c ssl/s3_enc.c ssl/s3_msg.c
     ssl/methods.c ssl/t1_lib.c ssl/t1_enc.c ssl/tls13_enc.c ssl/d1_lib.c
     ssl/d1_msg.c ssl/d1_srtp.c ssl/ssl_lib.c ssl/ssl_cert.c ssl/ssl_sess.c
     ssl/ssl_ciph.c ssl/ssl_stat.c ssl/ssl_rsa.c ssl/ssl_asn1.c ssl/ssl_txt.c
     ssl/ssl_init.c ssl/ssl_conf.c ssl/ssl_mcnf.c ssl/bio_ssl.c ssl/ssl_err.c
-    ssl/ssl_err_legacy.c ssl/tls_srp.c ssl/t1_trce.c ssl/ssl_utst.c ssl/tls_depr.c
+    ssl/tls_srp.c ssl/tls_depr.c
     ssl/ssl_cert_comp.c ssl/record/methods/ssl3_cbc.c ssl/record/methods/tls_pad.c
     ssl/record/methods/dtls_meth.c ssl/record/methods/tls_common.c
     ssl/record/methods/tlsany_meth.c ssl/record/methods/tls13_meth.c
@@ -26,9 +26,7 @@ set(CRYPTO_SOURCES
     crypto/cryptlib.c crypto/params.c crypto/params_from_text.c
     crypto/bsearch.c
     crypto/ex_data.c
-    crypto/threads_pthread.c
     crypto/threads_win.c
-    crypto/threads_none.c
     crypto/initthread.c
     crypto/context.c
     crypto/params_idx.c
@@ -46,8 +44,6 @@ set(CRYPTO_SOURCES
     crypto/mem_clr.c
     crypto/mem.c
     crypto/mem_sec.c
-    crypto/cversion.c
-    crypto/info.c
     crypto/cpt_err.c
     crypto/ebcdic.c
     crypto/uid.c
@@ -80,8 +76,6 @@ set(CRYPTO_SOURCES
     crypto/encode_decode/decoder_meth.c
     crypto/encode_decode/decoder_lib.c
     crypto/encode_decode/decoder_pkey.c
-    crypto/encode_decode/encoder_err.c
-    crypto/encode_decode/decoder_err.c
     crypto/md4/md4_dgst.c
     crypto/md4/md4_one.c
     crypto/md5/md5_dgst.c
@@ -105,8 +99,6 @@ set(CRYPTO_SOURCES
     crypto/sha/sha512.c
     crypto/hmac/hmac.c
     crypto/ripemd/rmd_dgst.c
-    crypto/hmac/hm_ameth.c
-    crypto/hmac/hm_pmeth.c
     crypto/ripemd/rmd_one.c
     crypto/des/set_key.c
     crypto/des/ecb_enc.c
@@ -122,7 +114,6 @@ set(CRYPTO_SOURCES
     crypto/des/pcbc_enc.c
     crypto/des/qud_cksm.c
     crypto/des/rand_key.c
-    crypto/des/fcrypt.c
     crypto/des/xcbc_enc.c
     crypto/des/cbc_cksm.c
     crypto/rc2/rc2_ecb.c
@@ -183,8 +174,6 @@ set(CRYPTO_SOURCES
     crypto/bn/bn_srp.c
     crypto/bn/bn_conv.c
     crypto/bn/bn_rsa_fips186_4.c
-    crypto/bn/rsaz_exp.c
-    crypto/bn/rsaz_exp_x2.c
     crypto/rsa/rsa_ossl.c
     crypto/rsa/rsa_gen.c
     crypto/rsa/rsa_lib.c
@@ -192,7 +181,6 @@ set(CRYPTO_SOURCES
     crypto/rsa/rsa_saos.c
     crypto/rsa/rsa_err.c
     crypto/rsa/rsa_pk1.c
-    crypto/rsa/rsa_ssl.c
     crypto/rsa/rsa_none.c
     crypto/rsa/rsa_oaep.c
     crypto/rsa/rsa_chk.c
@@ -267,7 +255,6 @@ set(CRYPTO_SOURCES
     crypto/bio/bss_core.c
     crypto/bio/bf_null.c
     crypto/bio/bf_buff.c
-    crypto/bio/bf_lbuf.c
     crypto/bio/bf_nbio.c
     crypto/bio/bf_prefix.c
     crypto/bio/bf_readbuff.c
@@ -333,7 +320,6 @@ set(CRYPTO_SOURCES
     crypto/evp/e_xcbc_d.c
     crypto/evp/e_rc2.c
     crypto/evp/e_cast.c
-    crypto/evp/e_rc5.c
     crypto/evp/m_null.c
     crypto/evp/p_seal.c
     crypto/evp/p_sign.c
@@ -400,8 +386,8 @@ set(CRYPTO_SOURCES
     crypto/asn1/nsseq.c
     crypto/asn1/d2i_pu.c
     crypto/asn1/d2i_pr.c
-    crypto/asn1/i2d_pu.c
-    crypto/asn1/i2d_pr.c
+    crypto/asn1/asn1_parse.c
+    crypto/asn1/i2d_evp.c
     crypto/asn1/t_pkey.c
     crypto/asn1/t_spki.c
     crypto/asn1/t_bitst.c
@@ -418,7 +404,6 @@ set(CRYPTO_SOURCES
     crypto/asn1/x_pkey.c
     crypto/asn1/asn_mime.c
     crypto/asn1/asn1_gen.c
-    crypto/asn1/asn1_par.c
     crypto/asn1/asn1_lib.c
     crypto/asn1/asn1_err.c
     crypto/asn1/bio_asn1.c
@@ -460,7 +445,6 @@ set(CRYPTO_SOURCES
     crypto/x509/x509_v3.c
     crypto/x509/x509_ext.c
     crypto/x509/x509_att.c
-    crypto/x509/x509_meth.c
     crypto/x509/x509_lu.c
     crypto/x509/x_all.c
     crypto/x509/x509_txt.c
@@ -559,8 +543,6 @@ set(CRYPTO_SOURCES
     crypto/comp/comp_lib.c
     crypto/comp/comp_err.c
     # crypto/comp/c_zlib.c
-    crypto/cmac/cm_ameth.c
-    crypto/cmac/cm_pmeth.c
     crypto/cmac/cmac.c
     crypto/ocsp/ocsp_asn.c
     crypto/ocsp/ocsp_ext.c
@@ -610,7 +592,6 @@ set(CRYPTO_SOURCES
     crypto/ec/ec_backend.c
     crypto/ec/ecx_backend.c
     crypto/ec/ecdh_kdf.c
-    crypto/ec/curve448/arch_64/f_impl64.c
     crypto/ec/ecp_nistputil.c
     crypto/ec/ecp_smpl.c
     crypto/ec/ecdh_ossl.c
@@ -626,7 +607,6 @@ set(CRYPTO_SOURCES
     crypto/ec/curve448/curve448_tables.c
     crypto/ec/curve448/f_generic.c
     # crypto/ec/curve448/arch_64/f_impl64.c
-    crypto/ec/curve448/arch_32/f_impl.c
     crypto/ec/curve448/arch_32/f_impl32.c
     crypto/ec/ecdsa_vrf.c
     crypto/ec/ec_ameth.c
@@ -658,24 +638,19 @@ set(CRYPTO_SOURCES
     crypto/async/arch/async_null.c
     crypto/kdf/hkdf.c
     crypto/kdf/tls1_prf.c
-    crypto/kdf/kdf_err.c
     crypto/kdf/scrypt.c
     crypto/store/store_init.c
     crypto/store/store_register.c
     crypto/store/store_err.c
     crypto/store/store_lib.c
     crypto/store/store_result.c
-    crypto/store/store_strings.c
     crypto/store/store_meth.c
     crypto/aria/aria.c
-    crypto/blake2/blake2b.c
-    crypto/blake2/blake2s.c
     crypto/sm3/sm3.c
     crypto/sm3/legacy_sm3.c
     crypto/sm4/sm4.c
     crypto/poly1305/poly1305.c
     crypto/siphash/siphash.c
-    crypto/sm2/sm2_pmeth.c
     crypto/sm2/sm2_crypt.c
     crypto/sm2/sm2_sign.c
     crypto/sm2/sm2_key.c
@@ -872,8 +847,6 @@ set(CRYPTO_SOURCES
 
 # Explicitly exclude files that are commented out in original CMakeLists.txt
 ucm_remove_files(FROM CRYPTO_SOURCES
-    crypto/rc4/rc4_skey.c
-    crypto/rc4/rc4_enc.c
     crypto/des/des_enc.c
     crypto/bf/bf_enc.c
     crypto/cast/c_enc.c
@@ -881,7 +854,6 @@ ucm_remove_files(FROM CRYPTO_SOURCES
     crypto/err/err_all_legacy.c
     crypto/async/arch/async_win.c
     crypto/ec/curve448/arch_64/f_impl64.c
-    crypto/ec/curve448/arch_32/f_impl.c
     # crypto/ec/curve448/arch_32/f_impl32.c
     crypto/curve448/arch_64/f_impl64.c
     crypto/des/des_enc.c
