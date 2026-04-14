@@ -1,0 +1,32 @@
+﻿# clang-format configuration for NetBox project
+# Based on project conventions: Allman/BSD, 2-space indent, 120 col max
+# Note: Line endings (CRLF) are controlled by .editorconfig
+
+---
+BasedOnStyle: LLVM
+IndentWidth: 2
+UseTab: Never
+ColumnLimit: 120
+BreakBeforeBraces: Allman
+PointerAlignment: Left
+ReferenceAlignment: Left
+DerivePointerAlignment: false
+SpaceBeforeParens: ControlStatements
+SpaceInEmptyParentheses: false
+SpacesInParentheses: false
+MaxEmptyLinesToKeep: 1
+KeepEmptyLinesAtTheStartOfBlocks: false
+IndentCaseLabels: true
+NamespaceIndentation: None
+AccessModifierOffset: -2
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: None
+AllowShortBlocksOnASingleLine: false
+AllowShortCaseLabelsOnASingleLine: false
+SortIncludes: false
+Cpp11BracedListStyle: true
+Standard: c++17
+AlignEscapedNewlines: Left
+AlignTrailingComments: true
+...

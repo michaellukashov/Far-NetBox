@@ -1,4 +1,4 @@
-<!-- handoff:task:ftp-heartbeat-noop -->
+﻿<!-- handoff:task:ftp-heartbeat-noop -->
 # Plan - FTP Heartbeat Implementation with NOOP Command
 
 **Branch:** `feature/ftp-heartbeat-noop`  

@@ -79,7 +79,7 @@ NetBox integrates multiple third-party libraries to provide protocol support and
 #### 5. OpenSSL 3
 - **Location**: `libs/openssl-3/`
 - **Purpose**: Cryptography and SSL/TLS support
-- **Version**: 3.x
+- **Version**: 3.x (synced with WinSCP 6.5.6, April 2026)
 - **License**: Apache License 2.0
 - **Components Used**:
   - SSL/TLS implementation
@@ -92,6 +92,8 @@ NetBox integrates multiple third-party libraries to provide protocol support and
   - Critical security component
   - Used by neon, PuTTY, and direct TLS connections
   - Regular updates required for security patches
+  - Sourced from WinSCP project (libs/openssl) with CMake integration
+  - Excludes QUIC support, FIPS provider, and legacy ciphers not used by WinSCP
 
 ### XML Processing
 

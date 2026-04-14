@@ -11,8 +11,9 @@ This directory contains comprehensive documentation about the NetBox codebase st
 | [ARCHITECTURE.md](./ARCHITECTURE.md) | High-level architecture overview, build system, component relationships |
 | [SOURCE_ORGANIZATION.md](./SOURCE_ORGANIZATION.md) | Source code organization, directory structure, module responsibilities |
 | [DEPENDENCIES.md](./DEPENDENCIES.md) | Third-party libraries, their purposes, and integration details |
-| [PLUGIN_STRUCTURE.md](./PLUGIN_STRUCTURE.md) | Far Manager plugin implementation, entry points, and lifecycle |
-| [PROTOCOL_IMPLEMENTATIONS.md](./PROTOCOL_IMPLEMENTATIONS.md) | Protocol implementations (SFTP, FTP, SCP, WebDAV, S3) |
+| [PROJECT_RULES.md](./PROJECT_RULES.md) | Coding standards, naming conventions, and contribution guidelines |
+| [AGENTS.md](./AGENTS.md) | AI agent workflow and development guide |
+| [README.md](./README.md) | Build instructions and project overview |
 
 ## Quick Reference
 
@@ -86,23 +87,23 @@ cmake --build build-RelWithDebugInfo -j
 ## Navigation Guide
 
 ### For New Developers
-1. Start with [ARCHITECTURE.md](./ARCHITECTURE.md) for overview
-2. Read [SOURCE_ORGANIZATION.md](./SOURCE_ORGANIZATION.md) for code layout
-3. Review [DEPENDENCIES.md](./DEPENDENCIES.md) for third-party libraries
-4. Study [PLUGIN_STRUCTURE.md](./PLUGIN_STRUCTURE.md) for plugin integration
-5. Examine [PROTOCOL_IMPLEMENTATIONS.md](./PROTOCOL_IMPLEMENTATIONS.md) for protocol details
+1. Start with [README.md](./README.md) for project overview
+2. Read [ARCHITECTURE.md](./ARCHITECTURE.md) for architecture understanding
+3. Review [AGENTS.md](./AGENTS.md) for development workflow
+4. Study [SOURCE_ORGANIZATION.md](./SOURCE_ORGANIZATION.md) for code layout
+5. Review [DEPENDENCIES.md](./DEPENDENCIES.md) for third-party libraries
 
 ### For Protocol Developers
-1. Review [PROTOCOL_IMPLEMENTATIONS.md](./PROTOCOL_IMPLEMENTATIONS.md)
+1. Review [ARCHITECTURE.md](./ARCHITECTURE.md) for protocol architecture
 2. Examine `src/core/Terminal.h` for base interface
 3. Study existing protocol implementations in `src/core/`
 4. Understand [DEPENDENCIES.md](./DEPENDENCIES.md) for library integration
 
 ### For Plugin Developers
-1. Read [PLUGIN_STRUCTURE.md](./PLUGIN_STRUCTURE.md)
+1. Read [ARCHITECTURE.md](./ARCHITECTURE.md) for component relationships
 2. Examine `src/NetBox/` directory
 3. Study Far Manager SDK in `src/PluginSDK/`
-4. Review [ARCHITECTURE.md](./ARCHITECTURE.md) for component relationships
+4. Review [SOURCE_ORGANIZATION.md](./SOURCE_ORGANIZATION.md) for module responsibilities
 
 ### For Build Engineers
 1. Review [ARCHITECTURE.md](./ARCHITECTURE.md) build system section
@@ -143,4 +144,4 @@ This documentation reflects the codebase as of the current working directory sta
 
 ---
 
-*Generated for NetBox codebase mapping - 2026-02-27*
+*Generated for NetBox codebase mapping - 2026-04-13*

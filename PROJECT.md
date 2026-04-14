@@ -61,4 +61,4 @@ This is a mature C++ codebase built on proven file transfer technologies:
 | Preserve WinXP compatibility | Maintains user base and backward compatibility | — Pending |
 
 ---
-*Last updated: 2025-02-27 after initialization*
+*Last updated: 2026-04-13*

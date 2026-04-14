@@ -1,8 +1,17 @@
-# AGENTS.md - NetBox Development Guide
+﻿# AGENTS.md — NetBox Development Guide
 
-This document provides guidelines for AI coding assistants working on the NetBox project (Far-NetBox SFTP/FTP/SCP/WebDAV/S3 client plugin for Far Manager).
+> You are an AI coding assistant working on the NetBox project — a **Far Manager plugin** (SFTP/FTP/SCP/WebDAV/S3 client) built in C++17 on top of WinSCP, PuTTY, and FileZilla codebases. Far Manager is a text-mode file manager for Windows; NetBox integrates as a plugin DLL loaded via F11.
 
-## Project Overview
+## Quick Navigation
+
+| Document | When to read |
+|----------|-------------|
+| [AGENTS-Overview.md](AGENTS-Overview.md) | Dependencies, troubleshooting |
+| [AGENTS-Structure.md](AGENTS-Structure.md) | Adding libs, CMake, OpenSSL, language files |
+| [AGENTS-Standards.md](AGENTS-Standards.md) | Writing code — naming, formatting, patterns |
+| [AGENTS-Workflows.md](AGENTS-Workflows.md) | Build commands, git, shell rules |
+
+## At a Glance
 
 | Attribute | Value |
 |-----------|-------|
@@ -12,281 +21,172 @@ This document provides guidelines for AI coding assistants working on the NetBox
 | **Platforms** | x86, x64, ARM64 |
 | **Base** | WinSCP, PuTTY, FileZilla codebases |
 
-## AI Agent Workflow
+## Tool Selection Guide
 
-### Core Principles
+| Task | Use this |
+|------|----------|
+| Read a known file | `read_file` (use `offset`/`limit` for large files) |
+| Find files by pattern | `glob` (e.g., `src/**/*.cpp`) |
+| Find code by keyword | `grep_search` (e.g., `GetSessionData`) |
+| Open-ended / multi-step search | `task` (Explore for quick, general-purpose for deep) |
+| Edit code | `edit` — surgical changes only, include 3+ lines context |
+| Create new file | `write_file` |
+| Run build/test | `bash` (one command per call) |
+| Track multi-step work | `todowrite` |
+| Ask user a question | `question` |
+| Commit changes | skill: `aif-commit` |
 
-1. **Read before writing** — Understand existing patterns before modifying code
-2. **Edit, don't rewrite** — Make minimal surgical changes to existing files
-3. **Don't re-read unnecessarily** — Remember files you've already read unless they may have changed
-4. **Verify before declaring done** — Build and check your changes
-5. **Be concise** — No fluff, no summaries, just the work
-6. **User instructions override this file** — Always follow explicit user direction
+## Task Type Decision Tree
 
-Use skills if available:
+```
+What kind of task?
+├── Fix a bug
+│   1. grep_search for error/symbol
+│   2. Read relevant code sections
+│   3. Minimal fix → build → verify
+│   4. Use /aif-fix if available
+│
+├── Add a feature
+│   1. Read AGENTS-Standards.md
+│   2. Locate related existing code
+│   3. Follow existing patterns exactly
+│   4. Use /aif-plan before coding
+│
+├── Refactor / clean up
+│   1. Read AGENTS-Standards.md
+│   2. Make minimal changes → build passes
+│
+├── Write or fix tests
+│   1. Read AGENTS-Standards.md (code patterns)
+│   2. Use /cpp-testing skill if available
+│   3. Build → run tests → verify
+│
+├── Build / CI issue
+│   1. Read AGENTS-Structure.md (CMake)
+│   2. Read AGENTS-Workflows.md (build commands)
+│   3. Check "Common Build Errors" below
+│
+└── Documentation
+    1. Update relevant AGENTS-*.md file
+    2. CRLF line endings, no trailing whitespace
+```
 
-- cpp-coding-standards
-- cpp-expert
-- memory-safety-patterns
-- cpp-modern-features
-- git-commit
+## Essential Build Commands
 
+Full commands in [AGENTS-Workflows.md](AGENTS-Workflows.md).
 
-### Task Execution Checklist
+**Standard build (x64 RelWithDebugInfo):**
 
-- [ ] Understand the task and locate relevant files
-- [ ] Read existing code to match patterns and conventions
-- [ ] Make minimal, focused changes
-- [ ] Build succeeds with no warnings (`cmake --build build-RelWithDebugInfo --clean-first -- -j4`)
-- [ ] No trailing whitespaces introduced
-- [ ] No spelling/grammar errors in comments
-
-### Before Committing
-
-- [ ] Clean build completes without warnings
-- [ ] Changes follow naming conventions (see below)
-- [ ] No modifications to third-party code in `libs/`
-- [ ] Manual testing of affected functionality
-
-## Quick Reference
-
-### Standard Build (x64 RelWithDebugInfo)
-
+Step 1 - Configure (adjust VS edition path if needed):
 ```cmd
-call "%VS170COMNTOOLS%\..\..\VC\vcvarsall.bat" x86_amd64
-cmake -S . -B build-RelWithDebugInfo -G "Ninja" -DCMAKE_BUILD_TYPE=RelWithDebugInfo -DOPT_CREATE_PLUGIN_DIR=ON
-cmake --build build-RelWithDebugInfo -j
+cmd /c "call &quot;C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvarsall.bat&quot; x86_amd64 && cmake -S . -B build-RelWithDebugInfo -G &quot;Ninja&quot; -DCMAKE_BUILD_TYPE=RelWithDebugInfo -DOPT_CREATE_PLUGIN_DIR=ON"
 ```
 
-### Debug Build x64
-
+Step 2 - Build:
 ```cmd
-cmake -S . -B build-Debug-x64 -G "Ninja" -DCMAKE_BUILD_TYPE=Debug -DOPT_CREATE_PLUGIN_DIR=ON
-cmake --build build-Debug-x64 -j
+cmd /c "cmake --build build-RelWithDebugInfo -j"
 ```
 
-### Debug Build Win32
+## Common File Locations
 
+| Area | Path | What's there |
+|------|------|-------------|
+| Plugin entry | `src/NetBox/` | Far Manager plugin interface |
+| Protocols | `src/core/` | SSH, FTP, SCP, S3, WebDAV |
+| UI / dialogs | `src/windows/` | Far Manager GUI code |
+| Base classes | `src/base/` | UnicodeString, Classes |
+| Utilities | `src/nbcore/` | Strings, memory, logging |
+| Headers | `src/include/` | nbtypes.h, rtti.hpp |
+| Resources | `src/resource/` | .rc, .lng, licenses |
+| **DO NOT TOUCH** | `libs/` | Third-party: OpenSSL, PuTTY, FileZilla |
+| Build config | `CMakeLists.txt` | Root + `cmake/` + `src/CMakeLists.txt` |
+
+## Critical Agent Rules
+
+- **NEVER modify `libs/`** — use patches instead
+- **Build must pass with ZERO warnings** (MSVC W4)
+- **All files must use CRLF line endings**
+- **Don't combine shell commands** with `&&`, `||`, `;`
+- **Don't use `2>/dev/null`** on Windows
+- **Don't rewrite entire files** — make minimal edits
+- **Don't commit secrets** or credentials
+
+## Project-Specific Gotchas
+
+### OpenSSL Patches
+
+After updating OpenSSL from upstream (WinSCP), **re-apply the patch**:
 ```cmd
-cmake -S . -B build-Debug-Win32 -A Win32 -DCMAKE_BUILD_TYPE=Debug -DOPT_CREATE_PLUGIN_DIR=ON
-cmake --build build-Debug-Win32 -j
+cd libs\openssl-3
+git apply -p3 0001-openssl-NetBox-patches.patch
 ```
+Without this: Win32 build breaks (`FARPROC` calling convention mismatch in `cryptlib.c`).
 
-### Release Build (x86, Unity)
+### Unity Build
 
+Symbol redefinition errors? Unity build is the culprit. Disable:
 ```cmd
-call "%VS170COMNTOOLS%\..\..\VC\vcvarsall.bat" x86
-cmake -S . -B build-Release-Win32 -A Win32 -DCMAKE_BUILD_TYPE=Release -DOPT_USE_UNITY_BUILD=ON -DOPT_CREATE_PLUGIN_DIR=ON
-cmake --build build-Release-Win32 -j
+cmake -S . -B build-... -DOPT_USE_UNITY_BUILD=OFF ...
 ```
 
-### Clean build
+### Plugin Directory
 
-```cmd
+Plugin DLLs go to `Far3_<platform>/Plugins/NetBox/` (not `build-*/src/`). Requires `OPT_CREATE_PLUGIN_DIR=ON`.
 
-call "%VS170COMNTOOLS%\..\..\VC\vcvarsall.bat" x86
-cmake --build build-RelWithDebugInfo-x64 -A Win32 --clean-first -- -j4
-```
+## Common Build Errors & Fixes
 
-### Verify No Warnings
+| Error | Cause | Fix |
+|-------|-------|-----|
+| `'call' is not recognized` | Running in pwsh without `cmd /c` | Prefix commands with `cmd /c "..."` |
+| `vcvarsall.bat not found` | VS2022 not installed or wrong path | Check VS edition (Community/Professional/Enterprise) |
+| `limits.h: No such file` | VS2022 C++ headers not installed | Reinstall VS2022 with "Desktop development with C++" |
+| Ninja not found | Not installed | `winget install Ninja-build.ninja` |
+| `CMAKE_C_COMPILER not set` (Win32) | x86 env not configured | Run `vcvarsall.bat x86` first |
+| Symbol redefinition | Unity build conflict | Add `-DOPT_USE_UNITY_BUILD=OFF` |
+| OpenSSL Win32: `FARPROC` mismatch | Patch not applied | Re-apply patch (see above) |
+| Link errors after adding file | Not in CMakeLists.txt | Add to `src/CMakeLists.txt` source list |
 
-```cmd
-cmake --build build-RelWithDebugInfo --clean-first -- -j4
-```
+## Far Manager Testing Cycle
 
-## Build Configuration
+1. Build with `OPT_CREATE_PLUGIN_DIR=ON`
+2. Launch Far Manager from `Far3_<platform>/`
+3. Press F11 → Plugins → NetBox
+4. Test the affected functionality
+5. Check plugin log for errors (tinylog, see `src/nbcore/logging.cpp`)
 
-### CMake Options
+## Skills
 
-| Option | Values | Default | Description |
-|--------|--------|---------|-------------|
-| `CMAKE_BUILD_TYPE` | `Debug`, `Release`, `RelWithDebugInfo` | `Debug` | Build configuration |
-| `PROJECT_PLATFORM` | `x86`, `x64`, `ARM64` | Auto-detected | Target architecture |
-| `OPT_CREATE_PLUGIN_DIR` | `ON`, `OFF` | `OFF` | Create plugin directory structure |
-| `OPT_USE_UNITY_BUILD` | `ON`, `OFF` | `ON` for x86 Release only | Faster compilation |
-| `OPT_COMPILE_COMMANDS` | `ON`, `OFF` | `OFF` | Generate `compile_commands.json` |
+Use these skills when applicable:
+- **cpp-coding-standards** — writing/reviewing C++ code
+- **cpp-expert** — complex C++ questions
+- **memory-safety-patterns** — RAII, ownership, resource management
+- **cpp-testing** — writing/fixing tests
+- **aif-review** — code review before commit
+- **aif-commit** — conventional commit messages
+- **aif-fix** — fix specific bugs
+- **aif-plan** — plan features before coding
+- **aif-security-checklist** — security review before deploy
 
-### CMake Structure
+## Quality Gates
 
-```
-CMakeLists.txt                    # Main entry (74 lines)
-├── cmake/
-│   ├── NetBox.cmake              # Compiler/linker flags
-│   ├── Libraries.cmake           # Centralized library config
-│   ├── PlatformDetection.cmake   # Platform auto-detection
-│   └── Install.cmake             # Post-build installation
-├── libs/*/CMakeLists.txt         # Third-party library builds
-└── src/CMakeLists.txt            # Plugin target (~530 lines)
-```
+Check before declaring a task complete:
 
-### Adding a New Library
-
-1. Create `cmake/NewLib.cmake` with library configuration
-2. Create `libs/newlib/CMakeLists.txt` for the build
-3. Add `add_subdirectory(libs/newlib)` in root `CMakeLists.txt`
-4. Link to plugin: add `newlib` to `NETBOX_LIBRARIES` in `src/CMakeLists.txt`
-
-### Build Output
-
-- Plugin DLLs: `Far3_<platform>/Plugins/NetBox/`
-- Platforms: `Far3_x86/`, `Far3_x64/`, `Far3_ARM64/`
-
-## Project Structure
-
-```
-src/
-├── base/        # Base classes (UnicodeString, Classes, etc.)
-├── core/        # Protocol implementations (SSH, FTP, SCP, S3, WebDAV)
-├── filezilla/   # FileZilla-based FTP engine
-├── include/     # Public headers (nbtypes.h, rtti.hpp)
-├── nbcore/      # Core utilities (strings, memory, logging)
-├── NetBox/      # Far Manager plugin interface
-├── PluginSDK/   # Far3 plugin SDK headers
-├── resource/    # Resources (.rc, .lng, licenses)
-└── windows/     # Windows-specific code (GUI, dialogs)
-```
-
-## Dependencies
-
-Third-party libraries in `libs/` — **never modify directly**, use patches if needed:
-
-| Library | Location | Purpose |
-|---------|----------|---------|
-| PuTTY | `libs/putty/` | SSH/SCP protocol |
-| FileZilla | `src/filezilla/` | FTP protocol |
-| OpenSSL 3 | `libs/openssl-3/` | Cryptography |
-| neon | `libs/neon/` | WebDAV protocol |
-| libs3 | `libs/libs3/` | S3 protocol |
-| ATL/MFC | `libs/atlmfc/` | Minimal MFC subset |
-| dlmalloc | `libs/dlmalloc/` | Memory allocator |
-| expat | `libs/expat/` | XML parsing |
-| zlib-ng | `libs/zlib-ng/` | Compression |
-| tinyxml2 | `libs/tinyxml2/` | XML parser |
-| fmt | `libs/fmt/` | String formatting |
-| tinylog | `libs/tinylog/` | Logging |
-| GSL | `libs/GSL/` | Guidelines Support Library |
-| icecream-cpp | `libs/icecream-cpp/` | Debug logging |
-
-## Code Style
-
-### Naming Conventions
-
-| Element | Convention | Example |
-|---------|------------|---------|
-| Classes | `T` + PascalCase | `TSessionData`, `TSecureShell` |
-| Methods/Functions | PascalCase | `GetSessionData()`, `Connect()` |
-| Member variables | `F` + PascalCase | `FSessionData`, `FConfig` |
-| Local variables | camelCase | `sessionData`, `configValue` |
-| Constants/Macros | UPPER_CASE | `MAX_RETRY_COUNT`, `DEFAULT_TIMEOUT` |
-| Enums | PascalCase | `SessionType`, `AuthMethod` |
-
-### Formatting
-
-- **Brace style**: Allman/BSD (opening brace on new line)
-- **Indentation**: 2 spaces (no tabs)
-- **Line endings**: CRLF (Windows)
-- **Pointer/reference**: Middle alignment (`int * ptr`, `int & ref`)
-- **Max line length**: 120 characters
-- **No trailing whitespaces** in any source or CMake file
-- **No `.clang-format`** file — follow manual rules above
-
-### File Organization
-
-- **Include guards**: `#pragma once`
-- **Include order**: System headers → Project headers → Local headers
-- **Extensions**: `.h`/`.hpp` for headers, `.cpp` for sources, `.rc`/`.lng` for resources
-
-### Comments
-
-- `//` for single-line comments
-- `/* */` for multi-line comments
-- `// TODO: description` for future work
-- `// FIXME: description` for known issues
-- Comments must be clear, grammatically correct English
-
-## Code Patterns
-
-### Error Handling
-
-- Use exceptions for error conditions
-- Log with `ADF()` macro for debug output
-- Use `DebugAssert()` for invariants
-- Handle network errors gracefully with meaningful messages
-
-### Memory Management
-
-- Prefer RAII and smart pointers
-- Avoid raw `new`/`delete`
-- Use `nbstr_*` functions for string memory management
-- Check for null before dereferencing
-
-### String Handling
-
-- `UnicodeString` for wide strings (user-facing text)
-- `AnsiString` for narrow strings when needed
-- UTF-8 for file I/O when possible
-- Handle encoding conversions explicitly
-
-### Debugging
-
-- `ADF()` macro for debug output
-- `DebugAssert()` for assertions
-- Logging via `tinylog` (see `src/nbcore/logging.cpp`)
-- For VS debugging: generate solution with `-G "Visual Studio 17 2022"`, set Far.exe as debug command
-
-## Language Files
-
-- English: `NetBoxEng.lng` (primary, always update this)
-- Other languages: `NetBoxRus.lng`, `NetBoxPol.lng`, etc.
-- Use message IDs from `MsgIDs.h`
-- Keep translations synchronized when modifying UI strings
-
-## Git Workflow
-
-- **Main branch**: `main` (protected)
-- **Branch naming**: `feature/description`, `fix/description`, `refactor/description`
-- **Commit messages**: Imperative mood, under 72 chars for summary
-- **Skip CI**: `[skip ci]` or `[ci skip]` in commit message
-- **CI/CD**: GitHub Actions (`.github/workflows/release.yml`), AppVeyor (legacy)
-
-## Troubleshooting
-
-| Problem | Solution |
-|---------|----------|
-| Missing `vcvarsall.bat` | Install VS2022 with "Desktop development with C++" |
-| Ninja not found | `winget install Ninja-build.ninja` |
-| Unity build errors | Add `-DOPT_USE_UNITY_BUILD=OFF` |
-| Plugin fails to load | Check architecture match (x86/x64), verify dependencies |
-| Connection failures | Check firewall, test with `ping`/`telnet`, review plugin log |
-
-## AI Context Files
-
-| File | Purpose |
-|------|---------|
-| AGENTS.md | This file — project structure map and AI agent guide |
-| .ai-factory/DESCRIPTION.md | Project specification and tech stack |
-| .ai-factory/ARCHITECTURE.md | Architecture decisions and guidelines |
-| .ai-factory/config.yaml | AI Factory configuration (paths, workflow, git) |
-| .ai-factory/rules/base.md | Auto-detected project conventions |
-| PROJECT.md | Project requirements and scope |
-| CODEBASE.md | Codebase documentation index |
-| DEPENDENCIES.md | Third-party library documentation |
-
-## Agent Rules
-
-- do not use "2>/dev/null" when calling shell scripts
-- Never combine shell commands with `&&`, `||`, or `;` — execute each command as a separate Bash tool call. This applies even when a skill, plan, or instruction provides a combined command — always decompose it into individual calls.
-  - ❌ Wrong: `git checkout <configured-base-branch> && git pull`
-  - ✅ Right: Two separate Bash tool calls — first `git checkout <configured-base-branch>`, then `git pull origin <configured-base-branch>`
-- **CRITICAL:** Always read `.ai-factory/rules/base.md` before making changes — it contains auto-detected project conventions
-- **CRITICAL:** Never modify third-party code in `libs/` — use patches instead
-- **CRITICAL:** Build must succeed with NO warnings (MSVC W4) before declaring task complete
-
-## Code Quality Checklist
-
-- [ ] No compiler warnings (MSVC W4)
-- [ ] No memory leaks (use RAII)
-- [ ] Exception safety
-- [ ] Unicode correctness
-- [ ] No spelling/grammar errors in comments
+- [ ] Clean build with zero warnings
+- [ ] No modifications to `libs/`
+- [ ] CRLF line endings on all modified files
+- [ ] No trailing whitespace
+- [ ] Naming conventions followed (T/F prefixes, PascalCase)
+- [ ] No spelling errors in comments
 - [ ] Common typo check: `loose`→`lose`, `connexion`→`connection`, `authentification`→`authentication`, `occured`→`occurred`, `recieve`→`receive`, `seperate`→`separate`
+
+**Verify CRLF**: See [AGENTS-Workflows.md](AGENTS-Workflows.md) → "Verify CRLF Line Endings" for pwsh commands.
+
+## When You're Stuck
+
+- **Don't guess** — say "insufficient information" and ask the user
+- **Can't find the file?** — use `glob` with broader patterns
+- **Can't find the code?** — use `grep_search` for the function/class name
+- **Unsure about the approach?** — use `question` or `/aif-explore`
+- **Build fails repeatedly?** — try clean reconfigure or read [AGENTS-Workflows.md](AGENTS-Workflows.md)
+- **Shell commands failing?** — read [AGENTS-Workflows.md](AGENTS-Workflows.md) → "Shell Script Rules"
+- **Something feels wrong?** — stop and tell the user
