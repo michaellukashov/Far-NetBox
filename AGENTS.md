@@ -21,18 +21,58 @@
 | **Platforms** | x86, x64, ARM64 |
 | **Base** | WinSCP, PuTTY, FileZilla codebases |
 
+## AI Agent Workflow
+
+### Core Principles
+
+1. **Read before writing** — Understand existing patterns before modifying code
+2. **Edit, don't rewrite** — Make minimal surgical changes to existing files
+3. **Don't re-read unnecessarily** — Remember files you've already read unless they may have changed
+4. **Verify before declaring done** — Build and check your changes
+5. **Be concise** — No fluff, no summaries, just the work
+6. **User instructions override this file** — Always follow explicit user direction
+
+Use skills if available:
+
+- cpp-coding-standards
+- cpp-expert
+- memory-safety-patterns
+- cpp-modern-features
+- git-commit
+
+When compacting, keep
+- Current editable files
+- Test error messages
+- Architectural solutions from this session
+
+### Task Execution Checklist
+
+- [ ] Understand the task and locate relevant files
+- [ ] Read existing code to match patterns and conventions
+- [ ] Make minimal, focused changes
+- [ ] Build succeeds with no warnings (`cmake --build build-RelWithDebugInfo --clean-first -- -j4`)
+- [ ] No trailing whitespaces introduced
+- [ ] No spelling/grammar errors in comments
+
+### Before Committing
+
+- [ ] Clean build completes without warnings
+- [ ] Changes follow naming conventions (see below)
+- [ ] No modifications to third-party code in `libs/`
+- [ ] Manual testing of affected functionality
+
 ## Tool Selection Guide
 
 | Task | Use this |
 |------|----------|
-| Read a known file | `read_file` (use `offset`/`limit` for large files) |
+| Read a known file | `read` (use `offset`/`limit` for large files) |
 | Find files by pattern | `glob` (e.g., `src/**/*.cpp`) |
 | Find code by keyword | `grep_search` (e.g., `GetSessionData`) |
-| Open-ended / multi-step search | `task` (Explore for quick, general-purpose for deep) |
+| Open-ended / multi-step search | `agent` (Explore for quick, general-purpose for deep) |
 | Edit code | `edit` — surgical changes only, include 3+ lines context |
 | Create new file | `write_file` |
 | Run build/test | `bash` (one command per call) |
-| Track multi-step work | `todowrite` |
+| Track multi-step work | `todo_write` |
 | Ask user a question | `question` |
 | Commit changes | skill: `aif-commit` |
 
@@ -122,10 +162,9 @@ cmd /c build-all.bat
 
 After updating OpenSSL from upstream (WinSCP), **re-apply the patch**:
 ```cmd
-cd libs\openssl-3
-git apply -p3 0001-openssl-NetBox-patches.patch
+git -C libs\openssl-3 apply -p3 0001-openssl-NetBox-patches.patch
 ```
-Without this: Win32 build breaks (`FARPROC` calling convention mismatch in `cryptlib.c`).
+See [AGENTS-Structure.md](AGENTS-Structure.md) → "OpenSSL Patch Application" for patch application instructions.
 
 ### Unity Build
 
@@ -151,7 +190,7 @@ Plugin DLLs go to `Far3_<platform>/Plugins/NetBox/` (not `build-*/src/`). Requir
 | OpenSSL Win32: `FARPROC` mismatch | Patch not applied | Re-apply patch (see above) |
 | Link errors after adding file | Not in CMakeLists.txt | Add to `src/CMakeLists.txt` source list |
 
-> **CRITICAL:** Always run `vcvarsall.bat` and CMake configure/build in the **same cmd session**. See [AGENTS-Workflows.md](AGENTS-Workflows.md) for correct build patterns.
+> **CRITICAL:** Always run `vcvarsall.bat` and CMake configure/build in the **same cmd session**. See [AGENTS-Workflows.md](AGENTS-Workflows.md) → "Common Build Errors" for correct build patterns.
 
 ## Far Manager Testing Cycle
 
@@ -180,14 +219,27 @@ Check before declaring a task complete:
 
 - [ ] Clean build with zero warnings
 - [ ] No modifications to `libs/`
+- [ ] Plugin DLLs in `Far3_<platform>/Plugins/NetBox/` (not `build-*/src/`)
 - [ ] CRLF line endings on all modified files
 - [ ] No BOM (UTF-8 without BOM) in all text files
 - [ ] No trailing whitespace
 - [ ] Naming conventions followed (T/F prefixes, PascalCase)
 - [ ] No spelling errors in comments
-- [ ] Common typo check: `loose`→`lose`, `connexion`→`connection`, `authentification`→`authentication`, `occured`→`occurred`, `recieve`→`receive`, `seperate`→`separate`
+See [AGENTS-Standards.md](AGENTS-Standards.md) → "Quality Gates" for common typo checks.
 
-**Verify CRLF**: See [AGENTS-Workflows.md](AGENTS-Workflows.md) → "Verify CRLF Line Endings" for pwsh commands.
+
+## AI Context Files
+
+| File | Purpose |
+|------|---------|
+| `AGENTS.md` | This file — project structure map and AI agent guide |
+| `.ai-factory/DESCRIPTION.md` | Project specification and tech stack |
+| `.ai-factory/ARCHITECTURE.md` | Architecture decisions and guidelines |
+| `.ai-factory/config.yaml` | AI Factory configuration (paths, workflow, git) |
+| `.ai-factory/rules/base.md` | Auto-detected project conventions |
+| `.ai-factory/skill-context/aif-commit/SKILL.md` | Project-specific commit conventions |
+
+| `.ai-factory/RULES.md` | Enforced coding rules and conventions |
 
 ## When You're Stuck
 
@@ -198,3 +250,33 @@ Check before declaring a task complete:
 - **Build fails repeatedly?** — try clean reconfigure or read [AGENTS-Workflows.md](AGENTS-Workflows.md)
 - **Shell commands failing?** — read [AGENTS-Workflows.md](AGENTS-Workflows.md) → "Shell Script Rules"
 - **Something feels wrong?** — stop and tell the user
+
+## Documentation Maintenance Checklist
+
+Before submitting documentation changes, verify:
+
+- [ ] All cross-references are valid
+- [ ] No duplicate content exists
+- [ ] All code blocks use correct syntax highlighting
+- [ ] All paths are absolute and use forward slashes
+- [ ] All references to tools use correct names (e.g., `read` not `read_file`)
+- [ ] All formatting follows the style guide in `.ai-factory/DOCUMENTATION.md`
+- [ ] Changes are reviewed by at least one other team member
+- [ ] Documentation is updated when code changes
+- [ ] Outdated or redundant information is removed
+- [ ] New documentation is added when new features are introduced
+
+
+## Documentation Review Process
+
+All documentation changes must follow this review process:
+
+1. **Submit for review** - Create a pull request with documentation changes
+2. **Assign reviewer** - Assign at least one team member to review
+3. **Verify compliance** - Reviewer checks against `.ai-factory/DOCUMENTATION.md`
+4. **Check cross-references** - Verify all links are valid
+5. **Confirm consistency** - Ensure no duplicate content exists
+6. **Approve or request changes** - Reviewer either approves or requests changes
+7. **Merge** - Only merge after approval
+
+Documentation changes that don't follow this process will be rejected.

@@ -45,18 +45,16 @@ Third-party libraries in `libs/` — **never modify directly**, use patches if n
 | GSL | `libs/GSL/` | Guidelines Support Library |
 | icecream-cpp | `libs/icecream-cpp/` | Debug logging |
 
-## Build Output
-
-- Plugin DLLs: `Far3_<platform>/Plugins/NetBox/`
-- Platforms: `Far3_x86/`, `Far3_x64/`, `Far3_ARM64/`
-
 ## Troubleshooting
 
 | Problem | Solution |
 |---------|----------|
-| Missing `vcvarsall.bat` | Install VS2022 with "Desktop development with C++" |
+| Missing `vcvarsall.bat` | Install VS2022 with "Desktop development with C++". Check: `C:\Program Files\Microsoft Visual Studio\2022\{Community,Professional,Enterprise}\VC\Auxiliary\Build\vcvarsall.bat` |
+| `CMAKE_C_COMPILER not found` | Run `vcvarsall.bat` first — always use .bat files that include the environment setup |
 | Ninja not found | `winget install Ninja-build.ninja` |
 | Unity build errors | Add `-DOPT_USE_UNITY_BUILD=OFF` |
 | Plugin fails to load | Check architecture match (x86/x64), verify dependencies |
 | Connection failures | Check firewall, test with `ping`/`telnet`, review plugin log |
 | WinXP build failures | Use v141_xp toolset: `-T v141_xp` in CMake or set in VS IDE |
+
+For detailed build error analysis, see [AGENTS-Workflows.md](AGENTS-Workflows.md) → "Common Build Errors".

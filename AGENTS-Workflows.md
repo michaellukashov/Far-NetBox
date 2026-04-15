@@ -28,18 +28,6 @@ cmake --build build-RelWithDebugInfo -j
 cmd /c build-all.bat
 ```
 
-**Alternative - separate configure and build** (only works if environment is already set in parent shell):
-
-Step 1 - Configure:
-```cmd
-cmd /c "call build-configure.bat"
-```
-
-Step 2 - Build:
-```cmd
-cmd /c "call build-run.bat"
-```
-
 > **NOTE:** Do NOT use `cmd /c "call vcvarsall.bat && cmake ... && cmake --build ..."` — the HTML encoding of quotes will break. Use .bat files instead.
 
 ### Debug Build x64
@@ -122,6 +110,57 @@ cmd /c "cmake --build build-RelWithDebugInfo --clean-first -- -j4"
 
 To ensure a completely clean build with zero warnings:
 
+### Debug Build x64
+
+Create `build-debug-x64.bat`:
+
+```bat
+@echo off
+call "C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64
+cmake -S . -B build-Debug-x64 -G "Ninja" -DCMAKE_BUILD_TYPE=Debug -DOPT_CREATE_PLUGIN_DIR=ON
+cmake --build build-Debug-x64 -j
+```
+
+**Run:**
+
+```cmd
+cmd /c build-debug-x64.bat
+```
+
+### Debug Build Win32
+
+Win32 (x86) requires the x86 MSVC compiler. Create `build-debug-win32.bat`:
+
+```bat
+@echo off
+call "C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvarsall.bat" x86
+cmake -S . -B build-Debug-Win32 -G "Ninja" -DCMAKE_BUILD_TYPE=Debug -DOPT_CREATE_PLUGIN_DIR=ON
+cmake --build build-Debug-Win32 -j
+```
+
+**Run:**
+
+```cmd
+cmd /c build-debug-win32.bat
+```
+
+### Release Build (x86, Unity)
+
+Create `build-release-win32.bat`:
+
+```bat
+@echo off
+call "C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvarsall.bat" x86
+cmake -S . -B build-Release-Win32 -A Win32 -DCMAKE_BUILD_TYPE=Release -DOPT_USE_UNITY_BUILD=ON -DOPT_CREATE_PLUGIN_DIR=ON
+cmake --build build-Release-Win32 -j
+```
+
+**Run:**
+
+```cmd
+cmd /c build-release-win32.bat
+```
+
 ```cmd
 cmd /c "cmake --build build-RelWithDebugInfo --clean-first -- -j4"
 ```
@@ -177,6 +216,12 @@ for /f "delims=" %a in ('dir /b "C:\Program Files\Microsoft Visual Studio\2022\*
 ```
 
 Or set `VS170COMNTOOLS` environment variable to point to the correct edition.
+
+This code automatically detects the installed VS edition by searching for vcvarsall.bat in all possible paths. It's recommended to use this approach in build scripts to ensure compatibility across different VS installations.
+
+
+
+⚠️ **Never use PowerShell for build operations** — always use .bat files with `cmd /c` to ensure proper environment setup.
 
 ## Agent Build Execution Rules
 

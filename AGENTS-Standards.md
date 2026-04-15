@@ -134,3 +134,19 @@ auto handle = std::make_unique<TFileHandle>(fileName);
 - [ ] Unicode correctness
 - [ ] No spelling/grammar errors in comments
 - [ ] Common typo check: `loose`→`lose`, `connexion`→`connection`, `authentification`→`authentication`, `occured`→`occurred`, `recieve`→`receive`, `seperate`→`separate`
+
+## Error Handling
+
+- Use exceptions for error conditions, not return codes
+- Log with `ADF()` macro for debug output
+- Use `DebugAssert()` for invariants
+- Handle network errors gracefully with meaningful messages
+
+**Pattern**:
+```cpp
+if (result == ERROR)
+{
+    ADF("Operation failed: %s", description.c_str());
+    throw EOperationError(description, errorCode);
+}
+```

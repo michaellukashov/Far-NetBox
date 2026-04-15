@@ -54,6 +54,9 @@ The build system compiles them with NASM via `cmake/OpenSSL.cmake` → `openssl_
 
 **NASM executable:** `buildtools/tools/nasm.exe`
 
+The NASM executable is included in the repository at `buildtools/tools/nasm.exe`.
+
+
 **x64 platform** (25 `.asm` files → `.obj`):
 
 ```cmake
@@ -84,9 +87,7 @@ NetBox maintains a local patch file `libs/openssl-3/0001-openssl-NetBox-patches.
 
 From the **project root** (`D:\Projects\NetBox\NetBox-dev`):
 
-```cmd
-cd libs\openssl-3
-git apply -p3 0001-openssl-NetBox-patches.patch
+git -C libs\openssl-3 apply -p3 0001-openssl-NetBox-patches.patch
 ```
 
 **Important:** The `-p3` flag strips 3 path components from the patch (`libs/openssl-3/openssl-3/crypto/...` → `crypto/...`). Always run from inside `libs/openssl-3/` — running from the project root will fail with "No such file or directory".
@@ -113,9 +114,19 @@ Then manually fix rejected hunks by comparing with the patch diff.
 2. `include/crypto/bn_conf.h`: platform detection for `_WIN32` vs `_WIN64` vs `_M_ARM64`
 3. `include/openssl/configuration.h`: `OPENSSL_SYS_WIN32`/`OPENSSL_SYS_WIN64A` defines
 
+⚠️ The patch file `0001-openssl-NetBox-patches.patch` should be versioned alongside the OpenSSL source. When updating OpenSSL, always check if the patch needs re-creation.
+
+
 ## Language Files
 
 - English: `NetBoxEng.lng` (primary, always update this)
 - Other languages: `NetBoxRus.lng`, `NetBoxPol.lng`, etc.
 - Use message IDs from `MsgIDs.h`
 - Keep translations synchronized when modifying UI strings
+
+## Build Output
+
+- **Plugin DLLs**: `Far3_<platform>/Plugins/NetBox/`
+- **Platform directories**: `Far3_x86/`, `Far3_x64/`, `Far3_ARM64/`
+- **Requires**: `OPT_CREATE_PLUGIN_DIR=ON` in CMake configuration
+- **Note**: Plugin DLLs go to `Far3_<platform>/Plugins/NetBox/` (not `build-*/src/`)
