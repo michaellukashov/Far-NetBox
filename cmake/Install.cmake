@@ -42,11 +42,11 @@ endfunction()
 
 function(netbox_define_distribution_files)
   set(DIST_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/NetBox/*.lng
-    ${CMAKE_CURRENT_SOURCE_DIR}/README*.md
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/NetBox/*.hlf
-    ${CMAKE_CURRENT_SOURCE_DIR}/ChangeLog
-    ${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.txt
+    ${CMAKE_SOURCE_DIR}/src/NetBox/*.lng
+    ${CMAKE_SOURCE_DIR}/README*.md
+    ${CMAKE_SOURCE_DIR}/src/NetBox/*.hlf
+    ${CMAKE_SOURCE_DIR}/ChangeLog
+    ${CMAKE_SOURCE_DIR}/LICENSE.txt
   PARENT_SCOPE)
 endfunction()
 
