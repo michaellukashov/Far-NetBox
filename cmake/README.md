@@ -55,6 +55,7 @@ Centralized compiler, linker, and platform-specific configuration.
 - `netbox_apply_compile_options(TARGET)` - Apply compile options to a target
 - `netbox_apply_link_options(TARGET)` - Apply linker options to a target
 - `netbox_get_include_dirs(RESULT_VAR)` - Get standard include directories
+- `netbox_compile_asm_files()` - Compile ASM files using NASM (MSVC only)
 
 #### `Install.cmake`
 Post-build installation and plugin directory setup.

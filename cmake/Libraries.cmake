@@ -57,6 +57,15 @@ endfunction()
 # Library Information Functions
 #===============================================================================
 
+function(netbox_print_library_summary)
+    # message(STATUS "")
+    # message(STATUS "NetBox Library Configuration:")
+    # message(STATUS "  Core libraries: ${NETBOX_CORE_LIBRARIES}")
+    # message(STATUS "  Protocol libraries: ${NETBOX_PROTOCOL_LIBRARIES}")
+    # message(STATUS "  Utility libraries: ${NETBOX_UTILITY_LIBRARIES}")
+    # message(STATUS "")
+endfunction()
+
 function(netbox_get_libraries OUTPUT_VAR)
     set(${OUTPUT_VAR} ${NETBOX_ALL_LIBRARIES} PARENT_SCOPE)
 endfunction()
