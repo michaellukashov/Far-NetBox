@@ -10,6 +10,8 @@
 
 #include "UnicodeString.hpp"
 
+class TDateTime;
+
 namespace nb {
 
 NB_CORE_EXPORT UnicodeString Format(const UnicodeString & fmt, fmt::ArgList args);
@@ -20,6 +22,8 @@ FMT_VARIADIC_W(UnicodeString, Sprintf, const UnicodeString &)
 
 NB_CORE_EXPORT UnicodeString FmtLoadStr(int32_t id, fmt::ArgList args);
 FMT_VARIADIC_W(UnicodeString, FmtLoadStr, int32_t)
+
+NB_CORE_EXPORT UnicodeString DateTimeToStr(const TDateTime & DateTime);
 
 } // namespace nb
 

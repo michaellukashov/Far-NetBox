@@ -16,6 +16,7 @@
 #include <Bookmarks.h>
 #include <GUITools.h>
 #include <Sysutils.hpp>
+#include <FormatUtils.h>
 #include "guid.h"
 
 #include "PuttyIntf.h"
@@ -2695,7 +2696,7 @@ int32_t TWinSCPFileSystem::GetFilesRemote(TObjectList * PanelItems, bool Move,
       {
         FLastEditFileTimestamp = RemoteFile->GetModification();
         ADF(L"Captured remote file timestamp for native edit: %s — %s",
-          FFileList->GetString(0).c_str(), DateTimeToStr(FLastEditFileTimestamp).c_str());
+          FFileList->GetString(0).c_str(), nb::DateTimeToStr(FLastEditFileTimestamp).c_str());
       }
     }
     Result = 1;
@@ -3933,7 +3934,7 @@ void TWinSCPFileSystem::UploadFromEditor(bool NoReload,
       {
         TDateTime CurrentTimestamp = RemoteFile->GetModification();
         ADF(L"Checking remote file timestamp: %s, stored: %s",
-          DateTimeToStr(CurrentTimestamp).c_str(), DateTimeToStr(SourceTimestamp).c_str());
+          nb::DateTimeToStr(CurrentTimestamp).c_str(), nb::DateTimeToStr(SourceTimestamp).c_str());
         if (CurrentTimestamp != SourceTimestamp)
         {
           ADF(L"Remote file was modified externally — showing confirmation dialog");
@@ -4321,7 +4322,7 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString Directory,
       {
         FLastMultipleEditTimestamp = RemoteFile->GetModification();
         ADF(L"Captured remote file timestamp for multiple edit: %s — %s",
-          FullFileName.c_str(), DateTimeToStr(FLastMultipleEditTimestamp).c_str());
+          FullFileName.c_str(), nb::DateTimeToStr(FLastMultipleEditTimestamp).c_str());
       }
     }
     __finally
