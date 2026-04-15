@@ -35,7 +35,7 @@ set(CRYPTO_SOURCES
     crypto/packet.c
     crypto/param_build.c
     crypto/param_build_set.c
-    crypto/threads_lib.c
+    crypto/threads_win.c
     crypto/params_dup.c
     crypto/o_str.c
     crypto/cpuid.c
