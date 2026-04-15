@@ -77,15 +77,20 @@ Full commands in [AGENTS-Workflows.md](AGENTS-Workflows.md).
 
 **Standard build (x64 RelWithDebugInfo):**
 
-Step 1 - Configure (adjust VS edition path if needed):
-```cmd
-cmd /c "call &quot;C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvarsall.bat&quot; x86_amd64 && cmake -S . -B build-RelWithDebugInfo -G &quot;Ninja&quot; -DCMAKE_BUILD_TYPE=RelWithDebugInfo -DOPT_CREATE_PLUGIN_DIR=ON"
+Create `build-all.bat` in project root:
+```bat
+@echo off
+call "C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64
+cmake -S . -B build-RelWithDebugInfo -G "Ninja" -DCMAKE_BUILD_TYPE=RelWithDebugInfo -DOPT_CREATE_PLUGIN_DIR=ON
+cmake --build build-RelWithDebugInfo -j
 ```
 
-Step 2 - Build:
+Run:
 ```cmd
-cmd /c "cmake --build build-RelWithDebugInfo -j"
+cmd /c build-all.bat
 ```
+
+> **IMPORTANT:** Configure and build MUST happen in the same cmd session with vcvarsall.bat environment.
 
 ## Common File Locations
 
@@ -137,14 +142,16 @@ Plugin DLLs go to `Far3_<platform>/Plugins/NetBox/` (not `build-*/src/`). Requir
 
 | Error | Cause | Fix |
 |-------|-------|-----|
-| `'call' is not recognized` | Running in pwsh without `cmd /c` | Prefix commands with `cmd /c "..."` |
+| `'call' is not recognized` | Running in pwsh without `cmd /c` | Use .bat files (see AGENTS-Workflows.md) |
 | `vcvarsall.bat not found` | VS2022 not installed or wrong path | Check VS edition (Community/Professional/Enterprise) |
-| `limits.h: No such file` | VS2022 C++ headers not installed | Reinstall VS2022 with "Desktop development with C++" |
+| `Cannot open include file: 'limits.h'` | Environment not set | **Use .bat files with vcvarsall.bat** - never separate configure/build |
 | Ninja not found | Not installed | `winget install Ninja-build.ninja` |
-| `CMAKE_C_COMPILER not set` (Win32) | x86 env not configured | Run `vcvarsall.bat x86` first |
+| `CMAKE_C_COMPILER not set` (Win32) | x86 env not configured | Use `vcvarsall.bat x86` in .bat file |
 | Symbol redefinition | Unity build conflict | Add `-DOPT_USE_UNITY_BUILD=OFF` |
 | OpenSSL Win32: `FARPROC` mismatch | Patch not applied | Re-apply patch (see above) |
 | Link errors after adding file | Not in CMakeLists.txt | Add to `src/CMakeLists.txt` source list |
+
+> **CRITICAL:** Always run `vcvarsall.bat` and CMake configure/build in the **same cmd session**. See [AGENTS-Workflows.md](AGENTS-Workflows.md) for correct build patterns.
 
 ## Far Manager Testing Cycle
 

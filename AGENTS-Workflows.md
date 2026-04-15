@@ -6,44 +6,72 @@
 
 ## Build Commands
 
-> **Agent execution**: Run build commands via Bash tool with individual calls — do NOT chain with `&&` or use cmd-specific constructs inside pwsh.
+> **Agent execution**: Use `.bat` files for all build operations. Each `cmd /c` creates a new shell session, losing `vcvarsall.bat` environment. Never chain with `&&` or use cmd-specific constructs inside pwsh.
 
 ### Standard Build (x64 RelWithDebugInfo)
 
-**Step 1: Configure** (adjust VS edition path if needed):
-```cmd
-cmd /c "call &quot;C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvarsall.bat&quot; x86_amd64 && cmake -S . -B build-RelWithDebugInfo -G &quot;Ninja&quot; -DCMAKE_BUILD_TYPE=RelWithDebugInfo -DOPT_CREATE_PLUGIN_DIR=ON"
+> **CRITICAL:** Configure and build **MUST** happen in the **same cmd session** with `vcvarsall.bat` environment. 
+> If you run configure in one session and build in another, you'll get "Cannot open include file" errors.
+
+**Recommended approach - use `build-all.bat` script:**
+
+Create `build-all.bat` in project root:
+```bat
+@echo off
+call "C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64
+cmake -S . -B build-RelWithDebugInfo -G "Ninja" -DCMAKE_BUILD_TYPE=RelWithDebugInfo -DOPT_CREATE_PLUGIN_DIR=ON
+cmake --build build-RelWithDebugInfo -j
 ```
 
-**Step 2: Build:**
+**Run build:**
 ```cmd
-cmd /c "cmake --build build-RelWithDebugInfo -j"
+cmd /c build-all.bat
 ```
+
+**Alternative - separate configure and build** (only works if environment is already set in parent shell):
+
+Step 1 - Configure:
+```cmd
+cmd /c "call build-configure.bat"
+```
+
+Step 2 - Build:
+```cmd
+cmd /c "call build-run.bat"
+```
+
+> **NOTE:** Do NOT use `cmd /c "call vcvarsall.bat && cmake ... && cmake --build ..."` — the HTML encoding of quotes will break. Use .bat files instead.
 
 ### Debug Build x64
 
-**Step 1: Configure:**
-```cmd
-cmd /c "call &quot;C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvarsall.bat&quot; x86_amd64 && cmake -S . -B build-Debug-x64 -G &quot;Ninja&quot; -DCMAKE_BUILD_TYPE=Debug -DOPT_CREATE_PLUGIN_DIR=ON"
+Create `build-debug-x64.bat`:
+```bat
+@echo off
+call "C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64
+cmake -S . -B build-Debug-x64 -G "Ninja" -DCMAKE_BUILD_TYPE=Debug -DOPT_CREATE_PLUGIN_DIR=ON
+cmake --build build-Debug-x64 -j
 ```
 
-**Step 2: Build:**
+**Run:**
 ```cmd
-cmd /c "cmake --build build-Debug-x64 -j"
+cmd /c build-debug-x64.bat
 ```
 
 ### Debug Build Win32
 
-Win32 (x86) requires the x86 MSVC compiler. If the environment is not already set up, CMake will fail with "CMAKE_C_COMPILER not set".
+Win32 (x86) requires the x86 MSVC compiler.
 
-**Step 1: Configure:**
-```cmd
-cmd /c "call &quot;C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvarsall.bat&quot; x86 && cmake -S . -B build-Debug-Win32 -G &quot;Ninja&quot; -DCMAKE_BUILD_TYPE=Debug -DOPT_CREATE_PLUGIN_DIR=ON"
+Create `build-debug-win32.bat`:
+```bat
+@echo off
+call "C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvarsall.bat" x86
+cmake -S . -B build-Debug-Win32 -G "Ninja" -DCMAKE_BUILD_TYPE=Debug -DOPT_CREATE_PLUGIN_DIR=ON
+cmake --build build-Debug-Win32 -j
 ```
 
-**Step 2: Build:**
+**Run:**
 ```cmd
-cmd /c "cmake --build build-Debug-Win32 -j"
+cmd /c build-debug-win32.bat
 ```
 
 **Verify architecture:**
@@ -54,62 +82,82 @@ dumpbin /headers build-Debug-Win32\src\NetBox.dll | findstr /i "machine"
 
 ### Release Build (x86, Unity)
 
-**Step 1: Configure:**
-```cmd
-cmd /c "call &quot;C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvarsall.bat&quot; x86 && cmake -S . -B build-Release-Win32 -A Win32 -DCMAKE_BUILD_TYPE=Release -DOPT_USE_UNITY_BUILD=ON -DOPT_CREATE_PLUGIN_DIR=ON"
+Create `build-release-win32.bat`:
+```bat
+@echo off
+call "C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvarsall.bat" x86
+cmake -S . -B build-Release-Win32 -A Win32 -DCMAKE_BUILD_TYPE=Release -DOPT_USE_UNITY_BUILD=ON -DOPT_CREATE_PLUGIN_DIR=ON
+cmake --build build-Release-Win32 -j
 ```
 
-**Step 2: Build:**
+**Run:**
 ```cmd
-cmd /c "cmake --build build-Release-Win32 -j"
+cmd /c build-release-win32.bat
 ```
 
 ### Clean Build
 
-**x64 (RelWithDebugInfo):**
+**Full clean reconfigure:**
+
+Create `build-clean.bat`:
+```bat
+@echo off
+rmdir /s /q build-RelWithDebugInfo
+call "C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64
+cmake -S . -B build-RelWithDebugInfo -G "Ninja" -DCMAKE_BUILD_TYPE=RelWithDebugInfo -DOPT_CREATE_PLUGIN_DIR=ON
+cmake --build build-RelWithDebugInfo -j
+```
+
+**Run:**
+```cmd
+cmd /c build-clean.bat
+```
+
+**Clean build with --clean-first** (rebuilds without deleting build dir):
 ```cmd
 cmd /c "cmake --build build-RelWithDebugInfo --clean-first -- -j4"
-```
-
-**Win32 (x86 Debug):**
-```cmd
-cmd /c "cmake --build build-Debug-Win32 --clean-first -- -j4"
-```
-
-**Full clean reconfigure (nuke and reconfigure):**
-
-Step 1 - Remove build directory:
-```cmd
-rmdir /s /q build-RelWithDebugInfo
-```
-
-Step 2 - Configure:
-```cmd
-cmd /c "call &quot;C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvarsall.bat&quot; x86_amd64 && cmake -S . -B build-RelWithDebugInfo -G &quot;Ninja&quot; -DCMAKE_BUILD_TYPE=RelWithDebugInfo -DOPT_CREATE_PLUGIN_DIR=ON"
-```
-
-Step 3 - Build:
-```cmd
-cmd /c "cmake --build build-RelWithDebugInfo -j"
 ```
 
 ### Verify No Warnings
 
+To ensure a completely clean build with zero warnings:
+
 ```cmd
 cmd /c "cmake --build build-RelWithDebugInfo --clean-first -- -j4"
 ```
+
+> **NOTE:** Third-party libraries in `libs/` may produce warnings - these are expected and acceptable since we cannot modify them directly (use patches instead).
 
 ## Common Build Errors
 
 | Error | Cause | Fix |
 |-------|-------|-----|
-| `'call' is not recognized` | Running in pwsh without `cmd /c` | Prefix commands with `cmd /c "..."` |
+| `'call' is not recognized` | Running in pwsh without `cmd /c` | Use .bat files or prefix with `cmd /c` |
 | `vcvarsall.bat not found` | VS2022 not installed or wrong edition | Check VS installation path (Community, Professional, Enterprise) |
-| `CMAKE_C_COMPILER not set` (Win32) | x86 env not configured | Run `vcvarsall.bat x86` (not x86_amd64) |
+| `CMAKE_C_COMPILER not set` (Win32) | x86 env not configured | Use `vcvarsall.bat x86` (not x86_amd64) |
 | `Ninja not found` | Not in PATH | Add to PATH: `winget install Ninja-build.ninja` |
-| `limits.h: No such file` | VS2022 C++ headers not installed | Reinstall VS2022 with "Desktop development with C++" workload |
+| `Cannot open include file: 'cstddef'` | Environment not set properly | **Use .bat files with vcvarsall.bat** - see build examples above |
 | `Symbol redefinition` | Unity build conflict | Add `-DOPT_USE_UNITY_BUILD=OFF` |
 | Link errors after adding file | Not in CMakeLists.txt | Add to `src/CMakeLists.txt` source list |
+
+### Critical: Standard Headers Not Found Errors
+
+If you see errors like:
+```
+fatal error C1083: Cannot open include file: 'cstddef': No such file or directory
+fatal error C1083: Cannot open include file: 'cstdlib': No such file or directory
+fatal error C1083: Cannot open include file: 'stdio.h': No such file or directory
+fatal error C1083: Cannot open include file: 'limits.h': No such file or directory
+```
+
+**Root cause:** The MSVC compiler environment (INCLUDE paths from `vcvarsall.bat`) is not active during build.
+
+**Solution:** ALWAYS run `vcvarsall.bat` and CMake configure/build in the **same cmd session**. Use the `.bat` file approach shown above.
+
+**DO NOT:**
+- Run configure in one cmd session and build in another
+- Use inline commands with `&&` chaining (HTML encoding breaks quotes)
+- Try to set INCLUDE manually - use `vcvarsall.bat` instead
 
 ### Visual Studio Edition Detection
 
@@ -136,18 +184,33 @@ Or set `VS170COMNTOOLS` environment variable to point to the correct edition.
 - The opencode tool runs in a pwsh environment
 - Direct `call` commands fail in pwsh
 - Chained commands (`cmd1 && cmd2`) fail when run via Bash tool
+- **HTML entities like `&quot;` break command parsing** — use .bat files instead
+- **Environment isolation:** Each `cmd /c` call creates a new shell session — `vcvarsall.bat` environment is lost
 
 **Correct patterns for agent:**
 
+✅ **USE .bat files** (recommended):
 ```cmd
-cmd /c "call &quot;%VS170COMNTOOLS%\..\..\VC\vcvarsall.bat&quot; x86_amd64 && cmake -S . -B build-RelWithDebugInfo -G &quot;Ninja&quot; -DCMAKE_BUILD_TYPE=RelWithDebugInfo -DOPT_CREATE_PLUGIN_DIR=ON"
+cmd /c build-all.bat
 ```
 
+✅ **Or use cmd /c with .bat wrapper:**
 ```cmd
-cmd /c "cmake --build build-RelWithDebugInfo -j"
+cmd /c "call my-build-script.bat"
 ```
 
-**Always separate configure and build into individual tool calls.**
+❌ **DO NOT use inline commands with &&:**
+```cmd
+cmd /c "call vcvarsall.bat x86_amd64 && cmake ..."  // BREAKS due to quote encoding
+```
+
+❌ **DO NOT separate configure and build into different sessions:**
+```cmd
+cmd /c "call vcvarsall.bat && cmake -S . -B build..."  // Session 1 - configure
+cmd /c "cmake --build build..."  // Session 2 - build - FAILS! Environment lost
+```
+
+**Always put vcvarsall.bat + configure + build in ONE .bat file.**
 
 ### Verify CRLF Line Endings
 
