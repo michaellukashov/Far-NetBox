@@ -7,6 +7,7 @@
 #include "FarUtils.h"
 #include <Common.h>
 #include <MsgIDs.h>
+#include <TextsWin.h>
 #include <ObjIDs.h>
 #include <Exceptions.h>
 #include <SessionData.h>
@@ -15,11 +16,18 @@
 #include <Bookmarks.h>
 #include <GUITools.h>
 #include <Sysutils.hpp>
+#include <FormatUtils.h>
 #include "guid.h"
 
 #include "PuttyIntf.h"
 #include "XmlStorage.h"
 #include <plugin.hpp>
+
+#ifdef _DEBUG
+#define ADF(format, ...) DEBUG_PRINTF(format, __VA_ARGS__)
+#else
+#define ADF(format, ...) ((void)0)
+#endif
 
 TSessionPanelItem::TSessionPanelItem(const TSessionData * ASessionData) :
   TCustomFarPanelItem(OBJECT_CLASS_TSessionPanelItem)
@@ -2681,6 +2689,16 @@ int32_t TWinSCPFileSystem::GetFilesRemote(TObjectList * PanelItems, bool Move,
       FLAGMASK(EditView, cpTemporary);
       // | FLAGMASK(CopyParam.GetNewerOnly(), cpNewerOnly);
     FTerminal->CopyToLocal(FFileList.get(), DestPath, &CopyParam, Params, nullptr);
+    if ((FFileList->GetCount() == 1) && (OpMode & OPM_EDIT))
+    {
+      std::unique_ptr<TRemoteFile> RemoteFile(FTerminal->TryReadFile(FFileList->GetString(0)));
+      if (RemoteFile != nullptr)
+      {
+        FLastEditFileTimestamp = RemoteFile->GetModification();
+        ADF(L"Captured remote file timestamp for native edit: %s — %s",
+          FFileList->GetString(0).c_str(), nb::DateTimeToStr(FLastEditFileTimestamp).c_str());
+      }
+    }
     Result = 1;
   }
   return Result;
@@ -3892,6 +3910,55 @@ void TWinSCPFileSystem::UploadFromEditor(bool NoReload,
     }
   }
 
+  TDateTime SourceTimestamp;
+  if (FLastEditFile == AFileName)
+  {
+    SourceTimestamp = FLastEditFileTimestamp;
+  }
+  else
+  {
+    const TMultipleEdits::iterator itEdit = FMultipleEdits.find(FLastEditorID);
+    if (itEdit != FMultipleEdits.end())
+    {
+      SourceTimestamp = itEdit->second.SourceTimestamp;
+    }
+  }
+
+  if (SourceTimestamp != TDateTime())
+  {
+    UnicodeString RemoteFilePath = base::UnixCombinePaths(DestPath, RealFileName);
+    try
+    {
+      std::unique_ptr<TRemoteFile> RemoteFile(FTerminal->TryReadFile(RemoteFilePath));
+      if (RemoteFile != nullptr)
+      {
+        TDateTime CurrentTimestamp = RemoteFile->GetModification();
+        ADF(L"Checking remote file timestamp: %s, stored: %s",
+          nb::DateTimeToStr(CurrentTimestamp).c_str(), nb::DateTimeToStr(SourceTimestamp).c_str());
+        if (CurrentTimestamp != SourceTimestamp)
+        {
+          ADF(L"Remote file was modified externally — showing confirmation dialog");
+          uint32_t Flags = FMSG_WARNING | FMSG_MB_OKCANCEL;
+          UnicodeString MessageText = GetMsg(EDIT_CHANGED_EXTERNALLY);
+          int Result = GetWinSCPPlugin()->Message(Flags, L"", MessageText);
+          if (Result == -1)
+          {
+            ADF(L"User cancelled upload — remote file was modified externally");
+            FTerminal->SetAutoReadDirectory(PrevAutoReadDirectory);
+            FFileList.reset();
+            return;
+          }
+          ADF(L"User confirmed overwrite of externally modified file");
+        }
+      }
+    }
+    catch (Exception & E)
+    {
+      ADF(L"Failed to read remote file timestamp: %s — proceeding with upload",
+        E.Message.c_str());
+    }
+  }
+
   std::unique_ptr<TRemoteFile> File(std::make_unique<TRemoteFile>());
   File->SetFileName(RealFileName);
   try__finally
@@ -4006,6 +4073,7 @@ void TWinSCPFileSystem::ProcessEditorEvent(intptr_t Event, void * /* Param */)
             MultipleEdit.Directory = FLastMultipleEditDirectory;
             MultipleEdit.LocalFileName = Info->GetFileName();
             MultipleEdit.PendingSave = false;
+            MultipleEdit.SourceTimestamp = FLastMultipleEditTimestamp;
             FMultipleEdits[Info->GetEditorID()] = MultipleEdit;
             if (FLastMultipleEditReadOnly)
             {
@@ -4249,6 +4317,13 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString Directory,
     {
       FileList->AddObject(FullFileName, FileDuplicate.get());
       TemporarilyDownloadFiles(FileList.get(), CopyParam, TempDir);
+      std::unique_ptr<TRemoteFile> RemoteFile(FTerminal->TryReadFile(FullFileName));
+      if (RemoteFile != nullptr)
+      {
+        FLastMultipleEditTimestamp = RemoteFile->GetModification();
+        ADF(L"Captured remote file timestamp for multiple edit: %s — %s",
+          FullFileName.c_str(), nb::DateTimeToStr(FLastMultipleEditTimestamp).c_str());
+      }
     }
     __finally
     {

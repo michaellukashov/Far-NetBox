@@ -67,6 +67,7 @@ struct TMultipleEdit final : public TObject
   UnicodeString Directory;
   UnicodeString LocalFileName;
   bool PendingSave{false};
+  TDateTime SourceTimestamp{};
 };
 
 struct TEditHistory final : public TObject
@@ -328,6 +329,8 @@ private:
   UnicodeString FLastMultipleEditDirectory;
   int32_t FLastEditorID{-1};
   TGUICopyParamType FLastEditCopyParam{};
+  TDateTime FLastEditFileTimestamp{};
+  TDateTime FLastMultipleEditTimestamp{};
   gsl::owner<TKeepAliveThread *> FKeepaliveThread{nullptr};
   gsl::owner<TSynchronizeController *> FSynchronizeController{nullptr};
   std::unique_ptr<TStrings> FCapturedLog;
