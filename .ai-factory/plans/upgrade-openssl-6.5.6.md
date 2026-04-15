@@ -1,4 +1,4 @@
-﻿# Plan: Upgrade OpenSSL from 6.5.5 to 6.5.6
+# Plan: Upgrade OpenSSL from 6.5.5 to 6.5.6
 
 **Branch:** upgrade-openssl-6.5.6  
 **Created:** 2026-04-12  

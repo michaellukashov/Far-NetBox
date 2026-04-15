@@ -1,4 +1,4 @@
-﻿# AGENTS.md — NetBox Development Guide
+# AGENTS.md — NetBox Development Guide
 
 > You are an AI coding assistant working on the NetBox project — a **Far Manager plugin** (SFTP/FTP/SCP/WebDAV/S3 client) built in C++17 on top of WinSCP, PuTTY, and FileZilla codebases. Far Manager is a text-mode file manager for Windows; NetBox integrates as a plugin DLL loaded via F11.
 
@@ -181,6 +181,7 @@ Check before declaring a task complete:
 - [ ] Clean build with zero warnings
 - [ ] No modifications to `libs/`
 - [ ] CRLF line endings on all modified files
+- [ ] No BOM (UTF-8 without BOM) in all text files
 - [ ] No trailing whitespace
 - [ ] Naming conventions followed (T/F prefixes, PascalCase)
 - [ ] No spelling errors in comments

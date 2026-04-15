@@ -1,4 +1,4 @@
-﻿# AGENTS-Standards.md — Coding Standards and Patterns
+# AGENTS-Standards.md — Coding Standards and Patterns
 
 > Part of the AGENTS documentation series. See also: [AGENTS.md](AGENTS.md) (entry), [AGENTS-Overview.md](AGENTS-Overview.md), [AGENTS-Structure.md](AGENTS-Structure.md), [AGENTS-Workflows.md](AGENTS-Workflows.md).
 
@@ -18,6 +18,7 @@
 - **Brace style**: Allman/BSD (opening brace on new line)
 - **Indentation**: 2 spaces (no tabs)
 - **Line endings**: CRLF (Windows)
+- **BOM**: No BOM (UTF-8 without BOM) in all source, documentation, and text files
 - **Pointer/reference**: Middle alignment (`int * ptr`, `int & ref`)
 - **Max line length**: 120 characters
 - **No trailing whitespaces** in any source or CMake file

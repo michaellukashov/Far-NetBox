@@ -1,4 +1,4 @@
-﻿# AGENTS-Structure.md — Project and Build Structure
+# AGENTS-Structure.md — Project and Build Structure
 
 > Part of the AGENTS documentation series. See also: [AGENTS.md](AGENTS.md) (entry), [AGENTS-Overview.md](AGENTS-Overview.md), [AGENTS-Standards.md](AGENTS-Standards.md), [AGENTS-Workflows.md](AGENTS-Workflows.md).
 

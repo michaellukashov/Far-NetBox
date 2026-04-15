@@ -1,4 +1,4 @@
-﻿# AGENTS-Overview.md — NetBox Project Overview
+# AGENTS-Overview.md — NetBox Project Overview
 
 > Part of the AGENTS documentation series. See also: [AGENTS.md](AGENTS.md) (entry), [AGENTS-Structure.md](AGENTS-Structure.md), [AGENTS-Standards.md](AGENTS-Standards.md), [AGENTS-Workflows.md](AGENTS-Workflows.md).
 

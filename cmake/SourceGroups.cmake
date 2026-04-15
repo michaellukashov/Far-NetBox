@@ -1,4 +1,4 @@
-﻿#===============================================================================
+#===============================================================================
 # NetBox Source Groups Configuration Module
 #
 # Purpose: Define source file groups for different components

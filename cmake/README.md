@@ -1,4 +1,4 @@
-﻿# NetBox CMake Configuration
+# NetBox CMake Configuration
 
 This document describes the modular CMake structure for NetBox.
 

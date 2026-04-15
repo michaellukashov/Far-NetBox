@@ -1,4 +1,4 @@
-﻿# Win32 Input Mode & KiTTY Input Mode for SFTP Terminal Interaction
+# Win32 Input Mode & KiTTY Input Mode for SFTP Terminal Interaction
 
 **Branch:** `feature/win32-kitty-input-mode`
 **Created:** 2026-04-12

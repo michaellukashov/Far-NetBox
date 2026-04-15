@@ -1,4 +1,4 @@
-﻿# Plan: Embed cacert.pem into C++ source
+# Plan: Embed cacert.pem into C++ source
 
 **Description:** Move the `cacert.pem` certificate bundle into C++ source as an embedded default, update configuration to use embedded content, and remove the external file from git tracking.
 

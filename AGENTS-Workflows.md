@@ -1,4 +1,4 @@
-﻿# AGENTS-Workflows.md — Build Commands, Git Workflow, and Shell Rules
+# AGENTS-Workflows.md — Build Commands, Git Workflow, and Shell Rules
 
 > Part of the AGENTS documentation series. See also: [AGENTS.md](AGENTS.md) (entry), [AGENTS-Overview.md](AGENTS-Overview.md), [AGENTS-Structure.md](AGENTS-Structure.md), [AGENTS-Standards.md](AGENTS-Standards.md).
 >
