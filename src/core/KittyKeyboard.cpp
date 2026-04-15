@@ -4,7 +4,7 @@
 #include "KittyKeyboard.h"
 #include "nbcore.h"
 
-void TKittyKeyboard::SetFlags(uint8_t Flags, TKittyKeyboardProtocolMode Mode) noexcept
+void NB_CORE_EXPORT TKittyKeyboard::SetFlags(uint8_t Flags, TKittyKeyboardProtocolMode Mode) noexcept
 {
   Flags &= TKittyKeyboardProtocolFlags::All;
 
@@ -22,7 +22,7 @@ void TKittyKeyboard::SetFlags(uint8_t Flags, TKittyKeyboardProtocolMode Mode) no
   }
 }
 
-void TKittyKeyboard::PushFlags(uint8_t Flags)
+void NB_CORE_EXPORT TKittyKeyboard::PushFlags(uint8_t Flags)
 {
   Flags &= TKittyKeyboardProtocolFlags::All;
 
@@ -37,7 +37,7 @@ void TKittyKeyboard::PushFlags(uint8_t Flags)
   FFlags = Flags;
 }
 
-void TKittyKeyboard::PopFlags(size_t Count)
+void NB_CORE_EXPORT TKittyKeyboard::PopFlags(size_t Count)
 {
   if (Count == 0)
   {
@@ -59,13 +59,13 @@ void TKittyKeyboard::PopFlags(size_t Count)
   }
 }
 
-void TKittyKeyboard::UseAlternateBuffer() noexcept
+void NB_CORE_EXPORT TKittyKeyboard::UseAlternateBuffer() noexcept
 {
   // When entering alternate screen buffer, reset flags
   FFlags = 0;
 }
 
-void TKittyKeyboard::UseMainBuffer() noexcept
+void NB_CORE_EXPORT TKittyKeyboard::UseMainBuffer() noexcept
 {
   // When returning to main screen buffer, restore from stack
   if (!FMainStack.empty())
