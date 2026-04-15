@@ -634,11 +634,11 @@ set(CRYPTO_SOURCES
     crypto/async/async.c
     crypto/async/async_err.c
     crypto/async/async_wait.c
-    # crypto/async/arch/async_win.c
+    crypto/async/arch/async_win.c
     crypto/async/arch/async_null.c
-    crypto/kdf/hkdf.c
-    crypto/kdf/tls1_prf.c
-    crypto/kdf/scrypt.c
+    # crypto/kdf/hkdf.c
+    # crypto/kdf/tls1_prf.c
+    # crypto/kdf/scrypt.c
     crypto/store/store_init.c
     crypto/store/store_register.c
     crypto/store/store_err.c
@@ -845,23 +845,20 @@ set(CRYPTO_SOURCES
     providers/implementations/storemgmt/winstore_store.c
 )
 
-# Explicitly exclude files that are commented out in original CMakeLists.txt
-ucm_remove_files(FROM CRYPTO_SOURCES
-    crypto/des/des_enc.c
-    crypto/bf/bf_enc.c
-    crypto/cast/c_enc.c
-    crypto/comp/c_zlib.c
-    crypto/err/err_all_legacy.c
-    crypto/async/arch/async_win.c
-    crypto/ec/curve448/arch_64/f_impl64.c
-    # crypto/ec/curve448/arch_32/f_impl32.c
-    crypto/curve448/arch_64/f_impl64.c
-    crypto/des/des_enc.c
-    crypto/bf/bf_enc.c
-    crypto/cast/c_enc.c
-    crypto/rand/rand_deprecated.c
-    crypto/evp/cmeth_lib.c
-)
+  # Explicitly exclude files that are commented out in original CMakeLists.txt
+  ucm_remove_files(FROM CRYPTO_SOURCES
+      crypto/des/des_enc.c
+      crypto/bf/bf_enc.c
+      crypto/cast/c_enc.c
+      crypto/comp/c_zlib.c
+      crypto/err/err_all_legacy.c
+      # crypto/async/arch/async_win.c
+      crypto/ec/curve448/arch_64/f_impl64.c
+      # crypto/ec/curve448/arch_32/f_impl32.c
+      crypto/curve448/arch_64/f_impl64.c
+      crypto/rand/rand_deprecated.c
+      crypto/evp/cmeth_lib.c
+  )
 
 # Platform-specific C files
 if(PROJECT_PLATFORM STREQUAL "ARM64")
@@ -869,19 +866,19 @@ if(PROJECT_PLATFORM STREQUAL "ARM64")
         crypto/aes/aes_core.c
         crypto/aes/aes_cbc.c
         crypto/sha/keccak1600.c
-        crypto/rc4/rc4_enc.c
-        crypto/rc4/rc4_skey.c
         crypto/des/des_enc.c
         crypto/cast/c_enc.c
         crypto/bf/bf_enc.c
+        crypto/rc4/rc4_skey.c
+        crypto/rc4/rc4_enc.c
     )
 elseif(PROJECT_PLATFORM STREQUAL "x64")
     ucm_add_files(TO CRYPTO_PLATFORM_SOURCES
-        crypto/rc4/rc4_enc.c
-        crypto/rc4/rc4_skey.c
         crypto/des/des_enc.c
         crypto/cast/c_enc.c
         crypto/bf/bf_enc.c
+        crypto/rc4/rc4_skey.c
+        crypto/rc4/rc4_enc.c
     )
 elseif(PROJECT_PLATFORM STREQUAL "x86")
     ucm_add_files(TO CRYPTO_PLATFORM_SOURCES

@@ -27,12 +27,12 @@ set(OPENSSL_COMPILE_FLAGS
     -DOPENSSL_API_COMPAT=11000
 )
 
-if(MSVC)
-    set(OPENSSL_COMPILE_FLAGS ${OPENSSL_COMPILE_FLAGS}
-        /Zi /Zl
-        -wd4090
-    )
-endif()
+ if(MSVC)
+     set(OPENSSL_COMPILE_FLAGS ${OPENSSL_COMPILE_FLAGS}
+         /Zi /Zl
+         -wd4090 -wd4133 -wd4319 -wd4005 -wd4311
+     )
+ endif()
 
 #-------------------------------------------------------------------------------
 # Function: openssl_apply_compile_options

@@ -20,12 +20,13 @@ set(PUTTY_COMPILE_FLAGS
     -D_WINDOWS
 )
 
-if(MSVC)
-    set(PUTTY_COMPILE_FLAGS ${PUTTY_COMPILE_FLAGS}
-        -wd4996
-        -wd4068  # warning C4068: unknown pragma 'warn'
-    )
-endif()
+ if(MSVC)
+     set(PUTTY_COMPILE_FLAGS ${PUTTY_COMPILE_FLAGS}
+         -wd4996
+         -wd4068  # warning C4068: unknown pragma 'warn'
+         -wd4133 -wd4319 -wd4311
+     )
+ endif()
 
 #-------------------------------------------------------------------------------
 # Function: putty_apply_compile_options
