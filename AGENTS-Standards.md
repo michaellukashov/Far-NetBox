@@ -17,7 +17,7 @@
 
 - **Brace style**: Allman/BSD (opening brace on new line)
 - **Indentation**: 2 spaces (no tabs)
-- **Line endings**: CRLF (Windows)
+- **Line endings**: CRLF (Windows) — see [AGENTS-Workflows.md](AGENTS-Workflows.md) → "Verify CRLF Line Endings" for scripts
 - **BOM**: No BOM (UTF-8 without BOM) in all source, documentation, and text files
 - **Pointer/reference**: Middle alignment (`int * ptr`, `int & ref`)
 - **Max line length**: 120 characters

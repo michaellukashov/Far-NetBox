@@ -106,66 +106,65 @@ cmd /c build-clean.bat
 cmd /c "cmake --build build-RelWithDebugInfo --clean-first -- -j4"
 ```
 
-### Verify No Warnings
-
-To ensure a completely clean build with zero warnings:
-
-### Debug Build x64
-
-Create `build-debug-x64.bat`:
-
-```bat
-@echo off
-call "C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64
-cmake -S . -B build-Debug-x64 -G "Ninja" -DCMAKE_BUILD_TYPE=Debug -DOPT_CREATE_PLUGIN_DIR=ON
-cmake --build build-Debug-x64 -j
-```
-
-**Run:**
-
-```cmd
-cmd /c build-debug-x64.bat
-```
-
-### Debug Build Win32
-
-Win32 (x86) requires the x86 MSVC compiler. Create `build-debug-win32.bat`:
-
-```bat
-@echo off
-call "C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvarsall.bat" x86
-cmake -S . -B build-Debug-Win32 -G "Ninja" -DCMAKE_BUILD_TYPE=Debug -DOPT_CREATE_PLUGIN_DIR=ON
-cmake --build build-Debug-Win32 -j
-```
-
-**Run:**
-
-```cmd
-cmd /c build-debug-win32.bat
-```
-
-### Release Build (x86, Unity)
-
-Create `build-release-win32.bat`:
-
-```bat
-@echo off
-call "C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvarsall.bat" x86
-cmake -S . -B build-Release-Win32 -A Win32 -DCMAKE_BUILD_TYPE=Release -DOPT_USE_UNITY_BUILD=ON -DOPT_CREATE_PLUGIN_DIR=ON
-cmake --build build-Release-Win32 -j
-```
-
-**Run:**
-
-```cmd
-cmd /c build-release-win32.bat
-```
-
-```cmd
-cmd /c "cmake --build build-RelWithDebugInfo --clean-first -- -j4"
-```
-
 > **NOTE:** Third-party libraries in `libs/` may produce warnings - these are expected and acceptable since we cannot modify them directly (use patches instead).
+
+### Platform-Specific Build Scripts
+
+Pre-configured build scripts are available in the project root for all supported platforms:
+
+| Script | Platform | Configuration |
+|--------|----------|---------------|
+| `build-x64.bat` | x64 (AMD64) | RelWithDebugInfo |
+| `build-x86.bat` | x86 (Win32) | RelWithDebugInfo |
+| `build-arm64.bat` | ARM64 | RelWithDebugInfo |
+
+**Usage:**
+```cmd
+cmd /c build-x64.bat
+cmd /c build-x86.bat
+cmd /c build-arm64.bat
+```
+
+These scripts configure and build in a single session, setting `OPT_CREATE_PLUGIN_DIR=ON` to output DLLs to `Far3_<platform>/Plugins/NetBox/`.
+
+### Testing the Plugin in Far Manager
+
+After successful build:
+
+1. **Launch Far Manager** from the platform directory:
+   - x64: `Far3_x64/Far.exe`
+   - x86: `Far3_x86/Far.exe`
+   - ARM64: `Far3_ARM64/Far.exe`
+
+2. **Open NetBox**: Press `F11` → Plugins → NetBox
+
+3. **Test functionality**: Create a connection or open a session
+
+4. **Check logs** for errors:
+   - Production: `%LOCALAPPDATA%\NetBox\netbox.log`
+   - Debug: Use tinylog output (see `src/nbcore/logging.cpp`)
+
+### Debugging in Visual Studio
+
+To debug with breakpoints:
+
+1. **Generate VS solution** (instead of Ninja):
+   ```bat
+   @echo off
+   call "C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64
+   cmake -S . -B build-VS -G "Visual Studio 17 2022" -DCMAKE_BUILD_TYPE=Debug -DOPT_CREATE_PLUGIN_DIR=ON
+   ```
+
+2. **Open solution** in Visual Studio:
+   ```
+   build-VS\NetBox.sln
+   ```
+
+3. **Set debug command**: Right-click NetBox project → Properties → Debugging
+   - Command: `D:\Projects\NetBox\NetBox-dev\Far3_x64\Far.exe`
+   - Working Directory: `D:\Projects\NetBox\NetBox-dev\Far3_x64`
+
+4. **Set breakpoints** in source code and press F5 to debug
 
 ## Common Build Errors
 
@@ -260,6 +259,36 @@ cmd /c "cmake --build build..."  // Session 2 - build - FAILS! Environment lost
 ### Verify CRLF Line Endings
 
 All source, markdown, and CMake files must use CRLF line endings. Verify before committing.
+
+**Check for BOM** (script `check_bom.ps1`):
+```powershell
+$ErrorActionPreference = "SilentlyContinue"
+Get-ChildItem -Path "D:\Projects\NetBox\NetBox-dev" -Filter "*.md" -Recurse | Where-Object { $_.FullName -notlike "*\libs\*" } | ForEach-Object {
+    $bytes = [System.IO.File]::ReadAllBytes($_.FullName)
+    $bom = "{0:X2} {1:X2} {2:X2}" -f $bytes[0], $bytes[1], $bytes[2]
+    if ($bom -eq "EF BB BF") {
+        Write-Output "BOM: $($_.FullName)"
+    }
+}
+```
+
+**Check for BOM:**
+```cmd
+powershell -ExecutionPolicy Bypass -File "D:\Projects\NetBox\NetBox-dev\check_bom.ps1"
+```
+
+**Remove BOM** (for files that have it):
+```powershell
+$files = Get-ChildItem -Path "D:\Projects\NetBox\NetBox-dev" -Filter "*.md" -Recurse
+foreach ($f in $files) {
+    $bytes = [System.IO.File]::ReadAllBytes($f.FullName)
+    if ($bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF) {
+        $content = [System.Text.Encoding]::UTF8.GetString($bytes, 3, $bytes.Length - 3)
+        [System.IO.File]::WriteAllText($f.FullName, $content, [System.Text.Encoding]::UTF8)
+        Write-Host "Removed BOM: $($f.Name)"
+    }
+}
+```
 
 **Create a check script** (`check_crlf.ps1`):
 ```powershell

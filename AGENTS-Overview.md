@@ -32,7 +32,6 @@ Third-party libraries in `libs/` — **never modify directly**, use patches if n
 |---------|----------|---------|
 | PuTTY | `libs/putty/` | SSH/SCP protocol |
 | FileZilla | `src/filezilla/` | FTP protocol |
-| OpenSSL 3 | `libs/openssl-3/` | Cryptography |
 | neon | `libs/neon/` | WebDAV protocol |
 | libs3 | `libs/libs3/` | S3 protocol |
 | ATL/MFC | `libs/atlmfc/` | Minimal MFC subset |
@@ -53,6 +52,8 @@ Third-party libraries in `libs/` — **never modify directly**, use patches if n
 | `CMAKE_C_COMPILER not found` | Run `vcvarsall.bat` first — always use .bat files that include the environment setup |
 | Ninja not found | `winget install Ninja-build.ninja` |
 | Unity build errors | Add `-DOPT_USE_UNITY_BUILD=OFF` |
+| OpenSSL unused files | Compare with WinSCP reference and remove files not present in WinSCP's openssl directory |
+| OpenSSL build errors after cleanup | Re-apply patch: `git -C libs\openssl-3 apply -p3 0001-openssl-NetBox-patches.patch` |
 | Plugin fails to load | Check architecture match (x86/x64), verify dependencies |
 | Connection failures | Check firewall, test with `ping`/`telnet`, review plugin log |
 | WinXP build failures | Use v141_xp toolset: `-T v141_xp` in CMake or set in VS IDE |

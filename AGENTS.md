@@ -261,6 +261,9 @@ Before submitting documentation changes, verify:
 - [ ] All paths are absolute and use forward slashes
 - [ ] All references to tools use correct names (e.g., `read` not `read_file`)
 - [ ] All formatting follows the style guide in `.ai-factory/DOCUMENTATION.md`
+- [ ] No BOM (UTF-8 without BOM) in all text files
+- [ ] CRLF line endings on all modified files
+- [ ] No trailing whitespace
 - [ ] Changes are reviewed by at least one other team member
 - [ ] Documentation is updated when code changes
 - [ ] Outdated or redundant information is removed
