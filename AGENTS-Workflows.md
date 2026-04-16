@@ -3,6 +3,8 @@
 > Part of the AGENTS documentation series. See also: [AGENTS.md](AGENTS.md) (entry), [AGENTS-Overview.md](AGENTS-Overview.md), [AGENTS-Structure.md](AGENTS-Structure.md), [AGENTS-Standards.md](AGENTS-Standards.md).
 >
 > For core principles, task checklist, and agent rules — see [AGENTS.md](AGENTS.md).
+>
+> Version: 1.3.0 | Last updated: 2026-04-16
 
 ## Build Commands
 

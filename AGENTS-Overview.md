@@ -1,6 +1,8 @@
 # AGENTS-Overview.md — NetBox Project Overview
 
 > Part of the AGENTS documentation series. See also: [AGENTS.md](AGENTS.md) (entry), [AGENTS-Structure.md](AGENTS-Structure.md), [AGENTS-Standards.md](AGENTS-Standards.md), [AGENTS-Workflows.md](AGENTS-Workflows.md).
+>
+> Version: 1.3.0 | Last updated: 2026-04-16
 
 ## What is NetBox?
 
@@ -56,6 +58,7 @@ Third-party libraries in `libs/` — **never modify directly**, use patches if n
 | OpenSSL build errors after cleanup | Re-apply patch: `git -C libs\openssl-3 apply -p3 0001-openssl-NetBox-patches.patch` |
 | Plugin fails to load | Check architecture match (x86/x64), verify dependencies |
 | Connection failures | Check firewall, test with `ping`/`telnet`, review plugin log |
+| Plugin loads but connection fails | Verify server address, check credentials, test network with standalone client, review plugin log |
 | WinXP build failures | Use v141_xp toolset: `-T v141_xp` in CMake or set in VS IDE |
 
 For detailed build error analysis, see [AGENTS-Workflows.md](AGENTS-Workflows.md) → "Common Build Errors".

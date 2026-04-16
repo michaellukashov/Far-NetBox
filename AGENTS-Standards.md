@@ -1,6 +1,8 @@
 # AGENTS-Standards.md — Coding Standards and Patterns
 
 > Part of the AGENTS documentation series. See also: [AGENTS.md](AGENTS.md) (entry), [AGENTS-Overview.md](AGENTS-Overview.md), [AGENTS-Structure.md](AGENTS-Structure.md), [AGENTS-Workflows.md](AGENTS-Workflows.md).
+>
+> Version: 1.3.0 | Last updated: 2026-04-16
 
 ## Naming Conventions
 
@@ -17,7 +19,7 @@
 
 - **Brace style**: Allman/BSD (opening brace on new line)
 - **Indentation**: 2 spaces (no tabs)
-- **Line endings**: CRLF (Windows) — see [AGENTS-Workflows.md](AGENTS-Workflows.md) → "Verify CRLF Line Endings" for scripts
+- **Line endings**: CRLF (Windows) — see [AGENTS-Workflows.md](AGENTS-Workflows.md) → "Verify CRLF Line Endings" for details
 - **BOM**: No BOM (UTF-8 without BOM) in all source, documentation, and text files
 - **Pointer/reference**: Middle alignment (`int * ptr`, `int & ref`)
 - **Max line length**: 120 characters

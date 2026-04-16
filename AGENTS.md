@@ -1,5 +1,7 @@
 # AGENTS.md — NetBox Development Guide
 
+> Version: 1.3.0 | Last updated: 2026-04-16
+
 > You are an AI coding assistant working on the NetBox project — a **Far Manager plugin** (SFTP/FTP/SCP/WebDAV/S3 client) built in C++17 on top of WinSCP, PuTTY, and FileZilla codebases. Far Manager is a text-mode file manager for Windows; NetBox integrates as a plugin DLL loaded via F11.
 
 ## Quick Navigation
@@ -67,7 +69,7 @@ When compacting, keep
 |------|----------|
 | Read a known file | `read` (use `offset`/`limit` for large files) |
 | Find files by pattern | `glob` (e.g., `src/**/*.cpp`) |
-| Find code by keyword | `grep_search` (e.g., `GetSessionData`) |
+| Find code by keyword | `grep` (e.g., `GetSessionData`) |
 | Open-ended / multi-step search | `agent` (Explore for quick, general-purpose for deep) |
 | Edit code | `edit` — surgical changes only, include 3+ lines context |
 | Create new file | `write_file` |
@@ -81,7 +83,7 @@ When compacting, keep
 ```
 What kind of task?
 ├── Fix a bug
-│   1. grep_search for error/symbol
+│   1. grep for error/symbol
 │   2. Read relevant code sections
 │   3. Minimal fix → build → verify
 │   4. Use /aif-fix if available
@@ -104,33 +106,32 @@ What kind of task?
 ├── Build / CI issue
 │   1. Read AGENTS-Structure.md (CMake)
 │   2. Read AGENTS-Workflows.md (build commands)
-│   3. Check "Common Build Errors" below
+│   3. Check "Common Build Errors" in AGENTS-Workflows.md
 │
 └── Documentation
     1. Update relevant AGENTS-*.md file
     2. CRLF line endings, no trailing whitespace
 ```
 
-## Essential Build Commands
+## Build Commands
 
-Full commands in [AGENTS-Workflows.md](AGENTS-Workflows.md).
+Full details in [AGENTS-Workflows.md](AGENTS-Workflows.md) → "Build Commands".
 
-**Standard build (x64 RelWithDebugInfo):**
+**Standard build (x64 RelWithDebugInfo):** Use pre-configured scripts:
 
-Create `build-all.bat` in project root:
-```bat
-@echo off
-call "C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64
-cmake -S . -B build-RelWithDebugInfo -G "Ninja" -DCMAKE_BUILD_TYPE=RelWithDebugInfo -DOPT_CREATE_PLUGIN_DIR=ON
-cmake --build build-RelWithDebugInfo -j
-```
-
-Run:
 ```cmd
-cmd /c build-all.bat
+cmd /c build-x64.bat
 ```
 
-> **IMPORTANT:** Configure and build MUST happen in the same cmd session with vcvarsall.bat environment.
+Pre-configured scripts for all platforms:
+
+| Script | Platform | Configuration |
+|--------|----------|---------------|
+| `build-x64.bat` | x64 (AMD64) | RelWithDebugInfo |
+| `build-x86.bat` | x86 (Win32) | RelWithDebugInfo |
+| `build-arm64.bat` | ARM64 | RelWithDebugInfo |
+
+> **IMPORTANT:** Configure and build MUST happen in the same cmd session with vcvarsall.bat environment. Always use the `.bat` scripts — never chain commands with `&&`.
 
 ## Common File Locations
 
@@ -158,13 +159,15 @@ cmd /c build-all.bat
 
 ## Project-Specific Gotchas
 
+Common build errors and fixes documented in [AGENTS-Workflows.md](AGENTS-Workflows.md).
+
 ### OpenSSL Patches
 
 After updating OpenSSL from upstream (WinSCP), **re-apply the patch**:
 ```cmd
 git -C libs\openssl-3 apply -p3 0001-openssl-NetBox-patches.patch
 ```
-See [AGENTS-Structure.md](AGENTS-Structure.md) → "OpenSSL Patch Application" for patch application instructions.
+See [AGENTS-Structure.md](AGENTS-Structure.md) → "OpenSSL Patch Application" for details.
 
 ### Unity Build
 
@@ -176,21 +179,6 @@ cmake -S . -B build-... -DOPT_USE_UNITY_BUILD=OFF ...
 ### Plugin Directory
 
 Plugin DLLs go to `Far3_<platform>/Plugins/NetBox/` (not `build-*/src/`). Requires `OPT_CREATE_PLUGIN_DIR=ON`.
-
-## Common Build Errors & Fixes
-
-| Error | Cause | Fix |
-|-------|-------|-----|
-| `'call' is not recognized` | Running in pwsh without `cmd /c` | Use .bat files (see AGENTS-Workflows.md) |
-| `vcvarsall.bat not found` | VS2022 not installed or wrong path | Check VS edition (Community/Professional/Enterprise) |
-| `Cannot open include file: 'limits.h'` | Environment not set | **Use .bat files with vcvarsall.bat** - never separate configure/build |
-| Ninja not found | Not installed | `winget install Ninja-build.ninja` |
-| `CMAKE_C_COMPILER not set` (Win32) | x86 env not configured | Use `vcvarsall.bat x86` in .bat file |
-| Symbol redefinition | Unity build conflict | Add `-DOPT_USE_UNITY_BUILD=OFF` |
-| OpenSSL Win32: `FARPROC` mismatch | Patch not applied | Re-apply patch (see above) |
-| Link errors after adding file | Not in CMakeLists.txt | Add to `src/CMakeLists.txt` source list |
-
-> **CRITICAL:** Always run `vcvarsall.bat` and CMake configure/build in the **same cmd session**. See [AGENTS-Workflows.md](AGENTS-Workflows.md) → "Common Build Errors" for correct build patterns.
 
 ## Far Manager Testing Cycle
 
@@ -237,18 +225,24 @@ See [AGENTS-Standards.md](AGENTS-Standards.md) → "Quality Gates" for common ty
 | `.ai-factory/ARCHITECTURE.md` | Architecture decisions and guidelines |
 | `.ai-factory/config.yaml` | AI Factory configuration (paths, workflow, git) |
 | `.ai-factory/rules/base.md` | Auto-detected project conventions |
+| `.ai-factory/RULES.md` | Enforced coding rules and conventions |
 | `.ai-factory/skill-context/aif-commit/SKILL.md` | Project-specific commit conventions |
 
-| `.ai-factory/RULES.md` | Enforced coding rules and conventions |
+These files shape agent behavior:
+- **DESCRIPTION.md** — tells agent what the project is (NetBox = Far Manager plugin, C++17, SSH/FTP/SCP/S3/WebDAV)
+- **ARCHITECTURE.md** — guides technical decisions (layered architecture, RAII, T/F prefix naming)
+- **config.yaml** — sets paths, build commands, workflow rules
+- **rules/base.md** — auto-detected patterns (file locations, naming patterns)
+- **RULES.md** — enforced constraints (zero warnings, no libs/ modification)
 
 ## When You're Stuck
 
 - **Don't guess** — say "insufficient information" and ask the user
 - **Can't find the file?** — use `glob` with broader patterns
-- **Can't find the code?** — use `grep_search` for the function/class name
+- **Can't find the code?** — use `grep` for the function/class name
 - **Unsure about the approach?** — use `question` or `/aif-explore`
-- **Build fails repeatedly?** — try clean reconfigure or read [AGENTS-Workflows.md](AGENTS-Workflows.md)
-- **Shell commands failing?** — read [AGENTS-Workflows.md](AGENTS-Workflows.md) → "Shell Script Rules"
+- **Build fails repeatedly?** — clean reconfigure or read [AGENTS-Workflows.md](AGENTS-Workflows.md) → "Common Build Errors"
+- **Shell commands failing?** — read [AGENTS-Workflows.md](AGENTS-Workflows.md) → "Agent Build Execution Rules"
 - **Something feels wrong?** — stop and tell the user
 
 ## Documentation Maintenance Checklist
