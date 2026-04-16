@@ -1,7 +1,7 @@
 # Separate Agent and User Documentation
 
-**Branch**: separate-agent-user-docs  
-**Created**: 2026-04-17  
+**Branch**: separate-agent-user-docs
+**Created**: 2026-04-17
 
 ## Settings
 
@@ -28,10 +28,11 @@ This reorganization improves clarity for both humans and AI agents.
 - [x] Create docs directory structure: Create `docs/features/` and `docs/i18n/` (docs/ already exists), log each operation with full path, ensure parent directories exist.
 - [x] Move core documentation files: Move from root to `docs/`: `README.md`, `ARCHITECTURE.md`, `SOURCE_ORGANIZATION.md`, `DEPENDENCIES.md`, `PROJECT_RULES.md`, `PROJECT.md`, `REFACTORING_PLAN.md`, `01-RESEARCH.md`, `2026-02-28-prepare-environment-for-winxp-build.md`. Log each move (source → destination). Verify success (file exists at destination, absent at source).
 - [x] Move feature documents: Move `docs/editor-external-modification.md` to `docs/features/editor-external-modification.md`. Log operation, verify success.
-- [x] Relocate CODEBASE.md and fix links: Move `CODEBASE.md` from root to `docs/CODEBASE.md`. Update all `./ARCHITECTURE.md`, `./SOURCE_ORGANIZATION.md`, `./DEPENDENCIES.md`, `./PROJECT_RULES.md`, `./README.md` to `./` (same-directory) links since all target files now reside in the same `docs/` directory. Update the link to `AGENTS.md` from `./AGENTS.md` to `../AGENTS.md`. Log each link change (old URL → new URL). Save file.
-- [ ] Write root README redirect: Create new `README.md` at root with concise content: one-sentence project description, "For user documentation, see `docs/README.md`." and "For AI assistant guidelines, see `AGENTS.md`." Log creation. Ensure CRLF line endings.
-- [ ] Link validation: Search all markdown files (excluding libs/, build/, .ai-factory/) for Markdown links to moved files (ARCHITECTURE.md, SOURCE_ORGANIZATION.md, DEPENDENCIES.md, PROJECT_RULES.md, CODEBASE.md, README.md). For each link, verify target exists relative to linking file. Log any broken links.
-- [ ] Root cleanup verification: List all `*.md` files in root (excluding AGENTS*.md and README.md). If any user docs remain, log and move to appropriate location. Log final root contents for audit.
+- [x] Move i18n files: Move `README.PL.md` → `docs/i18n/README.PL.md`; `README.RU.md` → `docs/i18n/README.RU.md`. Log each move, verify.
+- [x] Relocate CODEBASE.md and fix links: Move `CODEBASE.md` to `docs/CODEBASE.md`. Update all `./ARCHITECTURE.md`, `./SOURCE_ORGANIZATION.md`, `./DEPENDENCIES.md`, `./PROJECT_RULES.md`, `./README.md` to `./` (same-directory) links. Update `./AGENTS.md` to `../AGENTS.md`. Log each link change (old URL → new URL). Save file.
+- [x] Write root README redirect: Create `README.md` at root with concise content: one-sentence project description, "For user documentation, see `docs/README.md`." and "For AI assistant guidelines, see `AGENTS.md`." Log creation. Ensure CRLF line endings.
+- [x] Link validation: Search all markdown files (excluding libs/, build/, .ai-factory/) for Markdown links to moved files. Verify target exists relative to linking file. Log any broken links. (No broken links found.)
+- [x] Root cleanup verification: List all `*.md` files in root (excluding AGENTS*.md and README.md). Only AGENTS series and new README remain. Confirmed separation.
 
 ---
 
