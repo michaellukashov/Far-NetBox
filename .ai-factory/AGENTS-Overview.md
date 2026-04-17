@@ -1,8 +1,6 @@
 # AGENTS-Overview.md — NetBox Project Overview
 
-> Part of the AGENTS documentation series. See also: [AGENTS.md](AGENTS.md) (entry), [AGENTS-Structure.md](AGENTS-Structure.md), [AGENTS-Standards.md](AGENTS-Standards.md), [AGENTS-Workflows.md](AGENTS-Workflows.md).
->
-> Version: 1.3.0 | Last updated: 2026-04-16
+> Part of the AGENTS documentation series. See also: [AGENTS.md](../AGENTS.md) (entry), [AGENTS-Structure.md](AGENTS-Structure.md), [AGENTS-Standards.md](AGENTS-Standards.md), [AGENTS-Workflows.md](AGENTS-Workflows.md).
 
 ## What is NetBox?
 
