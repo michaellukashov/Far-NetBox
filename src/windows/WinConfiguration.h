@@ -689,7 +689,7 @@ public:
   void BeginMasterPasswordSession();
   void EndMasterPasswordSession();
   virtual void AskForMasterPasswordIfNotSet();
-  UnicodeString GetMasterKey();
+  UnicodeString GetMasterKey() const;
   void AddSessionToJumpList(UnicodeString SessionName);
   void DeleteSessionFromJumpList(UnicodeString SessionName);
   void AddWorkspaceToJumpList(UnicodeString Workspace);

@@ -1927,7 +1927,7 @@ void TWinConfiguration::SetMasterPassword(UnicodeString value)
   }
 }
 
-UnicodeString TWinConfiguration::GetMasterKey()
+UnicodeString TWinConfiguration::GetMasterKey() const
 {
   // Returns the master key for password encryption when Master Password is enabled.
   // When master password is set, use it as the encryption key.
