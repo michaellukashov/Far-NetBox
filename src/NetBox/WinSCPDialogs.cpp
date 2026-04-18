@@ -2,6 +2,10 @@
 #pragma hdrstop
 
 #include "WinSCPPlugin.h"
+#include <Cryptography.h>
+#include "TextsWin.h"
+#include "guid.h"
+#include "WinInterface.h"
 #include "WinSCPFileSystem.h"
 #include "FarDialog.h"
 #include "FarConfiguration.h"
@@ -1051,6 +1055,176 @@ bool TWinSCPPlugin::IntegrationConfigurationDialog()
   return Result;
 }
 
+bool TWinSCPPlugin::MasterPasswordConfigurationDialog()
+{
+  std::unique_ptr<TWinSCPDialog> DialogPtr(std::make_unique<TWinSCPDialog>(this));
+  TWinSCPDialog * Dialog = DialogPtr.get();
+
+  Dialog->SetSize(TPoint(70, 18));
+  UnicodeString Caption = FORMAT("%s - %s", GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(MASTER_PASSWORD_CAPTION)));
+  Dialog->SetCaption(Caption);
+  Dialog->SetDialogGuid(&MasterPasswordConfigurationDialogGuid);
+
+  bool UseMP = WinConfiguration->UseMasterPassword;
+
+  TFarEdit * CurrentEdit = nullptr;
+  int32_t Top = 2;
+
+  if (UseMP)
+  {
+    TFarText * CurrentLabel = MakeOwnedObject<TFarText>(Dialog);
+    CurrentLabel->SetCaption(GetMsg(MASTER_PASSWORD_CURRENT));
+    CurrentLabel->SetLeft(3);
+    CurrentLabel->SetTop(Top++);
+
+    CurrentEdit = MakeOwnedObject<TFarEdit>(Dialog);
+    CurrentEdit->SetLeft(3);
+    CurrentEdit->SetTop(Top++);
+    CurrentEdit->SetPassword(true);
+    CurrentEdit->SetWidth(60);
+  }
+
+  TFarCheckBox * EnableCheck = MakeOwnedObject<TFarCheckBox>(Dialog);
+  EnableCheck->SetCaption(GetMsg(MASTER_PASSWORD_CAPTION));
+  EnableCheck->SetLeft(3);
+  EnableCheck->SetTop(Top++);
+  EnableCheck->SetChecked(UseMP);
+
+  TFarText * NewLabel = MakeOwnedObject<TFarText>(Dialog);
+  NewLabel->SetCaption(GetMsg(MASTER_PASSWORD_NEW));
+  NewLabel->SetLeft(3);
+  NewLabel->SetTop(Top++);
+  NewLabel->SetEnabledDependency(EnableCheck);
+
+  TFarEdit * NewEdit = MakeOwnedObject<TFarEdit>(Dialog);
+  NewEdit->SetLeft(3);
+  NewEdit->SetTop(Top++);
+  NewEdit->SetPassword(true);
+  NewEdit->SetWidth(60);
+  NewEdit->SetEnabledDependency(EnableCheck);
+
+  TFarText * ConfirmLabel = MakeOwnedObject<TFarText>(Dialog);
+  ConfirmLabel->SetCaption(GetMsg(MASTER_PASSWORD_CONFIRM));
+  ConfirmLabel->SetLeft(3);
+  ConfirmLabel->SetTop(Top++);
+  ConfirmLabel->SetEnabledDependency(EnableCheck);
+
+  TFarEdit * ConfirmEdit = MakeOwnedObject<TFarEdit>(Dialog);
+  ConfirmEdit->SetLeft(3);
+  ConfirmEdit->SetTop(Top++);
+  ConfirmEdit->SetPassword(true);
+  ConfirmEdit->SetWidth(60);
+  ConfirmEdit->SetEnabledDependency(EnableCheck);
+
+  Dialog->AddStandardButtons();
+
+  if (Dialog->ShowModal() != brOK) return false;
+
+  bool EnableNow = EnableCheck->GetChecked();
+  UnicodeString CurrentPwd = UseMP ? CurrentEdit->Text : L"";
+  UnicodeString NewPwd = NewEdit->Text;
+  UnicodeString ConfirmPwd = ConfirmEdit->Text;
+
+  if (EnableNow)
+  {
+    if (UseMP)
+    {
+      if (NewPwd.IsEmpty())
+      {
+        MessageDialog(L"New password cannot be empty.", qtError, qaOK);
+        return false;
+      }
+      if (!WinConfiguration->ValidateMasterPassword(CurrentPwd))
+      {
+        MessageDialog(GetMsg(MASTER_PASSWORD_INCORRECT), qtError, qaOK);
+        return false;
+      }
+      if (NewPwd != ConfirmPwd)
+      {
+        MessageDialog(GetMsg(MASTER_PASSWORD_DIFFERENT), qtError, qaOK);
+        return false;
+      }
+      int Valid = IsValidPassword(NewPwd);
+      if (Valid <= 0)
+      {
+        if (MessageDialog(GetMsg(MASTER_PASSWORD_SIMPLE2), qtWarning, qaOK | qaCancel) == qaCancel)
+          return false;
+      }
+      try
+      {
+        WinConfiguration->ChangeMasterPassword(NewPwd);
+        GetConfiguration()->DoSave(false, false);
+        MessageDialog(GetMsg(MASTER_PASSWORD_CHANGED), qtInformation, qaOK);
+        return true;
+      }
+      catch (Exception & e)
+      {
+        MessageDialog(e.Message, qtError, qaOK);
+        return false;
+      }
+    }
+    else
+    {
+      if (NewPwd.IsEmpty())
+      {
+        MessageDialog(L"Please enter a new master password.", qtError, qaOK);
+        return false;
+      }
+      if (NewPwd != ConfirmPwd)
+      {
+        MessageDialog(GetMsg(MASTER_PASSWORD_DIFFERENT), qtError, qaOK);
+        return false;
+      }
+      int Valid = IsValidPassword(NewPwd);
+      if (Valid <= 0)
+      {
+        if (MessageDialog(GetMsg(MASTER_PASSWORD_SIMPLE2), qtWarning, qaOK | qaCancel) == qaCancel)
+          return false;
+      }
+      try
+      {
+        WinConfiguration->ChangeMasterPassword(NewPwd);
+        GetConfiguration()->DoSave(false, false);
+        MessageDialog(GetMsg(MASTER_PASSWORD_SET2), qtInformation, qaOK);
+        return true;
+      }
+      catch (Exception & e)
+      {
+        MessageDialog(e.Message, qtError, qaOK);
+        return false;
+      }
+    }
+  }
+  else
+  {
+    if (UseMP)
+    {
+      if (CurrentPwd.IsEmpty())
+      {
+        MessageDialog(L"Please enter current master password.", qtError, qaOK);
+        return false;
+      }
+      if (!WinConfiguration->ValidateMasterPassword(CurrentPwd))
+      {
+        MessageDialog(GetMsg(MASTER_PASSWORD_INCORRECT), qtError, qaOK);
+        return false;
+      }
+      try
+      {
+        WinConfiguration->ClearMasterPassword();
+        GetConfiguration()->DoSave(false, false);
+        MessageDialog(GetMsg(MASTER_PASSWORD_CLEARED2), qtInformation, qaOK);
+        return true;
+      }
+      catch (Exception & e)
+      {
+        MessageDialog(e.Message, qtError, qaOK);
+        return false;
+      }
+    }
+  }
+  return false;
+}
 class TAboutDialog final : public TFarDialog
 {
 public:
