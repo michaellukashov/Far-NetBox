@@ -18,22 +18,17 @@ The `cmd.exe /c` shell parses quotes incorrectly, treating body words as file pa
    git commit -m "ci(release): improve release workflow"
    ```
 
-2. **Multi-line commits (subject + body)** — use MULTIPLE `-m` flags, one per paragraph:
+2. **Multi-line commit**: Use `git commit -m "title" -m "- line 1\n-line 2"` instead of heredoc
    ```
-   git commit -m "ci(release): improve release workflow" -m "- Add error handling" -m "- Fix verification"
-   ```
-   Each `-m` value becomes a separate paragraph in the final message.
 
-3. **NEVER** use embedded newlines (`\n`) inside a single `-m` value on Windows.
+3. **NEVER** use escaped quotes (`\"`) inside `-m` on Windows — they break `cmd.exe` parsing.
 
-4. **NEVER** use escaped quotes (`\"`) inside `-m` on Windows — they break `cmd.exe` parsing.
-
-5. **Alternative:** If the message is complex, write it to a temp file and use `git commit -F <file>`.
+4. **Alternative:** If the message is complex, write it to a temp file and use `git commit -F <file>`.
 
 ### Correct pattern for this skill
 
 When committing:
 ```
-git commit -m "<subject>" -m "<body-line-1>" -m "<body-line-2>"
+git commit -m "<subject>" -m "<body-line-1>\n<body-line-2>"
 ```
 Or if the body is long, prefer subject-line only and let the diff speak for itself.
