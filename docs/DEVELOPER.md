@@ -39,21 +39,23 @@ Note: The batch files reference Visual Studio 2022 Professional by default. If y
    "C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64
    ```
 
+   > **Important:** Configure and build MUST happen in the same cmd session with the vcvarsall.bat environment. Always use the `.bat` scripts — never chain commands with `&&`.
+
 2. Configure and build using CMake (example for x64):
 
    ```batch
    cmake -S . -B build-RelWithDebugInfo -G "Ninja" -DCMAKE_BUILD_TYPE=RelWithDebugInfo -DOPT_CREATE_PLUGIN_DIR=ON
-   cmake --build build-RelWithDebugInfo -j
+   cmake --build build-RelWithDebugInfo --clean-first -- -j4
    ```
 
    To generate a Visual Studio 2022 solution:
 
    ```batch
    cmake -S . -B build-RelWithDebugInfo -G "Visual Studio 17 2022" -DCMAKE_BUILD_TYPE=RelWithDebugInfo -DOPT_CREATE_PLUGIN_DIR=ON
-   cmake --build build-RelWithDebugInfo -j
+   cmake --build build-RelWithDebugInfo --clean-first
    ```
 
-   The built plugin will be in `build-RelWithDebugInfo\Plugins\NetBox\<platform>\`.
+   The built plugin will be in `Far3_<platform>/Plugins/NetBox/` (not in the `build-` directory). `OPT_CREATE_PLUGIN_DIR=ON` is required to create the plugin output directory.
 
 ## Updating Third-Party Components
 
@@ -102,7 +104,11 @@ If tests are present, run them via your IDE or command line. Ensure all tests pa
 
 - Create a feature branch from `dev` (or `main` if more appropriate).
 - Make your changes, following the project's coding conventions and logging requirements.
-- Build and test your changes.
+- Build and test your changes. Ensure:
+  - Clean build with zero warnings
+  - No modifications to `libs/` (unless upgrading a dependency as described)
+  - Plugin DLLs appear in `Far3_<platform>/Plugins/NetBox/`
+  - All files use CRLF line endings, no BOM, no trailing whitespace
 - Commit with clear, conventional commit messages.
 - Create a pull request describing the changes and referencing any relevant issues.
 
