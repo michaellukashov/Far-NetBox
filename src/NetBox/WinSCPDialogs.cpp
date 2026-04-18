@@ -1619,6 +1619,8 @@ private:
   TFarEdit * UserNameEdit{nullptr};
   TFarText * PasswordLabel{nullptr};
   TFarText * S3SecretAccessKeyLabel{nullptr};
+  TFarText * S3CACertificateLabel{nullptr};
+  TFarEdit * S3CACertificateEdit{nullptr};
   TFarEdit * PasswordEdit{nullptr};
   TFarEdit * PrivateKeyEdit{nullptr};
   TFarComboBox * TransferProtocolCombo{nullptr};
@@ -2393,6 +2395,18 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   S3RequesterPaysCheck = MakeOwnedObject<TFarCheckBox>(this);
   S3RequesterPaysCheck->SetCaption(GetMsg(NB_S3_REQUESTERPAYS));
 
+  // CA Certificate
+  SetNextItemPosition(ipNewLine);
+  S3CACertificateLabel = MakeOwnedObject<TFarText>(this);
+  S3CACertificateLabel->SetCaption(GetMsg(NB_LOGIN_S3_CA_CERTIFICATE));
+  S3CACertificateLabel->SetWidth(20);
+  S3CACertificateLabel->SetVisible(false);
+
+  SetNextItemPosition(ipRight);
+  S3CACertificateEdit = MakeOwnedObject<TFarEdit>(this);
+  S3CACertificateEdit->SetWidth(30);
+  S3CACertificateEdit->SetVisible(false);
+
   // Authentication
   /*SetNextItemPosition(ipNewLine);
   Separator = MakeOwnedObject<TFarSeparator>(this);
@@ -3152,6 +3166,7 @@ void TSessionDialog::UpdateControls()
   S3AccessKeyIDLabel->SetVisible(IsMainTab && aS3Protocol);
   PasswordLabel->SetVisible(IsMainTab && !aS3Protocol);
   S3SecretAccessKeyLabel->SetVisible(IsMainTab && aS3Protocol);
+  S3CACertificateLabel->SetVisible(IsMainTab && aS3Protocol);
 
   // Connection sheet
   FtpPasvModeCheck->SetEnabled(aFtpProtocol);
@@ -3182,6 +3197,7 @@ void TSessionDialog::UpdateControls()
   S3UrlStyleCombo->Enabled = aS3Protocol;
   S3DefaultRegionCombo->Enabled = aS3Protocol;
   S3RequesterPaysCheck->Enabled = aS3Protocol;
+  S3CACertificateEdit->Enabled = aS3Protocol;
 
   // SSH tab
   SshTab->SetEnabled(aSshProtocol);
@@ -3463,6 +3479,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     S3UrlStyleCombo->ItemIndex = 0;
   }
   S3RequesterPaysCheck->Checked = FSessionData->S3RequesterPays;
+  S3CACertificateEdit->SetText(FSessionData->S3CACertificate);
   /*std::unique_ptr<TStrings> S3SessionToken(std::make_unique<TStringList>());
   S3SessionToken->SetText(SessionData->S3SessionToken());
   for (int32_t Index = 0; (Index < S3SessionToken->GetCount()) &&
@@ -3788,6 +3805,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     FSessionData->S3DefaultRegion = S3DefaultRegionCombo->Text;
     FSessionData->S3UrlStyle = S3UrlStyleCombo->ItemIndex == 0 ? s3usVirtualHost : s3usPath;
     FSessionData->S3RequesterPays = S3RequesterPaysCheck->Checked;
+    FSessionData->SetS3CACertificate(S3CACertificateEdit->GetText());
     /*std::unique_ptr<TStrings> S3SessionTokens(std::make_unique<TStringList>());
     for (int32_t Index4 = 0; Index4 < nb::ToInt32(_countof(S3SessionTokenEdits)); ++Index4)
     {

@@ -3499,6 +3499,11 @@ void TSessionData::SetDetachedCertificate(const UnicodeString & value)
   SET_SESSION_PROPERTY(DetachedCertificate);
 }
 
+void TSessionData::SetS3CACertificate(const UnicodeString & value)
+{
+  SET_SESSION_PROPERTY(S3CACertificate);
+}
+
 UnicodeString TSessionData::ResolvePublicKeyFile()
 {
   UnicodeString Result = PublicKeyFile;

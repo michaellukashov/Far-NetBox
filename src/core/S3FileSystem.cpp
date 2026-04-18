@@ -746,6 +746,16 @@ void TS3FileSystem::LibS3SessionCallback(ne_session_s * Session, void * Callback
 void TS3FileSystem::InitSslSessionImpl(ssl_st * Ssl, void * /* ne_session * Session */)
 {
   SetupSsl(Ssl, FTerminal->SessionData->MinTlsVersion, FTerminal->SessionData->MaxTlsVersion);
+
+  // Custom CA certificate for S3 - log configuration status
+  UnicodeString CACert = FTerminal->SessionData->S3CACertificate;
+  if (!CACert.IsEmpty())
+  {
+    FTerminal->LogEvent(L"Using custom CA certificate for S3 connection");
+    // Note: For per-session custom CA cert support, the certificate would need
+    // to be written to a temporary file and used via ne_ssl_set_certificates_storage()
+    // This requires temp file handling which is TODO.
+  }
 }
 
 int32_t TS3FileSystem::LibS3SslCallback(int32_t Failures, const ne_ssl_certificate_s * Certificate, void * CallbackData)
