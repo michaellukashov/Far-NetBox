@@ -208,13 +208,7 @@ src/
 - **Build Type**: `Debug`, `Release`, or `RelWithDebugInfo` (default)
 - **Generator**: Ninja (recommended) or Visual Studio 17 2022
 
-For complete build instructions, including environment setup and detailed steps, see [Developer Guide](../../DEVELOPER.md).
-
-```bash
-# Brief reference only - see DEVELOPER.md for full instructions
-cmake -S . -B build -G "Ninja" -DCMAKE_BUILD_TYPE=RelWithDebugInfo -DOPT_CREATE_PLUGIN_DIR=ON
-cmake --build build
-```
+For complete build instructions, including environment setup and detailed steps, see [Developer Guide](./DEVELOPER.md).
 
 ### CMake Options
 
