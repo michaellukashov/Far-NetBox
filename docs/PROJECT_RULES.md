@@ -208,16 +208,11 @@ src/
 - **Build Type**: `Debug`, `Release`, or `RelWithDebugInfo` (default)
 - **Generator**: Ninja (recommended) or Visual Studio 17 2022
 
-### Build Configuration
+For complete build instructions, including environment setup and detailed steps, see [Developer Guide](../../DEVELOPER.md).
 
 ```bash
-# Setup environment
-"%VS170COMNTOOLS%\..\..\VC\vcvarsall.bat" x86_amd64
-
-# Configure
+# Brief reference only - see DEVELOPER.md for full instructions
 cmake -S . -B build -G "Ninja" -DCMAKE_BUILD_TYPE=RelWithDebugInfo -DOPT_CREATE_PLUGIN_DIR=ON
-
-# Build
 cmake --build build
 ```
 
@@ -227,11 +222,7 @@ cmake --build build
 - `OPT_USE_UNITY_BUILD`: Use unity builds for faster compilation (x86 Release only)
 - `PROJECT_PLATFORM`: Target platform (`x86`, `x64`, `ARM64`)
 
-### Build Scripts
 
-- Use `scripts/build_netbox.cmd` for local builds
-- Use `scripts/build_netbox_release.cmd` for release builds
-- Use `scripts/build_debug.sh` for debug builds (if on Unix-like system)
 
 ### Output Structure
 
