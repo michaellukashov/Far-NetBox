@@ -2,7 +2,7 @@
 
 ## Project Summary
 
-**NetBox** is a Far Manager 3.0 plugin providing SFTP/FTP/SCP/WebDAV/S3 client capabilities. It's based on WinSCP v6.5.1 codebase with PuTTY (SSH/SCP) and FileZilla (FTP) components.
+**NetBox** is a Far Manager 3.0 plugin providing SFTP/FTP/SCP/WebDAV/S3 client capabilities. It's based on WinSCP v6.5.6 codebase with PuTTY (SSH/SCP) and FileZilla (FTP) components.
 
 ## Build System Architecture
 

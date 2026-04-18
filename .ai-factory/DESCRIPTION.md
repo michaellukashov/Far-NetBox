@@ -1,7 +1,7 @@
 # Project: Far-NetBox
 
 ## Overview
-Far-NetBox is a Far Manager 3.0 plugin providing SFTP/FTP/SCP/WebDAV/S3 client capabilities. Built on proven codebases (WinSCP 6.5.1, PuTTY 0.81, FileZilla 2.2.32), it delivers reliable file transfer across multiple protocols integrated within the Far Manager ecosystem.
+Far-NetBox is a Far Manager 3.0 plugin providing SFTP/FTP/SCP/WebDAV/S3 client capabilities. Built on proven codebases (WinSCP 6.5.6, PuTTY 0.81, FileZilla 2.2.32), it delivers reliable file transfer across multiple protocols integrated within the Far Manager ecosystem.
 
 ## Core Features
 - SFTP file transfers (via PuTTY SSH library)

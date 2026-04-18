@@ -21,7 +21,7 @@ This directory contains comprehensive documentation about the NetBox codebase st
 - **Name**: NetBox (Far-NetBox)
 - **Type**: Far Manager 3.x Plugin
 - **Purpose**: SFTP/FTP/SCP/WebDAV/S3 client
-- **Based On**: WinSCP 6.5.1, PuTTY 0.81, FileZilla 2.2.32
+- **Based On**: WinSCP 6.5.6, PuTTY 0.81, FileZilla 2.2.32
 - **Language**: C++17
 - **Build System**: CMake
 - **Platforms**: Windows (x86, x64, ARM64)

@@ -28,7 +28,7 @@ This document outlines the rules, conventions, and guidelines for contributing t
 
 This project is based on:
 
-- **WinSCP** version 6.5.1 (Copyright (c) 2000-2025 Martin Prikryl)
+- **WinSCP** version 6.5.6 (Copyright (c) 2000-2025 Martin Prikryl)
 - **PuTTY** 0.81 (Copyright (c) 1997-2024 Simon Tatham) - for SSH/SCP
 - **FileZilla** 2.2.32 (Copyright (c) 2001-2007 Tim Kosse) - for FTP
 

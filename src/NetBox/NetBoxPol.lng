@@ -1,4 +1,4 @@
-﻿.Language=Polish,Polish (Polski)
+.Language=Polish,Polish (Polski)
 
 "NetBox"
 "NetBox"
@@ -1263,7 +1263,7 @@
 "http://filezilla-project.org/"
 "Ten produkt zawiera oprogramowanie utworzone przez OpenSSL Project do użytku w OpenSSL Toolkit %s."
 "Copyright © 1998-2024 The OpenSSL Project"
-"3.3.2"
+"3.3.7"
 "http://www.openssl.org/"
 "Kod WebDAV bazuje na bibliotece Neon %s"
 "Copyright © 1999-2025 Joe Orton"
@@ -1275,7 +1275,7 @@
 "$$"
 
 "WinSCP"
-"6.5.1"
+"6.5.6"
 "1.6.2"
 "Bazuje na WinSCPFar: SFTP/FTP/SCP klient dla Far 1.75"
 " Wersja %s"

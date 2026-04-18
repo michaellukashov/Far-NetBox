@@ -37,7 +37,7 @@ Reliable file transfers across all supported protocols with consistent, error-fr
 ## Context
 
 This is a mature C++ codebase built on proven file transfer technologies:
-- Based on WinSCP version 6.5.1
+- Based on WinSCP version 6.5.6
 - SSH/SCP code based on PuTTY 0.81
 - FTP code based on FileZilla 2.2.32
 - Extensive protocol library integrations (OpenSSL, zlib, etc.)

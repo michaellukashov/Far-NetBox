@@ -14,7 +14,7 @@ Kod SSH i SCP bazuje na PuTTY 0.81 Copyright (c) 1997-2024 Simon Tatham
 
 Kod FTP bazuje na FileZilla 2.2.32 Copyright (c) 2001-2007 Tim Kosse
 
-Kryptografia oparta na OpenSSL 3.5.6 Copyright (c) 1998-2025 The OpenSSL Project
+Kryptografia oparta na OpenSSL 3.3.7 Copyright (c) 1998-2025 The OpenSSL Project
 
 Linki
 -----

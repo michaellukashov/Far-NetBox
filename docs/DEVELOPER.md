@@ -83,16 +83,16 @@ OpenSSL is vendored in `libs/openssl-3/`. To upgrade:
 
 1. Obtain the new OpenSSL source (from WinSCP or directly from OpenSSL if WinSCP has already integrated it). Usually you'll replace the entire `libs/openssl-3/` tree with the new version from the WinSCP project.
 2. Update the OpenSSL version header:
-   - In `libs/openssl-3/include/openssl/opensslv.h`, change `OPENSSL_VERSION_MINOR` and `OPENSSL_VERSION_PATCH` to the new version (e.g., `3` and `5` → `5` and `6` for 3.5.6). Also update `OPENSSL_VERSION_STR` and `OPENSSL_FULL_VERSION_STR` to match (e.g., `"3.5.6"`). Keep `OPENSSL_VERSION_MAJOR` as 3.
+   - In `libs/openssl-3/include/openssl/opensslv.h`, change `OPENSSL_VERSION_MINOR` and `OPENSSL_VERSION_PATCH` to the new version (e.g., `3` and `5` → `5` and `6` for 3.3.7). Also update `OPENSSL_VERSION_STR` and `OPENSSL_FULL_VERSION_STR` to match (e.g., `"3.3.7"`). Keep `OPENSSL_VERSION_MAJOR` as 3.
 3. Update NetBox's displayed version:
-   - In `src/NetBox/resource.h` (and `resource.h.template`), change `OPENSSL_VERSION_WTXT` to the new version (e.g., `L"3.5.6"`).
-   - In language resource files (`src/NetBox/NetBox*.lng`), update the OpenSSL version string (search for `"3.3.2"` and replace with `"3.5.6"`).
+   - In `src/NetBox/resource.h` (and `resource.h.template`), change `OPENSSL_VERSION_WTXT` to the new version (e.g., `L"3.3.7"`).
+   - In language resource files (`src/NetBox/NetBox*.lng`), update the OpenSSL version string (search for `"3.3.2"` and replace with `"3.3.7"`).
 4. Rebuild both the OpenSSL libraries and the NetBox plugin. Ensure there are no compile errors; you may need to adjust `cmake/OpenSSL.cmake` if new files are added or removed (WinSCP usually handles this automatically).
 5. Update documentation:
-   - In `docs/README.md` and i18n READMEs, add/update the OpenSSL credit line (e.g., `Cryptography based on OpenSSL 3.5.6 Copyright (c) 1998-2025 The OpenSSL Project`).
+   - In `docs/README.md` and i18n READMEs, add/update the OpenSSL credit line (e.g., `Cryptography based on OpenSSL 3.3.7 Copyright (c) 1998-2025 The OpenSSL Project`).
    - Update any other references (e.g., `.ai-factory/DESCRIPTION.md` lists OpenSSL version).
    - `ChangeLog`: note the OpenSSL upgrade.
-6. Commit as `chore(openssl): upgrade to OpenSSL 3.5.6`.
+6. Commit as `chore(openssl): upgrade to OpenSSL 3.3.7`.
 
 ## Running Tests
 

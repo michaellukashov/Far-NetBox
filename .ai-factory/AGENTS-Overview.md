@@ -18,10 +18,10 @@ Loads as a DLL via Far Manager's F11 plugin menu.
 | Component | Version |
 |-----------|---------|
 | **NetBox** | See `src/NetBox/plugin_version.hpp` |
-| **OpenSSL** | 3.3.2 |
+| **OpenSSL** | 3.3.7 |
 | **PuTTY** | 0.81 |
 | **FileZilla** | 2.2.32 |
-| **WinSCP** | 6.5.1 |
+| **WinSCP** | 6.5.6 |
 | **zlib-ng** | 2.2.2 |
 
 ## Dependencies

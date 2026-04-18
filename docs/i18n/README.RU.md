@@ -14,7 +14,7 @@ Far-NetBox: клиент SFTP/FTP(S)/SCP/WebDAV/S3 для Far Manager 3.0 (x86/x
 
 Код FTP основан на FileZilla 2.2.32 Copyright (c) 2001-2007 Tim Kosse
 
-Криптография основана на OpenSSL 3.5.6 Copyright (c) 1998-2025 The OpenSSL Project
+Криптография основана на OpenSSL 3.3.7 Copyright (c) 1998-2025 The OpenSSL Project
 
 1. Общие сведения о плагине
 
