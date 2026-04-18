@@ -2966,6 +2966,12 @@ UnicodeString TSessionData::DecryptPassword(const RawByteString & APassword, con
 
 UnicodeString TSessionData::GetSessionPasswordEncryptionKey() const
 {
+  // Returns the encryption key for session passwords.
+  // Default key derivation: UserName + HostName
+  //
+  // Note: When Master Password is implemented in core layer, this should call
+  // Configuration->GetMasterKey() if master password is enabled.
+  // For now, we use the simple default key.
   return UserName() + HostName();
 }
 

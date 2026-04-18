@@ -1927,6 +1927,24 @@ void TWinConfiguration::SetMasterPassword(UnicodeString value)
   }
 }
 
+UnicodeString TWinConfiguration::GetMasterKey()
+{
+  // Returns the master key for password encryption when Master Password is enabled.
+  // When master password is set, use it as the encryption key.
+  // Otherwise, return empty string to signal that default key derivation should be used.
+  UnicodeString Result;
+  if (FUseMasterPassword && !FPlainMasterPasswordDecrypt.IsEmpty())
+  {
+    Result = FPlainMasterPasswordDecrypt;
+    DEBUG_PRINTF("MasterKey: using master password for key derivation");
+  }
+  else
+  {
+    DEBUG_PRINTF("MasterKey: master password not set, using default");
+  }
+  return Result;
+}
+
 void TWinConfiguration::ChangeMasterPassword(
   UnicodeString value, TStrings * RecryptPasswordErrors)
 {
