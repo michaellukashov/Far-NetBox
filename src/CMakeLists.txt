@@ -47,8 +47,8 @@ add_custom_target(NetBoxResources SOURCES
   ${CMAKE_SOURCE_DIR}/ChangeLog
   ${CMAKE_SOURCE_DIR}/README.md
   ${CMAKE_SOURCE_DIR}/AGENTS.md
-  ${CMAKE_SOURCE_DIR}/PROJECT_RULES.md
-  ${CMAKE_SOURCE_DIR}/REFACTORING_PLAN.md
+  ${CMAKE_SOURCE_DIR}/docs/PROJECT_RULES.md
+
 )
 
 #===============================================================================

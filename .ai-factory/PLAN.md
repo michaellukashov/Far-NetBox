@@ -1,161 +1,88 @@
-# Plan: Embed cacert.pem into C++ source
-
-**Description:** Move the `cacert.pem` certificate bundle into C++ source as an embedded default, update configuration to use embedded content, and remove the external file from git tracking.
+# Plan: Separate Agent and User Documentation
 
 **Branch:** N/A (fast mode)
 
-**Created:** 2025-04-12
+**Created:** 2026-04-13
 
 ## Settings
-
-- **Testing:** No (skipped per user request)
-- **Logging:** Standard (infrastructure changes don't require verbose logging)
-- **Docs:** Not required (self-documenting code change)
-
-## Research Context
-
-Current implementation:
-- `cacert.pem` file resides in `src/NetBox/`
-- `cmake/Install.cmake` copies it to plugin directory
-- `TConfiguration::GetCertificateStorageExpanded()` falls back to `cacert.pem` in plugin directory if no custom path configured
-- Used by FTPS (FileZilla) and HTTPS/WebDAV (neon) via `CertificateStorageExpanded` property
+- **Testing:** No (documentation reorganization)
+- **Logging:** Standard (record actions in task completion notes)
+- **Docs:** N/A
 
 ## Tasks
 
-- [x] Task 1: Create embedded certificate source files
-- [x] Task 2: Modify configuration to use embedded certificates
-- [x] Task 3: Update CMake installation rules
-- [x] Task 4: Remove cacert.pem from git
-- [ ] Task 5: Build verification
+### Task 1: Inventory and analysis
+- [x] Task 1: Inventory and analysis
+- **Deliverable:** List all markdown files, classify as agent/user, identify link dependencies.
+- **Logging:** Record inventory in this task's notes.
+- **Steps:**
+  - Find all `.md` files (exclude third-party).
+  - Classify: agent-related (`.ai-factory/`, `AGENTS-*`, planning/research) vs user docs.
+  - Identify Markdown links referencing files to be moved.
+  - Create move plan:
+    - `AGENTS-Overview.md` → `.ai-factory/AGENTS-Overview.md`
+    - `AGENTS-Standards.md` → `.ai-factory/AGENTS-Standards.md`
+    - `AGENTS-Structure.md` → `.ai-factory/AGENTS-Structure.md`
+    - `AGENTS-Workflows.md` → `.ai-factory/AGENTS-Workflows.md`
+    - `01-RESEARCH.md` → `.ai-factory/RESEARCH.md` (rename)
+    - `REFACTORING_PLAN.md` → `.ai-factory/plans/REFACTORING_PLAN.md`
+    - `2026-02-28-prepare-environment-for-winxp-build.md` → `.ai-factory/plans/prepare-environment-for-winxp-build.md` (rename)
+- **Dependencies:** none
 
-### Task 5: Build verification
+### Task 2: Move AGENTS supplements and update links
+- [x] Task 2: Move AGENTS supplements and update links
+- **Deliverable:** AGENTS-*.md relocated; AGENTS.md links updated; correct link to AGENTS.md in each moved file.
+- **Logging:** Log each move and text replacement.
+- **Steps:**
+  1. Move `AGENTS-Overview.md`, `AGENTS-Standards.md`, `AGENTS-Structure.md`, `AGENTS-Workflows.md` to `.ai-factory/`.
+  2. In each moved file, replace `[AGENTS.md](AGENTS.md)` with `[AGENTS.md](../AGENTS.md)`.
+  3. In root `AGENTS.md`, replace:
+     - `[AGENTS-Overview.md](AGENTS-Overview.md)` → `[AGENTS-Overview.md](.ai-factory/AGENTS-Overview.md)`
+     - `[AGENTS-Standards.md](AGENTS-Standards.md)` → `[AGENTS-Standards.md](.ai-factory/AGENTS-Standards.md)`
+     - `[AGENTS-Structure.md](AGENTS-Structure.md)` → `[AGENTS-Structure.md](.ai-factory/AGENTS-Structure.md)`
+     - `[AGENTS-Workflows.md](AGENTS-Workflows.md)` → `[AGENTS-Workflows.md](.ai-factory/AGENTS-Workflows.md)`
+- **Dependencies:** Task 1
 
-**Deliverable:** Clean build with no warnings, and verification that SSL/TLS connections still work.
+### Task 3: Move research and plan artifacts
+- [x] Task 3: Move research and plan artifacts
+- **Deliverable:** Research and plan files under `.ai-factory/`; update CMakeLists.txt.
+- **Logging:** Log moves and renames.
+- **Steps:**
+  1. `01-RESEARCH.md` → `.ai-factory/RESEARCH.md` (rename)
+  2. `REFACTORING_PLAN.md` → `.ai-factory/plans/REFACTORING_PLAN.md`
+  3. `2026-02-28-prepare-environment-for-winxp-build.md` → `.ai-factory/plans/prepare-environment-for-winxp-build.md` (rename)
+  4. Update `src/CMakeLists.txt`: change `REFACTORING_PLAN.md` path to `.ai-factory/plans/REFACTORING_PLAN.md`
+- **Dependencies:** Task 1
 
-**Steps:**
-1. Clean build: `cmake --build build-RelWithDebugInfo --clean-first -- -j4`
-2. Ensure zero warnings (MSVC W4 level)
-3. Manual test: Connect to an FTPS server and HTTPS/WebDAV server to verify certificate validation works
-   - Use existing test sessions or create new ones
-   - Verify that server certificates are properly validated
-   - Check that no errors appear in logs
+### Task 4: Update cross-references
+- [x] Task 4: Update cross-references
+- **Deliverable:** All markdown links to old paths corrected; no broken links.
+- **Logging:** List updated files and changes.
+- **Steps:**
+  - Search all `.md` files for links to moved files.
+  - Update each to new path.
+  - Spot-check key files for remaining stale links.
+- **Dependencies:** Task 2, Task 3
 
-**Logging:** Verify debug messages show certificate file being created from embedded data
-
-**Dependencies:** Task 4 must be complete
-
----
-
-**Status:** Pending - Ready for build verification.
-
-### Task 2: Modify configuration to use embedded certificates
-
-**Deliverable:** Update `src/core/Configuration.cpp` - `GetCertificateStorageExpanded()` method to create a temporary file from embedded certificate data when no custom path is configured.
-
-**Implementation:**
-- If `FCertificateStorage` is set by user, use it (preserve custom override)
-- If empty, check for existing `cacert.pem` file (backward compatibility)
-- If no file exists, create a temporary file from `EmbeddedCacertPem`
-- Cache the temp file path to avoid recreating on every call
-- Log certificate source usage at debug level
-
-**File paths modified:**
-- `src/core/Configuration.h` (include Certificates.hpp)
-- `src/core/Configuration.cpp` (GetCertificateStorageExpanded implementation)
-- `src/core/NeonIntf.cpp` (include Certificates.hpp, simplified logging)
-- `src/core/FtpFileSystem.cpp` (include Certificates.hpp)
-
-**Logging:** 
-- Log when temp file is created from embedded data
-- Log certificate storage path being used
-
-**Dependencies:** Task 1 must be complete
-
----
-
-✅ **Task 2 completed** - Configuration now uses embedded certificates via temp file.
-
----
-
-### Task 3: Update CMake installation rules
-
-**Deliverable:** Remove `cacert.pem` from distribution files in `cmake/Install.cmake`.
-
-**Current (line 46):**
-```cmake
-set(DIST_FILES
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/NetBox/*.lng
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/NetBox/cacert.pem
-  ...
-)
-```
-
-**Action:** Delete the line referencing `cacert.pem`. No replacement needed since data is now embedded.
-
-**File paths:**
-- `cmake/Install.cmake`
-
-**Logging:** N/A (build script)
-
-**Dependencies:** Task 2 must be complete (to ensure embedded data is used)
-
----
-
-### Task 4: Remove cacert.pem from git
-
-**Deliverable:** `cacert.pem` is no longer tracked by git.
-
-**Steps:**
-```bash
-git rm --cached src/NetBox/cacert.pem
-```
-
-**Verify:** Check that `.gitignore` (if exists) doesn't need update; the file should be ignored if present in project but untracked.
-
-**Note:** The physical file can remain in working directory temporarily for backward compatibility during transition, but should be deleted from repository history. After this commit, the file is no longer part of git.
-
-**File paths affected:** None (git operation only)
-
-**Dependencies:** Task 3 must be complete
-
----
-
-### Task 5: Build verification
-
-**Deliverable:** Clean build with no warnings, and manual verification that SSL/TLS connections still succeed.
-
-**Steps:**
-1. Clean build: `cmake --build build-RelWithDebugInfo --clean-first -- -j4`
-2. Ensure zero warnings (MSVC W4 level)
-3. Manual test: Connect to an FTPS server and HTTPS/WebDAV server to verify certificate validation works
-   - Use existing test sessions or create new ones
-   - Verify that server certificates are properly validated
-   - Check that no errors appear in logs
-
-**Logging:** Verify `ADF()` messages in debug log show embedded certificate source
-
-** rollback:** If issues found, fix before proceeding
-
-**Dependencies:** Task 4 must be complete
-
----
+### Task 5: Verify separation
+- [x] Task 5: Verify separation
+- **Deliverable:** Confirmation that agent docs are only in `.ai-factory/` (plus root `AGENTS.md`), and `docs/` contains only user docs.
+- **Logging:** Provide verification summary.
+- **Steps:**
+  - Ensure root has no `AGENTS-*.md`; only `AGENTS.md` and user docs.
+  - Ensure `docs/` contains only user-facing files.
+  - Grep for any lingering references to moved files.
+- **Dependencies:** Task 4
 
 ## Commit Plan
-
-**Single commit** (5 tasks but logically atomic refactor):
-
+- After Task 5: Commit all changes with message:
 ```
-refactor(netbox): embed cacert.pem certificate bundle as C++ source
+docs: separate agent and user documentation
 
-- Add Certificates.hpp/cpp with embedded PEM data
-- Modify configuration to use embedded certificates by default
-- Update consumers (FtpFileSystem, NeonIntf) to use embedded data
-- Remove cacert.pem from CMake distribution and git tracking
-- Preserve backward compatibility: custom CertificateStorage still overrides
-
-BREAKING CHANGE: cacert.pem file removed from repository; custom certificate
-overrides via configuration still supported. Embedded certificates are now
-compiled into the plugin binary.
+- Move AGENTS-*.md to .ai-factory/
+- Update AGENTS.md links to new locations
+- Fix AGENTS-* "See also" links to point to ../AGENTS.md
+- Move research and plan artifacts into .ai-factory/ with proper naming
+- Update CMakeLists.txt to reference relocated REFACTORING_PLAN.md
+- Verify clean separation: root only user docs, agent docs centralized
 ```
-
-This is a single-commit change since all tasks are tightly coupled and must land together.

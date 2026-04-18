@@ -12,7 +12,7 @@ This directory contains comprehensive documentation about the NetBox codebase st
 | [SOURCE_ORGANIZATION.md](./SOURCE_ORGANIZATION.md) | Source code organization, directory structure, module responsibilities |
 | [DEPENDENCIES.md](./DEPENDENCIES.md) | Third-party libraries, their purposes, and integration details |
 | [PROJECT_RULES.md](./PROJECT_RULES.md) | Coding standards, naming conventions, and contribution guidelines |
-| [AGENTS.md](./AGENTS.md) | AI agent workflow and development guide |
+| [AGENTS.md](../AGENTS.md) | AI agent workflow and development guide |
 | [README.md](./README.md) | Build instructions and project overview |
 
 ## Quick Reference
@@ -89,7 +89,7 @@ cmake --build build-RelWithDebugInfo -j
 ### For New Developers
 1. Start with [README.md](./README.md) for project overview
 2. Read [ARCHITECTURE.md](./ARCHITECTURE.md) for architecture understanding
-3. Review [AGENTS.md](./AGENTS.md) for development workflow
+3. Review [AGENTS.md](../AGENTS.md) for development workflow
 4. Study [SOURCE_ORGANIZATION.md](./SOURCE_ORGANIZATION.md) for code layout
 5. Review [DEPENDENCIES.md](./DEPENDENCIES.md) for third-party libraries
 

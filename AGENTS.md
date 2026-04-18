@@ -8,10 +8,10 @@
 
 | Document | When to read |
 |----------|-------------|
-| [AGENTS-Overview.md](AGENTS-Overview.md) | Dependencies, troubleshooting |
-| [AGENTS-Structure.md](AGENTS-Structure.md) | Adding libs, CMake, OpenSSL, language files |
-| [AGENTS-Standards.md](AGENTS-Standards.md) | Writing code — naming, formatting, patterns |
-| [AGENTS-Workflows.md](AGENTS-Workflows.md) | Build commands, git, shell rules |
+| [AGENTS-Overview.md](.ai-factory/AGENTS-Overview.md) | Dependencies, troubleshooting |
+| [AGENTS-Structure.md](.ai-factory/AGENTS-Structure.md) | Adding libs, CMake, OpenSSL, language files |
+| [AGENTS-Standards.md](.ai-factory/AGENTS-Standards.md) | Writing code — naming, formatting, patterns |
+| [AGENTS-Workflows.md](.ai-factory/AGENTS-Workflows.md) | Build commands, git, shell rules |
 
 ## At a Glance
 
@@ -153,7 +153,7 @@ Pre-configured scripts for all platforms:
 - **Build must pass with ZERO warnings** (MSVC W4)
 - **All files must use CRLF line endings**
 - **Don't combine shell commands** with `&&`, `||`, `;`
-- **Don't use `2>/dev/null`** on Windows
+- **Avoid Unix-style redirections** (`< /dev/null`, `>/dev/null`, `2>/dev/null`) on Windows — use `NUL` or omit
 - **Don't rewrite entire files** — make minimal edits
 - **Don't commit secrets** or credentials
 

@@ -1,9 +1,8 @@
 # AGENTS-Workflows.md — Build Commands, Git Workflow, and Shell Rules
 
-> Part of the AGENTS documentation series. See also: [AGENTS.md](AGENTS.md) (entry), [AGENTS-Overview.md](AGENTS-Overview.md), [AGENTS-Structure.md](AGENTS-Structure.md), [AGENTS-Standards.md](AGENTS-Standards.md).
+> Part of the AGENTS documentation series. See also: [AGENTS.md](../AGENTS.md) (entry), [AGENTS-Overview.md](AGENTS-Overview.md), [AGENTS-Structure.md](AGENTS-Structure.md), [AGENTS-Standards.md](AGENTS-Standards.md).
 >
-> For core principles, task checklist, and agent rules — see [AGENTS.md](AGENTS.md).
->
+> For core principles, task checklist, and agent rules — see [AGENTS.md](../AGENTS.md).
 > Version: 1.3.0 | Last updated: 2026-04-16
 
 ## Build Commands
@@ -368,11 +367,11 @@ cmd /c "act -W .github/workflows/release.yml -j create-release -P windows-2022=-
 
 ## Agent Rules
 
-See [AGENTS.md](AGENTS.md) → "Critical Agent Rules" for the full list.
+See [AGENTS.md](../AGENTS.md) → "Critical Agent Rules" for the full list.
 
 Key rules repeated here:
 - Never combine shell commands with `&&`, `||`, or `;`
-- Never use `2>/dev/null` on Windows
+- Never use Unix-style redirections (`< /dev/null`, `>/dev/null`, `2>/dev/null`) on Windows
 - Never modify third-party code in `libs/`
 - Build must succeed with ZERO warnings
 
@@ -382,7 +381,7 @@ Key rules repeated here:
 
 - **Platform:** Windows (`cmd.exe`) — use native commands where possible
 - **Prefer:** Built-in commands (`dir`, `findstr`, `robocopy`, `powershell -Command`)
-- **Avoid:** Unix-style redirections (`2>/dev/null`, `>/dev/null`) — not supported on Windows
+- **Avoid:** Unix-style redirections (`< /dev/null`, `>/dev/null`, `2>/dev/null`) — not supported on Windows
 - **No:** `&&`, `||`, `;` chaining — execute each command as a separate tool call
 
 ### PowerShell (`pwsh` / `powershell`)
@@ -399,7 +398,7 @@ Key rules repeated here:
 ### Bash (Git Bash / WSL)
 
 - Only use when POSIX tools are required (`find`, `grep -P`, `sed`, `awk`)
-- **Never use:** `2>/dev/null` — Windows has no `/dev/null` (use `2>nul` in cmd, or omit)
+- **Never use:** any `/dev/null` redirection — Windows uses `NUL` (use `2>nul`, `>NUL`, or `< NUL` in cmd; or omit)
 - **Path separator:** Windows paths use `\` — convert to `/` for bash: `cygpath -u "D:\path"` or `sed 's/\\/\//g'`
 - **Line endings:** Output from bash on Windows may mix CRLF/LF — be aware when parsing
 
