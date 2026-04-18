@@ -1,9 +1,8 @@
 # AGENTS-Workflows.md — Build Commands, Git Workflow, and Shell Rules
 
-> Part of the AGENTS documentation series. See also: [AGENTS.md](AGENTS.md) (entry), [AGENTS-Overview.md](AGENTS-Overview.md), [AGENTS-Structure.md](AGENTS-Structure.md), [AGENTS-Standards.md](AGENTS-Standards.md).
+> Part of the AGENTS documentation series. See also: [AGENTS.md](../AGENTS.md) (entry), [AGENTS-Overview.md](AGENTS-Overview.md), [AGENTS-Structure.md](AGENTS-Structure.md), [AGENTS-Standards.md](AGENTS-Standards.md).
 >
-> For core principles, task checklist, and agent rules — see [AGENTS.md](AGENTS.md).
->
+> For core principles, task checklist, and agent rules — see [AGENTS.md](../AGENTS.md).
 > Version: 1.3.0 | Last updated: 2026-04-16
 
 ## Build Commands
@@ -368,7 +367,7 @@ cmd /c "act -W .github/workflows/release.yml -j create-release -P windows-2022=-
 
 ## Agent Rules
 
-See [AGENTS.md](AGENTS.md) → "Critical Agent Rules" for the full list.
+See [AGENTS.md](../AGENTS.md) → "Critical Agent Rules" for the full list.
 
 Key rules repeated here:
 - Never combine shell commands with `&&`, `||`, or `;`

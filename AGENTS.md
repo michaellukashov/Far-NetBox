@@ -8,10 +8,10 @@
 
 | Document | When to read |
 |----------|-------------|
-| [AGENTS-Overview.md](AGENTS-Overview.md) | Dependencies, troubleshooting |
-| [AGENTS-Structure.md](AGENTS-Structure.md) | Adding libs, CMake, OpenSSL, language files |
-| [AGENTS-Standards.md](AGENTS-Standards.md) | Writing code — naming, formatting, patterns |
-| [AGENTS-Workflows.md](AGENTS-Workflows.md) | Build commands, git, shell rules |
+| [AGENTS-Overview.md](.ai-factory/AGENTS-Overview.md) | Dependencies, troubleshooting |
+| [AGENTS-Structure.md](.ai-factory/AGENTS-Structure.md) | Adding libs, CMake, OpenSSL, language files |
+| [AGENTS-Standards.md](.ai-factory/AGENTS-Standards.md) | Writing code — naming, formatting, patterns |
+| [AGENTS-Workflows.md](.ai-factory/AGENTS-Workflows.md) | Build commands, git, shell rules |
 
 ## At a Glance
 
