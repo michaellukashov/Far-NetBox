@@ -1,12 +1,25 @@
-NetBox: SFTP/FTP(S)/SCP/WebDAV клиент для Far Manager 2.0/3.0
-===============
+Far-NetBox: клиент SFTP/FTP(S)/SCP/WebDAV/S3 для Far Manager 3.0 (x86/x64/ARM64)
+==============
+
+| Сборка        | Статус                                                                                                                                                                          |
+|---------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| GitHub Actions| [![build](https://github.com/michaellukashov/Far-NetBox/actions/workflows/release.yml/badge.svg)](https://github.com/michaellukashov/Far-NetBox/actions/workflows/release.yml)|
+| AppVeyor      | [![Build status](https://ci.appveyor.com/api/projects/status/91lhdjygkenumcmv?svg=true)](https://ci.appveyor.com/project/michaellukashov/far-netbox)                               |
+
+На основе WinSCP версии 6.5.1 Copyright (c) 2000-2025 Martin Prikryl
+
+На основе WinSCP как плагина для FAR: SFTP/FTP/SCP клиент для FAR версии 1.6.2 Copyright (c) 2000-2009 Martin Prikryl
+
+Код SSH и SCP основан на PuTTY 0.81 Copyright (c) 1997-2024 Simon Tatham
+
+Код FTP основан на FileZilla 2.2.32 Copyright (c) 2001-2007 Tim Kosse
 
 1. Общие сведения о плагине
 
    Плагин реализует клиентскую часть протоколов SFTP, FTP, SCP, FTPS, WebDAV и S3.
    SFTP, FTP, SCP, FTPS протоколы реализованы на основе плагина WinSCP [http://winscp.net/eng/download.php/](http://winscp.net/eng/download.php/)
    Поддержка протокола WebDAV реализована на основе библиотеки neon [http://www.webdav.org/neon/](http://www.webdav.org/neon/).
-   Парсер xml работает c помощью библиотеки TinyXML [http://sourceforge.net/projects/tinyxml/] (http://sourceforge.net/projects/tinyxml/).
+   Парсер xml работает c помощью библиотеки TinyXML [http://sourceforge.net/projects/tinyxml/](http://sourceforge.net/projects/tinyxml/).
 
 2. Использование префикса командной строки
 
@@ -70,6 +83,66 @@ NetBox: SFTP/FTP(S)/SCP/WebDAV клиент для Far Manager 2.0/3.0
 5. Установка
 
    Распакуйте содержимое архива в каталог плагинов Far (...Far\Plugins).
+
+6. Сборка из исходников
+
+   ### Требования
+
+   * Visual Studio 2022 (с workload "Desktop development with C++")
+   * CMake 3.15 или новее
+   * Ninja (рекомендуется)
+
+   ### Быстрая сборка (с использованием пакетных файлов)
+
+   В репозитории есть пакетные файлы в корне, которые автоматизируют процесс сборки:
+
+   - `build-all.bat` — сборка всех поддерживаемых платформ (x86, x64, ARM64)
+   - `build-x64.bat` — сборка x64 с отладочной информацией (RelWithDebugInfo)
+   - `build-x86.bat` — сборка x86 с отладочной информацией
+   - `build-arm64.bat` — сборка ARM64 с отладочной информацией
+
+   Просто запустите нужный пакетный файл из корня репозитория. Скрипты автоматически настроят окружение Visual Studio и вызовут CMake с подходящими параметрами.
+
+   **Примечание:** Пакетные файлы по умолчанию используют путь к Visual Studio 2022 Professional. Если вы используете другую редакцию (например, Community) или другой путь установки, измените путь к `vcvarsall.bat` в соответствующем пакетном файле.
+
+   ### Ручная сборка
+
+   1. Откройте командную строку и настройте окружение Visual Studio:
+
+      ```batch
+      "%VS170COMNTOOLS%..\..\VC\vcvarsall.bat" x86_amd64
+      ```
+
+      Или используйте полный путь:
+
+      ```batch
+      "C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64
+      ```
+
+   2. Настройте и соберите с помощью CMake (пример для x64):
+
+      ```batch
+      cmake -S . -B build-RelWithDebugInfo -G "Ninja" -DCMAKE_BUILD_TYPE=RelWithDebugInfo -DOPT_CREATE_PLUGIN_DIR=ON
+      cmake --build build-RelWithDebugInfo -j
+      ```
+
+      Для генерации решения Visual Studio 2022:
+
+      ```batch
+      cmake -S . -B build-RelWithDebugInfo -G "Visual Studio 17 2022" -DCMAKE_BUILD_TYPE=RelWithDebugInfo -DOPT_CREATE_PLUGIN_DIR=ON
+      cmake --build build-RelWithDebugInfo -j
+      ```
+
+      Собранный плагин будет находиться в папке `build-RelWithDebugInfo\Plugins\NetBox\x64\` (или соответствующей подпапке платформы).
+
+Ссылки
+------
+
+* Основная страница проекта: [https://github.com/michaellukashov/Far-NetBox](https://github.com/michaellukashov/Far-NetBox)
+* Форум Far Manager: [http://forum.farmanager.com/](http://forum.farmanager.com/)
+* Обсуждение Far-NetBox (на русском): [http://forum.farmanager.com/viewtopic.php?f=5&t=6317](http://forum.farmanager.com/viewtopic.php?f=5&t=6317)
+* Обсуждение Far-NetBox (на английском): [http://forum.farmanager.com/viewtopic.php?f=39&t=6638](http://forum.farmanager.com/viewtopic.php?f=39§t=6638)
+* Последние сборки: <https://nightly.link/michaellukashov/Far-NetBox/workflows/release/main?preview>
 
 Данный плагин предоставляется "as is" ("как есть"). Автор не несет
 ответственности за последствия использования данного плагина.

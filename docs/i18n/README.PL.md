@@ -1,60 +1,85 @@
-NetBox: Klient SFTP/FTP/FTP(S)/SCP/WebDAV dla Far Manager 3.0 x86/x64
+Far-NetBox: Klient SFTP/FTP(S)/SCP/WebDAV/S3 dla Far Manager 3.0 x86/x64/ARM64
 ==============
 
-[![Build status](https://ci.appveyor.com/api/projects/status/rc32omfcxkhn7kfk?svg=true)](https://ci.appveyor.com/project/FarGroup/far-netbox)
+| Środowisko      | Status budowania                                                                                                                                                                       |
+|-----------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| GitHub Actions  | [![build](https://github.com/michaellukashov/Far-NetBox/actions/workflows/release.yml/badge.svg)](https://github.com/michaellukashov/Far-NetBox/actions/workflows/release.yml)        |
+| AppVeyor        | [![Build status](https://ci.appveyor.com/api/projects/status/91lhdjygkenumcmv?svg=true)](https://ci.appveyor.com/project/michaellukashov/far-netbox)                                   |
 
+Bazuje na [WinSCP](http://winscp.net/eng/index.php) wersja 6.5.1 Copyright (c) 2000-2025 Martin Prikryl
 
-Bazuje na [WinSCP](http://winscp.net/eng/index.php) wersja 5.11.2 Copyright (c) 2000-2017 Martin Prikryl
-Bazuje na [WinSCP jako wtyczka FAR: Klient SFTP/FTP/SCP dla FAR wersja 1.6.2](http://winscp.net/download/winscpfar162setup.exe) Copyright (c) 2000-2009 Martin Prikryl
-Kod SSH i SCP bazuje na PuTTY 0.70 Copyright (c) 1997-2017 Simon Tatham
+Bazuje na [WinSCP jako wtyczka FAR: SFTP/FTP/SCP klient dla FAR wersja 1.6.2](http://winscp.net/download/winscpfar162setup.exe) Copyright (c) 2000-2009 Martin Prikryl
+
+Kod SSH i SCP bazuje na PuTTY 0.81 Copyright (c) 1997-2024 Simon Tatham
+
 Kod FTP bazuje na FileZilla 2.2.32 Copyright (c) 2001-2007 Tim Kosse
 
 Jak skompilować ze źródeł
-========================
+=======================
 
-Aby skompilować wtyczkę, będziesz potrzebować:
+### Wymagania wstępne
 
+* Visual Studio 2022 (z pakietem „Desktop development with C++”)
+* CMake 3.15 lub nowszy
+* Ninja (rekomendowane; opcjonalnie jeśli używasz generatora Visual Studio)
 
-  * Visual Studio 2010 SP1
-  * Microsoft Platform SDK, do pobrania ze strony [http://www.microsoft.com/msdownload/platformsdk/sdkupdate/](http://www.microsoft.com/msdownload/platformsdk/sdkupdate/).
-  * Perl 5 (do kompilacji openssl), do pobrania ze strony [http://www.activestate.com/ActivePerl/](http://www.activestate.com/ActivePerl/)
-  * UnxUtils [http://unxutils.sourceforge.net/](http://unxutils.sourceforge.net/)
-  * nasm [http://www.nasm.us/pub/nasm/releasebuilds/2.09.10/win32/](http://www.nasm.us/pub/nasm/releasebuilds/2.09.10/win32/)
+### Szybka kompilacja (przy użyciu plików wsadowych)
 
+Repozytorium zawiera gotowe pliki wsadowe (batch files) w katalogu głównym, które automatyzują proces budowania:
 
+- `build-all.bat` – buduje wszystkie obsługiwane platformy (x86, x64, ARM64)
+- `build-x64.bat` – buduje wersję x64 z informacjami debugowania (RelWithDebugInfo)
+- `build-x86.bat` – buduje wersję x86 z informacjami debugowania
+- `build-arm64.bat` – buduje wersję ARM64 z informacjami debugowania
 
-Pobierz źródło:
+Wystarczy uruchomić żądany plik wsadowy z katalogu głównego repozytorium. Skrypty automatycznie skonfigurują środowisko Visual Studio i wywołają CMake z odpowiednimi parametrami.
 
-    cd C:/src
-    git clone https://github.com/FarGroup/Far-NetBox.git
+**Uwaga:** Pliki wsadowe domyślnie odwołują się do ścieżki Visual Studio 2022 Professional. Jeśli używasz innej edycji (np. Community) lub innej lokalizacji instalacji, dostosuj ścieżkę do `vcvarsall.bat` w odpowiednim pliku wsadowym.
 
-Od teraz przyjmujemy, że źródło znajduje się w folderze C:/src/Far-NetBox
+### Ręczna kompilacja
 
+Jeśli wolisz ręcznie wykonać kroki, postępuj zgodnie z poniższymi instrukcjami:
 
-Kompilacja openssl:
+1. Otwórz wiersz poleceń i skonfiguruj środowisko Visual Studio:
 
-    cd libs/openssl
-    call ../../src/NetBox/scripts/build_openssl.bat x86
-    call ../../src/NetBox/scripts/build_openssl.bat x64
+   ```batch
+   "%VS170COMNTOOLS%..\..\VC\vcvarsall.bat" x86_amd64
+   ```
 
-Teraz otwórz src/NetBox/NetBox.sln w Visual Studio, lub skompiluj wtyczkę NetBox z linii poleceń:
+   Lub użyj pełnej ścieżki do instalacji Visual Studio:
 
-    cmd /c "%VS100COMNTOOLS%\..\..\VC\vcvarsall.bat" x86 && devenv NetBox.sln /Build "Release|Win32" /USEENV /Project "NetBox"
-    cmd /c "%VS100COMNTOOLS%\..\..\VC\vcvarsall.bat" x86_amd64 && devenv NetBox.sln /Build "Release|x64" /USEENV /Project "NetBox"
+   ```batch
+   "C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64
+   ```
 
-Zamień 'Release' na 'Debug', aby skompilować w trybie debugowania. Skompilowanie binaria znajdą się w folderze build/Release/x86 (lub build/Release/x84).
+2. Skonfiguruj i zbuduj przy użyciu CMake (przykład dla x64):
 
+   ```batch
+   cmake -S . -B build-RelWithDebugInfo -G "Ninja" -DCMAKE_BUILD_TYPE=RelWithDebugInfo -DOPT_CREATE_PLUGIN_DIR=ON
+   cmake --build build-RelWithDebugInfo -j
+   ```
+
+   Aby wygenerować rozwiązanie Visual Studio 2022:
+
+   ```batch
+   cmake -S . -B build-RelWithDebugInfo -G "Visual Studio 17 2022" -DCMAKE_BUILD_TYPE=RelWithDebugInfo -DOPT_CREATE_PLUGIN_DIR=ON
+   cmake --build build-RelWithDebugInfo -j
+   ```
+
+   Zbudowany plugin będzie znajdował się w katalogu `build-RelWithDebugInfo\Plugins\NetBox\x64\` (lub odpowiednim podkatalogu platformy).
 
 Linki
-========================
+-----
 
-* Strona główna projektu: [https://github.com/FarGroup/Far-NetBox](https://github.com/FarGroup/Far-NetBox)
+* Strona główna projektu: [https://github.com/michaellukashov/Far-NetBox](https://github.com/michaellukashov/Far-NetBox)
 * Forum Far Manager: [http://forum.farmanager.com/](http://forum.farmanager.com/)
-* Dyskusja o NetBox (po rosyjsku): [http://forum.farmanager.com/viewtopic.php?f=5&t=6317](http://forum.farmanager.com/viewtopic.php?f=5&t=6317)
-* Dyskusja o NetBox (po angielsku): [http://forum.farmanager.com/viewtopic.php?f=39&t=6638](http://forum.farmanager.com/viewtopic.php?f=39&t=6638)
+* Dyskusja o Far-NetBox (po rosyjsku): [http://forum.farmanager.com/viewtopic.php?f=5&t=6317](http://forum.farmanager.com/viewtopic.php?f=5&t=6317)
+* Dyskusja o Far-NetBox (po angielsku): [http://forum.farmanager.com/viewtopic.php?f=39&t=6638](http://forum.farmanager.com/viewtopic.php?f=39§t=6638)
+* Najnowsze buildy: <https://nightly.link/michaellukashov/Far-NetBox/workflows/release/main?preview>
 
 Licencja
-========================
+--------
 
 NetBox jest [wolnym](http://www.gnu.org/philosophy/free-sw.html) oprogramowaniem: możesz używać, rozpowszechniać i/lub modyfikować zgodnie z warunkami [GNU General Public License](http://www.gnu.org/licenses/gpl.html) opublikowanej przez Free Software Foundation, aktualnie wersja 3 Licencji, lub (jak wolisz) dowolnej kolejnej wersji.
-NetBox jest rozpowszechnianiy w nadzi że będzie użyteczny, ale bez jakiejkolwiek gwarancji; nawet bez dorozumianej gwarancji przydatności handlowej lub przydatności do określonego celu. Więcej szczegółów w [GNU General Public License](http://www.gnu.org/licenses/gpl.html).
+
+NetBox jest rozpowszechniany w nadziei, że będzie użyteczny, ale bez jakiejkolwiek gwarancji; nawet bez dorozumianej gwarancji przydatności handlowej lub przydatności do określonego celu. Więcej szczegółów w [GNU General Public License](http://www.gnu.org/licenses/gpl.html).

@@ -17,46 +17,56 @@ FTP code based on FileZilla 2.2.32 Copyright (c) 2001-2007 Tim Kosse
 How to build from source
 -----------------------
 
-To build plugin from source, you will need:
+### Prerequisites
 
-* Visual Studio 2022 build tools
-* CMake 3.15
-* Ninja (optional)
+* Visual Studio 2022 (with "Desktop development with C++" workload)
+* CMake 3.15 or later
+* Ninja (recommended; optional if using Visual Studio generator)
 
-Download the source:
+### Quick build (using batch files)
 
-```batch
-cd C:/src
-git clone https://github.com/michaellukashov/Far-NetBox.git
-```
+The repository provides batch files in the root directory to automate the build:
 
-From now on, we assume that your source tree is C:/src/Far-NetBox
+- `build-all.bat` - builds all supported platforms (x86, x64, ARM64)
+- `build-x64.bat` - builds x64 release with debug info
+- `build-x86.bat` - builds x86 release with debug info
+- `build-arm64.bat` - builds ARM64 release with debug info
 
-Compile Far-NetBox plugin on the command line as follows:
+Simply run the desired batch file from the repository root. The scripts will set up the Visual Studio environment and invoke CMake with appropriate settings.
 
-```batch
-"%VS170COMNTOOLS%\..\..\VC\vcvarsall.bat" x86_amd64
-```
+**Note:** The batch files reference Visual Studio 2022 Professional by default. If you use a different edition (e.g., Community) or installation path, adjust the `vcvarsall.bat` path accordingly within the batch file.
 
-Or use the full path to Visual Studio 2022 Professional:
+### Manual build
 
-```batch
-"C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64
-```
+If you prefer to build manually, follow these steps:
 
-Then configure and build:
+1. Open a command prompt and set up the Visual Studio environment:
 
-```batch
-cmake -S C:/src/Far-NetBox -B C:/build/Far-NetBox -G "Ninja" -DCMAKE_BUILD_TYPE=RelWithDebugInfo -DOPT_CREATE_PLUGIN_DIR=ON
-cmake --build C:/build/Far-NetBox -j
-```
+   ```batch
+   "%VS170COMNTOOLS%\..\..\VC\vcvarsall.bat" x86_amd64
+   ```
 
-You can generate solution for VS2022 IDE:
+   Or use the full path to your Visual Studio installation:
 
-```batch
-cmake -S C:/src/Far-NetBox -B C:/build/Far-NetBox -G "Visual Studio 17 2022" -DCMAKE_BUILD_TYPE=RelWithDebugInfo -DOPT_CREATE_PLUGIN_DIR=ON
-cmake --build C:/build/Far-NetBox -j
-```
+   ```batch
+   "C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64
+   ```
+
+2. Configure and build using CMake (example for x64):
+
+   ```batch
+   cmake -S . -B build-RelWithDebugInfo -G "Ninja" -DCMAKE_BUILD_TYPE=RelWithDebugInfo -DOPT_CREATE_PLUGIN_DIR=ON
+   cmake --build build-RelWithDebugInfo -j
+   ```
+
+   To generate a Visual Studio 2022 solution instead:
+
+   ```batch
+   cmake -S . -B build-RelWithDebugInfo -G "Visual Studio 17 2022" -DCMAKE_BUILD_TYPE=RelWithDebugInfo -DOPT_CREATE_PLUGIN_DIR=ON
+   cmake --build build-RelWithDebugInfo -j
+   ```
+
+   The built plugin will be located in `build-RelWithDebugInfo\Plugins\NetBox\x64\` (or the appropriate platform subfolder).
 
 Links
 -----
@@ -64,9 +74,8 @@ Links
 * Project main page: [https://github.com/michaellukashov/Far-NetBox](https://github.com/michaellukashov/Far-NetBox)
 * Far Manager forum: [http://forum.farmanager.com/](http://forum.farmanager.com/)
 * Far-NetBox discussions (in Russian): [http://forum.farmanager.com/viewtopic.php?f=5&t=6317](http://forum.farmanager.com/viewtopic.php?f=5&t=6317)
-* Far-NetBox discussions (in English): [http://forum.farmanager.com/viewtopic.php?f=39&t=6638](http://forum.farmanager.com/viewtopic.php?f=39&t=6638)
-* Latest builds:
-<https://nightly.link/michaellukashov/Far-NetBox/workflows/release/main?preview>
+* Far-NetBox discussions (in English): [http://forum.farmanager.com/viewtopic.php?f=39&t=6638](http://forum.farmanager.com/viewtopic.php?f=39§t=6638)
+* Latest builds: <https://nightly.link/michaellukashov/Far-NetBox/workflows/release/main?preview>
 
 License
 -------
