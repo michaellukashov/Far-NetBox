@@ -64,7 +64,7 @@ Far-NetBox/
 
 ### Build Instructions
 
-For detailed build instructions, see [Developer Guide](../DEVELOPER.md).
+For detailed build instructions, see [Developer Guide](./DEVELOPER.md).
 
 ### Code Style
 
