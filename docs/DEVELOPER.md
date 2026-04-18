@@ -23,7 +23,7 @@ The repository provides batch files in the root directory to automate the build:
 
 Run the desired batch file from the repository root. The scripts set up the Visual Studio environment and invoke CMake with appropriate settings.
 
-**Note:** The batch files default to Visual Studio 2022 Professional. If you use a different edition (e.g., Community) or installation path, adjust the `vcvarsall.bat` path in the batch file.
+Note: The batch files reference Visual Studio 2022 Professional by default. If you use a different edition (e.g., Community) or installation path, adjust the vcvarsall.bat path accordingly within the batch file.
 
 ### Manual Build
 
