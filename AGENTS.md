@@ -153,7 +153,7 @@ Pre-configured scripts for all platforms:
 - **Build must pass with ZERO warnings** (MSVC W4)
 - **All files must use CRLF line endings**
 - **Don't combine shell commands** with `&&`, `||`, `;`
-- **Don't use `2>/dev/null`** on Windows
+- **Avoid Unix-style redirections** (`< /dev/null`, `>/dev/null`, `2>/dev/null`) on Windows — use `NUL` or omit
 - **Don't rewrite entire files** — make minimal edits
 - **Don't commit secrets** or credentials
 

@@ -11,6 +11,14 @@
  - **Be concise** - No fluff, no summaries, just the work
  - **User instructions override this file** - Always follow explicit user direction
 
+## Shell Command Conventions
+
+- **Platform:** Windows — use native commands (`cmd.exe` built-ins) where possible
+- **Never use Unix-style redirections** (`< /dev/null`, `>/dev/null`, `2>/dev/null`) — Windows uses `NUL` (`2>nul`, `>NUL`, `< NUL`) or omit
+- **Never chain commands** with `&&`, `||`, `;` — each command must be a separate tool call
+- **Prefer PowerShell** for complex operations, but ensure proper quoting
+- **Path handling:** Use backslashes for Windows paths; in Bash, convert with `cygpath -u` if needed
+
 # Memory Bank & RAG Maintenance
 
 ## Responsibilities
