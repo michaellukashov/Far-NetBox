@@ -2,6 +2,7 @@
 #pragma hdrstop
 
 #include "WinSCPPlugin.h"
+#include "WinConfiguration.h"
 #include <Cryptography.h>
 #include "TextsWin.h"
 #include "guid.h"
@@ -11,8 +12,6 @@
 #include "FarConfiguration.h"
 #include "FarInterface.h"
 #include "FarUtils.h"
-
-#include <shellapi.h>
 #include <PuttyTools.h>
 #include <GUITools.h>
 #include <Tools.h>
@@ -1121,7 +1120,7 @@ bool TWinSCPPlugin::MasterPasswordConfigurationDialog()
   if (Dialog->ShowModal() != brOK) return false;
 
   bool EnableNow = EnableCheck->GetChecked();
-  UnicodeString CurrentPwd = UseMP ? CurrentEdit->Text : L"";
+  UnicodeString CurrentPwd = UseMP ? CurrentEdit->Text : UnicodeString();
   UnicodeString NewPwd = NewEdit->Text;
   UnicodeString ConfirmPwd = ConfirmEdit->Text;
 

@@ -8,6 +8,7 @@
 #include <GUITools.h>
 #include <ProgParams.h>
 #include <MsgIDs.h>
+#include <TextsWin.h>
 #include "WinSCPPlugin.h"
 #include "WinSCPFileSystem.h"
 #include "FarConfiguration.h"
@@ -149,7 +150,7 @@ bool TWinSCPPlugin::ConfigureEx(const GUID * /* Item */)
   const int32_t MTransferEditor = MenuItems->AddString(GetMsg(NB_CONFIG_TRANSFER_EDITOR));
   const int32_t MLogging = MenuItems->AddString(GetMsg(NB_CONFIG_LOGGING));
   const int32_t MIntegration = MenuItems->AddString(GetMsg(NB_CONFIG_INTEGRATION));
-+  const int32_t MMasterPassword = MenuItems->AddString(GetMsg(MASTER_PASSWORD_CAPTION));
+  const int32_t MMasterPassword = MenuItems->AddString(GetMsg(MASTER_PASSWORD_CAPTION));
   MenuItems->AddSeparator();
   const int32_t MAbout = MenuItems->AddString(GetMsg(NB_CONFIG_ABOUT));
 
@@ -224,13 +225,13 @@ bool TWinSCPPlugin::ConfigureEx(const GUID * /* Item */)
           Change = true;
         }
       }
-+      else if (Result == MMasterPassword)
-+      {
-+        if (MasterPasswordConfigurationDialog())
-+        {
-+          Change = true;
-+        }
-+      }
+  else if (Result == MMasterPassword)
+  {
+    if (MasterPasswordConfigurationDialog())
+    {
+      Change = true;
+    }
+  }
       else if (Result == MAbout)
       {
         AboutDialog();
