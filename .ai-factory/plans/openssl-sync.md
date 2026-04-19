@@ -21,7 +21,7 @@
 ### Source Analysis
 - **WinSCP OpenSSL:** 1,336 files (clean upstream source)
 - **NetBox OpenSSL:** 2,067 files (includes removed/ directory and build artifacts)
-- **Custom patch:** `0001-openssl-NetBox-patches.patch` (279 lines, 8 file modifications)
+- **Custom patch:** `0001-openssl-apply-NetBox-patches.patch` (279 lines, 8 file modifications)
 
 ### Key Differences
 1. **NetBox-specific files:** `CMakeLists.txt`, `.gitignore`, `removed/` directory
@@ -76,7 +76,7 @@
 - `CMakeLists.txt` (keep NetBox version)
 - `.gitignore` (keep NetBox version)
 - `removed/` (keep NetBox version)
-- `0001-openssl-NetBox-patches.patch` (preserve, will re-apply)
+- `0001-openssl-apply-NetBox-patches.patch` (preserve, will re-apply)
 
 **Steps:**
 1. Copy `crypto/*` from WinSCP → NetBox (overwrite existing)
@@ -112,7 +112,7 @@
 
 #### Task 5: Analyze patch compatibility
 **Deliverable:** Patch applicability report  
-**File:** `0001-openssl-NetBox-patches.patch`
+**File:** `0001-openssl-apply-NetBox-patches.patch`
 
 **Current patches (from patch file):**
 1. `crypto/core_namemap.c` - tsan_load cast for MSVC
@@ -139,10 +139,10 @@
 ---
 
 #### Task 6: Re-apply or recreate patch
-**Deliverable:** Updated `0001-openssl-NetBox-patches.patch`
+**Deliverable:** Updated `0001-openssl-apply-NetBox-patches.patch`
 
 **Steps:**
-1. Try applying existing patch: `git apply 0001-openssl-NetBox-patches.patch`
+1. Try applying existing patch: `git apply 0001-openssl-apply-NetBox-patches.patch`
 2. If successful: verify changes are present
 3. If fails: 
    - Identify rejected hunks
@@ -230,7 +230,7 @@ chore(openssl): synchronize source from WinSCP upstream
 ```
 chore(openssl): re-apply NetBox custom patches
 
-- Re-apply 0001-openssl-NetBox-patches.patch after source sync
+- Re-apply 0001-openssl-apply-NetBox-patches.patch after source sync
 - Patches cover: MSVC compatibility, platform detection, tsan fixes
 - Verify patch applies cleanly to new source revision
 ```
@@ -249,7 +249,7 @@ chore(openssl): move unused files to removed/
 ## Acceptance Criteria
 
 - [x] All source files match WinSCP upstream version
-- [x] Custom patch `0001-openssl-NetBox-patches.patch` applies cleanly
+- [x] Custom patch `0001-openssl-apply-NetBox-patches.patch` applies cleanly
 - [x] CMakeLists.txt remains functional (build succeeds)
 - [x] NetBox-specific files preserved (CMakeLists.txt, .gitignore, removed/)
 - [ ] Unused files identified and moved to removed/ (after confirmation)

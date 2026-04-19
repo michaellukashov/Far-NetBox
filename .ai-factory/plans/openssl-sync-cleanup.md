@@ -40,7 +40,7 @@ created: 2026-04-17
   - From `unused_by_build.txt`, keep any file that exists in WinSCP (`analysis/winscp_files.txt`). Rationale: WinSCP files may be needed indirectly or for future compatibility; NetBox should not have extra unused files that WinSCP doesn't have.
   - Also exclude essential items (even if unused):
     - `CMakeLists.txt`
-    - `0001-openssl-NetBox-patches.patch`
+ - `0001-openssl-apply-NetBox-patches.patch`
     - `ACKNOWLEDGEMENTS.md`, `AUTHORS.md`, `INSTALL.md`, `LICENSE.txt`, `SUPPORT.md`, `Makefile`, `.gitignore`
     - Entire `include/` directory (headers)
     - Any `cmake/` helper modules if present
@@ -108,11 +108,11 @@ created: 2026-04-17
   - Apply the NetBox patch file to the synced tree:
     ```bash
     cd libs/openssl-3
-    git apply --check 0001-openssl-NetBox-patches.patch
+ git apply --check 0001-openssl-apply-NetBox-patches.patch
     ```
   - If check succeeds, apply:
     ```bash
-    git apply 0001-openssl-NetBox-patches.patch
+ git apply 0001-openssl-apply-NetBox-patches.patch
     ```
   - Log: DEBUG each patch hunk applied.
   - If any hunk fails:
@@ -122,10 +122,10 @@ created: 2026-04-17
 
 - [x] **Task 3.4: Handle Patch Conflicts**
   - If patch application failed:
-    - Attempt three-way merge: `git apply --3way 0001-openssl-NetBox-patches.patch`.
+ - Attempt three-way merge: `git apply --3way 0001-openssl-apply-NetBox-patches.patch`.
     - If still failing, create a new patch that reflects current state:
       - Use `git diff` after manual adjustments (if user chooses to fix).
-      - Or generate `0001-openssl-NetBox-patches-updated.patch` with adjusted hunks.
+ - Or generate `0001-openssl-apply-NetBox-patches-updated.patch` with adjusted hunks.
     - Document the conflicts and resolution steps in `docs/patch_conflict_report.md`.
   - If patch applied cleanly, verify no unintended rejections: `git status` should show no unmerged paths.
   - Log: INFO with outcome.
@@ -172,7 +172,7 @@ created: 2026-04-17
     - See `docs/openssl_sync_cleanup_report.md` for details.
     ```
   - If any architectural changes (e.g., new OpenSSL configuration flags) were made, update `ARCHITECTURE.md` Third-Party Libraries section accordingly.
-  - Ensure patch file `0001-openssl-NetBox-patches.patch` still applies cleanly to the reduced tree (it should, as we only removed unneeded files, not patched ones).
+ - Ensure patch file `0001-openssl-apply-NetBox-patches.patch` still applies cleanly to the reduced tree (it should, as we only removed unneeded files, not patched ones).
   - Log: INFO docs updated.
 
 ## Commit Plan

@@ -165,7 +165,7 @@ Common build errors and fixes documented in [AGENTS-Workflows.md](AGENTS-Workflo
 
 After updating OpenSSL from upstream (WinSCP), **re-apply the patch**:
 ```cmd
-git -C libs\openssl-3 apply -p3 0001-openssl-NetBox-patches.patch
+git -C libs\openssl-3 apply -p3 0001-openssl-apply-NetBox-patches.patch
 ```
 See [AGENTS-Structure.md](AGENTS-Structure.md) → "OpenSSL Patch Application" for details.
 
