@@ -2356,6 +2356,8 @@ bool TSecureShell::EventSelectLoop(uint32_t MSec, bool ReadEventRequired,
         if (WaitList->nhandles < MAXIMUM_WAIT_OBJECTS)
           WaitList->handles[WaitList->nhandles] = FSocketEvent;
         WaitResult = ::WaitForMultipleObjects(WaitList->nhandles + 1, WaitList->handles, FALSE, TimeoutStep);
+        if (FBackendHandle == nullptr)
+          break;
         FUI->ProcessGUI();
         // run_toplevel_callbacks can cause processing of pending raw data, so:
         // 1) Check for changes in our pending buffer - wait criteria in Receive()
