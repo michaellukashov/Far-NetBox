@@ -172,7 +172,7 @@ private:
 ## Anti-Patterns
 
 - ❌ **Skip protocol inheritance** — All protocols must inherit from `TCustomFileSystem`
-- ❌ **Direct third-party changes** — Never modify libs/ directly, use patches
+- ❌ **Direct third-party changes** — modify libs/ only after confirmation
 - ❌ **Skip build verification** — Changes must compile without warnings
 - ❌ **No debug output** — Use ADF() for tracing protocol operations
 - ❌ **Skip exception handling** — Network errors must be caught properly
