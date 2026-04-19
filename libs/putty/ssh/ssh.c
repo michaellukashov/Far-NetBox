@@ -1402,7 +1402,7 @@ const struct ssh_decompressor * get_sccomp(Backend * be)
 unsigned int winscp_query(Backend * be, int query)
 {
   Ssh * ssh = container_of(be, Ssh, backend);
-  if ((ssh->base_layer != NULL) && (ssh->base_layer->vt->winscp_query != NULL))
+  if (ssh && (ssh->base_layer != NULL) && ssh->base_layer->vt && (ssh->base_layer->vt->winscp_query != NULL))
   {
     return ssh_ppl_winscp_query(ssh->base_layer, query);
   }
