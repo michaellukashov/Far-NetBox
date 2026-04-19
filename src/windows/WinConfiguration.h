@@ -5,7 +5,23 @@
 #include "CustomWinConfiguration.h"
 #if defined(__BORLANDC__)
 #include "CustomDirView.hpp"
+#endif // defined(__BORLANDC__)
 #include "FileInfo.h"
+
+#if !defined(__BORLANDC__)
+// MSVC compatibility definitions for types normally provided by Borland VCL
+enum TNortonLikeMode { nlKeyboard = 0, nlOff, nlOn };
+using TCompareCriterias = int;
+constexpr int ccTime = 1;
+constexpr int ccSize = 2;
+using TColor = uint32_t; // COLORREF equivalent
+struct TFont {};
+enum TFormatBytesStyle { fbsAuto = 0, fbsBytes, fbsKB, fbsMB, fbsGB };
+enum TIncrementalSearch { isOff = -1, isNameStartOnly, isName, isAll };
+enum TAssemblyLanguage { alIntel = 0, alATT };
+// Minimal stub for TCustomWinConfiguration
+class TCustomWinConfiguration {};
+#endif
 
 enum TEditor { edInternal, edExternal, edOpen };
 enum TGenerateUrlCodeTarget { guctUrl, guctScript, guctAssembly };
@@ -365,7 +381,11 @@ enum TDoubleClickAction { dcaOpen = 0, dcaCopy = 1, dcaEdit = 2 };
 enum TResolvedDoubleClickAction { rdcaNone, rdcaChangeDir, rdcaOpen, rdcaCopy, rdcaEdit };
 enum TStoreTransition { stInit, stStandard, stStoreFresh, stStoreMigrated, stStoreAcknowledged };
 
+#if defined(__BORLANDC__)
 typedef void (__closure *TMasterPasswordPromptEvent)();
+#else
+typedef void (*TMasterPasswordPromptEvent)();
+#endif
 
 class TWinConfiguration : public TCustomWinConfiguration
 {
@@ -953,9 +973,11 @@ private:
   TCustomCommandType * GetCommand(int32_t Index);
 };
 
+#if defined(__BORLANDC__)
+#endif // defined(__BORLANDC__)
+
 extern TWinConfiguration * WinConfiguration;
 extern const UnicodeString WinSCPExtensionExt;
 
-#endif // defined(__BORLANDC__)
 
 #endif
