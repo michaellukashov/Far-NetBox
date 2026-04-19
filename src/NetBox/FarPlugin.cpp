@@ -2268,7 +2268,8 @@ void TCustomFarFileSystem::ClosePanel()
 
 UnicodeString TCustomFarFileSystem::GetMsg(intptr_t MsgId) const
 {
-  return FPlugin->GetMsg(MsgId);
+  // return FPlugin->GetMsg(MsgId);
+  return GetGlobals()->GetMsg(MsgId);
 }
 
 TCustomFarFileSystem * TCustomFarFileSystem::GetOppositeFileSystem()

@@ -40,6 +40,10 @@ add_custom_target(NetBoxResources SOURCES
   NetBox/resource.h.template
   NetBox/NetBox.rc
   NetBox/NetBox.rc.template
+  resource/rtlconsts.rc
+  resource/TextsCore1.rc
+  resource/TextsFileZilla.rc
+  resource/TextsWin1.rc
   ${CMAKE_SOURCE_DIR}/cmake/copy_file.cmake
   ${CMAKE_SOURCE_DIR}/.github/workflows/release.yml
   ${CMAKE_SOURCE_DIR}/appveyor.yml
