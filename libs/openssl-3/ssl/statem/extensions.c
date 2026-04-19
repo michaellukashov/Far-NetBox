@@ -977,7 +977,7 @@ static int final_server_name(SSL_CONNECTION *s, unsigned int context, int sent)
     if (SSL_IS_FIRST_HANDSHAKE(s) && sctx != s->session_ctx
         && s->hello_retry_request == SSL_HRR_NONE) {
         ssl_tsan_counter(sctx, &sctx->stats.sess_accept);
-        ssl_tsan_decr(s->session_ctx, &s->session_ctx->stats.sess_accept);
+        ssl_tsan_decr(s->session_ctx, (volatile LONG *)&s->session_ctx->stats.sess_accept);
     }
 
     /*

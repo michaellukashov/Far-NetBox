@@ -191,6 +191,7 @@ private:
   UnicodeString FPublicKeyFile;
   UnicodeString FPassphrase;
   UnicodeString FDetachedCertificate;
+  UnicodeString FS3CACertificate;
   UnicodeString FPuttyProtocol;
   TFSProtocol FFSProtocol{};
   bool FModified{false};
@@ -356,6 +357,7 @@ public:
   UnicodeString GetPassphrase() const;
   void SetPassphrase(const UnicodeString & AValue);
   void SetDetachedCertificate(const UnicodeString & AValue);
+  void SetS3CACertificate(const UnicodeString & AValue);
 
   void SetPuttyProtocol(const UnicodeString & AValue);
   bool GetCanLogin() const;
@@ -693,6 +695,8 @@ public:
   RWProperty<UnicodeString> Passphrase{nb::bind(&TSessionData::GetPassphrase, this), nb::bind(&TSessionData::SetPassphrase, this)};
   __property UnicodeString DetachedCertificate  = { read=FDetachedCertificate, write=SetDetachedCertificate };
   RWPropertySimple<UnicodeString> DetachedCertificate{&FDetachedCertificate, nb::bind(&TSessionData::SetDetachedCertificate, this)};
+  __property UnicodeString S3CACertificate  = { read=FS3CACertificate, write=SetS3CACertificate };
+  RWPropertySimple<UnicodeString> S3CACertificate{&FS3CACertificate, nb::bind(&TSessionData::SetS3CACertificate, this)};
   __property UnicodeString PuttyProtocol  = { read=FPuttyProtocol, write=SetPuttyProtocol };
   RWProperty<UnicodeString> PuttyProtocol{nb::bind(&TSessionData::GetPuttyProtocol, this), nb::bind(&TSessionData::SetPuttyProtocol, this)};
   __property TFSProtocol FSProtocol  = { read=FFSProtocol, write=SetFSProtocol  };

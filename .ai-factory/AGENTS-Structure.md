@@ -79,7 +79,7 @@ nasm.exe -f win32 -o <build-dir>/<filename>.obj.asm.obj libs/openssl-3/<path>/<f
 
 ## OpenSSL Patch Application
 
-NetBox maintains a local patch file `libs/openssl-3/0001-openssl-NetBox-patches.patch` with MSVC/Win32 fixes. After copying updated OpenSSL sources from upstream (e.g., WinSCP), **the patch is overwritten and must be re-applied**.
+NetBox maintains a local patch file `libs/openssl-3/0001-openssl-apply-NetBox-patches.patch` with MSVC/Win32 fixes. After copying updated OpenSSL sources from upstream (e.g., WinSCP), **the patch is overwritten and must be re-applied**.
 
 **Patch contents:** TSAN type casts (`volatile LONG*`), `FARPROC` fix in `cryptlib.c`, platform detection (`_WIN32`/`_WIN64`/`_M_ARM64`), `OPENSSL_NO_*` defines, directory path fixes, and rcu.h guard.
 
@@ -87,7 +87,7 @@ NetBox maintains a local patch file `libs/openssl-3/0001-openssl-NetBox-patches.
 
 From the **project root** (`D:\Projects\NetBox\NetBox-dev`):
 
-git -C libs\openssl-3 apply -p3 0001-openssl-NetBox-patches.patch
+git -C libs\openssl-3 apply -p3 0001-openssl-apply-NetBox-patches.patch
 ```
 
 **Important:** The `-p3` flag strips 3 path components from the patch (`libs/openssl-3/openssl-3/crypto/...` → `crypto/...`). Always run from inside `libs/openssl-3/` — running from the project root will fail with "No such file or directory".
@@ -95,7 +95,7 @@ git -C libs\openssl-3 apply -p3 0001-openssl-NetBox-patches.patch
 **Verify the patch applied:**
 
 ```cmd
-git apply -p3 --check 0001-openssl-NetBox-patches.patch
+git apply -p3 --check 0001-openssl-apply-NetBox-patches.patch
 ```
 
 Silent output = OK. Any "patch does not apply" message means upstream changed — manually inspect the hunk and re-create it.
@@ -103,7 +103,7 @@ Silent output = OK. Any "patch does not apply" message means upstream changed �
 **Common failure after update:** If `git apply` skips patches, check context lines have changed. Use `--reject` to see what failed:
 
 ```cmd
-git apply -p3 --reject 0001-openssl-NetBox-patches.patch
+git apply -p3 --reject 0001-openssl-apply-NetBox-patches.patch
 ```
 
 Then manually fix rejected hunks by comparing with the patch diff.
@@ -114,7 +114,7 @@ Then manually fix rejected hunks by comparing with the patch diff.
 2. `include/crypto/bn_conf.h`: platform detection for `_WIN32` vs `_WIN64` vs `_M_ARM64`
 3. `include/openssl/configuration.h`: `OPENSSL_SYS_WIN32`/`OPENSSL_SYS_WIN64A` defines
 
-⚠️ The patch file `0001-openssl-NetBox-patches.patch` should be versioned alongside the OpenSSL source. When updating OpenSSL, always check if the patch needs re-creation.
+⚠️ The patch file `0001-openssl-apply-NetBox-patches.patch` should be versioned alongside the OpenSSL source. When updating OpenSSL, always check if the patch needs re-creation.
 
 
 ## Language Files

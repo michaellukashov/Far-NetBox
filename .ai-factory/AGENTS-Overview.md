@@ -53,7 +53,7 @@ Third-party libraries in `libs/` — **never modify directly**, use patches if n
 | Ninja not found | `winget install Ninja-build.ninja` |
 | Unity build errors | Add `-DOPT_USE_UNITY_BUILD=OFF` |
 | OpenSSL unused files | Compare with WinSCP reference and remove files not present in WinSCP's openssl directory |
-| OpenSSL build errors after cleanup | Re-apply patch: `git -C libs\openssl-3 apply -p3 0001-openssl-NetBox-patches.patch` |
+| OpenSSL build errors after cleanup | Re-apply patch: `git -C libs\openssl-3 apply -p3 0001-openssl-apply-NetBox-patches.patch` |
 | Plugin fails to load | Check architecture match (x86/x64), verify dependencies |
 | Connection failures | Check firewall, test with `ping`/`telnet`, review plugin log |
 | Plugin loads but connection fails | Verify server address, check credentials, test network with standalone client, review plugin log |

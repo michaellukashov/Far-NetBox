@@ -23,11 +23,7 @@
 #include "XmlStorage.h"
 #include <plugin.hpp>
 
-#ifdef _DEBUG
-#define ADF(format, ...) DEBUG_PRINTF(format, __VA_ARGS__)
-#else
-#define ADF(format, ...) ((void)0)
-#endif
+
 
 TSessionPanelItem::TSessionPanelItem(const TSessionData * ASessionData) :
   TCustomFarPanelItem(OBJECT_CLASS_TSessionPanelItem)
@@ -2688,16 +2684,33 @@ int32_t TWinSCPFileSystem::GetFilesRemote(TObjectList * PanelItems, bool Move,
     Params |=
       FLAGMASK(EditView, cpTemporary);
       // | FLAGMASK(CopyParam.GetNewerOnly(), cpNewerOnly);
-    FTerminal->CopyToLocal(FFileList.get(), DestPath, &CopyParam, Params, nullptr);
+    // Capture remote timestamp BEFORE download
+    TDateTime RemoteTimestamp;
     if ((FFileList->GetCount() == 1) && (OpMode & OPM_EDIT))
     {
       std::unique_ptr<TRemoteFile> RemoteFile(FTerminal->TryReadFile(FFileList->GetString(0)));
       if (RemoteFile != nullptr)
       {
-        FLastEditFileTimestamp = RemoteFile->GetModification();
-        ADF(L"Captured remote file timestamp for native edit: %s — %s",
-          FFileList->GetString(0).c_str(), nb::DateTimeToStr(FLastEditFileTimestamp).c_str());
+        RemoteTimestamp = RemoteFile->GetModification();
+        FTerminal->LogEvent(FORMAT("DEBUG: Captured timestamp BEFORE download: path=%s, timestamp=%s",
+          FFileList->GetString(0).c_str(), nb::DateTimeToStr(RemoteTimestamp).c_str()));
       }
+    }
+    FTerminal->CopyToLocal(FFileList.get(), DestPath, &CopyParam, Params, nullptr);
+    // Store the captured remote timestamp
+    if ((FFileList->GetCount() == 1) && (OpMode & OPM_EDIT) && (RemoteTimestamp != TDateTime()))
+    {
+      FLastEditFileTimestamp = RemoteTimestamp;
+      // Disable PreserveTime for this edit session to ensure remote file gets current timestamp on upload
+      // This allows proper detection of external modifications on subsequent edits
+      FLastEditCopyParam.SetPreserveTime(false);
+      FTerminal->LogEvent(FORMAT("DEBUG: Stored timestamp for edit (PreserveTime disabled): timestamp=%s",
+        nb::DateTimeToStr(FLastEditFileTimestamp).c_str()));
+    }
+    else
+    {
+      FTerminal->LogEvent(FORMAT("DEBUG: Not capturing timestamp: fileCount=%d, OpMode=%d, RemoteTimestamp=%d",
+        FFileList->GetCount(), OpMode, (RemoteTimestamp != TDateTime()) ? 1 : 0));
     }
     Result = 1;
   }
@@ -3911,6 +3924,8 @@ void TWinSCPFileSystem::UploadFromEditor(bool NoReload,
   }
 
   TDateTime SourceTimestamp;
+  FTerminal->LogEvent(FORMAT("DEBUG: UploadFromEditor - FLastEditFile='%s', AFileName='%s', FLastEditFileTimestamp set=%d",
+    FLastEditFile.c_str(), AFileName.c_str(), (FLastEditFileTimestamp != TDateTime()) ? 1 : 0));
   if (FLastEditFile == AFileName)
   {
     SourceTimestamp = FLastEditFileTimestamp;
@@ -3924,43 +3939,80 @@ void TWinSCPFileSystem::UploadFromEditor(bool NoReload,
     }
   }
 
+  bool ExternalModificationDetected = false;
+  // Force log output using terminal's logging
   if (SourceTimestamp != TDateTime())
   {
     UnicodeString RemoteFilePath = base::UnixCombinePaths(DestPath, RealFileName);
+    FTerminal->LogEvent(FORMAT("DEBUG: Timestamp check - DestPath='%s', RealFileName='%s', RemoteFilePath='%s'",
+      DestPath.c_str(), RealFileName.c_str(), RemoteFilePath.c_str()));
     try
     {
+      FTerminal->LogEvent(FORMAT("DEBUG: Attempting to read remote file: %s", RemoteFilePath.c_str()));
       std::unique_ptr<TRemoteFile> RemoteFile(FTerminal->TryReadFile(RemoteFilePath));
       if (RemoteFile != nullptr)
       {
         TDateTime CurrentTimestamp = RemoteFile->GetModification();
-        ADF(L"Checking remote file timestamp: %s, stored: %s",
-          nb::DateTimeToStr(CurrentTimestamp).c_str(), nb::DateTimeToStr(SourceTimestamp).c_str());
-        if (CurrentTimestamp != SourceTimestamp)
+        const int64_t DiffSecs = ::SecondsBetween(CurrentTimestamp, SourceTimestamp);
+        // Log to file using terminal
+        FTerminal->LogEvent(FORMAT("DEBUG: Checking timestamp - stored=%s, current=%s, diff=%lld seconds",
+          nb::DateTimeToStr(SourceTimestamp).c_str(),
+          nb::DateTimeToStr(CurrentTimestamp).c_str(),
+          DiffSecs));
+        ExternalModificationDetected = ((DiffSecs < -2) || (DiffSecs > 2));
+        FTerminal->LogEvent(FORMAT("DEBUG: ExternalModificationDetected=%d (abs(diff)=%lld > 2)",
+          ExternalModificationDetected, (int64_t)llabs(DiffSecs)));
+        if (ExternalModificationDetected)
         {
-          ADF(L"Remote file was modified externally — showing confirmation dialog");
+          FTerminal->LogEvent(FORMAT("DEBUG: Remote file was modified externally - showing confirmation dialog"));
           uint32_t Flags = FMSG_WARNING | FMSG_MB_OKCANCEL;
           UnicodeString MessageText = GetMsg(EDIT_CHANGED_EXTERNALLY);
-          int Result = GetWinSCPPlugin()->Message(Flags, L"", MessageText);
+          int32_t Result = GetWinSCPPlugin()->Message(Flags, L"", MessageText);
           if (Result == -1)
           {
-            ADF(L"User cancelled upload — remote file was modified externally");
+            FTerminal->LogEvent(FORMAT("DEBUG: User cancelled upload - remote file was modified externally"));
             FTerminal->SetAutoReadDirectory(PrevAutoReadDirectory);
             FFileList.reset();
             return;
           }
-          ADF(L"User confirmed overwrite of externally modified file");
+          FTerminal->LogEvent(FORMAT("DEBUG: User confirmed overwrite of externally modified file"));
         }
+        else
+        {
+          FTerminal->LogEvent(FORMAT("DEBUG: No external modification detected - timestamps match within tolerance"));
+        }
+      }
+      else
+      {
+        FTerminal->LogEvent(FORMAT("DEBUG: Remote file not found at path: %s - proceeding with upload", RemoteFilePath.c_str()));
       }
     }
     catch (Exception & E)
     {
-      ADF(L"Failed to read remote file timestamp: %s — proceeding with upload",
-        E.Message.c_str());
+      FTerminal->LogEvent(FORMAT("DEBUG: Failed to read remote file timestamp: %s - proceeding with upload",
+        E.Message.c_str()));
     }
   }
 
   std::unique_ptr<TRemoteFile> File(std::make_unique<TRemoteFile>());
   File->SetFileName(RealFileName);
+  // Disable timestamp preservation when external modification was detected
+  // This ensures the remote file gets a NEW timestamp after upload,
+  // allowing proper detection on subsequent edits
+  if (ExternalModificationDetected)
+  {
+    FLastEditFileTimestamp = TDateTime();
+    // Disable PreserveTime to force new timestamp on upload
+    FLastEditCopyParam.SetPreserveTime(false);
+    if (FLastEditorID >= 0)
+    {
+      auto it = FMultipleEdits.find(FLastEditorID);
+      if (it != FMultipleEdits.end())
+      {
+        it->second.SourceTimestamp = TDateTime();
+      }
+    }
+  }
   try__finally
   {
     FFileList->AddObject(AFileName, File.get()); //-V522
@@ -3996,7 +4048,9 @@ void TWinSCPFileSystem::UploadOnSave(bool NoReload)
         DebugAssert(FLastEditFile == Info->GetFileName());
         // always upload under the most recent name
         UnicodeString CurrentDirectory = FTerminal->GetCurrentDirectory();
-        UploadFromEditor(NoReload, FLastEditFile, FLastEditFile, CurrentDirectory);
+        // Extract remote file name from the original edit file path (local temp filename includes remote name)
+        UnicodeString RemoteFileName = base::ExtractFileName(FOriginalEditFile, false);
+        UploadFromEditor(NoReload, FLastEditFile, RemoteFileName, CurrentDirectory);
         FTerminal->SetCurrentDirectory(CurrentDirectory);
       }
 
@@ -4321,8 +4375,8 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString Directory,
       if (RemoteFile != nullptr)
       {
         FLastMultipleEditTimestamp = RemoteFile->GetModification();
-        ADF(L"Captured remote file timestamp for multiple edit: %s — %s",
-          FullFileName.c_str(), nb::DateTimeToStr(FLastMultipleEditTimestamp).c_str());
+        FTerminal->LogEvent(FORMAT("DEBUG: Captured timestamp for multiple edit: path=%s, timestamp=%s",
+          FullFileName.c_str(), nb::DateTimeToStr(FLastMultipleEditTimestamp).c_str()));
       }
     }
     __finally

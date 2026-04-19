@@ -218,6 +218,10 @@ function(netbox_define_resource_sources)
     include/type_traits.h
     include/rtti.hpp
     include/nbtypes.h
+    resource/rtlconsts.rc
+    resource/TextsCore1.rc
+    resource/TextsFileZilla.rc
+    resource/TextsWin1.rc
     NetBox/resource.h
     NetBox/NetBox.rc
     NetBox/NetBox.def
