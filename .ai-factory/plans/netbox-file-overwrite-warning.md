@@ -69,8 +69,15 @@ When copying .netbox files:
 
 ##### task-5: Добавить диалог подтверждения → REUSE (not needed)
 
+
 - **Status:** ✅ Uses existing MoreMessageDialog() API
 - No separate dialog needed
+
+---
+
+- [x] task-3: Export file exists check (already implemented)
+- [x] task-4: Import session name warning (already implemented)
+- [x] task-5: Reuse confirmation dialog
 
 ### Phase 3: Verification
 
