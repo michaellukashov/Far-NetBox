@@ -617,7 +617,26 @@ class TPath
 {
 public:
   static UnicodeString Combine(const UnicodeString & APath, const UnicodeString & AFileName);
-  static bool IsDriveRooted(const UnicodeString & /*APath*/) { return false; } // TODO: implement
+  static bool IsDriveRooted(const UnicodeString & APath)
+  {
+    // Check if path starts with drive letter (C:\, D:, etc.) or UNC path (\\)
+    if (APath.IsEmpty())
+    {
+      return false;
+    }
+    const wchar_t first = APath[1];
+    if (first == L'\\' || first == L'/')
+    {
+      // UNC path or network path
+      return APath.Length() >= 2 && APath[2] == L'\\';
+    }
+    // Check for drive letter (A: to Z:)
+    if ((first >= L'A' && first <= L'Z') || (first >= L'a' && first <= L'z'))
+    {
+      return APath.Length() >= 2 && APath[2] == L':';
+    }
+    return false;
+  }
 };
 
 class TUnixPath

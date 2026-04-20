@@ -617,10 +617,38 @@ void FileAge(const UnicodeString & AFileName, TDateTime & ATimestamp)
   }
 }
 
-DWORD FileGetAttr(const UnicodeString & AFileName, bool /*FollowLink*/)
+DWORD FileGetAttr(const UnicodeString & AFileName, bool FollowLink)
 {
-  TODO("FollowLink");
-  const DWORD LocalFileAttrs = ::GetFileAttributesW(ApiPath(AFileName).c_str());
+  DWORD LocalFileAttrs;
+  if (FollowLink)
+  {
+    // Open reparse point to get attributes of the target file
+    const HANDLE HFile = ::CreateFileW(ApiPath(AFileName).c_str(), FILE_READ_EA,
+      FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, nullptr,
+      OPEN_EXISTING, FILE_FLAG_OPEN_REPARSE_POINT | FILE_FLAG_BACKUP_SEMANTICS, nullptr);
+    if (HFile != INVALID_HANDLE_VALUE)
+    {
+      BY_HANDLE_FILE_INFORMATION info = {};
+      if (::GetFileInformationByHandle(HFile, &info))
+      {
+        LocalFileAttrs = info.dwFileAttributes;
+      }
+      else
+      {
+        LocalFileAttrs = ::GetFileAttributesW(ApiPath(AFileName).c_str());
+      }
+      ::CloseHandle(HFile);
+    }
+    else
+    {
+      LocalFileAttrs = ::GetFileAttributesW(ApiPath(AFileName).c_str());
+    }
+  }
+  else
+  {
+    // Default behavior - do not follow symbolic links
+    LocalFileAttrs = ::GetFileAttributesW(ApiPath(AFileName).c_str());
+  }
   return LocalFileAttrs;
 }
 
