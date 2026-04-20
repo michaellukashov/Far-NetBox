@@ -2579,7 +2579,18 @@ int32_t TWinSCPFileSystem::GetFilesEx(TObjectList * PanelItems, bool Move,
     {
       if (FFileList->GetCount() > 0)
       {
-        Result = GetFilesRemote(PanelItems, Move, DestPath, OpMode);
+        // Check if destination is local path (not remote)
+        if (!DestPath.IsEmpty() &&
+            ((DestPath[1] == L':' && (DestPath[2] == L'\\' || DestPath[2] == L'/')) ||
+             (DestPath[1] == L'\\' && DestPath[2] == L'\\')))
+        {
+          // Local-to-local copy: use Windows CopyFile
+          Result = CopyFilesLocal(PanelItems, DestPath, OpMode);
+        }
+        else
+        {
+          Result = GetFilesRemote(PanelItems, Move, DestPath, OpMode);
+        }
       }
     }
     __finally
@@ -2616,6 +2627,54 @@ int32_t TWinSCPFileSystem::GetFilesEx(TObjectList * PanelItems, bool Move,
       Result = 1;
     }
   }
+  return Result;
+}
+
+int32_t TWinSCPFileSystem::CopyFilesLocal(TObjectList * PanelItems,
+  UnicodeString & DestPath, OPERATION_MODES OpMode)
+{
+  // Local-to-local copy using Windows API
+  int32_t Result = 1;
+  UnicodeString SourcePath = GetCurrentDirectory();
+  DestPath = ::IncludeTrailingBackslash(DestPath);
+
+  for (int32_t Index = 0; Index < PanelItems->GetCount(); ++Index)
+  {
+    auto PanelItem = PanelItems->GetAs<TFarPanelItem>(Index);
+    if (!PanelItem || PanelItem->GetIsParentDirectory())
+    {
+      continue;
+    }
+
+    UnicodeString SrcFile = ::IncludeTrailingBackslash(SourcePath) + PanelItem->GetFileName();
+    UnicodeString DstFile = DestPath + PanelItem->GetFileName();
+
+    // Check if source exists
+    if (!FileExists(SrcFile))
+    {
+      Result = -1;
+      UnicodeString Error = FORMAT("Source file not found: %s", SrcFile);
+      if (!(OpMode & OPM_SILENT))
+      {
+        MoreMessageDialog(Error, nullptr, qtError, qaOK);
+      }
+      break;
+    }
+
+    // Copy file
+    if (!::CopyFileW(SrcFile.c_str(), DstFile.c_str(), FALSE))
+    {
+      Result = -1;
+      DWORD Err = GetLastError();
+      UnicodeString Error = FORMAT("Failed to copy %s to %s (error %d)", SrcFile, DstFile, Err);
+      if (!(OpMode & OPM_SILENT))
+      {
+        MoreMessageDialog(Error, nullptr, qtError, qaOK);
+      }
+      break;
+    }
+  }
+
   return Result;
 }
 

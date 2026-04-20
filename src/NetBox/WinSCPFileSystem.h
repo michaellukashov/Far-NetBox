@@ -114,6 +114,7 @@ protected:
   virtual bool DeleteFilesEx(TObjectList * PanelItems, OPERATION_MODES OpMode) override;
   virtual int32_t GetFilesEx(TObjectList * PanelItems, bool Move,
     UnicodeString & DestPath, OPERATION_MODES OpMode) override;
+  int32_t CopyFilesLocal(TObjectList * PanelItems, UnicodeString & DestPath, OPERATION_MODES OpMode);
   virtual int32_t PutFilesEx(TObjectList * PanelItems, bool Move, OPERATION_MODES OpMode) override;
   virtual bool ProcessPanelEventEx(intptr_t Event, void * Param) override;
 
