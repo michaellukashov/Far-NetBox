@@ -2754,6 +2754,17 @@ void TWinSCPFileSystem::ExportSession(TSessionData * Data, void * AParam)
   ExportData->SetModified(true);
   const UnicodeString XmlFileName = ::IncludeTrailingBackslash(Param.DestPath) +
     ::ValidLocalFileName(ExportData->GetName()) + ".netbox";
+
+  // Check if file already exists
+  if (FileExists(XmlFileName))
+  {
+    UnicodeString ConfirmMsg = FORMAT("File %s already exists. Overwrite?", XmlFileName);
+    if (MoreMessageDialog(ConfirmMsg, nullptr, qtConfirmation, qaYes | qaNo | qaCancel) != qaYes)
+    {
+      return; // User cancelled
+    }
+  }
+
   std::unique_ptr<THierarchicalStorage> ExportStorage(std::make_unique<TXmlStorage>(XmlFileName, GetConfiguration()->GetStoredSessionsSubKey()));
   ExportStorage->Init();
   ExportStorage->SetAccessMode(smReadWrite);
@@ -2939,6 +2950,24 @@ bool TWinSCPFileSystem::ImportSessions(TObjectList * PanelItems, bool /*Move*/,
           ImportStorage->HasSubKeys())
         {
           AnyData = true;
+          // Check if there are existing sessions with the same names
+          std::unique_ptr<TStringList> StoredKeys(std::make_unique<TStringList>());
+          ImportStorage->GetSubKeyNames(StoredKeys.get());
+          if (StoredKeys->GetCount() > 0)
+          {
+            UnicodeString SessionNames;
+            for (int32_t i = 0; i < StoredKeys->GetCount() && i < 5; i++)
+            {
+              if (i > 0) SessionNames += L", ";
+              SessionNames += StoredKeys->GetString(i);
+            }
+            if (StoredKeys->GetCount() > 5) SessionNames += L"...";
+            UnicodeString ConfirmMsg = FORMAT("%s will import sessions: %s. Continue?", FileName, SessionNames);
+            if (MoreMessageDialog(ConfirmMsg, nullptr, qtConfirmation, qaYes | qaNo) != qaYes)
+            {
+              return false;
+            }
+          }
           GetStoredSessions()->Load(ImportStorage.get(), /*AsModified*/ true, /*UseDefaults*/ true);
           // modified only, explicit
           GetStoredSessions()->Save(false, true);
