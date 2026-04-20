@@ -1,11 +1,1 @@
-{
-  "last_processed_patch": null,
-  "source_type": "plans",
-  "processed_plans": [
-    "win32-kitty-input-mode.md",
-    "winscp-2426-inactive-session-fix.md",
-    "ftp-heartbeat-noop.md",
-    "upgrade-openssl-6.5.6.md"
-  ],
-  "updated_at": "2026-04-16 08:00"
-}
+{"last_processed_patch": "2026-04-20-13.00.md", "updated_at": "2026-04-20 13:25"}
