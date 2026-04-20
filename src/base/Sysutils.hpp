@@ -239,6 +239,7 @@ NB_CORE_EXPORT void DecodeTime(const TDateTime & DateTime, uint16_t & Hour,
   uint16_t & Min, uint16_t & Sec, uint16_t & MSec);
 
 NB_CORE_EXPORT UnicodeString FormatDateTime(const UnicodeString & Fmt, const TDateTime & ADateTime);
+NB_CORE_EXPORT TDateTime ISO8601ToDate(const UnicodeString & S);
 NB_CORE_EXPORT TDateTime SystemTimeToDateTime(const SYSTEMTIME & SystemTime);
 
 NB_CORE_EXPORT TDateTime EncodeDate(uint16_t Year, uint16_t Month, uint16_t Day);

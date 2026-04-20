@@ -1536,6 +1536,40 @@ UnicodeString FormatDateTime(const UnicodeString & Fmt, const TDateTime & ADateT
   return Result;
 }
 
+TDateTime ISO8601ToDate(const UnicodeString & S)
+{
+  // Parse ISO 8601 format: YYYY-MM-DDTHH:MM:SS[.zzz]
+  TDateTime Result;
+  if (S.Length() < 10)
+  {
+    throw Exception(L"Invalid ISO 8601 date format");
+  }
+
+  // Parse YYYY-MM-DD
+  int32_t Year = S.SubString(1, 4).ToInt32();
+  int32_t Month = S.SubString(6, 2).ToInt32();
+  int32_t Day = S.SubString(9, 2).ToInt32();
+
+  int32_t Hour = 0, Minute = 0, Second = 0, Millisecond = 0;
+  if (S.Length() >= 13 && S[5] == L'T')
+  {
+    // Time present - parse HH:MM:SS
+    Hour = S.SubString(12, 2).ToInt32();
+    if (S.Length() >= 16 && S[14] == L':')
+    {
+      Minute = S.SubString(15, 2).ToInt32();
+      if (S.Length() >= 19 && S[17] == L':')
+      {
+        Second = S.SubString(18, 2).ToInt32();
+      }
+    }
+  }
+
+  Result = EncodeDate(static_cast<uint16_t>(Year), static_cast<uint16_t>(Month), static_cast<uint16_t>(Day)) +
+         EncodeTime(static_cast<uint32_t>(Hour), static_cast<uint32_t>(Minute), static_cast<uint32_t>(Second), static_cast<uint32_t>(Millisecond));
+  return Result;
+}
+
 static TDateTime ComposeDateTime(const TDateTime & Date, const TDateTime & Time)
 {
   TDateTime Result = TDateTime(Date);
