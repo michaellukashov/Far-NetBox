@@ -1485,53 +1485,118 @@ TDateTime Date()
 
 UnicodeString FormatDateTime(const UnicodeString & Fmt, const TDateTime & ADateTime)
 {
-  (void)Fmt;
   UnicodeString Result;
-  uint16_t Year;
-  uint16_t Month;
-  uint16_t Day;
-  uint16_t Hour;
-  uint16_t Minutes;
-  uint16_t Seconds;
-  uint16_t Milliseconds;
+  uint16_t Year, Month, Day, Hour, Minutes, Seconds, Milliseconds;
 
   ADateTime.DecodeDate(Year, Month, Day);
   ADateTime.DecodeTime(Hour, Minutes, Seconds, Milliseconds);
 
-  if (Fmt == L"dddddd tt")
+  // Simple format parser
+  const wchar_t * FmtStr = Fmt.c_str();
+  const wchar_t * End = FmtStr + Fmt.Length();
+  const wchar_t * p = FmtStr;
+
+  while (p < End)
   {
-    /*
-    return FormatDateTime(L"dddddd tt",
-        EncodeDateVerbose(
-            static_cast<uint16_t>(ValidityTime.Year), static_cast<uint16_t>(ValidityTime.Month),
-            static_cast<uint16_t>(ValidityTime.Day)) +
-        EncodeTimeVerbose(
-            static_cast<uint16_t>(ValidityTime.Hour), static_cast<uint16_t>(ValidityTime.Min),
-            static_cast<uint16_t>(ValidityTime.Sec), 0));
-    */
-    uint16_t Y, M, D, H, Mm, S, MS;
-    const TDateTime DateTime =
-      EncodeDateVerbose(Year, Month, Day) +
-      EncodeTimeVerbose(Hour, Minutes, Seconds, Milliseconds);
-    DateTime.DecodeDate(Y, M, D);
-    DateTime.DecodeTime(H, Mm, S, MS);
-    Result = FORMAT("%02d.%02d.%04d %02d:%02d:%02d ", D, M, Y, H, Mm, S);
-  }
-  else if (Fmt == L"nnzzz")
-  {
-    Result = FORMAT("%02d%03d ", Seconds, Milliseconds);
-  }
-  else if (Fmt == L" yyyy-mm-dd hh:nn:ss.zzz ")
-  {
-    Result = FORMAT(" %04d-%02d-%02d %02d:%02d:%02d.%03d ", Year, Month, Day, Hour, Minutes, Seconds, Milliseconds);
-  }
-  else if (Fmt == L"h:nn:ss")
-  {
-    Result = FORMAT("%02d:%02d:%02d", Hour, Minutes, Seconds);
-  }
-  else
-  {
-    ThrowNotImplemented(150);
+    if (*p == L'"' || *p == L'\'')
+    {
+      // Quoted literal
+      wchar_t Quote = *p++;
+      while (p < End && *p != Quote) Result += *p++;
+      if (p < End) p++;
+    }
+    else if (*p == L'y' || *p == L'Y')
+    {
+      // Year
+      int32_t Count = 0;
+      while (p < End && (*p == L'y' || *p == L'Y')) { p++; Count++; }
+      if (Count >= 4) Result += FORMAT("%04d", Year);
+      else Result += FORMAT("%02d", Year % 100);
+    }
+    else if (*p == L'm' || *p == L'M')
+    {
+      // Month
+      int32_t Count = 0;
+      const wchar_t * Start = p;
+      while (p < End && (*p == L'm' || *p == L'M')) { p++; Count++; }
+      // Check if month or minute (after H = hour = minute)
+      bool IsMinute = (Start > FmtStr && (*(Start-1) == L'h' || *(Start-1) == L'H'));
+      if (IsMinute)
+      {
+        Result += FORMAT("%02d", Minutes);
+      }
+      else
+      {
+        if (Count >= 3) Result += FORMAT("%02d", Month); // Short month names not implemented
+        else Result += FORMAT("%02d", Month);
+      }
+    }
+    else if (*p == L'd' || *p == L'D')
+    {
+      // Day
+      int32_t Count = 0;
+      while (p < End && (*p == L'd' || *p == L'D')) { p++; Count++; }
+      Result += FORMAT("%02d", Day);
+    }
+    else if (*p == L'h' || *p == L'H')
+    {
+      // Hour
+      int32_t Count = 0;
+      while (p < End && (*p == L'h' || *p == L'H')) { p++; Count++; }
+      Result += FORMAT("%02d", Hour);
+    }
+    else if (*p == L'n' || *p == L'N')
+    {
+      // Minute
+      int32_t Count = 0;
+      while (p < End && (*p == L'n' || *p == L'N')) { p++; Count++; }
+      Result += FORMAT("%02d", Minutes);
+    }
+    else if (*p == L's' || *p == L'S')
+    {
+      // Second
+      int32_t Count = 0;
+      while (p < End && (*p == L's' || *p == L'S')) { p++; Count++; }
+      Result += FORMAT("%02d", Seconds);
+    }
+    else if (*p == L'z' || *p == L'Z')
+    {
+      // Millisecond
+      int32_t Count = 0;
+      while (p < End && (*p == L'z' || *p == L'Z')) { p++; Count++; }
+      if (Count >= 3) Result += FORMAT("%03d", Milliseconds);
+      else if (Count == 2) Result += FORMAT("%02d", Milliseconds / 10);
+      else Result += FORMAT("%d", Milliseconds);
+    }
+    else if (*p == L':')
+    {
+      Result += L':';
+      p++;
+    }
+    else if (*p == L'/')
+    {
+      Result += L'/';
+      p++;
+    }
+    else if (*p == L'-')
+    {
+      Result += L'-';
+      p++;
+    }
+    else if (*p == L' ')
+    {
+      Result += L' ';
+      p++;
+    }
+    else if (*p == L'.')
+    {
+      Result += L'.';
+      p++;
+    }
+    else
+    {
+      Result += *p++;
+    }
   }
   return Result;
 }
