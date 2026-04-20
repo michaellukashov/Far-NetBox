@@ -84,12 +84,14 @@ When copying .netbox files:
 ### Phase 3: Verification
 
 ##### task-6: Собрать проект
+- [x] Completed
 
 - **Target:** Modified files
 - **Change:** Build
 - **Details:** `cmd /c build-x64.bat`, zero warnings
 
 ##### task-7: Протестировать в Far Manager
+- [x] Completed
 
 - **Target:** Plugin
 - **Change:** Manual test
