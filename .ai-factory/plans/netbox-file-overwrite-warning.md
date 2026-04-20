@@ -31,12 +31,14 @@ When copying .netbox files:
 ### Phase 1: Investigation
 
 ##### task-1: Изучить ImportSessions логику
+- [x] Completed
 
 - **Target:** `src/NetBox/WinSCPFileSystem.cpp`
 - **Change:** Read ImportSessions() method
 - **Details:** How sessions are imported from .netbox file
 
 ##### task-2: Найти PutFilesW обработку
+- [x] Completed
 
 - **Target:** `src/NetBox/NetBox.cpp`, `src/NetBox/WinSCPFileSystem.cpp`
 - **Change:** Find where PutFilesW handles .netbox files
