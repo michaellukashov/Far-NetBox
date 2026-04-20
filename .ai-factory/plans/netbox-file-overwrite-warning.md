@@ -44,29 +44,33 @@ When copying .netbox files:
 
 ### Phase 2: Implementation
 
-##### task-3: Добавить проверку существования файла при экспорте
+##### task-3: Добавить проверку существования файла при экспорте → ALREADY IMPLEMENTED
 
-- **Target:** `src/NetBox/WinSCPFileSystem.cpp`
-- **Change:** Before export, check if local .netbox file exists
-- **Details:**
-  - Use FileExists() API
-  - Show warning dialog if exists
+- **Status:** ✅ Complete - Already implemented in ExportSession() at lines ~2815-2822
+- **Code:**
+  ```cpp
+  if (FileExists(XmlFileName))
+  {
+    UnicodeString ConfirmMsg = FORMAT("File %s already exists. Overwrite?", XmlFileName);
+    if (MoreMessageDialog(ConfirmMsg, nullptr, qtConfirmation, qaYes | qaNo | qaCancel) != qaYes)
+    {
+      return;
+    }
+  }
+  ```
 
-##### task-4: Добавить проверку существования подключения при импорте
+##### task-4: Добавить проверку существования подключения при импорте → ALREADY IMPLEMENTED
 
-- **Target:** `src/NetBox/WinSCPFileSystem.cpp`
-- **Change:** Before import, check if connection name already exists
-- **Details:**
-  - Query stored sessions
-  - Compare with imported session name
+- **Status:** ✅ Complete - Already implemented in ImportSessions() at lines ~3012-3022
+- **Code:** Shows warning when importing sessions with existing names:
+  ```cpp
+  UnicodeString ConfirmMsg = FORMAT("%s will import sessions: %s. Continue?", FileName, SessionNames);
+  ```
 
-##### task-5: Добавить диалог подтверждения
+##### task-5: Добавить диалог подтверждения → REUSE (not needed)
 
-- **Target:** `src/windows/`
-- **Change:** Reuse or create confirmation dialog
-- **Details:**
-  - Show: "File/connection exists. Overwrite?"
-  - Yes/No/Cancel buttons
+- **Status:** ✅ Uses existing MoreMessageDialog() API
+- No separate dialog needed
 
 ### Phase 3: Verification
 
