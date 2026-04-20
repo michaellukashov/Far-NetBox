@@ -87,6 +87,8 @@ jobs:
         run: |
           echo "netbox_name=NetBox.${{ matrix.platform }}.${{ env.version }}.7z" >> "$GITHUB_ENV"
           echo "netbox_pdb_name=NetBox.${{ matrix.platform }}.${{ env.version }}.pdb.7z" >> "$GITHUB_ENV"
+          echo "DEBUG: platform=${{ matrix.platform }}, version=${{ env.version }}"
+          echo "DEBUG: netbox_name=NetBox.${{ matrix.platform }}.${{ env.version }}.7z"
 
       - name: Add C++ build tools to PATH
         uses: ilammy/msvc-dev-cmd@v1
