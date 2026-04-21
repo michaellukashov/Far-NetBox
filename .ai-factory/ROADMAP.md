@@ -12,7 +12,6 @@
 
 - DateTime format functions (custom tokens, locale support)
 - FTP heartbeat / NOOP keep‑alive
-- OpenSSL 6.5.6 upgrade with NetBox patches
 - Inactive session crash fix (WinSCP #2426)
 - Static RTTI improvements
 
