@@ -1,6 +1,5 @@
-
-#include <vcl.h>
 #pragma hdrstop
+
 #include "Common.h"
 #include "WinConfiguration.h"
 #include "Exceptions.h"
@@ -12,19 +11,16 @@
 #include "Tools.h"
 #include "Setup.h"
 #include "Security.h"
-#include "TerminalManager.h"
 #include "Cryptography.h"
-#include <VCLCommon.h>
-#include <InitGUID.h>
-#include <DragExt.h>
-#include <Math.hpp>
-#include <StrUtils.hpp>
-#include <OperationWithTimeout.hpp>
 #include "FileInfo.h"
 #include "CoreMain.h"
-#include "DriveView.hpp"
+#include <VCLCommon.h>
 
-#pragma package(smart_init)
+#endif
+
+#ifdef __BORLANDC__
+
+
 
 TWinConfiguration * WinConfiguration = nullptr;
 
@@ -1965,7 +1961,7 @@ void TWinConfiguration::ChangeMasterPassword(
 
 bool TWinConfiguration::ValidateMasterPassword(UnicodeString value)
 {
-  DebugAssert(UseMasterPassword);
+  DebugAssert(GetUseMasterPassword());
   DebugAssert(!FMasterPasswordVerifier.IsEmpty());
   bool Result = AES256Verify(value, HexToBytes(FMasterPasswordVerifier));
   return Result;

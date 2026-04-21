@@ -664,8 +664,8 @@ protected:
   virtual void CopyData(THierarchicalStorage * Source, THierarchicalStorage * Target);
   virtual UnicodeString GetDefaultKeyFile();
   virtual void Saved();
-  void RecryptPasswords(TStrings * RecryptPasswordErrors);
-  virtual bool GetUseMasterPassword();
+  // MOVED TO PUBLIC: RecryptPasswords
+  // MOVED TO PUBLIC: GetUseMasterPassword
   bool SameStringLists(TStrings * Strings1, TStrings * Strings2);
   virtual HINSTANCE LoadNewResourceModule(LCID Locale,
     UnicodeString & FileName);
@@ -688,6 +688,8 @@ protected:
 public:
   TWinConfiguration();
   virtual ~TWinConfiguration();
+  void RecryptPasswords(TStrings * RecryptPasswordErrors);
+  bool GetUseMasterPassword();
   virtual void Default();
   void ClearTemporaryLoginData();
   virtual THierarchicalStorage * CreateScpStorage(bool & SessionList);

@@ -1064,7 +1064,7 @@ bool TWinSCPPlugin::MasterPasswordConfigurationDialog()
   Dialog->SetCaption(Caption);
   Dialog->SetDialogGuid(&MasterPasswordConfigurationDialogGuid);
 
-  bool UseMP = WinConfiguration->UseMasterPassword;
+  bool UseMP = WinConfiguration->GetUseMasterPassword();
 
   TFarEdit * CurrentEdit = nullptr;
   int32_t Top = 2;
@@ -1151,7 +1151,7 @@ bool TWinSCPPlugin::MasterPasswordConfigurationDialog()
       }
       try
       {
-        WinConfiguration->ChangeMasterPassword(NewPwd);
+        WinConfiguration->ChangeMasterPassword(NewPwd, nullptr);
         GetConfiguration()->DoSave(false, false);
         MessageDialog(GetMsg(MASTER_PASSWORD_CHANGED), qtInformation, qaOK);
         return true;
@@ -1182,7 +1182,7 @@ bool TWinSCPPlugin::MasterPasswordConfigurationDialog()
       }
       try
       {
-        WinConfiguration->ChangeMasterPassword(NewPwd);
+        WinConfiguration->ChangeMasterPassword(NewPwd, nullptr);
         GetConfiguration()->DoSave(false, false);
         MessageDialog(GetMsg(MASTER_PASSWORD_SET2), qtInformation, qaOK);
         return true;
@@ -1210,7 +1210,7 @@ bool TWinSCPPlugin::MasterPasswordConfigurationDialog()
       }
       try
       {
-        WinConfiguration->ClearMasterPassword();
+        WinConfiguration->ClearMasterPassword(nullptr);
         GetConfiguration()->DoSave(false, false);
         MessageDialog(GetMsg(MASTER_PASSWORD_CLEARED2), qtInformation, qaOK);
         return true;

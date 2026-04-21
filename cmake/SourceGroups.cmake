@@ -181,6 +181,7 @@ function(netbox_define_core_sources)
     windows/GUIConfiguration.cpp
     windows/Tools.cpp
     windows/ProgParams.cpp
+    windows/MasterPassword.cpp
     windows/UserInterface.cpp
     windows/WinInterface.cpp
   PARENT_SCOPE)
