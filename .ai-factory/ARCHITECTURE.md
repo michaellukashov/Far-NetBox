@@ -138,7 +138,7 @@ TCustomFileSystem *CreateFileSystem(TSessionData * Data)
 - **Exceptions:** Throw from `Exception` hierarchy (`EAbort`, `EInOutError`)
 - **Try/catch in UI:** Top-level handlers catch and display errors
 - **Network errors:** Wrap with meaningful messages including URL/path
-- **Debug output:** Use `ADF()` macro for debug tracing
+- **Debug output:** Use `FTerminal->LogEvent()` for debug tracing
 
 ## Key Principles
 
@@ -174,7 +174,7 @@ private:
 - ❌ **Skip protocol inheritance** — All protocols must inherit from `TCustomFileSystem`
 - ❌ **Direct third-party changes** — modify libs/ only after confirmation
 - ❌ **Skip build verification** — Changes must compile without warnings
-- ❌ **No debug output** — Use ADF() for tracing protocol operations
+- ❌ **No debug output** — Use FTerminal->LogEvent() for tracing protocol operations
 - ❌ **Skip exception handling** — Network errors must be caught properly
 - ❌ **Mix layers** — Plugin code should not call third-party directly
 

@@ -43,11 +43,11 @@ See [.ai-factory/ARCHITECTURE.md](./ARCHITECTURE.md) for detailed architecture g
 - All protocol implementations inherit from `TCustomFileSystem` interface
 - Factory pattern for protocol-specific filesystem creation
 - RAII pattern for resource management
-- Exception-based error handling with debug logging via `ADF()` macro
+- Exception-based error handling with debug logging via `FTerminal->LogEvent()`
 - Unity builds enabled for x86 Release builds (faster compilation)
 
 ## Non-Functional Requirements
-- **Logging:** Configurable via tinylog integration, debug output via `ADF()` macro
+- **Logging:** Configurable via tinylog integration, debug output via `FTerminal->LogEvent()`
 - **Error handling:** Exception-based with structured error responses
 - **Security:** OpenSSL 3 for cryptography, regular security updates for PuTTY/OpenSSL
 - **Performance:** Maintain or improve current performance levels

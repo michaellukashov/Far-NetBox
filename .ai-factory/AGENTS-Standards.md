@@ -119,7 +119,7 @@ auto handle = std::make_unique<TFileHandle>(fileName);
 
 ## Debugging
 
-- `ADF()` macro for debug output (enabled in debug builds)
+- `FTerminal->LogEvent()` for debug output (enabled in debug builds)
 - `DebugAssert()` for invariants (fires in debug builds)
 - Logging via `tinylog` (see `src/nbcore/logging.cpp`)
 - **VS debugging**: Generate solution with `-G "Visual Studio 17 2022"`, set Far.exe as debug command
@@ -138,7 +138,7 @@ auto handle = std::make_unique<TFileHandle>(fileName);
 ## Error Handling
 
 - Use exceptions for error conditions, not return codes
-- Log with `ADF()` macro for debug output
+- Log with `FTerminal->LogEvent()` for debug output
 - Use `DebugAssert()` for invariants
 - Handle network errors gracefully with meaningful messages
 
@@ -146,7 +146,7 @@ auto handle = std::make_unique<TFileHandle>(fileName);
 ```cpp
 if (result == ERROR)
 {
-    ADF("Operation failed: %s", description.c_str());
+    FTerminal->LogEvent("Operation failed: %s", description.c_str());
     throw EOperationError(description, errorCode);
 }
 ```

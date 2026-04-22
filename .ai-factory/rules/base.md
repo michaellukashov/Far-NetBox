@@ -64,7 +64,7 @@ Dumping thousands of lines of raw logs into `CONTEXT.md`.
 - **Methods/Functions:** PascalCase (e.g., `GetSessionData()`, `Connect()`, `Initialize()`)
 - **Member variables:** `F` prefix + PascalCase (e.g., `FSessionData`, `FConfig`, `FTerminal`)
 - **Local variables:** camelCase (e.g., `sessionData`, `configValue`, `filePath`)
-- **Constants/Macros:** UPPER_CASE (e.g., `MAX_RETRY_COUNT`, `DEFAULT_TIMEOUT`, `ADF()`)
+- **Constants/Macros:** UPPER_CASE (e.g., `MAX_RETRY_COUNT`, `DEFAULT_TIMEOUT`)
 - **Enums:** PascalCase (e.g., `SessionType`, `AuthMethod`, `ProtocolType`)
 
 ## Module Structure
@@ -92,13 +92,13 @@ src/
 
 - **Exception-based:** Use exceptions for error conditions
 - **Hierarchy:** Inherit from `Exception` base class (`EAbort`, `EInOutError`, `EConvertError`, etc.)
-- **Debug logging:** Use `ADF()` macro for debug output
+- **Debug logging:** Use `FTerminal->LogEvent()` for debug output
 - **Assertions:** Use `DebugAssert()` for invariants
 - **Network errors:** Handle gracefully with meaningful messages
 
 ## Logging
 
-- **Debug output:** `ADF()` macro (e.g., `ADF("Connection established")`)
+- **Debug output:** `FTerminal->LogEvent()` (e.g., `FTerminal->LogEvent("Connection established")`)
 - **Assertions:** `DebugAssert(condition, "message")`
 - **Integration:** tinylog library (`src/nbcore/logging.cpp`)
 - **Log levels:** Configurable via tinylog
