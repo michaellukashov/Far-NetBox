@@ -310,7 +310,7 @@ Explain what and why, not how.
 ### Debugging
 
 - Use debug builds for development (`RelWithDebugInfo` recommended)
-- Include debug logging with `ADF()` macro
+- Include debug logging with `FTerminal->LogEvent()`
 - Use assertions (`DebugAssert()`) for invariants
 - Enable debug output in session configuration
 

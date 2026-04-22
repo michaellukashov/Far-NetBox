@@ -146,7 +146,7 @@ Exception (base)
     └── Network-related exceptions
 ```
 
-- **Debug Logging**: `ADF()` macro for debug output
+- **Debug Logging**: `FTerminal->LogEvent()` for debug output
 - **Assertions**: `DebugAssert()` for invariants
 - **Logging**: tinylog library integration
 

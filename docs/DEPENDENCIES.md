@@ -157,7 +157,7 @@ NetBox integrates multiple third-party libraries to provide protocol support and
 - **Build Config**: `cmake/TinyLog.cmake`
 - **Notes**:
   - Minimal logging implementation
-  - Debug output via `ADF()` macro
+  - Debug output via `FTerminal->LogEvent()`
 
 ### Memory Management
 
