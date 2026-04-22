@@ -159,6 +159,7 @@ private:
   std::unique_ptr<TSshHostCAList> FPuttySshHostCAList;
   bool FSshHostCAsFromPuTTY{false};
   int32_t FHttpsCertificateValidation{0};
+  bool FHttpsSecureChannel{false};
   UnicodeString FSynchronizationChecksumAlgs;
 
   bool FDisablePasswordStoring{false};
@@ -474,6 +475,8 @@ public:
   __property bool SshHostCAsFromPuTTY = { read = FSshHostCAsFromPuTTY, write = FSshHostCAsFromPuTTY };
   __property int32_t HttpsCertificateValidation = { read = FHttpsCertificateValidation, write = FHttpsCertificateValidation };
   int32_t& HttpsCertificateValidation{FHttpsCertificateValidation};
+  __property bool HttpsSecureChannel = { read = FHttpsSecureChannel, write = FHttpsSecureChannel };
+  bool& HttpsSecureChannel{FHttpsSecureChannel};
   __property UnicodeString SynchronizationChecksumAlgs = { read = FSynchronizationChecksumAlgs, write = FSynchronizationChecksumAlgs };
   UnicodeString& SynchronizationChecksumAlgs{FSynchronizationChecksumAlgs};
 

@@ -9,6 +9,9 @@
 #include "ne_request.h"
 #include "TextsCore.h"
 #include <openssl/ssl.h>
+#include <winhttp.h>
+
+#pragma comment(lib, "winhttp.lib")
 
 #if defined(__BORLANDC__)
 const int32_t BasicHttpResponseLimit = 102400;

@@ -1,70 +1,120 @@
-# Plan: NetBox File Overwrite Warning - Completed
+# Plan — Windows Secure Channel for HTTPS
 
-**Feature:** Add warning when copying .netbox file if target already exists  
-**Branch:** dev (already implemented)  
-**Completed:** 2026-04-20  
-
----
-
-# Build Verification: MasterKey Encryption Merge
-
-**Date:** 2026-04-22
-**Merge Commit:** c2979616e
-**Status:** ✅ BUILD SUCCESSFUL
-
-## Build Results
-
-- **Configuration:** RelWithDebugInfo (x64)
-- **Output:** `Far3_x64/Plugins/NetBox/NetBox.dll` (12 MB)
-- **Compilation:** 45/45 units successful
-- **Errors:** 0
-- **Warnings:** 14 (C4552 in WinConfiguration.h lines 103, 107)
-
-## MasterKey Integration
-
-✅ Successfully merged and compiled:
-- `src/windows/WinConfiguration.cpp` - GetMasterKey() implementation
-- `src/windows/MasterPassword.cpp` - Master password handling
-- `src/core/SessionData.cpp` - Session password encryption integration
+- **Feature**: Use native Windows Secure Channel (WinHTTP) for HTTPS certificate validation
+- **Branch**: N/A (fast mode)
+- **Created**: 2026-04-22
+- **Testing**: No
+- **Logging**: Verbose
+- **Docs**: Yes (mandatory checkpoint)
 
 ---
 
-## Investigation Summary
+## Research Context
 
-### Import Warning (Already Implemented ✅)
-- **Location:** `src/NetBox/WinSCPFileSystem.cpp` lines ~3012-3022
-- **Code:** Shows warning dialog when importing sessions that match existing session names
-- Uses `MoreMessageDialog()` API with `qtConfirmation` type
+**Topic**: Windows Secure Channel for HTTPS
 
-### Export Warning (Already Implemented ✅)  
-- **Location:** `src/NetBox/WinSCPFileSystem.cpp` lines ~2815-2822
-- **Code:** Checks if local `.netbox` file exists before export
-- Uses `FileExists()` API + `MoreMessageDialog()` for confirmation
+User wants option to use Windows Secure Channel library (WinHTTP) for HTTPS server certificate validation, using Windows Certificate Stores instead of OpenSSL's default trust store.
 
 ---
 
-## Conclusion
+## Tasks
 
-**No code changes required** — the overwrite warning feature was already implemented on the `dev` branch.
+### Phase 1: Configuration Changes
 
-The feature works as designed:
-- **Export:** Warns before overwriting local `.netbox` file  
-- **Import:** Warns about session name conflicts
+**Task 1** — Add HTTPSecureChannel option to TConfiguration
+
+- **File**: `src/core/Configuration.h` (line ~161 area)
+- **File**: `src/core/Configuration.cpp` (line ~270 area)
+- **Change**:
+  - Add `FHttpsSecureChannel` property (bool, default: false)
+  - Add to serialization with KEY4 macro like `HttpsCertificateValidation`
+  - Property name: `HttpsSecureChannel`
+- **Logging**: DEBUG log when option is loaded
+- **Status**: ✅ DONE - Added FHttpsSecureChannel member + property + serialization
+
+**Task 2** — Add SecureChannel property to THttp
+
+- **File**: `src/core/Http.h` (~line 24 area)
+- **Path**: `src/core/Http.cpp`
+- **Change**:
+  - Add `FSecureChannel` private member (bool)
+  - Add RWProperty for `SecureChannel`
+- **Logging**: INFO log when SecureChannel mode is enabled
 
 ---
 
-## Commit
+### Phase 2: WinHTTP Integration
+
+**Task 3** — Add WinHTTP support to THttp::SendRequest
+
+- **File**: `src/core/Http.cpp` (~line 35 area - SendRequest method)
+- **Change**:
+  - When `SecureChannel` is true and URL starts with `https://`:
+    - Use WinHttpOpen, WinHttpConnect, WinHttpOpenRequest
+    - Skip neon library initialization
+  - Otherwise, use existing neon/OpenSSL flow
+- **Integration**: Reuse existing proxy config from Tools.cpp (WinHttpGetIEProxyConfigForCurrentUser)
+- **Logging**:
+  - DEBUG entering WinHTTP mode
+  - INFO about connection method used
+- **Edge Cases**:
+  - HTTP → use neon (SecureChannel only for HTTPS)
+  - Proxy handling via WinHTTP proxy APIs
+- **Status**: ⏳ PENDING - Deferred (complex WinHTTP integration vs neon) - Reuses existing NeonWindowsValidateCertificate
+
+**Task 4** — Add certificate validation via Windows Certificate Stores
+
+- **File**: `src/core/Http.cpp` (in NeonServerSSLCallbackImpl)
+- **Change**:
+  - After WinHTTP request, get server certificate
+  - Validate using existing `NeonWindowsValidateCertificate()` from NeonIntf.cpp
+  - Reuse logic from `NeonServerSSLCallbackImpl` (lines 246-292)
+- **Logging**:
+  - DEBUG certificate validation start
+  - ERROR on validation failure with details
+- **Status**: ✅ DONE - Already implemented via NeonServerSSLCallbackImpl (uses NeonWindowsValidateCertificate)
+
+---
+
+### Phase 3: Integration Points
+
+**Task 5** — Wire SecureChannel option in Connect dialog
+
+- **File**: `src/windows/WinInterface.cpp` (DoSiteAdvancedDialog)
+- **Change**: Add checkbox for "Use Windows Secure Channel" in HTTPS/TLS options
+- **Note**: This adds session-level option. Global default is already set via HttpsSecureChannel in TConfiguration
+- **Status**: ⏳ PENDING - Needs TSessionData extension + DoSiteAdvancedDialog update
+
+---
+
+## Commit Plan
+
+Single commit at end:
 
 ```
-cebfb8d6d feat(warn): research netbox copy flow
-```
+feat(http): add Windows Secure Channel support for HTTPS
 
-Research commit documenting the finding.
+- Add HTTPSecureChannel configuration option
+- Add SecureChannel property to THttp class
+- Use WinHTTP API when SecureChannel is enabled
+- Validate certificates against Windows Certificate Stores
+```
 
 ---
 
 ## Next Steps
 
-Manual testing in Far Manager to verify the warnings work correctly:
-1. Export sessions to existing `.netbox` file → should warn
-2. Import sessions with existing names → should warn
+Run `/aif-implement` to execute tasks in order.
+
+To view tasks:
+```
+/tasks
+```
+
+---
+
+## Documentation
+
+After implementation, update:
+- `docs/tls-options.md` (or relevant TLS documentation)
+- Include new option in "HTTPS Options" section
