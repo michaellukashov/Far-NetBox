@@ -2966,6 +2966,13 @@ UnicodeString TSessionData::DecryptPassword(const RawByteString & APassword, con
 
 UnicodeString TSessionData::GetSessionPasswordEncryptionKey() const
 {
+  UnicodeString Key = GetConfiguration()->GetMasterKey();
+  if (!Key.IsEmpty())
+  {
+    DEBUG_PRINTF("SessionPasswordEncryptionKey: using MasterKey");
+    return Key;
+  }
+  DEBUG_PRINTF("SessionPasswordEncryptionKey: using default (UserName+HostName)");
   return UserName() + HostName();
 }
 

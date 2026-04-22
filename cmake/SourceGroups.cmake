@@ -179,8 +179,10 @@ function(netbox_define_core_sources)
     windows/SynchronizeController.cpp
     windows/GUITools.cpp
     windows/GUIConfiguration.cpp
+    windows/WinConfiguration.cpp
     windows/Tools.cpp
     windows/ProgParams.cpp
+    windows/MasterPassword.cpp
     windows/UserInterface.cpp
     windows/WinInterface.cpp
   PARENT_SCOPE)

@@ -359,6 +359,8 @@ public:
   virtual RawByteString EncryptPassword(const UnicodeString & APassword, const UnicodeString & AKey);
   virtual UnicodeString DecryptPassword(const RawByteString & APassword, const UnicodeString & AKey);
   virtual RawByteString StronglyRecryptPassword(const RawByteString & APassword, const UnicodeString & Key);
+  virtual UnicodeString GetMasterKey() const { return UnicodeString(); }
+
   UnicodeString GetFileDescription(const UnicodeString & AFileName) const;
   UnicodeString GetFileVersion(const UnicodeString & AFileName) const;
   UnicodeString GetFileMimeType(const UnicodeString & AFileName) const;

@@ -1,6 +1,5 @@
-
-#include <vcl.h>
 #pragma hdrstop
+
 #include "Common.h"
 #include "WinConfiguration.h"
 #include "Exceptions.h"
@@ -12,19 +11,14 @@
 #include "Tools.h"
 #include "Setup.h"
 #include "Security.h"
-#include "TerminalManager.h"
 #include "Cryptography.h"
-#include <VCLCommon.h>
-#include <InitGUID.h>
-#include <DragExt.h>
-#include <Math.hpp>
-#include <StrUtils.hpp>
-#include <OperationWithTimeout.hpp>
 #include "FileInfo.h"
 #include "CoreMain.h"
-#include "DriveView.hpp"
+#include <VCLCommon.h>
 
-#pragma package(smart_init)
+#ifdef __BORLANDC__
+
+
 
 TWinConfiguration * WinConfiguration = nullptr;
 
@@ -1927,6 +1921,24 @@ void TWinConfiguration::SetMasterPassword(UnicodeString value)
   }
 }
 
+UnicodeString TWinConfiguration::GetMasterKey() const
+{
+  // Returns the master key for password encryption when Master Password is enabled.
+  // When master password is set, use it as the encryption key.
+  // Otherwise, return empty string to signal that default key derivation should be used.
+  UnicodeString Result;
+  if (FUseMasterPassword && !FPlainMasterPasswordDecrypt.IsEmpty())
+  {
+    Result = FPlainMasterPasswordDecrypt;
+    DEBUG_PRINTF("MasterKey: using master password for key derivation");
+  }
+  else
+  {
+    DEBUG_PRINTF("MasterKey: master password not set, using default");
+  }
+  return Result;
+}
+
 void TWinConfiguration::ChangeMasterPassword(
   UnicodeString value, TStrings * RecryptPasswordErrors)
 {
@@ -1947,7 +1959,7 @@ void TWinConfiguration::ChangeMasterPassword(
 
 bool TWinConfiguration::ValidateMasterPassword(UnicodeString value)
 {
-  DebugAssert(UseMasterPassword);
+  DebugAssert(GetUseMasterPassword());
   DebugAssert(!FMasterPasswordVerifier.IsEmpty());
   bool Result = AES256Verify(value, HexToBytes(FMasterPasswordVerifier));
   return Result;
@@ -4051,3 +4063,17 @@ void TCustomCommandList::ShortCuts(TShortCuts & ShortCuts) const
     }
   }
 }
+
+#else // !__BORLANDC__ - MSVC implementation
+
+// Global WinConfiguration instance for MSVC builds
+TWinConfiguration * WinConfiguration = nullptr;
+
+// Stub implementation for NetBox/MSVC - minimal functionality
+void TWinConfiguration::RecryptPasswords(TStrings * /*RecryptPasswordErrors*/)
+{
+  // Stub implementation - master password functionality not fully ported to MSVC yet
+  // TODO: Implement full RecryptPasswords for MSVC build
+}
+
+#endif // __BORLANDC__

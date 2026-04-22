@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cmd *)",
+      "Bash(powershell *)",
+      "Bash(cmake *)",
+      "Bash(git checkout *)",
+      "Skill(git-commit)",
+      "Bash(git add *)",
+      "Bash(git commit *)"
+    ]
+  },
+  "defaultMode": "acceptEdits"
+}

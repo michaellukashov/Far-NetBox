@@ -1,5 +1,5 @@
 @echo off
-echo === Configuring and building NetBox (x64 RelWithDebugInfo) ===
+echo === Configuring and building NetBox (x64 Debug) ===
 echo.
 
 rem === Calling vcvarsall.bat to set up MSVC environment ===
@@ -10,7 +10,7 @@ if %errorlevel% neq 0 (
 )
 
 rem === Running CMake configure ===
-cmake -S . -B build-RelWithDebugInfo -G "Ninja" -DCMAKE_BUILD_TYPE=RelWithDebugInfo -DOPT_CREATE_PLUGIN_DIR=ON
+cmake -S . -B build-Debug-x64 -G "Ninja" -DCMAKE_BUILD_TYPE=Debug -DOPT_CREATE_PLUGIN_DIR=ON
 if %errorlevel% neq 0 (
     echo ERROR: CMake configure failed
     exit /b 1
@@ -18,7 +18,7 @@ if %errorlevel% neq 0 (
 echo.
 
 rem === Running CMake build ===
-cmake --build build-RelWithDebugInfo -j
+cmake --build build-Debug-x64 -j
 if %errorlevel% neq 0 (
     echo ERROR: Build failed
     exit /b 1

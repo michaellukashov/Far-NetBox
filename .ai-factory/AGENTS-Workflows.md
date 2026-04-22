@@ -14,19 +14,41 @@
 > **CRITICAL:** Configure and build **MUST** happen in the **same cmd session** with `vcvarsall.bat` environment. 
 > If you run configure in one session and build in another, you'll get "Cannot open include file" errors.
 
-**Recommended approach - use `build-all.bat` script:**
+**Use the pre-configured `build-x64.bat` script:**
 
-Create `build-all.bat` in project root:
-```bat
-@echo off
-call "C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64
-cmake -S . -B build-RelWithDebugInfo -G "Ninja" -DCMAKE_BUILD_TYPE=RelWithDebugInfo -DOPT_CREATE_PLUGIN_DIR=ON
-cmake --build build-RelWithDebugInfo -j
+```cmd
+cmd /c build-x64.bat
 ```
 
-**Run build:**
-```cmd
-cmd /c build-all.bat
+The script includes proper error checking and status messages:
+```bat
+@echo off
+echo === Configuring and building NetBox (x64 RelWithDebugInfo) ===
+echo.
+
+rem === Calling vcvarsall.bat to set up MSVC environment ===
+call "C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64
+if %errorlevel% neq 0 (
+    echo ERROR: Failed to initialize VS environment
+    exit /b 1
+)
+
+rem === Running CMake configure ===
+cmake -S . -B build-RelWithDebugInfo -G "Ninja" -DCMAKE_BUILD_TYPE=RelWithDebugInfo -DOPT_CREATE_PLUGIN_DIR=ON
+if %errorlevel% neq 0 (
+    echo ERROR: CMake configure failed
+    exit /b 1
+)
+echo.
+
+rem === Running CMake build ===
+cmake --build build-RelWithDebugInfo -j
+if %errorlevel% neq 0 (
+    echo ERROR: Build failed
+    exit /b 1
+)
+echo.
+echo === Build completed successfully ===
 ```
 
 > **NOTE:** Do NOT use `cmd /c "call vcvarsall.bat && cmake ... && cmake --build ..."` — the HTML encoding of quotes will break. Use .bat files instead.
@@ -53,13 +75,38 @@ Win32 (x86) requires the x86 MSVC compiler.
 Create `build-debug-win32.bat`:
 ```bat
 @echo off
+echo === Configuring and building NetBox (Win32 Debug) ===
+echo.
+
+rem === Calling vcvarsall.bat to set up MSVC environment ===
 call "C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvarsall.bat" x86
+if %errorlevel% neq 0 (
+    echo ERROR: Failed to initialize VS environment
+    exit /b 1
+)
+
+rem === Running CMake configure ===
 cmake -S . -B build-Debug-Win32 -G "Ninja" -DCMAKE_BUILD_TYPE=Debug -DOPT_CREATE_PLUGIN_DIR=ON
+if %errorlevel% neq 0 (
+    echo ERROR: CMake configure failed
+    exit /b 1
+)
+echo.
+
+rem === Running CMake build ===
 cmake --build build-Debug-Win32 -j
+if %errorlevel% neq 0 (
+    echo ERROR: Build failed
+    exit /b 1
+)
+echo.
+echo === Build completed successfully ===
 ```
 
 **Run:**
 ```cmd
+cmd /c build-debug-win32.bat
+```
 cmd /c build-debug-win32.bat
 ```
 
