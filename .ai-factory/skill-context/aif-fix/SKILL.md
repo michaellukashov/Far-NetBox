@@ -20,7 +20,7 @@
 
 ### C++ exception handling by reference
 **Source**: Codebase convention scan (src/**/*.cpp)
-**Rule**: Always catch C++ exceptions by reference (`catch (Exception &E)`), not by value. Log exceptions using `ADF()` or `TINYLOG_TRACE` before handling.
+**Rule**: Always catch C++ exceptions by reference (`catch (Exception &E)`), not by value. Log exceptions using `FTerminal->LogEvent()` or `TINYLOG_TRACE` before handling.
 
 ### File operation exception handling
 **Source**: Codebase pattern (TryReadFile, file operations)

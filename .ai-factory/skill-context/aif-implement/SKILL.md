@@ -30,9 +30,9 @@
 **Source**: ftp-heartbeat-noop.md
 **Rule**: When adding new config options, verify Save() / Load() / XML serialization.
 
-### ADF logging requirement
+### logging
 **Source**: ARCHITECTURE.md
-**Rule**: Add ADF() debug logs for all significant code paths (connect, disconnect, errors).
+**Rule**: Add FTerminal->LogEvent() debug logs for all significant code paths (connect, disconnect, errors).
 
 ### C++17 feature adoption
 **Source**: DESCRIPTION.md (C++17 language requirement)
