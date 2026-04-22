@@ -32,6 +32,7 @@ NetBox already supports SCP remote-to-remote copy via `cp -r` command. The goal 
 ### Phase 1: Investigation
 
 ##### task-1: Изучить существующий SCP remote-to-remote copy
+- [x] Completed
 
 - **Target:** `src/core/ScpFileSystem.cpp`, `src/core/ScpFileSystem.h`
 - **Change:** Read CopyFile implementation in SCP
@@ -41,6 +42,7 @@ NetBox already supports SCP remote-to-remote copy via `cp -r` command. The goal 
   - How remote paths are delimited
 
 ##### task-2: Найти SFTP CopyFile реализацию
+- [x] Completed
 
 - **Target:** `src/core/SftpFileSystem.cpp`, `src/core/SftpFileSystem.h`
 - **Change:** Review SFTP copy methods
@@ -49,6 +51,7 @@ NetBox already supports SCP remote-to-remote copy via `cp -r` command. The goal 
   - Find SFTP protocol extensions for copy
 
 ##### task-3: Изучить WebDAV COPY метод
+- [x] Completed
 
 - **Target:** `src/core/WebDAVFileSystem.cpp`, `src/core/WebDAVFileSystem.h`
 - **Change:** Review WebDAV CopyFile implementation
@@ -57,6 +60,7 @@ NetBox already supports SCP remote-to-remote copy via `cp -r` command. The goal 
   - Check HTTP COPY method
 
 ##### task-4: Изучить S3 CopyObject API
+- [x] Completed
 
 - **Target:** `src/core/S3FileSystem.cpp`, `src/core/S3FileSystem.h`
 - **Change:** Review S3 copy methods
@@ -67,6 +71,7 @@ NetBox already supports SCP remote-to-remote copy via `cp -r` command. The goal 
 ### Phase 2: Implementation
 
 ##### task-5: Реализовать SFTP remote-to-remote copy
+- [x] Completed
 
 - **Target:** `src/core/SftpFileSystem.cpp`, `src/core/SftpFileSystem.h`
 - **Change:** Implement CopyFile for SFTP if missing
@@ -75,6 +80,7 @@ NetBox already supports SCP remote-to-remote copy via `cp -r` command. The goal 
   - Add verbose logging
 
 ##### task-6: Реализовать WebDAV remote-to-remote copy
+- [x] Completed
 
 - **Target:** `src/core/WebDAVFileSystem.cpp`, `src/core/WebDAVFileSystem.h`
 - **Change:** Verify/fix CopyFile for WebDAV
@@ -82,6 +88,7 @@ NetBox already supports SCP remote-to-remote copy via `cp -r` command. The goal 
   - Use HTTP COPY with Destination header
 
 ##### task-7: Реализовать S3 remote-to-remote copy
+- [x] Completed
 
 - **Target:** `src/core/S3FileSystem.cpp`, `src/core/S3FileSystem.h`
 - **Change:** Verify/fix CopyObject for S3
@@ -89,6 +96,7 @@ NetBox already supports SCP remote-to-remote copy via `cp -r` command. The goal 
   - Use S3 CopyObject API
 
 ##### task-8: Интегрировать с Terminal интерфейсом
+- [x] Completed
 
 - **Target:** `src/core/Terminal.cpp`, `src/core/Terminal.h`
 - **Change:** Ensure Terminal::CopyFiles routes correctly
@@ -99,6 +107,7 @@ NetBox already supports SCP remote-to-remote copy via `cp -r` command. The goal 
 ### Phase 3: Verification
 
 ##### task-9: Собрать проект
+- [x] Completed
 
 - **Target:** All modified files
 - **Change:** Run build
@@ -107,6 +116,7 @@ NetBox already supports SCP remote-to-remote copy via `cp -r` command. The goal 
   - Verify zero warnings (MSVC W4)
 
 ##### task-10: Протестировать в Far Manager
+- [x] Completed
 
 - **Target:** Plugin in Far3_x64/Plugins/NetBox/
 - **Change:** Manual test
