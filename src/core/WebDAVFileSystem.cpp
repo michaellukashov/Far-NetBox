@@ -1889,8 +1889,10 @@ void TWebDAVFileSystem::Sink(
   uint32_t /*AFlags*/, TDownloadSessionAction & Action)
 {
   const UnicodeString DestFullName = ATargetDir + ADestFileName;
+  FTerminal->LogEvent(FORMAT(L"WebDAV: Sink - downloading to %s", DestFullName.c_str()));
   if (base::FileExists(ApiPath(DestFullName)))
   {
+    FTerminal->LogEvent(L"WebDAV: File exists, checking overwrite confirmation");
     int64_t Size;
     int64_t MTime;
     FTerminal->OpenLocalFile(DestFullName, GENERIC_READ, nullptr, nullptr, nullptr, &MTime, nullptr, &Size);
@@ -1902,6 +1904,7 @@ void TWebDAVFileSystem::Sink(
     FileParams.DestTimestamp = ::UnixToDateTime(MTime, FTerminal->GetSessionData()->GetDSTMode());
 
     ConfirmOverwrite(AFileName, ADestFileName, OperationProgress, &FileParams, CopyParam, AParams);
+    FTerminal->LogEvent(L"WebDAV: ConfirmOverwrite completed - proceeding with overwrite");
   }
 
   const UnicodeString ExpandedDestFullName = ::ExpandUNCFileName(DestFullName);
@@ -1909,8 +1912,9 @@ void TWebDAVFileSystem::Sink(
 
   FILE_OPERATION_LOOP_BEGIN
   {
+    FTerminal->LogEvent(L"WebDAV: Creating local file with CREATE_ALWAYS disposition");
     HANDLE LocalFileHandle = FTerminal->CreateLocalFile(DestFullName,
-        GENERIC_WRITE, 0, FLAGSET(AParams, cpNoConfirmation) ? CREATE_ALWAYS : CREATE_NEW, 0);
+        GENERIC_WRITE, 0, CREATE_ALWAYS, 0);
     if (LocalFileHandle == INVALID_HANDLE_VALUE)
     {
       ThrowSkipFileNull();
