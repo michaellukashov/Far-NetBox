@@ -1009,6 +1009,7 @@ bool TWinConfiguration::GetUseMasterPassword()
   return FUseMasterPassword;
 }
 
+
 THierarchicalStorage * TWinConfiguration::CreateScpStorage(bool & SessionList)
 {
   // Detect embedded session, if not checked yet

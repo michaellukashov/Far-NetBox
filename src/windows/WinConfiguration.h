@@ -690,6 +690,7 @@ public:
   virtual ~TWinConfiguration();
   void RecryptPasswords(TStrings * RecryptPasswordErrors);
   bool GetUseMasterPassword();
+  bool GetRefreshRemotePanel() { return FRefreshRemotePanel; }
   virtual void Default();
   void ClearTemporaryLoginData();
   virtual THierarchicalStorage * CreateScpStorage(bool & SessionList);

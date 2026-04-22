@@ -914,7 +914,10 @@ bool TWinSCPFileSystem::ExecuteCommand(const UnicodeString & Command)
         FTerminal->EndTransaction();
       if (FTerminal->GetActive())
       {
-        UpdatePanel();
+        if (WinConfiguration && WinConfiguration->GetRefreshRemotePanel())
+        {
+          UpdatePanel();
+        }
         RedrawPanel();
       }
       else
