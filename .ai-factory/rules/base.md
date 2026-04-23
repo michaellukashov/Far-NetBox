@@ -1,6 +1,9 @@
 # Project Base Rules
 
 > Auto-detected conventions from codebase analysis. Edit as needed.
+## File Validation
+
+ - Always re-read file before trying to modify it
 
 ## Core Principles
 
