@@ -956,13 +956,14 @@ bool TWinSCPFileSystem::ProcessKeyEx(int32_t Key, uint32_t ControlState)
       Handled = true;
     }
 
-    if ((Key == VK_RETURN) && CheckControlMaskSet(ControlState, CTRLMASK))
-    {
-      InsertSessionNameOnCommandLine();
-      Handled = true;
-    }
+    // Ctrl+Enter disabled - insert session name into command line
+    // if ((Key == VK_RETURN) && CheckControlMaskSet(ControlState, CTRLMASK))
+    // {
+    //   InsertSessionNameOnCommandLine();
+    //   Handled = true;
+    // }
 
-    if (Key == VK_RETURN && ((ControlState == 0) || (ControlState & ENHANCED_KEY)) && Data)
+    if ((Key == VK_RETURN) && ((ControlState == 0) || (ControlState & ENHANCED_KEY)) && Data)
     {
       EditConnectSession(Data, false);
       Handled = true;
@@ -1011,11 +1012,12 @@ bool TWinSCPFileSystem::ProcessKeyEx(int32_t Key, uint32_t ControlState)
       Handled = true;
     }
 
-    if ((Key == VK_RETURN) && CheckControlMaskSet(ControlState, CTRLMASK))
-    {
-      InsertFileNameOnCommandLine(false);
-      Handled = true;
-    }
+    // Ctrl+Enter disabled - insert file name into command line
+    // if ((Key == VK_RETURN) && CheckControlMaskSet(ControlState, CTRLMASK))
+    // {
+    //   InsertFileNameOnCommandLine(false);
+    //   Handled = true;
+    // }
 
     if ((Key == 'R') && CheckControlMaskSet(ControlState, CTRLMASK))
     {
