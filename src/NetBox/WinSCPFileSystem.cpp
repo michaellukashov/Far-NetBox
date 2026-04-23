@@ -2761,6 +2761,13 @@ int32_t TWinSCPFileSystem::GetFilesRemote(TObjectList * PanelItems, bool Move,
       }
     }
     FTerminal->CopyToLocal(FFileList.get(), DestPath, &CopyParam, Params, nullptr);
+
+  // Clear FFileList after temporary file operations to prevent stale pointers
+  // This fixes crash on second file open without directory refresh (GitHub issue #508)
+  if (EditView)
+  {
+    FFileList.reset();
+  }
     // Store the captured remote timestamp
     if ((FFileList->GetCount() == 1) && (OpMode & OPM_EDIT) && (RemoteTimestamp != TDateTime()))
     {
