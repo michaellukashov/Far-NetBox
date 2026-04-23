@@ -238,7 +238,47 @@ NB_CORE_EXPORT void DecodeDate(const TDateTime & DateTime, uint16_t & Year,
 NB_CORE_EXPORT void DecodeTime(const TDateTime & DateTime, uint16_t & Hour,
   uint16_t & Min, uint16_t & Sec, uint16_t & MSec);
 
+/**
+ * @brief Formats a TDateTime value according to a format string.
+ *
+ * This function parses the format string and replaces format tokens with
+ * corresponding date/time components. Token parsing is case-insensitive.
+ *
+ * Supported format tokens:
+ *   - `y` or `Y` : Year. One or two `y`/`Y` characters yield a two-digit year.
+ *                  Three or four `y`/`Y` characters yield a four-digit year.
+ *   - `m` or `M` : Month (01-12). If immediately preceded by `h` or `H`, it is
+ *                  interpreted as minutes instead (to support formats like "hhmm").
+ *   - `d` or `D` : Day of month (01-31).
+ *   - `h` or `H` : Hour in 24-hour format (00-23).
+ *   - `n` or `N` : Minute (00-59).
+ *   - `s` or `S` : Second (00-59).
+ *   - `z` or `Z` : Milliseconds. One `z`/`Z` outputs the value as is; two digits
+ *                  output hundredths of a second (value/10); three or more digits
+ *                  output the full three-digit millisecond value.
+ * Literal characters: Any character not recognized as a format token is copied
+ *   literally to the output. Common separators like `:`, `/`, `-`, ` `.`, and
+ *   quoted strings (e.g., `'T'`) are also handled.
+ *
+ * @param Fmt The format string containing tokens and literal characters.
+ * @param ADateTime The date/time value to format.
+ * @return A UnicodeString containing the formatted date/time.
+ */
 NB_CORE_EXPORT UnicodeString FormatDateTime(const UnicodeString & Fmt, const TDateTime & ADateTime);
+/**
+ * @brief Converts an ISO 8601 date/time string to a TDateTime value.
+ *
+ * Parses a string in ISO 8601 format. Supported forms:
+ *   - Date only: "YYYY-MM-DD"
+ *   - Date and time: "YYYY-MM-DDTHH:MM:SS" (the 'T' separator is required)
+ *
+ * The time part is optional. Seconds are mandatory if time is present.
+ * Fractional seconds and timezone information (Z, +HH:MM, -HH:MM) are not supported.
+ *
+ * @param S The ISO 8601 date/time string.
+ * @return A TDateTime representing the parsed date and time.
+ * @throw Exception If the string does not conform to the expected format.
+ */
 NB_CORE_EXPORT TDateTime ISO8601ToDate(const UnicodeString & S);
 NB_CORE_EXPORT TDateTime SystemTimeToDateTime(const SYSTEMTIME & SystemTime);
 

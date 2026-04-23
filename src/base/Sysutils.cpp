@@ -1483,6 +1483,17 @@ TDateTime Date()
   return Result;
 }
 
+/**
+ * @brief Formats a TDateTime value according to a format string.
+ *
+ * Parses the format string token by token and constructs the output
+ * by appending formatted components. See the corresponding header
+ * documentation for supported tokens.
+ *
+ * @param Fmt Format string with tokens.
+ * @param ADateTime Date/time value to format.
+ * @return Formatted string.
+ */
 UnicodeString FormatDateTime(const UnicodeString & Fmt, const TDateTime & ADateTime)
 {
   UnicodeString Result;
@@ -1601,6 +1612,16 @@ UnicodeString FormatDateTime(const UnicodeString & Fmt, const TDateTime & ADateT
   return Result;
 }
 
+/**
+ * @brief Converts an ISO 8601 date/time string to a TDateTime.
+ *
+ * Parses the string in ISO 8601 format. Supported forms:
+ * "YYYY-MM-DD" and "YYYY-MM-DDTHH:MM:SS".
+ *
+ * @param S ISO 8601 date/time string.
+ * @return TDateTime value.
+ * @throw Exception If parsing fails.
+ */
 TDateTime ISO8601ToDate(const UnicodeString & S)
 {
   // Parse ISO 8601 format: YYYY-MM-DDTHH:MM:SS[.zzz]
