@@ -27,6 +27,7 @@
 #include "../base/System.SyncObjs.cpp"
 #include "../base/FormatUtils.cpp"
 #include "../base/ObjIDs.cpp"
+#include "../base/LogContext.cpp"
 
 #include "../core/RemoteFiles.cpp"
 #include "../core/Terminal.cpp"
