@@ -206,13 +206,20 @@ void TCustomFarPlugin::SetStartupInfo(const struct PluginStartupInfo * Info)
     {
       memmove(&FFarStandardFunctions, Info->FSF,
         nb::ToSizeT(Info->FSF->StructSize) >= sizeof(FFarStandardFunctions) ?
-        sizeof(FFarStandardFunctions) : Info->FSF->StructSize);
+          sizeof(FFarStandardFunctions) : Info->FSF->StructSize);
     }
   }
   catch(Exception & E)
   {
     DEBUG_PRINTF("before HandleException");
     HandleException(&E);
+  }
+
+  // Start idle thread now that plugin is fully loaded
+  if (!FTIdleThread)
+  {
+    FTIdleThread = std::make_unique<TPluginIdleThread>(this, 400);
+    FTIdleThread->InitIdleThread("NetBox IdleThread");
   }
 }
 
@@ -1920,8 +1927,7 @@ intptr_t TCustomFarPlugin::InputRecordToKey(const INPUT_RECORD * /*Rec*/)
 void TCustomFarPlugin::Initialize()
 {
 //  ::SetGlobals(new TGlobalFunctions());
-  FTIdleThread = std::make_unique<TPluginIdleThread>(this, 400);
-  FTIdleThread->InitIdleThread("NetBox IdleThread");
+  // Idle thread initialization moved to SetStartupInfo to avoid early start
 }
 
 void TCustomFarPlugin::Finalize()
