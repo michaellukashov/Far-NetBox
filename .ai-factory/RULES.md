@@ -15,3 +15,8 @@
   - `src/NetBox/NetBoxRus.lng`: add Russian translation
   - Both files must have the same number of lines
   - Ensure proper line endings (CRLF) and newline at end of file
+
+- The code should remain as similar as possible to the source code of the WinSCP project
+  - WinSCP code for reference: https://github.com/winscp/winscp
+  - Follow WinSCP coding patterns and conventions when making changes
+  - Keep compatibility with WinSCP codebase for easier upstream merging
