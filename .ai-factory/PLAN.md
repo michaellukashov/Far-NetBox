@@ -56,6 +56,14 @@ Dependency flow: Plugin Layer (NetBox/) → Core Layer (core/) → Base Layer (b
 
 ### Phase 1: Certificate Store Access
 
+**Task 1.0:** CMake integration for new source files
+- File: `src/CMakeLists.txt`
+- Add `WindowsCertStore.cpp` to NETBOX_SOURCES
+- Link `ncrypt.lib` and `crypt32.lib` for Windows Certificate Store APIs
+- Deliverable: CMake builds new files without errors
+- Logging: N/A
+- Depends on: Task 0.2
+
 **Task 1.1:** Implement certificate enumeration
 - Files: `src/WindowsCertStore.cpp` (new)
 - Open store with `CertOpenStore(CERT_STORE_PROV_SYSTEM, 0, NULL, CERT_SYSTEM_STORE_CURRENT_USER | CERT_STORE_READONLY_FLAG, L"MY")`
@@ -96,15 +104,25 @@ Dependency flow: Plugin Layer (NetBox/) → Core Layer (core/) → Base Layer (b
 - Logging: INFO on cleanup, ERROR on double-free attempts
 - Depends on: Task 1.3
 
+**Task 1.5:** Error handling for store access failures
+- Files: `src/WindowsCertStore.cpp`
+- Handle `CERT_E_*`, `NCrypt_*`, `SCARD_E_*` error codes gracefully
+- Implement fallback behavior spec: store access failure → error, not silent fallback to file
+- Return user-friendly error messages via `ECertStoreError` enum
+- Deliverable: All known error codes handled with appropriate user messages
+- Logging: ERROR on unhandled errors, WARNING on recoverable failures
+- Depends on: Task 1.4
+
 ### Phase 2: Session Data & Configuration
 
 **Task 2.1:** Extend TSessionData with certificate source fields
 - Files: `src/SessionData.h`, `src/SessionData.cpp`
 - Add members: `FCertSourceType: TCertSourceType` (default cstNone), `FCertThumbprint: UnicodeString`, `FCertStoreLocation: TCertStoreLocation` (default CurrentUser)
 - Properties with validation: `SetCertThumbprint` enforces length=40, hex-only, uppercase; `SetCertSourceType` enforces consistency
+- **Mutual exclusivity:** Setting `CertThumbprint` clears `DetachedCertificate`, and vice versa (implementation detail)
 - Deliverable: Session loads with defaults, invalid thumbprint throws EConvertError
 - Logging: DEBUG on property set, WARNING on validation failure
-- Depends on: Task 1.4
+- Depends on: Task 1.5
 
 **Task 2.2:** Update session save/load with version handling
 - File: `src/SessionData.cpp` (SaveToStorage, LoadFromStorage)
@@ -115,10 +133,20 @@ Dependency flow: Plugin Layer (NetBox/) → Core Layer (core/) → Base Layer (b
 - Logging: INFO on migration, WARNING on unknown version
 - Depends on: Task 2.1
 
+**Task 2.4:** Legacy session migration validation (NEW)
+- Files: `src/SessionData.cpp` (existing test or manual test)
+- Verify old sessions with `DetachedCertificate` load correctly with `CertSourceType=File`
+- Verify sessions with both `DetachedCertificate` and `CertThumbprint` set use proper precedence
+- Test edge case: corrupted thumbprint values in existing sessions
+- Deliverable: All legacy formats load without crash, migration logs correctly
+- Logging: INFO on legacy format detected
+- Depends on: Task 2.2
+
 **Task 2.3:** Update protocol logging and UI strings
 - Files: `src/SessionInfo.cpp`, `src/FarPluginStrings.cpp`
 - Add `MSG_CERT_SOURCE_TYPE`, `MSG_CERT_THUMBPRINT` constants
 - Format log line: include cert source and thumbprint (masked? no, thumbprint is not secret)
+- **Internationalization:** Follow existing FarPluginStrings.cpp pattern for new string IDs
 - Deliverable: Session info shows correct certificate info
 - Logging: INFO on session start with certificate details
 - Depends on: Task 2.2
@@ -134,7 +162,7 @@ Dependency flow: Plugin Layer (NetBox/) → Core Layer (core/) → Base Layer (b
 - Double-click = Select
 - Deliverable: Picker shows only eligible certs, selection populates session thumbprint
 - Logging: DEBUG on dialog open, INFO on certificate selected
-- Depends on: Task 2.3, Task 1.4
+- Depends on: Task 2.3, Task 1.5
 
 **Task 3.2:** Create certificate details dialog
 - File: `src/windows/WinSCPDialogs.cpp`
@@ -173,7 +201,7 @@ Dependency flow: Plugin Layer (NetBox/) → Core Layer (core/) → Base Layer (b
 - If found: obtain `NCRYPT_KEY_HANDLE`, convert to `EVP_PKEY*`
 - Deliverable: Authentication succeeds with store cert, fails with clear error if missing
 - Logging: DEBUG on store lookup, INFO on cert found, ERROR on not found
-- Depends on: Task 3.4, Task 1.4
+- Depends on: Task 3.4, Task 1.5
 
 **Task 4.2:** Implement EVP_PKEY conversion from NCrypt key handle
 - File: `src/PuttyIntf.cpp`
@@ -182,9 +210,10 @@ Dependency flow: Plugin Layer (NetBox/) → Core Layer (core/) → Base Layer (b
 - Build OpenSSL key: RSA → populate RSA struct with n,e,d,p,q,dmp1,dmq1,iqmp; ECDSA → EC_KEY with curve and scalar
 - Return `EVP_PKEY*` with correct type; caller frees with `EVP_PKEY_free`
 - Zero all temporary buffers with `SecureZeroMemory`
+- **Thread-safety:** NCrypt calls must be serialized (use critical section if called from multiple threads)
 - Deliverable: Conversion produces valid EVP_PKEY that can sign test data
 - Logging: DEBUG on conversion, ERROR on unsupported algorithm
-- Depends on: Task 4.1
+- Depends on: Task 1.5
 
 **Task 4.3:** Wire up smart card PIN caching and retry
 - Files: `src/core/SecureShell.cpp`, `src/SessionData.h`
@@ -193,7 +222,7 @@ Dependency flow: Plugin Layer (NetBox/) → Core Layer (core/) → Base Layer (b
 - Detect `SCARD_E_NO_SMARTCARD` during signing → show error, prompt to re-authenticate
 - Deliverable: Smart card auth works with PIN caching, removal detected
 - Logging: INFO on PIN cache set/clear, WARNING on card removal
-- Depends on: Task 4.2
+- Depends on: Task 4.2, Task 3.4
 
 **Task 4.4:** Integration testing with OpenSSH server
 - File: `tests/integration/ssh_cert_auth_test.cpp` (new)
@@ -230,6 +259,7 @@ Dependency flow: Plugin Layer (NetBox/) → Core Layer (core/) → Base Layer (b
 **Task 5.3:** Security validation
 - Manual test: use ProcMon to verify no private key material written to disk during auth
 - Memory scan after session logout: verify PIN and key handles cleared
+- **PIN timeout:** Verify PIN is cleared after session timeout (configurable, default 30 minutes)
 - Fuzz test thumbprint input with malformed strings (nulls, non-hex, 41 chars) → no crash
 - Deliverable: Security checklist signed off
 - Logging: Test report in docs/security-validation.md
