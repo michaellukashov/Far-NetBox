@@ -1,5 +1,7 @@
 #pragma once
 
+#include <atomic>
+#include <chrono>
 #include <cstdlib>
 #include <memory>
 #include <WinSock2.h>
@@ -16,7 +18,7 @@ class LogStream
   friend class TinyLog;
 public:
   LogStream() = delete;
-  explicit LogStream(FILE * file, pthread_mutex_t & mutex, pthread_cond_t & cond, bool & already_swap);
+  explicit LogStream(FILE * file, pthread_mutex_t & mutex, pthread_cond_t & cond, std::atomic<bool> & already_swap);
   ~LogStream();
 
   size_t Write(const char * data, size_t ToWrite);
@@ -50,11 +52,14 @@ private:
   int32_t line_{0};
   const char * func_name_{nullptr};
   const char * str_log_level_;
-  timeval tv_base_{};
-  struct tm tm_base_{};
+  std::atomic<uint64_t> timestamp_us_{0};
+  std::atomic<size_t> dropped_count_{0};  // Track dropped log entries due to overflow
   pthread_mutex_t & mutex_;
   pthread_cond_t & cond_;
-  bool & drain_buffer_;
+  std::atomic<bool> & drain_buffer_;
+  // Thread-local staging buffer for reduced mutex contention
+  static thread_local std::array<char, 4096> tls_buffer_;
+  static thread_local size_t tls_buffer_used_;
 };
 
 } // namespace tinylog

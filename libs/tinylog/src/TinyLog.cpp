@@ -40,7 +40,7 @@ private:
   pthread_mutex_t mutex_;
   pthread_cond_t cond_;
   bool run_{false};
-  bool drain_buffer_{false};
+  std::atomic<bool> drain_buffer_{false};
 };
 
 TinyLogImpl::TinyLogImpl(FILE * file) noexcept :
@@ -132,7 +132,7 @@ int32_t TinyLogImpl::MainLoop()
   pthread_mutex_lock(&mutex_);
   while (run_)
   {
-    while (run_ && !drain_buffer_)
+    while (run_ && !drain_buffer_.load(std::memory_order_acquire))
     {
       result = pthread_cond_timedwait(&cond_, &mutex_, timeout_millisecs);
       if (result == WAIT_TIMEOUT)
@@ -143,11 +143,11 @@ int32_t TinyLogImpl::MainLoop()
 
     logstream_->WriteBuffer();
 
-    if (drain_buffer_)
+    if (drain_buffer_.load(std::memory_order_acquire))
     {
       logstream_->SwapBuffer();
       logstream_->UpdateBaseTime();
-      drain_buffer_ = false;
+      drain_buffer_.store(false, std::memory_order_release);
     }
   }
   pthread_mutex_unlock(&mutex_);

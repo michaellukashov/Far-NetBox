@@ -16,6 +16,7 @@ public:
   ~Buffer();
 
   size_t TryAppend(const void* pt_log, size_t ToWrite);
+  bool IsFull() const { return size_ >= capacity_; }
 
   void Clear();
   size_t Size() const;
