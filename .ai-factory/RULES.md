@@ -9,3 +9,9 @@
 - do not use any Unix-style redirection (`< /dev/null`, `>/dev/null`, `2>/dev/null`) on Windows; use `NUL` or omit
 - use skill `caveman` if available
 - Use skills if available: `cpp-coding-standards`, `cpp-expert`, `memory-safety-patterns`, `pp-modern-features`, `git-commit`
+
+- After adding/deleting IDs in `src/base/MsgIDs.h`, update all language files:
+  - `src/NetBox/NetBoxEng.lng`: add English message
+  - `src/NetBox/NetBoxRus.lng`: add Russian translation
+  - Both files must have the same number of lines
+  - Ensure proper line endings (CRLF) and newline at end of file
