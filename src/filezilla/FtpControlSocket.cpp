@@ -1801,8 +1801,9 @@ void CFtpControlSocket::List(BOOL bFinish, int nError /*=FALSE*/, CServerPath pa
     }
 
     size_t num = 0;
+    t_directory::t_direntry *direntry = m_pTransferSocket->m_pListResult->getList(num);
     pData->pDirectoryListing = new t_directory;
-    pData->pDirectoryListing->direntry = m_pTransferSocket->m_pListResult->getList(num);
+    pData->pDirectoryListing->direntry = direntry;
     pData->pDirectoryListing->num = num;
     if (m_pTransferSocket->m_pListResult->m_server.nServerType & FZ_SERVERTYPE_SUB_FTP_VMS && m_CurrentServer.nServerType & FZ_SERVERTYPE_FTP)
       m_CurrentServer.nServerType |= FZ_SERVERTYPE_SUB_FTP_VMS;
@@ -2925,8 +2926,9 @@ void CFtpControlSocket::FileTransfer(t_transferfile * transferfile/*=0*/, BOOL b
       }
 
       size_t num=0;
+      t_directory::t_direntry *direntry = m_pTransferSocket->m_pListResult->getList(num);
       pData->pDirectoryListing=new t_directory;
-      pData->pDirectoryListing->direntry=m_pTransferSocket->m_pListResult->getList(num);
+      pData->pDirectoryListing->direntry=direntry;
       pData->pDirectoryListing->num=num;
       if (m_pTransferSocket->m_pListResult->m_server.nServerType&FZ_SERVERTYPE_SUB_FTP_VMS && m_CurrentServer.nServerType&FZ_SERVERTYPE_FTP)
         m_CurrentServer.nServerType |= FZ_SERVERTYPE_SUB_FTP_VMS;

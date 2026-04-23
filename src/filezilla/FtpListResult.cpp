@@ -4,6 +4,8 @@
 #include "FtpListResult.h"
 #include "FileZillaApi.h"
 #include <WideStrUtils.hpp>
+#include "MsgIDs.h"
+#include <Exceptions.h>
 
 CFtpListResult::CFtpListResult(t_server server, bool mlst, bool *bUTF8, int *nCodePage, bool vmsAllRevisions, bool debugShowListing)
 {
@@ -231,6 +233,12 @@ CFtpListResult::CFtpListResult(t_server server, bool mlst, bool *bUTF8, int *nCo
 
 t_directory::t_direntry * CFtpListResult::getList(size_t & Num)
 {
+  // Check for safety limit triggered during parsing (Issue #513)
+  if (m_listingParseFailed)
+  {
+    throw Exception(FMTLOAD(MSG_FTP_LISTING_PARSE_FAILED));
+  }
+
   if (!FBuffer.IsEmpty())
   {
     SendLineToMessageLog("Unparsed listing:");
@@ -330,6 +338,17 @@ bool CFtpListResult::IsNewLineChar(char C) const
 
 void CFtpListResult::AddData(const char * Data, int Size)
 {
+  // Safety check: buffer size limit (Issue #513)
+  if (FBuffer.Length() + Size > MAX_LISTING_BUFFER_SIZE)
+  {
+    LogMessage(FZ_LOG_ERROR,
+      _T("FTP listing parser: buffer size limit exceeded (%d bytes), aborting"),
+      FBuffer.Length() + Size);
+    m_listingParseFailed = true;
+    FBuffer.Clear();
+    return;
+  }
+
   FBuffer += RawByteString(Data, Size);
 
   // Just in case the previous buffer was terminated between CR and LF.
@@ -362,6 +381,22 @@ void CFtpListResult::AddData(const char * Data, int Size)
     Found = (Pos <= FBuffer.Length());
     if (Found)
     {
+      // Safety check: total line limit (Issue #513)
+      m_TotalLinesProcessed++;
+      if (m_debugShowListing)
+      {
+        LogMessage(FZ_LOG_DEBUG, _T("FTP listing: processed line %d, buffer size %d bytes"), m_TotalLinesProcessed, FBuffer.Length());
+      }
+      if (m_TotalLinesProcessed > MAX_TOTAL_LINES)
+      {
+        LogMessage(FZ_LOG_ERROR,
+          _T("FTP listing parser: exceeded max line limit (%d), aborting"),
+          MAX_TOTAL_LINES);
+        m_listingParseFailed = true;
+        FBuffer.Clear();
+        break;
+      }
+      
       Count++;
       RawByteString Record = FBuffer.SubString(1, Pos - 1);
       while ((Pos <= FBuffer.Length()) && IsNewLineChar(FBuffer[Pos]))
@@ -383,6 +418,8 @@ void CFtpListResult::AddData(const char * Data, int Size)
       }
       if (parseLine(Line.c_str(), Line.Length(), DirEntry))
       {
+        // Parse successful - reset failure counter
+        m_ConsecutiveParseFailures = 0;
         if ((DirEntry.name != L".") && (DirEntry.name != L".."))
         {
           AddLine(DirEntry);
@@ -393,14 +430,25 @@ void CFtpListResult::AddData(const char * Data, int Size)
       }
       else
       {
-        if (Count == 2)
+        // Parse failed - increment failure counter
+        m_ConsecutiveParseFailures++;
+        
+        // Safety check: consecutive parse failure limit (Issue #513)
+        if (m_ConsecutiveParseFailures >= MAX_CONSECUTIVE_PARSE_FAILURES)
         {
-          RawByteString FirstLine = FBuffer.SubString(1, FirstLineEnd - 1).TrimRight();
-          SendLineToMessageLog("Cannot parse line:");
-          SendLineToMessageLog(FirstLine);
-          FBuffer.Delete(1, FirstLineEnd - 1);
-          Restart = true;
+          LogMessage(FZ_LOG_ERROR,
+            _T("FTP listing parser: exceeded max consecutive parse failures (%d), aborting. Buffer: %d bytes"),
+            MAX_CONSECUTIVE_PARSE_FAILURES, FBuffer.Length());
+          m_listingParseFailed = true;
+          FBuffer.Clear();
+          break;
         }
+        
+        // Skip unparseable line immediately (improved handling)
+        SendLineToMessageLog("Cannot parse line:");
+        SendLineToMessageLog(Record);
+        FBuffer.Delete(1, Pos - 1);
+        Restart = true;
       }
     }
   }

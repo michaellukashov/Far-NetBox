@@ -1326,3 +1326,4 @@
 "Requester &pays"
 "Authentication"
 "&Session token:"
+"Cannot read directory listing from this FTP server.\nTry connecting to a subdirectory instead."

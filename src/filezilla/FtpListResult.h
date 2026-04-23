@@ -75,6 +75,15 @@ private:
   bool m_vmsAllRevisions{false};
   bool m_debugShowListing{false};
 
+  // Safety limits to prevent infinite loops (Issue #513)
+  int m_ConsecutiveParseFailures{0};
+  int m_TotalLinesProcessed{0};
+  bool m_listingParseFailed{false};
+  static constexpr int MAX_CONSECUTIVE_PARSE_FAILURES = 100;
+  static constexpr int MAX_TOTAL_LINES = 100000;
+  static constexpr int MAX_LISTING_BUFFER_SIZE = 10 * 1024 * 1024; // 10MB
+
+
 protected:
   bool m_mlst{false};
   bool * m_bUTF8{nullptr};
