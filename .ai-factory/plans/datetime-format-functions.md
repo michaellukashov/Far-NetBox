@@ -40,6 +40,7 @@ Reference: FPC `dati.inc` FormatDateTime implementation
   - Token parsing loop
   - Format tokens: Y, M, D, H, N, S, Z, A, etc.
   - Date/Time separators
+  - AM/PM handling
 
 ##### task-2: Изучить существующую реализацию в NetBox
 
@@ -71,6 +72,7 @@ Reference: FPC `dati.inc` FormatDateTime implementation
   - Parse format string token by token
   - Handle separators (: /)
   - Handle AM/PM
+  - Support all documented format tokens
 
 ##### task-5: Implement ISO8601ToDate parser
 
@@ -81,25 +83,45 @@ Reference: FPC `dati.inc` FormatDateTime implementation
   - Handle timezone (Z, +HH:MM)
   - Throw on invalid
 
+##### task-6: Update function documentation
+
+- **Target:** `src/base/Sysutils.cpp`, `src/base/Sysutils.hpp`
+- **Change:** Add documentation comments for new functions
+- **Details:**
+  - Add Doxygen-style comments for FormatDateTime
+  - Document all supported format tokens
+  - Document ISO8601ToDate usage
+
 ### Phase 3: Verification
 
-##### task-6: Собрать проект
+##### task-7: Собрать проект
 
 - **Target:** All modified files
 - **Change:** Build
 - **Details:** `cmd /c build-x64.bat`, zero warnings
 
+##### task-8: Verify implementation
+
+- **Target:** Test with various format strings
+- **Change:** Unit test new functions
+- **Details:**
+  - Test all format tokens
+  - Test edge cases
+  - Test error conditions
+
 ---
 
 ## Commit Plan
 
-6 tasks → checkpoints:
+8 tasks → checkpoints:
 
 | Checkpoint | Tasks | Message |
 |------------|-------|----------|
 | 1 | task-1-3 | `feat(datetime): research format functions` |
 | 2 | task-4-5 | `feat(datetime): implement format and parser` |
-| 3 | task-6 | `feat(datetime): verify build` |
+| 3 | task-6 | `feat(datetime): add documentation` |
+| 4 | task-7 | `feat(datetime): verify build` |
+| 5 | task-8 | `feat(datetime): verify implementation` |
 
 ---
 
@@ -109,4 +131,4 @@ Reference: FPC `dati.inc` FormatDateTime implementation
 /aif-implement
 ```
 
-Plan: `.ai-factory/plans/datetime-format-functioms.md`
+Plan: `.ai-factory/plans/datetime-format-functions.md`
