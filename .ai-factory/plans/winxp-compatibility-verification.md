@@ -1,7 +1,8 @@
 # Windows XP Compatibility Verification Plan
 
-**Branch:** N/A (verification task)  
-**Created:** 2026-04-24  
+**Branch:** N/A (implementation + verification task)
+**Created:** 2026-04-24
+**Updated:** 2026-04-25
 **Mode:** Fast
 
 ## Settings
@@ -12,7 +13,9 @@
 
 ## Overview
 
-Comprehensive verification of NetBox plugin compatibility with Windows XP SP3. The plugin is built with Visual Studio 2022 (v143 toolset) targeting Windows XP (_WIN32_WINNT=0x0501) with static CRT linking.
+Comprehensive Windows XP compatibility implementation and verification for NetBox plugin. Based on Far3's proven `vc_crt_fix_impl.cpp` pattern, this plan implements a compatibility layer for 18 Vista+ APIs, then verifies the plugin works on Windows XP SP3.
+
+The plugin is built with Visual Studio 2022 (v143 toolset) targeting Windows XP (_WIN32_WINNT=0x0501) with static CRT linking.
 
 **Plugin Details:**
 - **Type:** Far Manager 3.0 plugin DLL (NetBox.dll)
@@ -25,6 +28,368 @@ Comprehensive verification of NetBox plugin compatibility with Windows XP SP3. T
   - Standard: C++17
 
 ## Tasks
+
+### Phase 0: Implementation
+
+#### Task 0.1: Verify OpenSSL XP Patches Applied
+**Files:** `libs/openssl-3/`, `libs/openssl-3/0001-openssl-apply-NetBox-patches.patch`
+
+Verify OpenSSL 3.x patches are applied before implementing compatibility layer:
+1. Check if patch file exists: `libs/openssl-3/0001-openssl-apply-NetBox-patches.patch`
+2. Verify patch is applied: `git -C libs/openssl-3 log --oneline | grep -i netbox`
+3. Search for GetTickCount64 usage: `grep -r GetTickCount64 libs/openssl-3/`
+4. Search for other Vista+ APIs:
+   - InitOnceExecuteOnce
+   - SRWLock functions (AcquireSRWLockExclusive, etc.)
+   - Condition variable functions
+5. Document patch contents and what it fixes
+6. If patch not applied, apply it: `git -C libs/openssl-3 apply -p3 ../0001-openssl-apply-NetBox-patches.patch`
+
+**Expected Results:**
+- Patch file exists and is applied
+- No GetTickCount64 usage in OpenSSL code
+- No Vista+ synchronization primitives
+- OpenSSL builds without Vista+ API dependencies
+
+**Logging:**
+- Document patch application status
+- List Vista+ APIs found (if any) with ERROR level
+- Document patch purpose and changes
+
+**Blocks:** Task 0.2 (need to know which APIs require stubs)
+
+#### Task 0.2: Create Windows XP Compatibility Layer Implementation
+**Files:** `src/NetBox/vc_crt_fix_impl.cpp`, `src/NetBox/vc_crt_fix.asm`
+
+Implement XP compatibility stubs for 18 Vista+ APIs following Far3's proven pattern:
+
+**Pattern to follow (from Far3 vc_crt_fix_impl.cpp):**
+```cpp
+template<typename T>
+static T GetFunctionPointer(const wchar_t* ModuleName, const char* FunctionName, T Replacement)
+{
+    const auto Module = GetModuleHandleW(ModuleName);
+    const auto Address = Module? GetProcAddress(Module, FunctionName) : nullptr;
+    return Address? reinterpret_cast<T>(reinterpret_cast<void*>(Address)) : Replacement;
+}
+
+#define CREATE_FUNCTION_POINTER(ModuleName, FunctionName)\
+    static const auto Function = GetFunctionPointer(ModuleName, #FunctionName, &implementation::FunctionName)
+
+extern "C" RETURN_TYPE WINAPI FunctionNameWrapper(PARAMS)
+{
+    struct implementation
+    {
+        static RETURN_TYPE WINAPI FunctionName(PARAMS)
+        {
+            // XP fallback implementation or ERROR_CALL_NOT_IMPLEMENTED
+        }
+    };
+    CREATE_FUNCTION_POINTER(modules::kernel32, FunctionName);
+    return Function(args...);
+}
+```
+
+**APIs to implement (18 total):**
+
+1. **File System APIs:**
+   - `CreateSymbolicLinkW` → return FALSE, SetLastError(ERROR_CALL_NOT_IMPLEMENTED)
+   - `GetFileInformationByHandleEx` → return FALSE, SetLastError(ERROR_CALL_NOT_IMPLEMENTED)
+   - `SetFileInformationByHandle` → return FALSE, SetLastError(ERROR_CALL_NOT_IMPLEMENTED)
+
+2. **Threadpool APIs (8 functions):**
+   - `CreateThreadpoolWait` → return NULL, SetLastError(ERROR_CALL_NOT_IMPLEMENTED)
+   - `SetThreadpoolWait` → no-op stub
+   - `CloseThreadpoolWait` → no-op stub
+   - `CreateThreadpoolTimer` → return NULL, SetLastError(ERROR_CALL_NOT_IMPLEMENTED)
+   - `SetThreadpoolTimer` → no-op stub
+   - `WaitForThreadpoolTimerCallbacks` → no-op stub
+   - `CloseThreadpoolTimer` → no-op stub
+   - `FreeLibraryWhenCallbackReturns` → no-op stub
+
+3. **Time APIs:**
+   - `GetTickCount64` → fallback to GetTickCount() (32-bit, wraps every 49.7 days)
+
+4. **Processor APIs:**
+   - `GetCurrentProcessorNumber` → return 0 (single processor fallback)
+   - `FlushProcessWriteBuffers` → call FlushInstructionCache(GetCurrentProcess(), NULL, 0)
+
+5. **Synchronization APIs:**
+   - `CreateSemaphoreExW` → fallback to CreateSemaphoreW(NULL, initial, max, name)
+   - `CreateEventExW` → fallback to CreateEventW(NULL, manual, initial, name)
+   - `InitOnceExecuteOnce` → return FALSE, SetLastError(ERROR_CALL_NOT_IMPLEMENTED)
+
+6. **Locale APIs:**
+   - `GetLocaleInfoEx` → fallback to GetLocaleInfoW(LOCALE_USER_DEFAULT, ...)
+
+**Implementation steps:**
+1. Add wrapper functions to `src/NetBox/vc_crt_fix_impl.cpp`
+2. Follow exact pattern from Far3 reference code
+3. Use `modules::kernel32` namespace for module names
+4. Implement XP-compatible fallbacks where possible (GetTickCount64 → GetTickCount)
+5. Return ERROR_CALL_NOT_IMPLEMENTED for features that can't be emulated
+6. Add comments explaining each stub's behavior
+
+**Expected Results:**
+- 18 wrapper functions implemented
+- All functions follow GetFunctionPointer pattern
+- XP fallbacks used where possible
+- ERROR_CALL_NOT_IMPLEMENTED for unimplementable features
+- Code compiles without warnings
+
+**Logging:**
+- Document each API stub and its behavior
+- Note which APIs have fallbacks vs. stubs
+- Log any implementation challenges
+
+**Blocks:** Task 0.3, Task 0.4
+
+#### Task 0.3: Update ASM Export Definitions
+**Files:** `src/NetBox/vc_crt_fix.asm`
+
+Add ASM export declarations for all 18 new wrapper functions:
+
+**Pattern (from existing vc_crt_fix.asm):**
+```asm
+HOOK MACRO name, size, args:VARARG
+    ifndef X64
+        @CatStr(name, Wrapper) proto stdcall args
+        @CatStr(__imp__, name, @, size) dd @CatStr(name, Wrapper)
+        public @CatStr(__imp__, name, @, size)
+    else
+        @CatStr(name, Wrapper) proto stdcall
+        @CatStr(__imp_, name) dq @CatStr(name, Wrapper)
+        public @CatStr(__imp_, name)
+    endif
+ENDM
+```
+
+**Add HOOK declarations for:**
+1. File APIs (3): CreateSymbolicLinkW, GetFileInformationByHandleEx, SetFileInformationByHandle
+2. Threadpool APIs (8): CreateThreadpoolWait, SetThreadpoolWait, CloseThreadpoolWait, CreateThreadpoolTimer, SetThreadpoolTimer, WaitForThreadpoolTimerCallbacks, CloseThreadpoolTimer, FreeLibraryWhenCallbackReturns
+3. Time APIs (1): GetTickCount64
+4. Processor APIs (2): GetCurrentProcessorNumber, FlushProcessWriteBuffers
+5. Sync APIs (3): CreateSemaphoreExW, CreateEventExW, InitOnceExecuteOnce
+6. Locale APIs (1): GetLocaleInfoEx
+
+**Calculate stack sizes for x86 (stdcall convention):**
+- Pointer = 4 bytes
+- DWORD/BOOL = 4 bytes
+- HANDLE = 4 bytes
+- Example: `HOOK CreateSymbolicLinkW, 12, :dword, :dword, :dword` (3 pointers = 12 bytes)
+
+**Expected Results:**
+- 18 HOOK declarations added
+- Correct stack sizes for x86
+- x64 declarations without size parameter
+- ASM file assembles without errors
+
+**Logging:**
+- Document each HOOK declaration
+- Verify stack size calculations
+
+**Blocks:** Task 0.5
+
+#### Task 0.4: Test Compatibility Layer with Sample Program
+**Files:** `tests/xp_compat_test.cpp` (new)
+
+Create minimal test program to verify all 18 stubs work correctly:
+
+```cpp
+// Test program that calls all stubbed APIs
+#include <windows.h>
+#include <stdio.h>
+
+int main() {
+    // Test each API and verify it doesn't crash
+    ULONGLONG tick64 = GetTickCount64();
+    printf("GetTickCount64: %llu\n", tick64);
+    
+    DWORD proc = GetCurrentProcessorNumber();
+    printf("GetCurrentProcessorNumber: %u\n", proc);
+    
+    // Test threadpool APIs (should return NULL/fail gracefully)
+    PTP_WAIT wait = CreateThreadpoolWait(NULL, NULL, NULL);
+    printf("CreateThreadpoolWait: %p (expected NULL)\n", wait);
+    
+    // ... test remaining 15 APIs ...
+    
+    return 0;
+}
+```
+
+**Test steps:**
+1. Create test program that calls all 18 APIs
+2. Build test program with same flags as NetBox
+3. Run on Windows 10/11 (should delegate to real APIs)
+4. Verify no crashes, appropriate return values
+5. Check that ERROR_CALL_NOT_IMPLEMENTED is set where expected
+
+**Expected Results:**
+- Test program compiles and links
+- All 18 APIs callable without crashes
+- Fallback APIs return sensible values (GetTickCount64 → GetTickCount)
+- Stub APIs return NULL/FALSE with ERROR_CALL_NOT_IMPLEMENTED
+- No undefined behavior
+
+**Logging:**
+- Document test results for each API
+- Log return values and error codes
+- Verify behavior matches expectations
+
+**Blocks:** Task 7 (VM testing)
+
+#### Task 0.5: Add Linker Subsystem Version Flag
+**Files:** `cmake/NetBox.cmake`
+
+Add explicit subsystem version to linker flags:
+
+**Current (line 223):**
+```cmake
+/SUBSYSTEM:WINDOWS
+```
+
+**Change to:**
+```cmake
+/SUBSYSTEM:WINDOWS,5.01
+```
+
+**Verification steps:**
+1. Edit `cmake/NetBox.cmake` line 223
+2. Reconfigure CMake: `cmake -S . -B build-RelWithDebugInfo ...`
+3. Build: `cmake --build build-RelWithDebugInfo`
+4. Extract linker command from build log
+5. Verify `/SUBSYSTEM:WINDOWS,5.01` appears in link command
+6. Use `dumpbin /HEADERS build-RelWithDebugInfo/src/NetBox.dll` to verify PE header shows subsystem version 5.01
+
+**Expected Results:**
+- Linker flag updated in cmake/NetBox.cmake
+- Build succeeds
+- PE header shows subsystem version 5.01
+
+**Logging:**
+- Document linker flag change
+- Log PE header verification results
+
+**Blocks:** Task 1 (PE header verification)
+
+#### Task 0.6: Add CMake Build Verification Step
+**Files:** Build output, CMake cache
+
+Verify build system produces XP-compatible binaries:
+
+1. **Verify _WIN32_WINNT propagation:**
+   - Check CMakeCache.txt for NETBOX_WIN32_WINNT=0x0501
+   - Extract compile commands: `cmake -S . -B build-RelWithDebugInfo -DCMAKE_EXPORT_COMPILE_COMMANDS=ON`
+   - Verify all .cpp files compiled with `-D_WIN32_WINNT=0x0501`
+   - Sample check: `grep '_WIN32_WINNT' build-RelWithDebugInfo/compile_commands.json | head -5`
+
+2. **Verify subsystem version in link command:**
+   - Build with verbose output: `cmake --build build-RelWithDebugInfo --verbose`
+   - Extract link.exe command line
+   - Verify `/SUBSYSTEM:WINDOWS,5.01` is present
+
+3. **Verify static CRT linking:**
+   - Check for `/MT` (release) or `/MTd` (debug) in compile commands
+   - Verify no `/MD` or `/MDd` flags
+   - Check CMakeCache.txt: `CMAKE_MSVC_RUNTIME_LIBRARY:STRING=MultiThreaded`
+
+4. **Document build configuration:**
+   - Compiler version: `cl.exe /?` (first line)
+   - CMake version: `cmake --version`
+   - Platform: x86, x64, or ARM64
+   - Build type: Release, Debug, RelWithDebInfo
+
+**Expected Results:**
+- _WIN32_WINNT=0x0501 in all compilation units
+- /SUBSYSTEM:WINDOWS,5.01 in link command
+- Static CRT (/MT or /MTd)
+- Build configuration documented
+
+**Logging:**
+- Log compiler/linker command samples
+- Document CMake configuration
+- Flag any misconfigurations with ERROR level
+
+**Blocks:** Task 6 (compiler/linker audit)
+
+#### Task 0.7: Document XP Compatibility Architecture
+**Files:** `.ai-factory/docs/xp-compatibility.md` (new)
+
+Create comprehensive documentation for the compatibility layer:
+
+**Document structure:**
+
+1. **Overview**
+   - Purpose: Enable NetBox to run on Windows XP SP3
+   - Approach: Runtime API detection + fallback stubs
+   - Based on: Far3's proven vc_crt_fix pattern
+
+2. **Architecture**
+   - GetFunctionPointer template pattern
+   - How runtime detection works
+   - Why this approach (vs. conditional compilation)
+   - Wrapper function naming convention
+
+3. **Implemented Stubs (18 APIs)**
+   - Table: API name | Module | XP Behavior | Vista+ Behavior
+   - Example: GetTickCount64 | kernel32 | Returns GetTickCount() | Returns real GetTickCount64()
+   - Document which APIs have fallbacks vs. ERROR_CALL_NOT_IMPLEMENTED
+
+4. **XP Limitations**
+   - GetTickCount wraps every 49.7 days (GetTickCount64 fallback)
+   - No threadpool support (CreateThreadpoolWait returns NULL)
+   - No symbolic links (CreateSymbolicLinkW fails)
+   - Single processor assumed (GetCurrentProcessorNumber returns 0)
+   - No InitOnceExecuteOnce (must use critical sections)
+
+5. **Adding New Stubs**
+   - Step-by-step guide
+   - Code template
+   - ASM export declaration
+   - Testing checklist
+
+6. **Testing**
+   - How to test on modern Windows
+   - How to test on XP VM
+   - Expected behavior for each stub
+
+7. **Troubleshooting**
+   - Common issues
+   - Linker errors
+   - Runtime crashes
+
+**Expected Results:**
+- Complete architecture documentation
+- Clear explanation of each stub
+- Maintainer guide for future changes
+
+**Logging:**
+- Document creation in commit message
+
+
+## Task Dependencies
+
+**Phase 0 (Implementation) dependencies:**
+- Task 0.1 (Verify OpenSSL Patches) → blocks Task 0.2 (need to know which APIs require stubs)
+- Task 0.2 (Create Compatibility Layer) → blocks Task 0.3, 0.4, 0.5
+- Task 0.3 (Update ASM Exports) → blocks Task 0.5 (linker needs exports)
+- Task 0.4 (Test Compatibility Layer) → blocks Task 7 (VM testing)
+- Task 0.5 (Add Linker Subsystem Flag) → blocks Task 1 (PE header verification)
+- Task 0.6 (CMake Build Verification) → blocks Task 6 (compiler/linker audit)
+
+**Cross-phase dependencies:**
+- Task 0.2 (Create Compatibility Layer) → blocks Task 7 (can't test on XP VM without stubs)
+- Task 0.4 (Test Compatibility Layer) → blocks Task 8 (unit test before functional test)
+- Task 5 (Third-Party Library Compatibility) → informs Task 0.2 (which APIs need stubs)
+
+**Recommended execution order:**
+1. Phase 0: Tasks 0.1 → 0.2 → 0.3 → 0.4 → 0.5 → 0.6 → 0.7 (implementation)
+2. Phase 1: Tasks 1 → 2 → 3 (binary analysis)
+3. Phase 2: Tasks 4 → 5 (runtime analysis)
+4. Phase 3: Task 6 (build config review)
+5. Phase 4: Tasks 7 → 8 (test plan)
+6. Phase 5: Tasks 9 → 10 (assessment)
 
 ### Phase 1: Binary Analysis
 
@@ -362,8 +727,55 @@ docs(compat): add Windows XP compatibility verification report
 
 ## Notes
 
-- This is a verification and analysis task, not implementation
+## Notes
+
+- This plan combines implementation and verification
+- Phase 0 implements the compatibility layer based on Far3's proven pattern
+- Phases 1-5 verify the implementation works correctly
 - Focus on evidence-based assessment using binary analysis tools
-- No assumptions about code — analyze compiled binaries only
+- No assumptions about code — analyze compiled binaries after implementation
 - Provide clear, actionable recommendations
-- If incompatibilities found, create separate implementation plan for fixes
+- Track implementation status in remediation plan (Task 10)
+
+## Success Criteria
+
+1. **Implementation Complete (Phase 0):**
+   - All 18 Vista+ API stubs implemented in vc_crt_fix_impl.cpp
+   - ASM export declarations added for all wrappers
+   - Compatibility layer unit tests pass
+   - Linker subsystem version set to 5.01
+   - Build verification confirms XP-compatible configuration
+   - Architecture documentation complete
+
+2. **Binary Analysis Complete (Phase 1):**
+   - PE headers analyzed and show subsystem version 5.01
+   - All dependencies documented and XP-compatible
+   - API compatibility verified (all Vista+ APIs have stubs)
+
+3. **Runtime Analysis Complete (Phase 2):**
+   - CRT configuration verified (static linking)
+   - C++17 features assessed for XP compatibility
+   - Third-party libraries evaluated (OpenSSL patches verified)
+
+4. **Build Configuration Verified (Phase 3):**
+   - _WIN32_WINNT=0x0501 consistently applied
+   - /SUBSYSTEM:WINDOWS,5.01 in linker command
+   - Static CRT linking confirmed
+
+5. **Test Plan Ready (Phase 4):**
+   - VM setup guide created
+   - Functional test checklist complete
+   - Test environment documented
+
+6. **Compatibility Report Generated (Phase 5):**
+   - Clear verdict provided (Compatible/Partially Compatible/Incompatible)
+   - Evidence-based conclusions
+   - Actionable recommendations
+   - Implementation status tracked
+
+7. **Quality Gates:**
+   - Clean build with zero warnings
+   - All compatibility layer stubs tested
+   - PE header shows subsystem 5.01
+   - No Vista+ API dependencies without stubs
+   - Documentation complete and accurate

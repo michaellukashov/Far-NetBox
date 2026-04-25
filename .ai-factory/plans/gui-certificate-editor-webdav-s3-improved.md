@@ -9,13 +9,13 @@
 
 ## Rationale for Refinement
 
-After codebase analysis, the original plan had gaps and architectural assumptions that conflict with NetBox patterns. This refined version corrects those issues.
+After codebase analysis and code review (2026-04-25), the original plan had gaps and architectural assumptions that conflict with NetBox patterns. This refined version corrects those issues based on review feedback.
 
 ## Settings
 
-- **Testing:** yes (unit tests for PEM validation; integration tests for session persistence)
+- **Testing:** yes (Catch2 unit tests for PEM validation; manual integration tests for session persistence)
 - **Logging:** verbose (DEBUG logs for file I/O, certificate validation)
-- **Docs:** yes (user documentation update)
+- **Docs:** yes (docs/features/ + .hlf help files)
 
 ## Research Context
 
@@ -33,9 +33,11 @@ After codebase analysis, the original plan had gaps and architectural assumption
 1. **S3 has `S3CACertificate` property** (`SessionData.h` lines 698-699, `WinSCPDialogs.cpp` lines 1795-1796) - WebDAV lacks equivalent
 2. **WebDAV certificate handling exists** in `WebDAVFileSystem.cpp` but uses global/config-level certificates
 3. **Dialog pattern:** Far Manager dialogs use `TFarDialog` with `TFarEdit`, `TFarButton`, `TFarCheckBox` (not VCL tabs)
-4. **Session dialog location:** `src/NetBox/WinSCPDialogs.cpp` (3000+ lines, handles all protocol session UIs)
-5. **Certificate validation** uses OpenSSL - should leverage existing patterns in `src/core/Certificates.cpp`
-6. **File picker:** Uses Windows API/WIN32 dialog patterns, not VCL TOpenDialog
+4. **Session dialog location:** `src/NetBox/WinSCPDialogs.cpp` (9400+ lines, handles all protocol session UIs)
+5. **Certificate validation** uses OpenSSL - should leverage existing patterns or create new validation module
+6. **File picker:** No existing file picker pattern found - need to implement Windows API dialogs (`GetOpenFileName`/`GetSaveFileName`)
+7. **PrivateKeyEdit pattern:** Uses `TFarEdit` without Load/Save buttons - users type paths manually
+8. **Test infrastructure:** No tests/ directory exists - must set up Catch2 from scratch
 
 **Architecture Pattern:**
 - Plugin Layer -> Core Layer -> Base Layer -> Third-Party
@@ -47,11 +49,15 @@ After codebase analysis, the original plan had gaps and architectural assumption
 | Issue | Original | Correction |
 |-------|----------|------------|
 | WebDAV certs | Not addressed | Add `WebDAVCertificate` property to SessionData |
-| Component design | New `CertificateManager` class | Reuse existing `TCertificateStorage` pattern |
+| Component design | New `CertificateManager` class | Reuse existing patterns or create validation utility |
 | UI approach | New "page or panel" | Inline `TFarEdit` + Load/Save buttons in existing dialog |
 | File path | `src/windows/*` | `src/NetBox/*` (Far Manager plugin UI layer) |
-| Button handler | Separate class methods | Inline handlers in `TSessionDialog` |
-
+| Button handler | Separate class methods | Inline handlers in `TSessionDialog` using Windows API |
+| Test framework | Assumed exists | Must set up Catch2 first |
+| Documentation | Assumed CHANGELOG.md | Use `docs/features/` + `.hlf` help files |
+| File picker | Assumed exists | Must implement Windows `GetOpenFileName`/`GetSaveFileName` |
+| Validation strictness | Unclear | Allow invalid PEM with warning (user decision) |
+| Backward compatibility | Not mentioned | Existing sessions must load correctly without certificate property |
 ## Tasks
 
 ### Phase 1: Core Session Data Extensions

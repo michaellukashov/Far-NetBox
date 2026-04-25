@@ -21,10 +21,12 @@ NetBox plugin currently lacks Windows XP compatibility layer that exists in Far 
 - Falls back to XP-compatible alternatives where needed
 - Maintains full functionality on modern Windows (Vista+)
 
-**Reference implementation:**
-- Far Manager 3 source code: `D:\Projects\Far3\far3-master`
-- Repository: https://github.com/FarGroup/FarManager.git
-- Focus areas: OS version detection, API compatibility layer, conditional compilation
+**Reference implementations:**
+- **Far Manager 3** (runtime pattern): `D:\Projects\Far3\far3-master` — OS version detection, GetProcAddress wrappers
+  - Repository: https://github.com/FarGroup/FarManager.git
+- **YY-Thunks** (static library pattern): https://github.com/Chuyu-Team/YY-Thunks — Pre-built XP stub implementations
+  - License: MIT
+  - Use for: Vista+ API stub implementations that work on XP (kernel32, syncapi, libloaderapi modules)
 
 ---
 
@@ -38,16 +40,37 @@ NetBox plugin currently lacks Windows XP compatibility layer that exists in Far 
 
 ## Reference Sources
 
-**Primary reference:**
+**Primary reference (runtime pattern):**
 - Local: `D:\Projects\Far3\far3-master`
 - Remote: https://github.com/FarGroup/FarManager.git
+- **Key files to analyze:**
+  - `far/platform.*.cpp` — OS version detection
+  - `far/imports.*.cpp` — API imports (GetProcAddress wrappers)
+  - `far/common/os_version.cpp` — Version checks
+  - Build scripts — XP toolset configuration
 
-**Key files to analyze:**
-- OS version detection logic
-- API compatibility shims (GetProcAddress wrappers)
-- Conditional compilation macros
-- XP-specific workarounds
-- Build configuration for XP target
+**Secondary reference (stub implementations):**
+- Remote: https://github.com/Chuyu-Team/YY-Thunks
+- License: MIT (allows linking or copying implementations)
+- **Key files to analyze:**
+  - `src/Thunks/kernel32/*.cpp` — API shims for kernel32.dll (InitializeCriticalSectionEx, EncodePointer, etc.)
+  - `src/Thunks/syncapi/*.cpp` — Synchronization primitives (condition variables, SRW locks)
+  - `src/Thunks/libloaderapi/*.cpp` — DLL loading compatibility (AddDllDirectory, etc.)
+  - `CMakeLists.txt` — How to integrate thunks into CMake build
+- **Key YY-Thunks patterns:**
+  - Static library approach: compile once, link into any target
+  - Conditional compilation per API based on target Windows version
+  - Tested implementations for XP (SP2/SP3), Vista, Win7 missing APIs
+  - See issues for specific API coverage: #83 (TLS), #89 (EncodePointer), #90 (Chrome APIs), #117 (kernel32 version fixes)
+
+**Approach comparison:**
+
+|Aspect|Far3 Pattern|YY-Thunks Pattern|Recommended for NetBox|
+|---|---|---|---|
+|Resolution|Runtime GetProcAddress|Link-time static library|Hybrid: YY-Thunks for stubs, Far3 for OS detection|
+|Toolset|Requires XP toolset (v141_xp/v142_xp)|Works with modern VS2022 toolset|YY-Thunks (avoids VS2019 requirement)|
+|Maintenance|Must write each shim manually|Upstream maintained|Copy relevant stubs from YY-Thunks source|
+|Overhead|Per-API lazy loading|Zero overhead (linked at compile time)|YY-Thunks|
 
 ---
 
@@ -55,22 +78,31 @@ NetBox plugin currently lacks Windows XP compatibility layer that exists in Far 
 
 ### Phase 1: Discovery & Analysis
 
-- [ ] **task-1:** Analyze Far3 XP compatibility architecture
-  - **Files to examine:**
+- [ ] **task-1:** Analyze Far3 and YY-Thunks XP compatibility architectures
+  - **Far3 files to examine:**
     - `D:\Projects\Far3\far3-master\far\platform.*.cpp` (OS detection)
     - `D:\Projects\Far3\far3-master\far\imports.*.cpp` (API imports)
     - `D:\Projects\Far3\far3-master\far\common\os_version.cpp` (version checks)
     - CMakeLists.txt or build scripts (XP toolset configuration)
-  - **Search for:**
+  - **YY-Thunks files to examine:**
+    - `src/Thunks/kernel32/*.cpp` — API shims (InitializeCriticalSectionEx, EncodePointer, DecodePointer)
+    - `src/Thunks/syncapi/*.cpp` — Condition variables, SRW locks emulation
+    - `src/Thunks/libloaderapi/*.cpp` — LoadLibrary, AddDllDirectory compatibility
+    - `CMakeLists.txt` — Build integration patterns
+  - **Search for (Far3):**
     - `IsWindowsXP`, `IsWindowsVersionOrGreater`, `OSVERSIONINFO`
     - `GetProcAddress`, `LoadLibrary` patterns for dynamic API loading
     - `_WIN32_WINNT` preprocessor checks
     - XP-specific workarounds (e.g., `InitializeCriticalSectionEx` fallback)
+  - **Search for (YY-Thunks):**
+    - List of APIs already stubbed (check `src/Thunks/` directory structure)
+    - CMake integration patterns (how thunks are built and linked)
+    - License verification (MIT — confirm terms allow copying/linking)
   - **DONE when:** Documented:
     1. Far3's OS version detection mechanism (function names, file locations)
-    2. List of APIs that need XP compatibility shims
+    2. YY-Thunks stub inventory (which APIs are already implemented)
     3. Conditional compilation strategy (macros, build flags)
-    4. Dynamic loading patterns for Vista+ APIs
+    4. Decision: which APIs from YY-Thunks to reuse vs implement from Far3
   - **LOGGING:**
     - Log discovered compatibility patterns with file:line references
     - Use format: `[XPCompat.Discovery] Found pattern: {description} in {file}:{line}`
@@ -89,21 +121,21 @@ NetBox plugin currently lacks Windows XP compatibility layer that exists in Far 
     - Network APIs (IPv6, modern TLS)
     - Threading primitives (condition variables, SRW locks)
   - **DONE when:** Created compatibility matrix:
-    | NetBox File | API Used | XP Available? | Far3 Shim Location | Action Required |
-    |-------------|----------|---------------|-------------------|-----------------|
-    | ... | ... | Yes/No | file:line | Port/Adapt/Skip |
+    | NetBox File | API Used | XP Available? | YY-Thunks Has It? | Far3 Shim Location | Action Required |
+    |-------------|----------|---------------|-------------------|-------------------|-----------------|
+    | ... | ... | Yes/No | Yes/No | file:line | Port/Adapt/Skip/Copy from YY-Thunks |
   - **LOGGING:**
     - Log each incompatible API found with usage count
-    - Use format: `[XPCompat.Audit] API {name} used {count} times in {file} - XP: {yes/no}`
+    - Use format: `[XPCompat.Audit] API {name} used {count} times in {file} - XP: {yes/no} - YY-Thunks: {yes/no}`
     - Use WARN level for XP-incompatible APIs
 
 - [ ] **task-3:** Design NetBox XP compatibility layer architecture
   - **Design decisions:**
     1. OS version detection: Where to initialize? (plugin startup, session init, per-operation?)
     2. API shim location: New file `src/base/WinXPCompat.h/cpp` or integrate into existing `src/base/Common.cpp`?
-    3. Macro strategy: `#if (_WIN32_WINNT < 0x0600)` or runtime checks?
-    4. Build configuration: Separate XP build target or single binary with runtime detection?
-  - **API shim pattern (from Far3):**
+    3. Stub strategy: Copy YY-Thunks implementations into NetBox vs link YY-Thunks.lib
+    4. Build configuration: Single binary with runtime detection (recommended)
+  - **API shim pattern (from Far3 — runtime GetProcAddress):**
     ```cpp
     // Example: InitializeCriticalSectionEx (Vista+)
     typedef BOOL (WINAPI *PInitializeCriticalSectionEx)(LPCRITICAL_SECTION, DWORD, DWORD);
@@ -123,11 +155,29 @@ NetBox plugin currently lacks Windows XP compatibility layer that exists in Far 
             return InitializeCriticalSection(lpCriticalSection), TRUE; // XP fallback
     }
     ```
+  - **API shim pattern (from YY-Thunks — static stub):**
+    ```cpp
+    // YY-Thunks approach: Provide stub that's always linked
+    // On XP: stub executes directly (no GetProcAddress overhead)
+    // On Vista+: stub calls native API (transparent)
+    // Example: YY-Thunks kernel32 InitializeCriticalSectionEx stub
+    extern "C" BOOL WINAPI InitializeCriticalSectionEx(
+        LPCRITICAL_SECTION lpCriticalSection,
+        DWORD dwSpinCount,
+        DWORD Flags)
+    {
+        // YY-Thunks implements proper fallback logic inline
+        // No runtime detection needed — stub is always available
+        if (dwSpinCount == 0 && Flags == 0)
+            return ::InitializeCriticalSection(lpCriticalSection), TRUE;
+        // ... full stub implementation from YY-Thunks source
+    }
+    ```
   - **DONE when:** Design document added to plan with:
     1. File structure (new files to create)
-    2. API shim pattern (code template)
+    2. API shim pattern (code template — choose Far3 vs YY-Thunks per API)
     3. Initialization sequence (when to detect OS, when to load shims)
-    4. Build configuration changes (CMake, compiler flags)
+    4. Build configuration changes (CMake, compiler flags, YY-Thunks integration)
   - **LOGGING:**
     - Log design decisions and rationale
     - Use format: `[XPCompat.Design] Decision: {description}`
@@ -160,14 +210,30 @@ NetBox plugin currently lacks Windows XP compatibility layer that exists in Far 
     - Use format: `[XPCompat.Init] OS detected: {version} (XP mode: {yes/no})`
     - Use INFO level
 
-- [ ] **task-5:** Port Far3 API compatibility shims
+- [ ] **task-5:** Port API compatibility shims
   - **File:** `src/base/WinXPCompat.cpp`, `src/base/WinXPCompat.h`
   - **APIs to port (based on task-2 audit):**
     - Threading: `InitializeCriticalSectionEx`, `InitializeConditionVariable`, `SleepConditionVariableCS`
     - File system: `GetFinalPathNameByHandle`, `CreateSymbolicLink`
     - Network: IPv6 functions if used
-    - Security: `CreateWellKnownSid` (if used)
-  - **Pattern:** For each API:
+    - Security: `CreateWellKnownSid` (if used), `EncodePointer`, `DecodePointer`
+    - Process: `FlsAlloc`, `FlsFree`, `FlsGetValue`, `FlsSetValue` (fiber local storage)
+  - **Source selection per API:**
+    |API|Source|Rationale|
+    |---|---|---|
+    |`InitializeCriticalSectionEx`|YY-Thunks|Protested fallback with spin count handling|
+    |`InitializeConditionVariable`|YY-Thunks|Event-based emulation already tested|
+    |`SleepConditionVariableCS`|YY-Thunks|Pairs with above|
+    |`GetFinalPathNameByHandle`|Far3 or YY-Thunks|Both have implementations|
+    |`EncodePointer`/`DecodePointer`|YY-Thunks|Issue #89 has XP RTM fix|
+    |`Fls*` functions|YY-Thunks|Issue #83 has TLS support|
+    |`CreateSymbolicLink`|Far3|Simple wrapper, no YY-Thunks equivalent|
+  - **Pattern (YY-Thunks approach — preferred):**
+    1. Copy stub implementation from YY-Thunks source (MIT license)
+    2. Wrap in `#ifndef NETBOX_WINXP_COMPAT` guard for non-XP builds
+    3. Add to `src/base/WinXPCompat.cpp`
+    4. Declare in `src/base/WinXPCompat.h` with `extern "C"` linkage
+  - **Pattern (Far3 approach — for APIs not in YY-Thunks):**
     1. Define function pointer typedef
     2. Implement `XP_<APIName>` wrapper with dynamic loading
     3. Provide XP fallback implementation
@@ -175,7 +241,8 @@ NetBox plugin currently lacks Windows XP compatibility layer that exists in Far 
   - **DONE when:**
     1. All APIs from task-2 compatibility matrix have shims
     2. Each shim has XP fallback that preserves functionality (or gracefully degrades)
-    3. Shims tested on modern Windows (should use native API via GetProcAddress)
+    3. Shims tested on modern Windows (should use native API or transparent stub)
+    4. YY-Thunks source attribution included in comments for each copied stub
   - **LOGGING:**
     - Log each API shim initialization (success/fallback)
     - Use format: `[XPCompat.Shim] API {name}: {native/fallback}`
@@ -203,16 +270,23 @@ NetBox plugin currently lacks Windows XP compatibility layer that exists in Far 
   - **File:** `CMakeLists.txt` (root and `src/CMakeLists.txt`)
   - **Changes:**
     1. Add option: `option(OPT_WINXP_COMPAT "Enable Windows XP compatibility" OFF)`
-    2. Set `_WIN32_WINNT=0x0501` when `OPT_WINXP_COMPAT=ON`
-    3. Use Visual Studio XP toolset: `set(CMAKE_GENERATOR_TOOLSET "v141_xp")` (VS2017) or `v142_xp` (VS2019)
-    4. Add preprocessor define: `add_definitions(-DNETBOX_WINXP_COMPAT)` when enabled
+    2. **Important:** Keep `_WIN32_WINNT >= 0x0600` even for XP builds (APIs must be declared)
+       - Do NOT set `_WIN32_WINNT=0x0501` — this hides Vista+ API declarations
+       - Use runtime resolution (GetProcAddress) or static stubs (YY-Thunks pattern)
+    3. Add preprocessor define: `add_definitions(-DNETBOX_WINXP_COMPAT)` when enabled
+    4. When `OPT_WINXP_COMPAT=ON`:
+       - Option A: Add YY-Thunks stubs to build target directly (copy source approach)
+       - Option B: Link against pre-built `yythunks.lib` (if available)
+    5. **DO NOT** use XP toolset (`v141_xp`/`v142_xp`) — use modern VS2022 toolset with stubs
   - **DONE when:**
     1. CMake generates XP-compatible build when `OPT_WINXP_COMPAT=ON`
     2. Default build (OFF) remains unchanged (modern Windows target)
-    3. Build script `build-x64-xp.bat` created for XP builds
+    3. Build works with VS2022 toolset (no XP toolset dependency)
+    4. Build script `build-x64-xp.bat` created for XP builds
   - **LOGGING:**
     - Log build configuration at CMake configure time
     - Use CMake `message(STATUS "XP compatibility: ${OPT_WINXP_COMPAT}")`
+    - Use CMake `message(STATUS "XP stub source: ${XP_STUB_SOURCE}")`
 
 - [ ] **task-8:** Create XP build script
   - **File:** `build-x64-xp.bat` (new file)
@@ -277,8 +351,8 @@ NetBox plugin currently lacks Windows XP compatibility layer that exists in Far 
     - `AGENTS-Structure.md` (document WinXPCompat module)
   - **Content:**
     1. How to build XP-compatible plugin (`build-x64-xp.bat`)
-    2. XP compatibility layer architecture
-    3. List of shimmed APIs
+    2. XP compatibility layer architecture (Far3 + YY-Thunks hybrid)
+    3. List of shimmed APIs with source attribution
     4. Known limitations on XP
   - **DONE when:** Documentation merged and reviewed
 
@@ -295,7 +369,7 @@ NetBox plugin currently lacks Windows XP compatibility layer that exists in Far 
 
 ## Commit Plan
 
-- **Commit 1** (after tasks 1-3): `feat(xp): analyze Far3 XP compatibility and design NetBox layer`
+- **Commit 1** (after tasks 1-3): `feat(xp): analyze Far3 and YY-Thunks compatibility, design NetBox layer`
 - **Commit 2** (after tasks 4-6): `feat(xp): implement OS detection and API compatibility shims`
 - **Commit 3** (after tasks 7-8): `build(xp): add CMake XP build configuration and script`
 - **Commit 4** (after tasks 9-10): `test(xp): validate XP compatibility on VM and modern Windows`
@@ -311,23 +385,34 @@ NetBox plugin currently lacks Windows XP compatibility layer that exists in Far 
 - `far/common/os_version.cpp` — Version checks
 - Build scripts — XP toolset configuration
 
+**YY-Thunks reference files (to clone/study):**
+- Repository: https://github.com/Chuyu-Team/YY-Thunks
+- `src/Thunks/kernel32/*.cpp` — API shims (InitializeCriticalSectionEx, EncodePointer, etc.)
+- `src/Thunks/syncapi/*.cpp` — Condition variables emulation
+- `src/Thunks/libloaderapi/*.cpp` — DLL loading compatibility
+- `CMakeLists.txt` — Build integration
+
 **NetBox files to modify (estimated):**
 - `src/base/WinXPCompat.h` (new) — Compatibility layer header
-- `src/base/WinXPCompat.cpp` (new) — Shim implementations
+- `src/base/WinXPCompat.cpp` (new) — Shim implementations (from Far3 + YY-Thunks)
 - `src/NetBox/NetBox.cpp` — Initialize compatibility layer
-- `CMakeLists.txt` — XP build option
+- `CMakeLists.txt` — XP build option, stub source configuration
 - Files from task-2 audit — Integrate shims
 
 **XP-incompatible APIs (common examples):**
-- `InitializeCriticalSectionEx` (Vista+) → fallback to `InitializeCriticalSection`
-- `GetFinalPathNameByHandle` (Vista+) → fallback to `GetMappedFileName` or skip
-- `CreateSymbolicLink` (Vista+) → return error on XP
-- Condition variables (Vista+) → emulate with events + critical sections
+- `InitializeCriticalSectionEx` (Vista+) → YY-Thunks stub (spin count handling)
+- `InitializeConditionVariable` / `SleepConditionVariableCS` (Vista+) → YY-Thunks event-based emulation
+- `GetFinalPathNameByHandle` (Vista+) → Far3 fallback or YY-Thunks stub
+- `CreateSymbolicLink` (Vista+) → return error on XP (no good fallback)
+- `EncodePointer` / `DecodePointer` (XP RTM missing) → YY-Thunks stub (issue #89)
+- `FlsAlloc` / `FlsFree` / `FlsGetValue` / `FlsSetValue` → YY-Thunks TLS support (issue #83)
+- `AddDllDirectory` / `RemoveDllDirectory` / `SetDefaultDllDirectories` → YY-Thunks stub (issue #92)
 
-**Build toolset:**
-- Visual Studio 2017: `v141_xp`
-- Visual Studio 2019: `v142_xp`
-- Visual Studio 2022: No official XP toolset (use VS2019 or earlier)
+**Build toolset decision:**
+- **Approach:** Use modern VS2022 toolset + compatibility stubs (no XP toolset needed)
+- **Why:** VS2022 does not include `v143_xp`; requiring VS2019 is burdensome
+- **How:** YY-Thunks pattern — stubs provide missing symbols at link time
+- **Preprocessor:** Keep `_WIN32_WINNT >= 0x0600` so API declarations are visible
 
 ---
 
@@ -336,9 +421,11 @@ NetBox plugin currently lacks Windows XP compatibility layer that exists in Far 
 - **XP SP2 vs SP3:** Require SP3 minimum (some APIs differ)
 - **64-bit XP:** Rare, focus on 32-bit XP (x86 build)
 - **API not available on XP:** Graceful degradation (log warning, disable feature)
-- **Dynamic loading fails:** Fallback to XP-compatible alternative
+- **Dynamic loading fails:** Fallback to XP-compatible alternative (YY-Thunks stub)
 - **Performance on XP:** Acceptable degradation for legacy support
 - **TLS/SSL on XP:** Limited to TLS 1.0/1.1 (modern servers may reject)
+- **OpenSSL version:** Modern OpenSSL 3.x dropped XP support — may need older OpenSSL for XP builds
+- **YY-Thunks license compliance:** MIT license allows copying — include attribution in source comments
 
 ---
 
@@ -350,6 +437,7 @@ NetBox plugin currently lacks Windows XP compatibility layer that exists in Far 
 - [ ] No regression on Windows 10/11
 - [ ] XP mode correctly detected at runtime
 - [ ] All shimmed APIs logged in debug mode
+- [ ] YY-Thunks source attribution included for copied stubs
 - [ ] Documentation complete (build + user-facing)
 - [ ] Code follows NetBox conventions (CRLF, naming, no warnings)
 
