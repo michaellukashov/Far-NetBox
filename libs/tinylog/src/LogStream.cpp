@@ -35,12 +35,25 @@ LogStream::LogStream(FILE * file, pthread_mutex_t & mutex, pthread_cond_t & cond
 LogStream::~LogStream()
 {
   // DEBUG_PRINTF("end");
+  // Flush any remaining log entries in the TLS buffer before closing the file
+  if (tls_buffer_used_ > 0)
+  {
+    InternalWrite(tls_buffer_.data(), tls_buffer_used_);
+    tls_buffer_used_ = 0;
+    // Immediately flush to file since background thread may be done
+    WriteBuffer();
+  }
   if (file_ != nullptr)
   {
     fclose(file_);
     file_ = nullptr;
   }
   // DEBUG_PRINTF("end");
+}
+
+size_t LogStream::GetDroppedCount() const
+{
+  return dropped_count_.load(std::memory_order_relaxed);
 }
 
 size_t LogStream::Write(const char * data, size_t ToWrite)
@@ -75,10 +88,14 @@ void LogStream::WriteBuffer()
   auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start);
   
   // Log warning if write took too long (indicates mutex contention)
-  if (elapsed.count() > 10)
+  auto ms = elapsed.count();
+  if (ms > 10)
   {
-    // TODO: Consider implementing buffer copy optimization if this warning appears frequently
-    // For now, just track that we measured it
+    // Buffer copy optimization decision: if this warning appears frequently
+    // in stress tests, implement copy-then-write to reduce mutex hold time
+    char tmp[256];
+    sprintf_s(tmp, "tinylog: WriteBuffer flush took %lld ms (threshold: 10ms) - mutex contention\n", ms);
+    OutputDebugStringA(tmp);
   }
   
   front_buff_->Clear();
@@ -165,7 +182,33 @@ size_t LogStream::FormattedWrite(const char * log_data, size_t to_write)
 
     if (n_append > 0)
     {
-      Result = InternalWrite(buf, n_append);
+      // Use thread-local buffer to batch writes and reduce mutex contention
+      if (tls_buffer_used_ + n_append > tls_buffer_.size())
+      {
+        // TLS buffer full, flush existing content to shared buffer first
+        if (tls_buffer_used_ > 0)
+        {
+          InternalWrite(tls_buffer_.data(), tls_buffer_used_);
+          tls_buffer_used_ = 0;
+        }
+
+        // If formatted line exceeds TLS buffer capacity, write it directly
+        if (n_append > tls_buffer_.size())
+        {
+          Result = InternalWrite(buf, n_append);
+        }
+        else
+        {
+          memcpy(tls_buffer_.data(), buf, n_append);
+          tls_buffer_used_ = n_append;
+        }
+      }
+      else
+      {
+        // Append to TLS buffer
+        memcpy(tls_buffer_.data() + tls_buffer_used_, buf, n_append);
+        tls_buffer_used_ += n_append;
+      }
     }
     nb_free(buf);
   }

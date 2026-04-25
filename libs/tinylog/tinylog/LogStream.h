@@ -27,6 +27,7 @@ public:
   void WriteBuffer();
   void SetFile(FILE * file);
   void SetPrefix(const char * file_name, int32_t line, const char * func_name, Utils::LogLevel log_level);
+  size_t GetDroppedCount() const;
   LogStream & operator <<(const std::string & log_data);
   LogStream & operator <<(const char * log_data);
   template<typename StringType>
