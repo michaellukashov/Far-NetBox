@@ -1,0 +1,18 @@
+{
+    // Markdownlint configuration
+    "markdownlint.config": {
+        // Enable MD060: Spaces inside code span elements
+        "MD060": false,
+        
+        // Enable MD033: Inline HTML with allowed elements
+        "MD033": {
+            "allowed_elements": ["br", "img", "a"]
+        }
+    },
+    
+    // Other VS Code settings for markdown
+    "[markdown]": {
+        "editor.formatOnSave": false,
+        "editor.wordWrap": "on"
+    }
+}
