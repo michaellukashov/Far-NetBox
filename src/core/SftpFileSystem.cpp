@@ -4220,11 +4220,39 @@ void TSFTPFileSystem::CopyFile(
 
 void TSFTPFileSystem::CreateDirectory(const UnicodeString & ADirName, bool Encrypt)
 {
-  TSFTPPacket Packet(SSH_FXP_MKDIR, FCodePage);
   const UnicodeString CanonifiedName = Canonify(ADirName);
-  AddPathString(Packet, CanonifiedName, Encrypt);
+  const SSH_FX_TYPE Status = CreateDirectoryRecursive(CanonifiedName, Encrypt);
+  if (Status != SSH_FX_OK)
+  {
+    throw ECommand(nullptr, FORMAT("Error creating directory \"%s\"", CanonifiedName), L"");
+  }
+}
+
+SSH_FX_TYPE TSFTPFileSystem::CreateDirectoryRecursive(const UnicodeString & ADirName, bool Encrypt)
+{
+  TSFTPPacket Packet(SSH_FXP_MKDIR, FCodePage);
+  AddPathString(Packet, ADirName, Encrypt);
   Packet.AddProperties(nullptr, 0, true, FVersion, FUtfStrings, nullptr);
-  SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_STATUS);
+
+  SSH_FX_TYPE Status = SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_STATUS);
+  if (Status != SSH_FX_OK)
+  {
+    if (Status == SSH_FX_NO_SUCH_FILE)
+    {
+      const UnicodeString Path2 = base::UnixExcludeTrailingBackslash(ADirName);
+      const UnicodeString ParentPath = base::UnixExtractFilePath(Path2);
+      if (!ParentPath.IsEmpty() && !base::IsUnixRootPath(ParentPath))
+      {
+        FTerminal->LogEvent(FORMAT("CreateDirectory: parent \"%s\" does not exist, creating recursively", ParentPath));
+        Status = CreateDirectoryRecursive(ParentPath, Encrypt);
+        if (Status == SSH_FX_OK)
+        {
+          Status = SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_STATUS);
+        }
+      }
+    }
+  }
+  return Status;
 }
 
 void TSFTPFileSystem::CreateLink(const UnicodeString & AFileName,

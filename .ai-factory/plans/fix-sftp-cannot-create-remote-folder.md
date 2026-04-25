@@ -208,6 +208,102 @@ Reference: https://github.com/michaellukashov/Far-NetBox/issues/485
   - **Acceptance criteria:** `F7` → type nested path when parent exists → directory created
   - **Acceptance criteria:** `F7` → type nested path when parent missing → clear error "No such file or directory"
 
+- [x] **Task 7: Implement recursive parent directory creation in CreateDirectory** (depends on Task 3)
+  - When `MKDIR` returns `SSH_FX_NO_SUCH_FILE` (Status 2), recursively create missing parent
+    directories bottom-up using `CreateDirectoryRecursive()`, then retry MKDIR for the target.
+  - **Files:** `src/core/SftpFileSystem.cpp`, `src/core/SftpFileSystem.h`
+  - **Build:** zero new warnings
+
+- [x] **Task 8: Build and verify zero warnings** (depends on Task 7)
+  - Run: `cmd /c build-x64.bat`
+  - Confirm: zero MSVC W4 warnings
+
+- [ ] **Task 9: Verify nested directory creation** (depends on Task 8)
+
+### Phase 5: Add Recursive Directory Creation
+
+- [ ] **Task 7: Implement recursive parent directory creation in CreateDirectory** (depends on Task 3)
+
+  **File:** `src/core/SftpFileSystem.cpp`, `src/core/SftpFileSystem.h`
+
+  When `MKDIR` returns `SSH_FX_NO_SUCH_FILE` (Status 2), the current fallback re-throws
+  immediately. Instead, recursively create missing parent directories bottom-up, then
+  retry MKDIR for the target.
+
+  **Change 1 — Add declaration to header:**
+  ```
+  SSH_FX_TYPE CreateDirectoryRecursive(const UnicodeString & ADirName, bool Encrypt);
+  ```
+
+  **Change 2 — Refactor CreateDirectory:**
+  ```
+  BEFORE:
+  void TSFTPFileSystem::CreateDirectory(const UnicodeString & ADirName, bool Encrypt)
+  {
+    TSFTPPacket Packet(SSH_FXP_MKDIR, FCodePage);
+    const UnicodeString CanonifiedName = Canonify(ADirName);
+    AddPathString(Packet, CanonifiedName, Encrypt);
+    Packet.AddProperties(nullptr, 0, true, FVersion, FUtfStrings, nullptr);
+    SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_STATUS);
+  }
+
+  AFTER:
+  void TSFTPFileSystem::CreateDirectory(const UnicodeString & ADirName, bool Encrypt)
+  {
+    const UnicodeString CanonifiedName = Canonify(ADirName);
+    const SSH_FX_TYPE Status = CreateDirectoryRecursive(CanonifiedName, Encrypt);
+    if (Status != SSH_FX_OK)
+    {
+      throw ECommand(nullptr, FORMAT("Error creating directory \"%s\"", CanonifiedName), L"");
+    }
+  }
+  ```
+
+  **Change 3 — Implement CreateDirectoryRecursive:**
+  ```
+  SSH_FX_TYPE TSFTPFileSystem::CreateDirectoryRecursive(const UnicodeString & ADirName, bool Encrypt)
+  {
+    TSFTPPacket Packet(SSH_FXP_MKDIR, FCodePage);
+    AddPathString(Packet, ADirName, Encrypt);
+    Packet.AddProperties(nullptr, 0, true, FVersion, FUtfStrings, nullptr);
+
+    SSH_FX_TYPE Status = SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_STATUS);
+    if (Status != SSH_FX_OK)
+    {
+      if (Status == SSH_FX_NO_SUCH_FILE)
+      {
+        const UnicodeString Path2 = base::UnixExcludeTrailingBackslash(ADirName);
+        const UnicodeString ParentPath = base::UnixExtractFilePath(Path2);
+        if (!ParentPath.IsEmpty() && !base::IsUnixRootPath(ParentPath))
+        {
+          FTerminal->LogEvent(FORMAT("CreateDirectory: parent \"%s\" does not exist, creating recursively", ParentPath));
+          Status = CreateDirectoryRecursive(ParentPath, Encrypt);
+          if (Status == SSH_FX_OK)
+          {
+            Status = SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_STATUS);
+          }
+        }
+      }
+    }
+    return Status;
+  }
+  ```
+
+  **Edge cases:**
+  - Root path (`/`) — `IsUnixRootPath` guard prevents infinite recursion
+  - Empty parent path — guard prevents unnecessary recursive calls
+  - Permission denied (Status 3) — propagate as error, do not retry
+  - All other failures — propagate as error
+
+- [ ] **Task 8: Build and verify zero warnings** (depends on Task 7)
+  - Run: `cmd /c build-x64.bat`
+  - Confirm: zero MSVC W4 warnings
+
+- [ ] **Task 9: Verify nested directory creation** (depends on Task 8)
+  - F7 → type `CACHEDEV1_DATA/Download/Kodi/newdir` → directory created successfully
+  - F7 → type `CACHEDEV1_DATA/Download/deeply/nested/path` → all parents created
+  - Check plugin log for "parent ... does not exist, creating recursively" messages
+
 ---
 
 ## Commit Plan
@@ -233,6 +329,13 @@ Two changes fix this issue:
    Canonify callers: CreateDirectory, RenameFile (x2), CreateLink (x2).
    Improved logging in second fallback block for debugging.
 
+3. CreateDirectory: Add recursive parent directory creation
+   When MKDIR returns SSH_FX_NO_SUCH_FILE, recursively create missing parent
+   directories bottom-up before retrying MKDIR for the target. This enables
+   creating deeply nested directories (e.g. a/b/c/d) in a single operation.
+   Edge cases: root path and empty parent path are guarded to prevent
+   infinite recursion.
+
 Fixes #485
 ```
 
@@ -249,6 +352,10 @@ Fixes #485
    the issue is upstream of Canonify — see Task 5.
 5. Confirm: directory created successfully, no error dialog appears
 6. Check plugin log for `"Canonify: GetRealPath failed"` messages (expected — not errors)
+7. Test nested directory creation:
+   - Navigate to `CACHEDEV1_DATA/Download`
+   - F7 → type `deep/nested/dir` → all parent directories created
+   - Check log for `"parent ... does not exist, creating recursively"` messages
 
 **Expected logs after fix:**
 - `TMkdirSessionAction` log now uses `LocalCanonify()` — no `SSH_FXP_REALPATH`

@@ -83,6 +83,7 @@ public:
     const TCopyParamType * CopyParam, int32_t AParams, TFileOperationProgressType * OperationProgress,
     uint32_t AFlags, TDownloadSessionAction & Action) override;
   virtual void CreateDirectory(const UnicodeString & ADirName, bool Encrypt) override;
+  SSH_FX_TYPE CreateDirectoryRecursive(const UnicodeString & ADirName, bool Encrypt);
   virtual void CreateLink(const UnicodeString & AFileName, const UnicodeString & APointTo, bool Symbolic) override;
   virtual void DeleteFile(const UnicodeString & AFileName,
     const TRemoteFile * AFile, int32_t Params, TRmSessionAction & Action) override;
