@@ -18,7 +18,7 @@ The `cmd.exe /c` shell parses quotes incorrectly, treating body words as file pa
    git commit -m "ci(release): improve release workflow"
    ```
 
-2. **Multi-line commit**: Use `git commit -m "title" -m "- line 1\n-line 2"` instead of heredoc
+2. **Multi-line commit**: Use `git commit -m "title{CRLF}line1{CRLF}line2"` instead of heredoc
    ```
 
 3. **NEVER** use escaped quotes (`\"`) inside `-m` on Windows — they break `cmd.exe` parsing.
@@ -29,6 +29,6 @@ The `cmd.exe /c` shell parses quotes incorrectly, treating body words as file pa
 
 When committing:
 ```
-git commit -m "<subject>" -m "<body-line-1>\n<body-line-2>"
+git commit -m "<subject>" -m "title{CRLF}line1{CRLF}line2"
 ```
 Or if the body is long, prefer subject-line only and let the diff speak for itself.

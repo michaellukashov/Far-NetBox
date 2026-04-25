@@ -408,7 +408,7 @@ cmd /c "act -W .github/workflows/release.yml -j create-release -P windows-2022=-
 - **Main branch**: `main` (protected)
 - **Branch naming**: `feature/description`, `fix/description`, `refactor/description`
 - **Commit messages**: Imperative mood, under 72 chars for summary
-- **Multi-line commit**: Use `git commit -m "title" -m "body"` instead of heredoc (causes parsing errors)
+- **Multi-line commit**: Use `git commit -m "title{CRLF}line1{CRLF}line2"` instead of heredoc (causes parsing errors)
 - **Skip CI**: `[skip ci]` or `[ci skip]` in commit message
 - **CI/CD**: GitHub Actions (`.github/workflows/release.yml`), AppVeyor (legacy)
 
