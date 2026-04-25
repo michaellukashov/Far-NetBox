@@ -1,42 +1,98 @@
 # Far-NetBox Issue Prioritization & Task List
 
-> Generated: 2026-04-25
+> Generated: 2026-04-25 (updated)
 > Source: <https://github.com/michaellukashov/Far-NetBox/issues>
-> Total issues analyzed: 10 open issues
+> Total issues analyzed: **100** (last 100 by creation date)
 
 ---
 
-## Priority-Sorted Task Table
+## Stats Summary
+
+| Metric | Count |
+|--------|-------|
+| Total analyzed | **100** |
+| Open | **20** |
+| Closed | **80** |
+| Pull Requests | **60** (58 closed, 2 open: [#504](https://github.com/michaellukashov/Far-NetBox/pull/504), [#500](https://github.com/michaellukashov/Far-NetBox/pull/500)) |
+| Non-PR Issues | **40** (18 open, 22 closed) |
+
+### Issue Category Breakdown (non-PR only: 40)
+
+| Category | Count | Description |
+|----------|-------|-------------|
+| **Bug** | 23 | Crashes, errors, not working, data corruption |
+| **Integration** | 11 | S3, FTP listings, TLS, certs, codepage, file copy |
+| **Feature** | 3 | New capabilities, enhancements |
+| **Performance** | 3 | Speed, hangs, idle thread |
+
+---
+
+## Priority-Sorted Task Table (Open Issues)
 
 ### CRITICAL — Severity 9-10 — Immediate Action Required
 
-| # | Issue | Description | Impact | Est. Time | Dependencies |
-|---|-------|-------------|--------|-----------|-------------|
-| 1 | **#485 — Cannot create remote folder**<br>`[Bug · Severity 10 · Immediate]` | Remote directory creation fails on SFTP connections. Breaks core file management workflow. | Users cannot create directories on remote servers — fundamental functionality broken. | 2-4 hours | WinSCP core folder creation logic |
-| 2 | **#432 — Far silent close on FTP connection**<br>`[Bug · Severity 10 · Immediate]` | Connecting to FTP server causes Far Manager to silently crash/close without error message. No crash dump generated. | Complete application crash — data loss risk, unrecoverable session. | 4-8 hours | Debug logging infrastructure |
-| 3 | **#184 — FTP AUTO/ASCII transfer mode download failure**<br>`[Bug · Severity 9 · Immediate]` | When FTP transfer mode set to AUTO or ASCII, downloads fail silently. Binary mode works. | Data corruption on text file transfers; affects ASCII-mode workflows. | 3-5 hours | FTP protocol handler module |
+| # | Issue | Type | Summary | Impact | Est. Time |
+|---|-------|------|---------|--------|-----------|
+| 1 | **[#432](https://github.com/michaellukashov/Far-NetBox/issues/432)** | Bug | **CLOSED** — Fixed by PR [#433](https://github.com/michaellukashov/Far-NetBox/pull/433). Far silent close on FTP connection. | Resolved. | — |
+| 2 | **[#513](https://github.com/michaellukashov/Far-NetBox/issues/513)** | Bug | FTP hangs then crashes with `STATUS_STACK_OVERFLOW` on BusyBox FTP (cameras). 14 comments. | Crash + data loss risk. | 4-8h |
+| 3 | **[#506](https://github.com/michaellukashov/Far-NetBox/issues/506)** | Bug | Far crashes on FTP connect to specific servers; scans all directories before crash. | Complete app crash. | 4-8h |
+| 4 | **[#508](https://github.com/michaellukashov/Far-NetBox/issues/508)** | Bug | Far crashes after 2nd file open via SFTP unless Ctrl+R refresh between opens. | Workflow-breaking crash. | 3-5h |
+| 5 | **[#497](https://github.com/michaellukashov/Far-NetBox/issues/497)** | Bug | `STATUS_STACK_OVERFLOW` on F3 (file info) via SFTP to certain servers. | Crash on info view. | 3-5h |
+| 6 | **[#501](https://github.com/michaellukashov/Far-NetBox/issues/501)** | Bug | Slow SSH/SCP copy + corrupted files on certain SSH servers. | Data corruption risk. | 4-6h |
 
 ### HIGH — Severity 7-8 — Short-term Resolution
 
-| # | Issue | Description | Impact | Est. Time | Dependencies |
-|---|-------|-------------|--------|-----------|-------------|
-| 4 | **#389 / #202 — Pure-FTPd TLS connection failure**<br>`[Bug · Severity 8 · Short-term]` | Cannot establish TLS-encrypted connections to Pure-FTPd servers. Two open issues (#202, #389) indicating recurring/unresolved problem. | No encrypted FTP possible with Pure-FTPd — security compliance issue. | 4-6 hours | OpenSSL integration; TLS negotiation module |
-| 5 | **#380 — Slow FTP download of many files**<br>`[Performance · Severity 8 · Short-term]` | Downloading large numbers of files via FTP is extremely slow. Performance degrades with file count. | Productivity blocker for bulk operations; makes FTP impractical for large transfers. | 6-12 hours | FTP session pooling; file enumeration optimization |
-| 6 | **#396 — FTP non-default port not preserved**<br>`[Bug · Severity 7 · Short-term]` | FTP connection forgets custom port number; reconnects to default port 21. | Users with non-standard FTP ports cannot maintain connections. | 2-3 hours | Session data serialization; configuration persistence |
-| 7 | **#329 — KeepAlive broken since FAR 3 (2021)**<br>`[Bug · Severity 7 · Short-term]` | KeepAlive mechanism doesn't work in FAR 3 distributions. Connections drop after idle period. | Sessions disconnect unexpectedly; data loss during interrupted transfers. | 3-5 hours | FAR 3 API integration; keepalive timer module |
+| # | Issue | Type | Summary | Impact | Est. Time |
+|---|-------|------|---------|--------|-----------|
+| 7 | **[#515](https://github.com/michaellukashov/Far-NetBox/issues/515)** | Bug | F7 directory creation ignores autocomplete text; creates partial name. | Broken directory creation UX. | 2-3h |
+| 8 | **[#514](https://github.com/michaellukashov/Far-NetBox/issues/514)** | Bug | S3: lists buckets but cannot enter any bucket. | S3 protocol unusable. | 4-8h |
+| 9 | **[#510](https://github.com/michaellukashov/Far-NetBox/issues/510)** | Bug | Amazon S3 connects but shows empty directory; can't upload; time encode error. | S3 unusable on AWS. | 4-8h |
+| 10 | **[#512](https://github.com/michaellukashov/Far-NetBox/issues/512)** | Bug | IdleThread starts too early; crashes on plugin unload (`EXCEPTION_ACCESS_VIOLATION`). By contributor @alabuzhev. | Crash on plugin load/unload. | 2-3h |
+| 11 | **[#511](https://github.com/michaellukashov/Far-NetBox/issues/511)** | Perf | Download speed limit in transfer dialog has no effect (SSH). | Cannot throttle transfers. | 2-4h |
+| 12 | **[#507](https://github.com/michaellukashov/Far-NetBox/issues/507)** | Bug | FTP directory listing hangs; treats every file as directory (vsftpd). | Impossibly slow listing. | 4-6h |
+| 13 | **[#486](https://github.com/michaellukashov/Far-NetBox/issues/486)** | Bug | Dialog size overflow with proxy+tunnel settings in key exchange panel. | UI corruption. | 1-2h |
 
 ### MEDIUM — Severity 5-6 — Planned Enhancement
 
-| # | Issue | Description | Impact | Est. Time | Dependencies |
-|---|-------|-------------|--------|-----------|-------------|
-| 8 | **#385 — Add ed25519 key support**<br>`[Feature · Severity 6 · Short-term]` | Missing support for Ed25519 SSH key type. Modern standard for SSH authentication. | Users with ed25519 keys cannot authenticate; security best practice gap. | 4-8 hours | PuTTY key loading module; OpenSSH compatibility layer |
-| 9 | **#382 — ~/.ssh/config file reading**<br>`[Feature · Severity 5 · Long-term]` | Plugin doesn't read OpenSSH ~/.ssh/config for connection parameters (host aliases, jump hosts, key paths). | Users must manually configure every session; no Host alias support. | 8-16 hours | SSH config parser; session configuration UI |
+| # | Issue | Type | Summary | Impact | Est. Time |
+|---|-------|------|---------|--------|-----------|
+| 14 | **[#509](https://github.com/michaellukashov/Far-NetBox/issues/509)** | Feature | Support user-provided auth certificates (PuTTY cert auth). 19 comments. | Missing auth method. | 4-8h |
+| 15 | **[#505](https://github.com/michaellukashov/Far-NetBox/issues/505)** | Feature | Fall back to opening FTP URL as file if directory access fails. | UX improvement. | 3-5h |
+| 16 | **[#481](https://github.com/michaellukashov/Far-NetBox/issues/481)** | Bug | FTP codepage ISO-8859-5 copy fails (filename encoding). | Broken non-UTF8 FTP. | 3-5h |
+| 17 | **[#472](https://github.com/michaellukashov/Far-NetBox/issues/472)** | Bug | False positive session import prompts on every start. | Annoyance. | 2-3h |
+| 18 | **[#443](https://github.com/michaellukashov/Far-NetBox/issues/443)** | Feature | Various UX improvements. | Quality-of-life. | Varies |
 
 ### LOW — Severity 1-4 — Backlog / Nice-to-have
 
-| # | Issue | Description | Impact | Est. Time | Dependencies |
-|---|-------|-------------|--------|-----------|-------------|
-| 10 | **Additional feature requests**<br>`[Improvement · Severity 3 · Long-term]` | General UX improvements and minor feature requests from community feedback. | Incremental quality-of-life improvements. | Varies | Depends on specific request scope |
+| # | Issue | Type | Summary |
+|---|-------|------|---------|
+| 19 | **[#502](https://github.com/michaellukashov/Far-NetBox/pull/502)** | PR | Patch for NetBox.rc version string (open). |
+| 20 | **[#500](https://github.com/michaellukashov/Far-NetBox/pull/500)** | PR | Open PR. |
+| 21 | **[#504](https://github.com/michaellukashov/Far-NetBox/pull/504)** | PR | Fix for #390: DateTimeToTimeStamp timestamp clamping (open). |
+
+### FIXED (in this analysis batch)
+
+| # | Fix | Status |
+|---|-----|--------|
+| **[#485](https://github.com/michaellukashov/Far-NetBox/issues/485)** | SFTP "Cannot create remote folder" | **FIXED** — `lmv/dev` branch, `SftpFileSystem.cpp:3147-3173` |
+| **[#432](https://github.com/michaellukashov/Far-NetBox/issues/432)** | Far silent close on FTP connect | **CLOSED** — Fixed by PR [#433](https://github.com/michaellukashov/Far-NetBox/pull/433) |
+| **[#390](https://github.com/michaellukashov/Far-NetBox/issues/390)** | Invalid argument to time encode | **PR open** — [#504](https://github.com/michaellukashov/Far-NetBox/pull/504) |
+| **[#503](https://github.com/michaellukashov/Far-NetBox/issues/503)** | FTPS implicit doesn't work | **CLOSED** |
+
+### OLDER ISSUES (not in last 100, from original PLAN-Issues.md)
+
+These issues are older than the 100-issue window and need re-verification:
+
+| # | Title | Status |
+|---|-------|--------|
+| [#184](https://github.com/michaellukashov/Far-NetBox/issues/184) | FTP AUTO/ASCII transfer mode download failure | Unverified |
+| [#202](https://github.com/michaellukashov/Far-NetBox/issues/202) | Pure-FTPd TLS connection failure | Unverified |
+| [#329](https://github.com/michaellukashov/Far-NetBox/issues/329) | KeepAlive broken since FAR 3 (2021) | Unverified |
+| [#380](https://github.com/michaellukashov/Far-NetBox/issues/380) | Slow FTP download of many files | Unverified |
+| [#382](https://github.com/michaellukashov/Far-NetBox/issues/382) | ~/.ssh/config file reading | Unverified |
+| [#385](https://github.com/michaellukashov/Far-NetBox/issues/385) | Add ed25519 key support | Unverified |
+| [#389](https://github.com/michaellukashov/Far-NetBox/issues/389) | Pure-FTPd TLS connection failure | Unverified |
+| [#396](https://github.com/michaellukashov/Far-NetBox/issues/396) | FTP non-default port not preserved | Unverified |
 
 ---
 
@@ -44,50 +100,64 @@
 
 | Category | Count | Priority Range |
 |----------|-------|----------------|
-| **Bug** | 7 | Critical → High |
-| **Feature** | 2 | Medium |
-| **Performance** | 1 | High |
-| **Improvement** | 1 | Low |
+| **Bug** | 23 (of 40 non-PR) | Critical → High |
+| **Integration** | 11 | High → Medium |
+| **Performance** | 3 | High |
+| **Feature** | 3 | Medium → Low |
 
 ## Summary by Urgency
 
 | Urgency | Count | Key Issues |
 |---------|-------|------------|
-| **Immediate** | 3 | #485, #432, #184 — crashes, data corruption, broken core features |
-| **Short-term** | 5 | #389/#202, #380, #396, #329, #385 — security, performance, compatibility |
-| **Long-term** | 2 | #382, improvements — UX enhancements |
+| **Immediate** | 6 | #513, #506, #508, #497, #501 — crashes + data corruption |
+| **Short-term** | 7 | #515, #514, #510, #512, #511, #507, #486 |
+| **Medium-term** | 5 | #509, #505, #481, #472, #443 |
+| **Backlog** | 3 (open PRs) | #502, #500, #504 |
 
 ## Recommended Execution Order
 
-### Phase 1: Stabilization (Week 1-2) — Critical Bugs
+### Phase 1: Stabilization — Critical Crash Bugs
 
-1. **#432** — Fix silent crash on FTP connect (highest user impact, crash = P0)
-2. **#485** — Fix remote folder creation (core workflow broken)
-3. **#184** — Fix FTP AUTO/ASCII transfer mode (data integrity risk)
+1. **[#513](https://github.com/michaellukashov/Far-NetBox/issues/513)** — FTP stack overflow crash (highest recent activity, 14 comments)
+2. **[#506](https://github.com/michaellukashov/Far-NetBox/issues/506)** — FTP connect crash
+3. **[#508](https://github.com/michaellukashov/Far-NetBox/issues/508)** — SFTP double-open crash
+4. **[#497](https://github.com/michaellukashov/Far-NetBox/issues/497)** — F3 file info stack overflow
+5. **[#512](https://github.com/michaellukashov/Far-NetBox/issues/512)** — IdleThread startup crash (simple fix)
 
-### Phase 2: Security & Performance (Week 3-4) — High Priority
+### Phase 2: Protocol Functionality — S3 + FTP
 
-1. **#389/#202** — Fix Pure-FTPd TLS connections (security compliance)
-2. **#396** — Fix port preservation (connection reliability)
-3. **#329** — Fix KeepAlive for FAR 3 (session stability)
-4. **#380** — Optimize bulk FTP downloads (performance)
+1. **[#514](https://github.com/michaellukashov/Far-NetBox/issues/514)** / **[#510](https://github.com/michaellukashov/Far-NetBox/issues/510)** — S3 bucket access (combine investigation)
+2. **[#507](https://github.com/michaellukashov/Far-NetBox/issues/507)** — FTP directory listing hang
+3. **[#515](https://github.com/michaellukashov/Far-NetBox/issues/515)** — F7 autocomplete directory name
 
-### Phase 3: Feature Additions (Week 5-8) — Medium Priority
+### Phase 3: UX & Polish
 
-1. **#385** — Add ed25519 key support (modern authentication)
-2. **#382** — Implement ~/.ssh/config reading (UX improvement)
+1. **[#511](https://github.com/michaellukashov/Far-NetBox/issues/511)** — Speed limit not working
+2. **[#486](https://github.com/michaellukashov/Far-NetBox/issues/486)** — Dialog overflow
+3. **[#505](https://github.com/michaellukashov/Far-NetBox/issues/505)** — FTP URL file fallback
+4. **[#472](https://github.com/michaellukashov/Far-NetBox/issues/472)** — False import prompts
 
-### Phase 4: Polish (Ongoing) — Low Priority
+### Phase 4: Features & Integration
 
-1. Community-requested improvements and minor fixes
+1. **[#509](https://github.com/michaellukashov/Far-NetBox/issues/509)** — Auth certificate support
+2. **[#481](https://github.com/michaellukashov/Far-NetBox/issues/481)** — FTP codepage fix
+3. **[#501](https://github.com/michaellukashov/Far-NetBox/issues/501)** — Corrupted file copy
 
 ---
 
 ## Risk Assessment
 
 | Risk | Likelihood | Mitigation |
-|------|-----------|------------|
-| WinSCP core changes break fixes | Medium | Test against multiple WinSCP versions |
-| OpenSSL compatibility issues | Medium | Use project's patched OpenSSL |
-| FAR 3 API changes | Low | FAR 3 API is stable since 2021 |
-| Regressions in TLS/SSH | High | Manual testing cycle per AGENTS.md |
+|-------|------------|------------|
+| Multiple stack overflow crashes suggest concurrency bugs | High | Audit threading model; IdleThread fix may help |
+| S3 protocol broken for multiple users | High | Isolate S3-specific issues from TLS/HTTP layer |
+| FTP crash reports overlap (#513, #506, #432) | Medium | Check if all share same root cause |
+| Open PRs accumulating without review | Medium | Review and merge or close stale PRs |
+
+---
+
+## Change Log
+
+| Date | Change |
+|------|--------|
+| 2026-04-25 | Full re-analysis of last 100 issues; expanded from 10 to all open issues; added links; marked #485 as fixed, #432 as closed |
