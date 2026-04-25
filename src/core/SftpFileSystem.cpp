@@ -3146,14 +3146,8 @@ UnicodeString TSFTPFileSystem::Canonify(const UnicodeString & APath)
   }
   catch(...)
   {
-    if (FTerminal->GetActive())
-    {
-      TryParent = true;
-    }
-    else
-    {
-      throw;
-    }
+    FTerminal->LogEvent(FORMAT("Canonify: GetRealPath failed for \"%s\", falling back to parent", APath));
+    TryParent = true;
   }
 
   if (TryParent)
@@ -3174,14 +3168,8 @@ UnicodeString TSFTPFileSystem::Canonify(const UnicodeString & APath)
       }
       catch(...)
       {
-        if (FTerminal->GetActive())
-        {
-          Result = Path;
-        }
-        else
-        {
-          throw;
-        }
+        FTerminal->LogEvent(FORMAT("Canonify: GetRealPath failed for parent \"%s\", using original path", Path3));
+        Result = Path;
       }
     }
   }
