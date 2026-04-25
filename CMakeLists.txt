@@ -48,6 +48,12 @@ endif()
 # Plugin directory creation
 set(OPT_CREATE_PLUGIN_DIR OFF CACHE BOOL "Create plugin directory structure")
 
+# Test targets
+set(OPT_CREATE_TESTS OFF CACHE BOOL "Enable test targets")
+if(OPT_CREATE_TESTS)
+    enable_testing()
+endif()
+
 # IDE suppor
 set(OPT_COMPILE_COMMANDS OFF CACHE BOOL "Generate compile_commands.json for IDE support")
 if(OPT_COMPILE_COMMANDS)

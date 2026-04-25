@@ -70,3 +70,24 @@ netbox_configure_target(NetBox)
 #===============================================================================
 
 netbox_setup_plugin_installation(NetBox)
+
+#===============================================================================
+# tinylog Unit Tests
+#===============================================================================
+
+if(OPT_CREATE_TESTS)
+  add_executable(test_tinylog
+    ${CMAKE_SOURCE_DIR}/libs/tinylog/tests/test_tinylog.cpp
+    ${CMAKE_SOURCE_DIR}/libs/tinylog/tests/unicode_stub.cpp
+    ${CMAKE_SOURCE_DIR}/src/nbcore/nbmemory.cpp
+    ${CMAKE_SOURCE_DIR}/src/nbcore/nbstring.cpp
+    ${CMAKE_SOURCE_DIR}/libs/tinylog/src/TinyLog.cpp
+    ${CMAKE_SOURCE_DIR}/libs/tinylog/src/LogStream.cpp
+    ${CMAKE_SOURCE_DIR}/libs/tinylog/src/Buffer.cpp
+    ${CMAKE_SOURCE_DIR}/libs/tinylog/src/Utils.cpp
+    ${CMAKE_SOURCE_DIR}/libs/tinylog/src/LockFreeQueue.cpp
+  )
+  netbox_configure_target(test_tinylog)
+  target_compile_definitions(test_tinylog PRIVATE -DTINYLOG_EXPOR)
+  add_test(NAME tinylog COMMAND test_tinylog)
+endif()
