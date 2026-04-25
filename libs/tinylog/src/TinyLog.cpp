@@ -164,6 +164,9 @@ TinyLog::TinyLog() noexcept :
 
 TinyLog::~TinyLog() noexcept
 {
+  // Mark singleton as destroyed so background threads
+  // skip logging via TINYLOG_* null-guard checks
+  instance_ = nullptr;
 }
 
 auto TinyLog::instance() -> TinyLog * &

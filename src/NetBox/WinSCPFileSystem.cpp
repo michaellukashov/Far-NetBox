@@ -22,7 +22,7 @@
 #include "PuttyIntf.h"
 #include "XmlStorage.h"
 #include <plugin.hpp>
-
+#include <LogContext.h>
 
 
 TSessionPanelItem::TSessionPanelItem(const TSessionData * ASessionData) :
@@ -2580,6 +2580,13 @@ int32_t TWinSCPFileSystem::GetFilesEx(TObjectList * PanelItems, bool Move,
   if (Connected())
   {
     FFileList.reset(CreateFileList(PanelItems, osRemote));
+    {
+      UTF8String destPathUtf8(DestPath);
+      TINYLOG_DEBUG(g_tinylog) << TLogContext::Format()
+        << " GetFilesEx: items=" << std::to_string(PanelItems->GetCount())
+        << " count=" << std::to_string(FFileList->GetCount())
+        << " dest=" << destPathUtf8.c_str();
+    }
     try__finally
     {
       if (FFileList->GetCount() > 0)
@@ -2688,6 +2695,17 @@ int32_t TWinSCPFileSystem::GetFilesRemote(TObjectList * PanelItems, bool Move,
 {
   int32_t Result = -1;
   const bool EditView = (OpMode & (OPM_EDIT | OPM_VIEW)) != 0;
+
+  std::string remoteOp(EditView ? "edit_view" : "download");
+  TLogContext ctx_op("op", remoteOp);
+  UTF8String remoteSrcUtf8(FFileList && FFileList->GetCount() > 0 ?
+    FFileList->GetString(0) : UnicodeString(L""));
+  std::string remoteSrc(remoteSrcUtf8.c_str());
+  TLogContext ctx_src("src", remoteSrc);
+  TINYLOG_DEBUG(g_tinylog) << TLogContext::Format()
+    << " GetFilesRemote start, count=" << std::to_string(FFileList ? FFileList->GetCount() : 0)
+    << " move=" << (Move ? "1" : "0");
+
   bool Confirmed =
     (OpMode & OPM_SILENT) &&
     (!EditView || GetFarConfiguration()->GetEditorDownloadDefaultMode());
@@ -2713,6 +2731,8 @@ int32_t TWinSCPFileSystem::GetFilesRemote(TObjectList * PanelItems, bool Move,
     Confirmed = CopyDialog(false, Move, FFileList.get(),
         Options, CopyParamAttrs,
         DestPath, &CopyParam);
+    TINYLOG_DEBUG(g_tinylog) << TLogContext::Format()
+      << " CopyDialog result=" << (Confirmed ? "confirmed" : "cancelled");
 
     if (Confirmed && !EditView && CopyParam.GetQueue())
     {
@@ -2722,6 +2742,7 @@ int32_t TWinSCPFileSystem::GetFilesRemote(TObjectList * PanelItems, bool Move,
         // | FLAGMASK(CopyParam.GetNewerOnly(), cpNewerOnly)
       QueueAddItem(new TDownloadQueueItem(FTerminal, FFileList.get(),
           DestPath, &CopyParam, Params, false));
+      TINYLOG_DEBUG(g_tinylog) << TLogContext::Format() << " QueueAddItem: queued download";
       Confirmed = false;
     }
   }
@@ -2761,13 +2782,8 @@ int32_t TWinSCPFileSystem::GetFilesRemote(TObjectList * PanelItems, bool Move,
       }
     }
     FTerminal->CopyToLocal(FFileList.get(), DestPath, &CopyParam, Params, nullptr);
+    TINYLOG_DEBUG(g_tinylog) << TLogContext::Format() << " CopyToLocal completed";
 
-  // Clear FFileList after temporary file operations to prevent stale pointers
-  // This fixes crash on second file open without directory refresh (GitHub issue #508)
-  if (EditView)
-  {
-    FFileList.reset();
-  }
     // Store the captured remote timestamp
     if ((FFileList->GetCount() == 1) && (OpMode & OPM_EDIT) && (RemoteTimestamp != TDateTime()))
     {
@@ -2784,6 +2800,13 @@ int32_t TWinSCPFileSystem::GetFilesRemote(TObjectList * PanelItems, bool Move,
         FFileList->GetCount(), OpMode, (RemoteTimestamp != TDateTime()) ? 1 : 0));
     }
     Result = 1;
+
+  // Clear FFileList after temporary file operations to prevent stale pointers
+  // This fixes crash on second file open without directory refresh (GitHub issue #508)
+  if (EditView)
+  {
+    FFileList.reset();
+  }
   }
   return Result;
 }
