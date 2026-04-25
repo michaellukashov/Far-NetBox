@@ -34,6 +34,7 @@ This plan fixes critical thread-safety issues in the tinylog logging library and
 ### Phase 1: Fix tinylog Thread-Safety
 
 #### Task 1.1: Add Thread-Local Staging Buffers
+**Status:** [x]
 **File:** `libs/tinylog/tinylog/LogStream.h`  
 **File:** `libs/tinylog/src/LogStream.cpp`
 
@@ -68,6 +69,7 @@ Add `thread_local` staging buffers to reduce mutex contention.
 ---
 
 #### Task 1.2: Make drain_buffer_ Atomic
+**Status:** [x]
 **File:** `libs/tinylog/tinylog/LogStream.h`  
 **File:** `libs/tinylog/src/LogStream.cpp`  
 **File:** `libs/tinylog/src/TinyLog.cpp`
@@ -118,6 +120,7 @@ Fix buffer swap race by making `drain_buffer_` atomic with proper memory orderin
 ---
 
 #### Task 1.3: Replace Timestamp with Atomic
+**Status:** [x]
 **File:** `libs/tinylog/tinylog/LogStream.h`  
 **File:** `libs/tinylog/src/LogStream.cpp`
 
@@ -164,6 +167,7 @@ Replace `tv_base_` and `tm_base_` with atomic timestamp to prevent races.
 ---
 
 #### Task 1.4: Measure Mutex Hold Time
+**Status:** [x]
 **File:** `libs/tinylog/src/LogStream.cpp`
 
 Measure current `fwrite` time under lock to determine if buffer copy optimization is needed.
@@ -198,6 +202,7 @@ Measure current `fwrite` time under lock to determine if buffer copy optimizatio
 ---
 
 #### Task 1.5: Add Buffer Overflow Handling
+**Status:** [x]
 **File:** `libs/tinylog/tinylog/Buffer.h`  
 **File:** `libs/tinylog/src/Buffer.cpp`
 
@@ -233,6 +238,7 @@ Add ring buffer semantics to drop oldest entries when buffer is full.
 ---
 
 #### Task 1.6: Create tinylog Unit Tests
+**Status:** [x]
 **File:** `libs/tinylog/tests/test_tinylog.cpp` (new)  
 **File:** `libs/tinylog/CMakeLists.txt`
 
@@ -291,6 +297,7 @@ xcopy /E /I /Y libs\tinylog libs\tinylog.backup
 ### Phase 2: Improve NetBox Logging Patterns
 
 #### Task 2.1: Create TLogContext Helper
+**Status:** [x]
 **File:** `src/base/LogContext.h` (new)  
 **File:** `src/base/LogContext.cpp` (new)
 
@@ -328,6 +335,7 @@ private:
 ---
 
 #### Task 2.2: Add Structured Logging Macros
+**Status:** [x]
 **File:** `src/base/Global.h`
 
 Add convenience macros for structured logging.
@@ -359,6 +367,7 @@ Add convenience macros for structured logging.
 ---
 
 #### Task 2.3: Instrument TSimpleThread
+**Status:** [x]
 **File:** `src/core/Queue.cpp`
 
 Add logging to `TSimpleThread::ThreadProc` and `TSimpleThread::Execute`.
@@ -394,6 +403,7 @@ Add logging to `TSimpleThread::ThreadProc` and `TSimpleThread::Execute`.
 ---
 
 #### Task 2.4: Instrument TTerminalQueue
+**Status:** [x]
 **File:** `src/core/Queue.cpp`
 
 Add logging to `TTerminalQueue::ProcessEvent` and queue item processing.
@@ -431,6 +441,7 @@ Add logging to `TTerminalQueue::ProcessEvent` and queue item processing.
 ---
 
 #### Task 2.5: Instrument TQueueItem
+**Status:** [x]
 **File:** `src/core/Queue.cpp`
 
 Add logging to `TQueueItem::Execute` and status changes.
@@ -469,6 +480,7 @@ Add logging to `TQueueItem::Execute` and status changes.
 ---
 
 #### Task 2.6: Add Lock Contention Logging (Debug Only)
+**Status:** [x]
 **File:** `src/base/System.SyncObjs.cpp`
 
 Add optional lock contention logging to `TCriticalSection` (debug builds only).
@@ -504,6 +516,7 @@ Add optional lock contention logging to `TCriticalSection` (debug builds only).
 ### Phase 3: Testing & Verification
 
 #### Task 3.1: Integration Test with Far Manager
+**Status:** [ ]  
 **File:** `tests/integration/test_logging.md` (new, manual test plan)
 
 Create manual test plan for integration testing with Far Manager.
@@ -533,6 +546,7 @@ Create manual test plan for integration testing with Far Manager.
 ---
 
 #### Task 3.2: Performance Benchmark
+**Status:** [ ]  
 **File:** `tests/benchmark/bench_logging.cpp` (new)
 
 Create benchmark to measure logging overhead.
@@ -556,6 +570,7 @@ Create benchmark to measure logging overhead.
 ---
 
 #### Task 3.3: Final Verification Checklist
+**Status:** [ ]  
 **File:** `.ai-factory/plans/logging-thread-safety.md` (this file)
 
 Run final verification checklist and document results.
