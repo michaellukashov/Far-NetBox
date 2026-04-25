@@ -141,6 +141,7 @@ function(netbox_define_core_sources)
     base/FileBuffer.cpp
     base/System.IOUtils.cpp
     base/Global.cpp
+    base/LogContext.cpp
     base/System.SyncObjs.cpp
     base/FormatUtils.cpp
     base/ObjIDs.cpp

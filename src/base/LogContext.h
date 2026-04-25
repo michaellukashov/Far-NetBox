@@ -36,6 +36,7 @@ private:
 
 // Convenience macros for structured logging
 #define LOG_CONTEXT(key, value) TLogContext _ctx_##key(key, value)
-#define LOG_OPERATION(op) LOG_CONTEXT("op", op)
+#define LOG_OPERATION(op, path) \
+  TLogContext __ctx_op("op", op); TLogContext __ctx_path("path", path);
 #define LOG_FILE(path) LOG_CONTEXT("file", path)
 #define LOG_SESSION(id) LOG_CONTEXT("session", id)

@@ -9,6 +9,7 @@
 
 #include <FormatUtils.h>
 #include <tinylog/TinyLog.h>
+#include <LogContext.h>
 
 #define FORMAT(S, ...) nb::Sprintf((S), __VA_ARGS__)
 #define FMTLOAD(Id, ...) nb::FmtLoadStr((Id), __VA_ARGS__)
@@ -183,4 +184,14 @@ void SetThreadName(HANDLE ThreadHandle, const UnicodeString & AName);
 UnicodeString GetThreadName(HANDLE ThreadHandle);
 
 } // namespace os::debug
+
+// Structured logging macros
+#define LOG_THREAD_START(name) \
+  TINYLOG_INFO(g_tinylog) << TLogContext::Format() << " Thread started: " << (name)
+
+#define LOG_THREAD_STOP(name) \
+  TINYLOG_INFO(g_tinylog) << TLogContext::Format() << " Thread stopped: " << (name)
+
+#define LOG_QUEUE_EVENT(event) \
+  TINYLOG_DEBUG(g_tinylog) << TLogContext::Format() << " Queue event: " << (event)
 

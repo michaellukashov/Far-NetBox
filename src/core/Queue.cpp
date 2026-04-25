@@ -8,6 +8,8 @@
 
 #include "Queue.h"
 
+#include <LogContext.h>
+
 #if defined(__BORLANDC__)
 #pragma package(smart_init)
 #endif // defined(__BORLANDC__)
@@ -308,6 +310,11 @@ int32_t TSimpleThread::ThreadProc(void * Thread)
   DebugAssert(SimpleThread != nullptr);
   if (!SimpleThread)
     return 0;
+
+  std::string threadIdStr = std::to_string(::GetCurrentThreadId());
+  TLogContext ctx_thread("thread_id", threadIdStr);
+  LOG_THREAD_START(threadIdStr.c_str());
+
   try
   {
     SimpleThread->Execute();
@@ -322,6 +329,8 @@ int32_t TSimpleThread::ThreadProc(void * Thread)
     SimpleThread->Close();
     SAFE_DESTROY(SimpleThread);
   }
+
+  LOG_THREAD_STOP(threadIdStr.c_str());
   return 0;
 }
 
@@ -1076,6 +1085,9 @@ bool TTerminalQueue::WaitForEvent()
 
 void TTerminalQueue::ProcessEvent()
 {
+  TLogContext ctx_queue("queue", "terminal");
+  TINYLOG_DEBUG(g_tinylog) << TLogContext::Format() << " ProcessEvent called";
+
   TTerminalItem * TerminalItem;
 #if defined(__BORLANDC__)
   TQueueItem * Item;
@@ -1769,6 +1781,13 @@ TQueueItem::TStatus TQueueItem::GetStatus() const
 
 void TQueueItem::SetStatus(TStatus Status)
 {
+  if (FQueue != nullptr && FStatus != Status)
+  {
+    TINYLOG_DEBUG(g_tinylog) << TLogContext::Format()
+      << " Status: " << to_str(static_cast<int32_t>(FStatus))
+      << " -> " << to_str(static_cast<int32_t>(Status));
+  }
+
   {
     const TGuard Guard(FSection);
 
@@ -1847,6 +1866,12 @@ bool TQueueItem::IsExecutionCancelled() const
 
 void TQueueItem::Execute()
 {
+  std::string opName = std::to_string(static_cast<int32_t>(FInfo ? FInfo->Operation : foNone));
+  std::string srcPath = UTF8String(FInfo ? FInfo->Source : UnicodeString()).c_str();
+  TLogContext ctx_op("op", opName);
+  TLogContext ctx_src("src", srcPath);
+  TINYLOG_INFO(g_tinylog) << TLogContext::Format() << " QueueItem execute start";
+
   {
     DebugAssert(FProgressData == nullptr);
     const TGuard Guard(FSection);

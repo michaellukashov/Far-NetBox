@@ -19,7 +19,19 @@ TCriticalSection::~TCriticalSection() noexcept
 
 void TCriticalSection::Enter() const
 {
+#ifdef _DEBUG
+  auto start = std::chrono::steady_clock::now();
+#endif
   ::EnterCriticalSection(&FSection);
+#ifdef _DEBUG
+  auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(
+    std::chrono::steady_clock::now() - start);
+  auto ms = elapsed.count();
+  if (ms > 100)
+  {
+    TINYLOG_WARNING(g_tinylog) << "Lock contention: waited " << to_str(ms) << "ms";
+  }
+#endif
   ++FAcquired;
 }
 
