@@ -221,6 +221,7 @@ Add ring buffer semantics to drop oldest entries when buffer is full.
 **Acceptance Criteria:**
 - Stress test with slow disk (simulated delay) shows `dropped_count_ > 0`
 - Log file contains "WARNING: Log buffer overflow, dropped N entries"
+- Log file contains all non-dropped entries with correct format (timestamp + prefix)
 - No crashes or corruption when buffer overflows
 
 **Logging:**
@@ -248,6 +249,7 @@ Create comprehensive unit tests for tinylog thread-safety.
 - All tests pass with exit code 0
 - ThreadSanitizer reports zero data races
 - Test output format: `PASS: test_name` or `FAIL: test_name: <reason>`
+- Test log file `./test.log` exists and is non-empty after tests complete
 - Stress test verifies:
   - All 100K entries present (sequence numbers)
   - No partial log lines (every entry ends with `\n`)
@@ -275,6 +277,7 @@ ctest -R tinylog
 - All tinylog tests exit with code 0
 - No ThreadSanitizer warnings
 - No compiler warnings
+- Log file `test.log` exists in the current test working directory and contains expected log entries
 
 **If gate fails:** Debug and fix before proceeding. Do NOT start Phase 2 with broken tinylog.
 
@@ -514,7 +517,11 @@ Create manual test plan for integration testing with Far Manager.
 
 **Acceptance Criteria:**
 - All test scenarios documented
-- Logs contain session ID, operation type, file paths
+- Log files exist at expected paths:
+  - `%TEMP%\netbox-dbglog.txt` (global debug log)
+  - `%TEMP%\<sessionname>.log` (session protocol log)
+  - `%TEMP%\<sessionname>.xml` (action log)
+- Logs contain structured context
 - No crashes or deadlocks during testing
 - Lock contention <5% of operations (debug build)
 
@@ -556,6 +563,8 @@ Run final verification checklist and document results.
 **Checklist:**
 - [ ] tinylog multi-threaded stress test passes (10 threads × 10K entries, zero loss)
 - [ ] No data corruption in logs (verify with checksum or sequence numbers)
+- [ ] Log file created and contains entries — `test.log` in the test working directory
+- [ ] Log files created at all 3 expected NetBox paths: `%TEMP%\netbox-dbglog.txt`, `%TEMP%\&S.log`, `%TEMP%\&S.xml`
 - [ ] Logging overhead <1% CPU (measure with profiler)
 - [ ] Lock contention <5% (measure with debug logging)
 - [ ] NetBox builds cleanly with zero warnings
@@ -655,4 +664,5 @@ If Phase 1 causes crashes or test failures:
 - `AGENTS.md` — NetBox development guide, build commands, conventions
 - `AGENTS-Standards.md` — C++ coding standards, naming conventions
 - `libs/tinylog/tinylog/README.md` — tinylog documentation
+- `docs/logging-subsystem.md` — NetBox logging architecture reference (tinylog internals, log file paths, configuration)
 - Windows `CRITICAL_SECTION` docs — https://learn.microsoft.com/en-us/windows/win32/sync/critical-section-objects
