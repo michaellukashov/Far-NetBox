@@ -25,7 +25,8 @@ void DestroyFarPlugin(TCustomFarPlugin *& Plugin)
 {
   DebugAssert(FarPlugin);
   Plugin->Finalize();
-  SAFE_DESTROY(Plugin);
+  delete Plugin;
+  Plugin = nullptr;
 }
 
 static UnicodeString GetDbgPath(const char * Env) noexcept
