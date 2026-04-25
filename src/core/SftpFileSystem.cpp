@@ -3168,7 +3168,8 @@ UnicodeString TSFTPFileSystem::Canonify(const UnicodeString & APath)
       }
       catch(...)
       {
-        FTerminal->LogEvent(FORMAT("Canonify: GetRealPath failed for parent \"%s\", using original path", Path3));
+        FTerminal->LogEvent(FORMAT("Canonify: GetRealPath failed for parent \"%s\", using constructed path", Path3));
+        // Path (from LocalCanonify) already includes FCurrentDirectory prefix
         Result = Path;
       }
     }

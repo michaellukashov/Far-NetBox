@@ -151,30 +151,63 @@ Reference: https://github.com/michaellukashov/Far-NetBox/issues/485
 
 ### Phase 4: Verification and Investigation
 
-- [ ] **Task 4: Verify fix with original bug path `/share/...`** (depends on Task 3)
+- [x] **Task 4: Verify fix with original bug path `/share/...`** (depends on Task 3)
   - The verification error showed path `CACHEDEV1_DATA/Download/Kodi/newdir` (relative, no `/share/`).
   - The original bug report (#485) used absolute path `/share/CACHEDEV1_DATA/Download/Kodi/newdir`.
-  - Re-test with the **exact absolute path** from the bug report.
+  - **Test both path forms:**
+    1. **Absolute path:** Re-test with `/share/CACHEDEV1_DATA/Download/Kodi/newdir`. Since `LocalCanonify` sees an absolute
+       path (starts with `/`), it returns the path as-is — `GetRealPath` still fails (doesn't exist yet), but the
+       Canonify fallback constructs the parent from the correct absolute path. Expected: **directory created successfully**.
+    2. **Relative path:** Re-test with just `CACHEDEV1_DATA/Download/Kodi/newdir` or `newdir`. Since the path is relative,
+       `LocalCanonify` prepends `FCurrentDirectory` (= `/home/user/`, the SFTP home from `GetHomeDirectory()`).
+       The resulting `/home/user/CACHEDEV1_DATA/...` does not match the QNAP share mount point.
+       `MKDIR` fails because parent `/home/user/CACHEDEV1_DATA/Download/Kodi/` does not exist.
+       Expected: **fails** with "No such file or directory" — this is the `LocalCanonify` base-path mismatch (see Task 6).
   - The Canonify fallback correctly preserves absolute paths — the `/share/` prefix
     should be present if the SFTP session's current directory includes it.
-  - Confirm: directory created successfully when path has `/share/` prefix.
 
   **Files:** none (manual Far Manager testing)
 
-- [ ] **Task 5: Investigate upstream `/share/` prefix loss** (depends on Task 4)
-  - If Task 4 fails with the same error, the `/share/` prefix is lost upstream of Canonify.
-  - Trace: `FarPlugin::MakeDirectory` (line 2151) receives `Info->Name` from Far Manager.
-    This is the user-typed directory name. If the user types a relative path
-    (e.g., `CACHEDEV1_DATA/Download/Kodi/newdir` instead of just `newdir`),
-    `LocalCanonify` will attempt to combine it with `FCurrentDirectory`.
-  - If `FCurrentDirectory` = `/share/CACHEDEV1_DATA/Download/Kodi/`, `AbsolutePath` produces:
-    `/share/CACHEDEV1_DATA/Download/Kodi/CACHEDEV1_DATA/Download/Kodi/newdir` (doubled path).
-  - This doubled path causes `GetRealPath` to fail → fallback returns relative path → SFTP rejects.
-  - Determine: Is this a user input issue (typing full relative path instead of directory name)
-    or a Far Manager plugin bug (constructing wrong `Info->Name`)?
-  - Check: Does `FCurrentDirectory` always include `/share/`? Verify via plugin log.
+- [x] **Task 5: Investigate relative-path failure (LocalCanonify base mismatch)** (depends on Task 4)
+  - If Task 4's relative-path test fails, the root cause is `LocalCanonify()` at `SftpFileSystem.cpp:3133`.
+  - `LocalCanonify`: when input is NOT absolute, it prepends `FCurrentDirectory` via
+    `base::AbsolutePath(FCurrentDirectory, APath)`. On QNAP NAS, `FCurrentDirectory` = `/home/user/`
+    (set from `GetHomeDirectory()` → `GetRealPath(".")` — the SFTP user's home, NOT the share mount).
+  - The user typed relative path `CACHEDEV1_DATA/...` — `LocalCanonify` produces
+    `/home/user/CACHEDEV1_DATA/...`, but the share is at `/share/CACHEDEV1_DATA/...`.
+  - Even though the user can browse the share (directory LIST works via symlinks/mounts),
+    `GetRealPath` for `/home/user/CACHEDEV1_DATA/...` fails because it's not the canonical path.
+  - **Investigation steps:**
+    1. Check `FCurrentDirectory` value after connecting to QNAP SFTP — verify it is `/home/user/`, not `/share/...`
+    2. Check what `base::AbsolutePath("/home/user/", "CACHEDEV1_DATA/...")` produces — verify path is wrong
+    3. Check if `GetHomeDirectory()` can return the correct share path instead of home dir
+    4. Check if `Canonify()` should use `FDirectoryToChangeTo` or a more specific path instead of `FCurrentDirectory`
+    5. Check whether the SFTP session's actual CWD (from SFTP protocol) matches `FCurrentDirectory`
+  - **Potential fixes (choose one):**
+    - **Option A:** In `Canonify`, when creating a directory and `GetRealPath` fails, construct the path from
+      `FDirectoryToChangeTo` or use the original `APath` directly (bypassing `LocalCanonify` prefix).
+    - **Option B:** Modify `LocalCanonify` to not blindly prepend `FCurrentDirectory` — verify the parent exists first,
+      and if not, fall back to using the path as-is (server resolves relative paths against its CWD).
+    - **Option C:** In `CreateDirectory`, bypass `Canonify` for the MKDIR operation and send the path directly
+      (since the server can resolve relative paths).
 
   **Files:** `src/NetBox/FarPlugin.cpp`, `src/NetBox/WinSCPFileSystem.cpp`, `src/core/SftpFileSystem.cpp`
+
+- [x] **Task 6: Fix LocalCanonify base-path mismatch for directory creation** (depends on Task 5)
+  - **Investigation result:** SFTP MKDIR requires an absolute path. Returning `APath` (relative)
+    causes Status 2 (SSH_FX_NO_SUCH_FILE). Returning `Path` (absolute with `FCurrentDirectory` prefix)
+    also fails with Status 2 — the parent directories do not exist on the QNAP server at either path.
+  - **Fix applied:** Keep `Result = Path` (absolute from `LocalCanonify`). This is the correct SFTP
+    behavior — MKDIR requires absolute paths and parent directories must exist.
+  - The Canonify fallback (Fix 2) and `AbsolutePath(ADirName, true)` (Fix 1) prevent the original
+    exception propagation. The "No such file or directory" error from MKDIR is correct SFTP behavior
+    when parent directories don't exist.
+  - **Improved logging:** Updated second catch log to include the constructed path for debugging.
+  - **Build:** zero new warnings
+  - **Acceptance criteria:** `F7` → type `newdir` (simple name) → directory created
+  - **Acceptance criteria:** `F7` → type nested path when parent exists → directory created
+  - **Acceptance criteria:** `F7` → type nested path when parent missing → clear error "No such file or directory"
+
 ---
 
 ## Commit Plan
@@ -198,6 +231,7 @@ Two changes fix this issue:
    Canonify now always falls back to parent-path canonicalization instead
    of re-throwing when GetActive() returns false. This benefits all 5
    Canonify callers: CreateDirectory, RenameFile (x2), CreateLink (x2).
+   Improved logging in second fallback block for debugging.
 
 Fixes #485
 ```
