@@ -1,7 +1,7 @@
 # Far-NetBox Issue Prioritization & Task List
 
 > Generated: 2026-04-25
-> Source: https://github.com/michaellukashov/Far-NetBox/issues
+> Source: <https://github.com/michaellukashov/Far-NetBox/issues>
 > Total issues analyzed: 10 open issues
 
 ---
@@ -60,22 +60,26 @@
 ## Recommended Execution Order
 
 ### Phase 1: Stabilization (Week 1-2) — Critical Bugs
+
 1. **#432** — Fix silent crash on FTP connect (highest user impact, crash = P0)
 2. **#485** — Fix remote folder creation (core workflow broken)
 3. **#184** — Fix FTP AUTO/ASCII transfer mode (data integrity risk)
 
 ### Phase 2: Security & Performance (Week 3-4) — High Priority
-4. **#389/#202** — Fix Pure-FTPd TLS connections (security compliance)
-5. **#396** — Fix port preservation (connection reliability)
-6. **#329** — Fix KeepAlive for FAR 3 (session stability)
-7. **#380** — Optimize bulk FTP downloads (performance)
+
+1. **#389/#202** — Fix Pure-FTPd TLS connections (security compliance)
+2. **#396** — Fix port preservation (connection reliability)
+3. **#329** — Fix KeepAlive for FAR 3 (session stability)
+4. **#380** — Optimize bulk FTP downloads (performance)
 
 ### Phase 3: Feature Additions (Week 5-8) — Medium Priority
-8. **#385** — Add ed25519 key support (modern authentication)
-9. **#382** — Implement ~/.ssh/config reading (UX improvement)
+
+1. **#385** — Add ed25519 key support (modern authentication)
+2. **#382** — Implement ~/.ssh/config reading (UX improvement)
 
 ### Phase 4: Polish (Ongoing) — Low Priority
-10. Community-requested improvements and minor fixes
+
+1. Community-requested improvements and minor fixes
 
 ---
 

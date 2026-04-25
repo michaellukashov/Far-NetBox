@@ -20,3 +20,8 @@
   - WinSCP code for reference: https://github.com/winscp/winscp
   - Follow WinSCP coding patterns and conventions when making changes
   - Keep compatibility with WinSCP codebase for easier upstream merging
+
+- Markdown documentation follows markdownlint rules:
+  - MD060: Enabled - No spaces inside code span elements (e.g., `` `code` `` not `` ` code ` ``)
+  - MD033: Enabled with allowed elements `["br", "img", "a"]` - Only these HTML elements are permitted
+  - Configuration in `.vscode/settings.json` for VS Code users

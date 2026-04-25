@@ -8,7 +8,7 @@ Use skill `git-commit` if available.
 
 ## Windows cmd.exe commit rules
 
-**CRITICAL:** When running on Windows (`win32`), `git commit` messages MUST avoid multi-line strings in a single `-m` flag.
+**CRITICAL:** When running on Windows `cmd.exe` (`win32`), `git commit` messages MUST avoid multi-line strings in a single `-m` flag.
 The `cmd.exe /c` shell parses quotes incorrectly, treating body words as file pathspecs (error: `pathspec 'word' did not match any file(s) known to git`).
 
 ### Rules
