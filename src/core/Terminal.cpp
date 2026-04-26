@@ -4909,12 +4909,49 @@ void TTerminal::CalculateFileSize(const UnicodeString & AFileName,
             LogEvent(FORMAT("Getting size of directory \"%s\"", FileName));
           }
 
-          // pass in full path so we get it back in file list for AllowTransfer() exclusion
-          if (!DoCalculateDirectorySize(AFile->FullFileName, Params))
+          // Cycle detection: check if directory was already visited
+          UnicodeString RealDirectory;
+          if (AFile->GetIsSymLink() && !AFile->GetLinkTo().IsEmpty())
           {
-            if (CollectionIndex >= 0)
+            // Symlink: resolve to absolute path
+            RealDirectory = base::AbsolutePath(FileName, AFile->GetLinkTo());
+          }
+          else
+          {
+            // Regular directory: join path
+            RealDirectory = base::UnixIncludeTrailingBackslash(FileName) + AFile->GetFileName();
+          }
+          // Normalize for comparison
+          RealDirectory = base::UnixExcludeTrailingBackslash(RealDirectory);
+
+          // Check for cycles and record visited directories
+          bool DirectoryAlreadyVisited = false;
+          if (Params->VisitedDirs != nullptr)
+          {
+            DirectoryAlreadyVisited = (Params->VisitedDirs->IndexOf(RealDirectory) >= 0);
+          }
+
+          if (DirectoryAlreadyVisited)
+          {
+            LogEvent(FORMAT("Already counted \"%s\" directory (real path \"%s\"), link loop detected", FileName, RealDirectory));
+            // Skip recursion - directory already counted
+          }
+          else
+          {
+            // First visit: create visited set if needed, record directory, recurse
+            if (Params->VisitedDirs == nullptr)
             {
-              Params->Files->DidNotRecurse(CollectionIndex);
+              Params->VisitedDirs = CreateSortedStringList();
+            }
+            Params->VisitedDirs->Add(RealDirectory);
+
+            // pass in full path so we get it back in file list for AllowTransfer() exclusion
+            if (!DoCalculateDirectorySize(AFile->FullFileName, Params))
+            {
+              if (CollectionIndex >= 0)
+              {
+                Params->Files->DidNotRecurse(CollectionIndex);
+              }
             }
           }
         }
@@ -4990,6 +5027,12 @@ bool TTerminal::CalculateFilesSize(TStrings * AFileList, int64_t & Size, TCalcul
   // draft-peterson-streamlined-ftp-command-extensions-10
   // Implemented by Serv-U FTP.
 
+  // Initialize visited directories set for cycle detection
+  if (Params.VisitedDirs == nullptr)
+  {
+    Params.VisitedDirs = CreateSortedStringList();
+  }
+
   TValueRestorer<bool> UseBusyCursorRestorer(FUseBusyCursor, false);
   FUseBusyCursor = false;
 
@@ -4999,6 +5042,10 @@ bool TTerminal::CalculateFilesSize(TStrings * AFileList, int64_t & Size, TCalcul
   {
     LogEvent(FORMAT(L"Size of %d remote files/folders calculated as %s", AFileList->Count, Int64ToStr(Size)));
   }
+  // Clean up visited directories set
+  delete Params.VisitedDirs;
+  Params.VisitedDirs = nullptr;
+
   return Params.Result;
 }
 

@@ -1009,6 +1009,7 @@ private:
   UnicodeString LastDirPath;
   int64_t Size{0};
   bool Result{true};
+  TStringList * VisitedDirs{nullptr};  // For cycle detection in recursive directory traversal
 };
 
 #if defined(__BORLANDC__)
