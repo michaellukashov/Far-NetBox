@@ -1585,7 +1585,22 @@ int CFtpControlSocket::TryGetReplyCode()
   }
   else if ((str[0] < '1') || (str[0] > '9'))
   {
-    UnicodeString Error = FMTLOAD(FTP_MALFORMED_RESPONSE, UnicodeString(str));
+    // Escape % characters to prevent fmt format string vulnerability
+    // Server responses may contain % which fmt interprets as format specifiers
+    UnicodeString EscapedStr;
+    for (int32_t i = 0; i < str.GetLength(); ++i)
+    {
+      if (str[i] == '%')
+      {
+        EscapedStr += L'%';
+        EscapedStr += L'%';
+      }
+      else
+      {
+        EscapedStr += str[i];
+      }
+    }
+    UnicodeString Error = FMTLOAD(FTP_MALFORMED_RESPONSE, EscapedStr);
     LogMessageRaw(FZ_LOG_WARNING, Error.c_str());
     return 0;
   }
