@@ -13,7 +13,14 @@ Available knowledge references for AI agents.
 
 | Reference | Topic | Sources | Updated |
 |-----------|-------|---------|---------|
+| [crash-second-file-open-analysis](crash-second-file-open-analysis.md) | Crash when opening files twice without refresh | Code analysis | 2026-04-26 |
 | [foundation-stability-research](foundation-stability-research.md) | Foundation stability research | Internal research | 2026-04-22 |
+
+## Implementation Plans
+
+| Plan | Topic | Status | Updated |
+|------|-------|--------|---------|
+| [fix-crash-second-file-open](fix-crash-second-file-open.md) | Fix crash on second file open without refresh | Planned | 2026-04-26 |
 | [silent-mode-research](silent-mode-research.md) | Silent mode research | Internal research | 2026-04-22 |
 | [winscp-source-architecture](winscp-source-architecture.md) | WinSCP source code architecture and integration guide | D:\Projects\WinSCP-work\winscp-master\source | 2026-04-22 |
 | [winscp-sessiondata-encryption-settings](winscp-sessiondata-encryption-settings.md) | WinSCP encryption field definitions, property macros, and TLS defaults | WinSCP source: SessionData.h, serialization macros | 2026-04-26 |

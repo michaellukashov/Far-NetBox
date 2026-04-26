@@ -3125,12 +3125,23 @@ TStrings * TWinSCPFileSystem::CreateFileList(TObjectList * PanelItems,
   TStrings * AFileList)
 {
   Expects(PanelItems);
+  TINYLOG_TRACE(g_tinylog) << TLogContext::Format()
+      << " CreateFileList: start, side=" << (Side == osRemote ? "remote" : "local")
+      << ", items=" << std::to_string(PanelItems->GetCount());
+
   std::unique_ptr<TStrings> FileList((AFileList == nullptr) ? new TStringList() : AFileList);
   if (AFileList == nullptr)
   {
-    // FileList->SetOwnsObjects(true);
     FileList->SetCaseSensitive(true);
     FileList->SetDuplicates(dupAccept);
+  }
+
+  // Enable ownership for remote file lists to ensure duplicated files are cleaned up.
+  // This prevents stale pointer issues when TRemoteFile objects stored in panel UserData
+  // are deleted after directory refresh.
+  if (Side == osRemote)
+  {
+    FileList->SetOwnsObjects(true);
   }
 
   TFarPanelItem * PanelItem{nullptr};
@@ -3145,8 +3156,26 @@ TStrings * TWinSCPFileSystem::CreateFileList(TObjectList * PanelItems,
       UnicodeString FileName = PanelItem->GetFileName();
       if (Side == osRemote)
       {
-        Data = static_cast<TRemoteFile *>(PanelItem->GetUserData());
-        DebugAssert(Data);
+        TRemoteFile * RemoteFile = static_cast<TRemoteFile *>(PanelItem->GetUserData());
+        if (RemoteFile != nullptr)
+        {
+          // Duplicate the file to avoid dangling pointer issues after directory refresh.
+          // This ensures the file list owns independent copies that survive when
+          // TTerminal::FFiles resets and deletes its TRemoteFile objects.
+          // Use Standalone=true to compute and store FFullFileName so that
+          // GetFullFileName() works correctly even when FDirectory is nullptr.
+          UTF8String fileNameUtf8(FileName);
+          TINYLOG_TRACE(g_tinylog) << TLogContext::Format()
+              << " CreateFileList: duplicating remote file: " << fileNameUtf8.c_str();
+          Data = RemoteFile->Duplicate(true);
+        }
+        else
+        {
+          UTF8String fileNameUtf8(FileName);
+          TINYLOG_WARNING(g_tinylog) << TLogContext::Format()
+              << " CreateFileList: panel item has no UserData for file: " << fileNameUtf8.c_str();
+          Data = nullptr;
+        }
       }
       else if (Side == osLocal)
       {
@@ -3175,6 +3204,18 @@ TStrings * TWinSCPFileSystem::CreateFileList(TObjectList * PanelItems,
   {
     DebugAssert(true); // Abort();
   }
+
+  // Log summary of duplicated remote files
+  if (Side == osRemote && FileList->GetCount() > 0)
+  {
+    TINYLOG_DEBUG(g_tinylog) << TLogContext::Format()
+        << " CreateFileList: duplicated " << std::to_string(FileList->GetCount())
+        << " remote file objects to prevent stale pointer issues";
+  }
+
+  TINYLOG_TRACE(g_tinylog) << TLogContext::Format()
+      << " CreateFileList: end, result count=" << std::to_string(FileList->GetCount());
+
   return FileList.release();
 }
 
