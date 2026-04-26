@@ -2,7 +2,7 @@
 
 **Branch:** `feature/openssh-certificate-auth`
 **Created:** 2026-04-26
-**Updated:** 2026-04-26 (post-aif-improve — deep codebase analysis)
+**Updated:** 2026-04-26 (post-aif-improve — second pass deep codebase analysis)
 **Mode:** Full Plan
 
 ## Settings
@@ -16,7 +16,6 @@
 
 - [SSH Authentication Exploration](../references/ssh-authentication-exploration.md) — code paths, PuTTY cert support details, key format limitations, extension approach
 - [Session Configuration UI Patterns](../references/session-config-ui-patterns.md) — dialog architecture, tab UI patterns, control creation, data binding, extension code examples
-
 
 ### Codebase Findings (Deep Analysis)
 
@@ -35,7 +34,7 @@
 - **Conclusion: OpenSSH-format private keys (~/.ssh/id_*) will NOT work directly with PuTTY's auth flow**
 
 **Resolution approach:** Two viable paths:
-- **Option A (recommended):** Convert OpenSSH private key → PPK format at runtime using PuTTY's `import_ssh2()` + `save_ssh2_privatekey()` before passing to `CONF_keyfile`
+- **Option A (recommended):** Convert OpenSSH private key → PPK format at runtime using existing `GetKeyType()` + `LoadKey()` + `ppk_save_f()` before passing to `CONF_keyfile`
 - **Option B:** Prompt user to convert keys manually using PuTTYgen; only accept PPK files
 - **Option A is preferred** for UX — transparent conversion with no user burden
 
@@ -58,9 +57,11 @@ TSessionData → StoreToConfig() → PuTTY Conf → backend_init() → ssh2_user
 1. **`FDetachedCertificate` REUSED** for certificate file path — no new cert field needed
 2. **`FOpensshPrivateKeyFile`** added for OpenSSH-format private key path (user specifies ~/.ssh/id_*)
 3. **`FUseOpensshCertificate`** added as enable/disable flag
-4. **Runtime conversion** (Option A) — OpenSSH key → PPK via PuTTY's `import_ssh2()` before `CONF_keyfile`
+4. **Runtime conversion** (Option A) — OpenSSH key → PPK via existing `GetKeyType()` + `LoadKey()` + `ppk_save_f()` before `CONF_keyfile`
 5. **No CA validation in v1** — PuTTY already validates certs; we just log the results
 6. **Simple TFarEdit controls** — no browse buttons (matches existing patterns in WinSCPDialogs.cpp)
+7. **No new source files needed** — key conversion uses existing `LoadKey()`/`SaveKey()` in PuttyIntf.cpp
+8. **TASK-9 (Tunnel Support) deferred to v2** — scope too large for initial delivery
 
 ## Related GitHub Issues
 
@@ -108,9 +109,10 @@ TSessionData → StoreToConfig() → PuTTY Conf → backend_init() → ssh2_user
 4. Add corresponding `__property` declarations and getter/setter methods following naming conventions:
    - `SetOpensshPrivateKeyFile()`, `GetOpensshPrivateKeyFile()`
    - `SetUseOpensshCertificate()`, `GetUseOpensshCertificate()`
-5. Add storage serialization in `DoLoad()` and `DoSave()` using `Storage->ReadString()`/`Storage->WriteString()` and `Storage->ReadBool()`/`Storage->WriteBool()`
-6. Add field to `Assign()` copy method and `IsSame()` comparison method
-7. Add field to `ImportFromOpenssh()` for ssh_config import support
+5. Add new fields to the PROPERTY macro block (near line 435 in SessionData.cpp, where `PROPERTY2(DetachedCertificate)` and `PROPERTY_HANDLER(Passphrase, F)` are defined). Use `PROPERTY2(OpensshPrivateKeyFile)` and `PROPERTY(UseOpensshCertificate)` to auto-generate getters/setters.
+6. Add storage serialization in `DoLoad()` (line ~878, near `DetachedCertificate = Storage->ReadString(...)`) and `DoSave()` (line ~1250, near `WRITE_DATA_EX(String, "DetachedCertificate", FDetachedCertificate, )`) using `Storage->ReadString()`/`Storage->WriteString()` and `Storage->ReadBool()`/`Storage->WriteBool()`.
+7. Add field to `IsSame()` comparison method (at SessionData.cpp:769) — compare new fields against defaults
+8. Add field to `ImportFromOpenssh()` for ssh_config import support
 
 **Logging:** Log every property read/write during session load/save with `FTerminal->LogEvent(L"SessionData: %s = %s", ...)`
 
@@ -128,22 +130,29 @@ TSessionData → StoreToConfig() → PuTTY Conf → backend_init() → ssh2_user
 - `src/NetBox/WinSCPDialogs.cpp` — add controls to tabAuthentication `Init()`, wire up in `Execute()`
 
 **Changes:**
-1. In `Init()` for tabAuthentication, below the GSSAPI group:
+1. **Declare member variables in TSessionDialog class** (near existing control declarations like `SshNoUserAuthCheck`, `TryAgentCheck`):
+   - `TFarCheckBox * FUseOpensshCertCheck`
+   - `TFarText * FOpensshCertLabel`
+   - `TFarEdit * FOpensshCertEdit`
+   - `TFarText * FOpensshKeyLabel`
+   - `TFarEdit * FOpensshKeyEdit`
+2. In `Init()` for tabAuthentication, below the GSSAPI group:
    - Add checkbox: "Use OpenSSH certificate authentication" (`FUseOpensshCertCheck`)
    - Add label: "Certificate file:" + TFarEdit for `FDetachedCertificate` path (`FOpensshCertEdit`)
    - Add label: "Private key file (OpenSSH format):" + TFarEdit for `FOpensshPrivateKeyFile` path (`FOpensshKeyEdit`)
-   - Use existing UI patterns: `MakeOwnedObject<TFarCheckBox>()`, `MakeOwnedObject<TFarEdit>()`, `SetNextItemPosition()`, `SetDefaultGroup(tabAuthentication)`
-2. Wire enable/disable: checkbox state controls edit field enabled state
-3. In `Execute()` after modal result (IDOK):
-   - `SessionData->SetUseOpensshCertificate(UseOpensshCertCheck->GetChecked())`
+   - Use existing UI patterns: `MakeOwnedObject<TFarCheckBox>()`, `MakeOwnedObject<TFarEdit>()`, `MakeOwnedObject<TFarText>()`, `SetNextItemPosition()`, `SetDefaultGroup(tabAuthentication)`
+3. Wire enable/disable: checkbox state controls edit field and label enabled state
+4. In `Execute()` after modal result (IDOK):
+   - `SessionData->SetUseOpensshCertificate(FUseOpensshCertCheck->GetChecked())`
    - `SessionData->SetDetachedCertificate(FOpensshCertEdit->GetText())`
    - `SessionData->SetOpensshPrivateKeyFile(FOpensshKeyEdit->GetText())`
-4. In `Init()` for dialog population:
+5. In `Init()` for dialog population:
    - `FOpensshCertEdit->SetText(SessionData->DetachedCertificate)`
    - `FOpensshKeyEdit->SetText(SessionData->GetOpensshPrivateKeyFile())`
-   - `UseOpensshCertCheck->SetChecked(SessionData->GetUseOpensshCertificate())`
-5. Follow spacing/separator patterns from existing checkbox groups on tabAuthentication
-6. Add validation: if cert auth enabled but paths empty, show error via `MessageDlg()`
+   - `FUseOpensshCertCheck->SetChecked(SessionData->GetUseOpensshCertificate())`
+   - Set initial enabled state: `FOpensshCertEdit->SetChecked(SessionData->GetUseOpensshCertificate())`
+6. Follow spacing/separator patterns from existing checkbox groups on tabAuthentication
+7. Add validation: if cert auth enabled but paths empty, show error via `MessageDlg()`
 
 **Note:** No browse buttons — matches existing patterns (S3CACertificateEdit, PrivateKeyEdit, RecycleBinPathEdit all use simple TFarEdit). User types or pastes the path.
 
@@ -161,32 +170,44 @@ TSessionData → StoreToConfig() → PuTTY Conf → backend_init() → ssh2_user
 
 **Description:** **CRITICAL TASK** — PuTTY only accepts PPK format for private keys. Implement runtime conversion from OpenSSH format to PPK so `~/.ssh/id_*` keys work with certificate authentication.
 
+**Key finding from deep analysis:** NetBox **already has** the key conversion infrastructure:
+- `GetKeyType()` at `PuttyIntf.cpp:796` — detects key format (ktOpenSSHPEM, ktOpenSSHNew, ktSSHCom, ktSSH2)
+- `LoadKey()` at `PuttyIntf.cpp:855-900` — calls `import_ssh2()` for OpenSSH formats, `ppk_load_f()` for PPK
+- `SaveKey()` at `PuttyIntf.cpp:1040-1082` — calls `ppk_save_f()` to write PPK format
+- `FreeKey()` at `PuttyIntf.cpp:1084-1090` — cleans up `ssh2_userkey` struct
+
 **File paths:**
 - `src/core/SecureShell.cpp` — add key conversion before `StoreToConfig()`
-- `src/core/PuttyTools.h` — add conversion function declaration
-- `src/core/PuttyTools.cpp` — implement OpenSSH → PPK conversion
+- `src/core/PuttyTools.h` — verify `GetKeyType()`/`LoadKey()`/`SaveKey()`/`FreeKey()` are declared and accessible
 
 **Changes:**
-1. Add `ConvertOpenSSHKeyToPPK()` function:
-   - Read OpenSSH private key file (PEM or new OpenSSH format)
-   - Use PuTTY's `import_ssh2()` (`libs/putty/import.c:144`) to parse OpenSSH format into `struct ssh2_userkey`
-   - Use PuTTY's `save_ssh2_privatekey()` to write PPK format to a temporary file
-   - Handle passphrase-protected keys — pass passphrase to `import_ssh2()`
-   - Return path to temporary PPK file
+1. **Leverage existing infrastructure** — do NOT create new conversion functions:
+   - Call `GetKeyType(FOpensshPrivateKeyFile)` to detect format
+   - If `ktOpenSSHPEM`, `ktOpenSSHNew`, or `ktSSHCom`: call `LoadKey()` to parse OpenSSH key into `ssh2_userkey`
+   - Call `ppk_save_f(tempPPKPath, ssh2_userkey, passphrase, &ppk_save_default_parameters)` to write PPK to temp file
+   - Call `FreeKey()` to clean up the in-memory key struct
 2. In `StoreToConfig()` or before `CONF_keyfile` is set:
-   - If `FUseOpensshCertificate` is true and `FOpensshPrivateKeyFile` is set:
-     - Convert OpenSSH key → temporary PPK file
-     - Set `CONF_keyfile` to temporary PPK path
-     - Store temporary file path for cleanup on disconnect
-3. Cleanup temporary PPK file in `TSecureShell::Close()` or destructor
+   - If `FSessionData->GetUseOpensshCertificate()` is true and `FOpensshPrivateKeyFile` is set:
+     - Generate temp PPK path using `GetTempPath()` + unique filename
+     - Convert OpenSSH key → temp PPK file using steps above
+     - Set `CONF_keyfile` to temp PPK path
+     - Store temp file path in `FTempPPKFile` member variable (new field on `TSecureShell`) for cleanup
+3. **Temp PPK file lifecycle:**
+   - Add `UnicodeString FTempPPKFile` member to `TSecureShell`
+   - Delete temp file in `TSecureShell::Close()` and destructor
+   - Use `DeleteFile()` for cleanup; on Windows, consider `FILE_FLAG_DELETE_ON_CLOSE` via `CreateFile()`
 4. Handle conversion errors: log detailed error, fall back to standard key auth if `FPublicKeyFile` is also set
-5. Handle passphrase-protected keys using existing `FPassphrase` flow
+5. Handle passphrase-protected keys using existing `FPassphrase` flow (already passed to `LoadKey()`)
 
 **Key reference points:**
-- `import_ssh2()` at `libs/putty/import.c:144` — converts OpenSSH to internal key struct
-- `ppk_load_f()` at `libs/putty/ssh/sshpubk.c` — loads PPK format (what PuTTY normally uses)
-- `save_ssh2_privatekey()` — writes PPK format from internal key struct
-- `key_type()` at `libs/putty/ssh/sshpubk.c:2014` — detects key format (OPENSSH_PEM, OPENSSH_NEW, SSHCOM)
+- `import_ssh2()` at `libs/putty/import.c:144` — converts OpenSSH to internal `ssh2_userkey` struct
+- `ppk_load_f()` at `libs/putty/ssh/sshpubk.c:1068` — loads PPK format
+- `ppk_save_f()` at `libs/putty/ssh/ssh.h:1579` — writes PPK format from `ssh2_userkey` struct
+- `ppk_save_default_parameters` at `libs/putty/ssh/ssh.h:1575` — default save parameters
+- `GetKeyType()` at `src/core/PuttyIntf.cpp:796` — detects key format
+- `LoadKey()` at `src/core/PuttyIntf.cpp:855-900` — loads key with format-specific dispatch
+- `SaveKey()` at `src/core/PuttyIntf.cpp:1040-1082` — saves key as PPK
+- `FreeKey()` at `src/core/PuttyIntf.cpp:1084-1090` — frees `ssh2_userkey`
 
 **Logging:**
 ```
@@ -247,17 +268,17 @@ LogEvent(L"SSH: CONF_keyfile set to %s (converted from OpenSSH)", PpkPath)
 
 #### TASK-5: Log Certificate Authentication Results
 
-**Description:** Add logging for certificate authentication results. PuTTY already validates certificates — we just need to surface the results in NetBox's log output.
+**Description:** Add logging for certificate authentication results. PuTTY already validates certificates — we just need to surface the results in NetBox's log output through existing ScpSeat callbacks.
 
 **File paths:**
 - `src/core/SecureShell.cpp` — add logging around authentication flow
-- `src/core/PuttyIntf.h` — review ScpSeat callbacks for auth result hooks
+- `src/core/PuttyIntf.cpp` — review `ScpSeat` class callbacks for auth result hooks; cert validation errors surface through Seat notification callbacks
 
 **Changes:**
-1. Log when certificate authentication is attempted
-2. Log PuTTY's certificate validation results (errors are surfaced through PuTTY's error callbacks)
+1. Log when certificate authentication is attempted (before `StoreToConfig()` is called)
+2. **Capture cert errors via ScpSeat callbacks:** Review `ScpSeat` in `PuttyIntf.cpp` for Seat interface methods that receive error notifications (e.g., `notify_userpass`, `connection_fatal`). Certificate validation errors (expired cert, unknown CA, principal mismatch) are surfaced through these callbacks — add logging to capture them.
 3. Log certificate principals and validity info if available from PuTTY's cert parsing
-4. Capture and log PuTTY's certificate-related error messages (expired cert, unknown CA, principal mismatch, etc.)
+4. Capture and log PuTTY's certificate-related error messages via Seat callbacks
 5. Use existing error callback patterns from `ScpSeat` for auth failure messages
 
 **Note:** PuTTY's certificate validation (openssh-certs.c) already checks:
@@ -268,7 +289,7 @@ LogEvent(L"SSH: CONF_keyfile set to %s (converted from OpenSSH)", PpkPath)
 - Principal matching (username)
 - Critical options support
 
-We just need to log the outcomes, not re-implement validation.
+We just need to log the outcomes via ScpSeat, not re-implement validation.
 
 **Logging:**
 ```
@@ -313,30 +334,11 @@ LogEvent(L"Session: Parsing opensshkey=%s from URL", KeyPath)
 
 ---
 
-#### TASK-7: Add XML Storage Support for OpenSSH Certificate Settings
+#### ~~TASK-7: Add XML Storage Support for OpenSSH Certificate Settings~~ MERGED INTO TASK-1
 
-**Description:** Ensure OpenSSH certificate fields are properly saved/loaded in XML session storage format.
+**Reason:** `DoLoad()`/`DoSave()` in SessionData.cpp handle BOTH registry storage (TFar3Storage) AND XML storage (TXmlStorage) through the unified `THierarchicalStorage` abstraction. There is no separate XML-specific save/load path — the same `Storage->ReadString()`/`WriteString()` calls work for both backends. TASK-1's serialization changes automatically cover XML storage.
 
-**File paths:**
-- `src/core/SessionData.cpp` — verify `DoLoad()`/`DoSave()` handle XML storage correctly
-- `src/NetBox/XmlStorage.cpp` — review XML storage patterns for reference
-
-**Changes:**
-1. Verify that `DoSave()` writes OpenSSH certificate fields to XML storage with correct element names
-2. Verify that `DoLoad()` reads OpenSSH certificate fields from XML storage
-3. Ensure password-protected private keys use `LOAD_PASSWORD`/`SAVE_PASSWORD` for encryption
-4. Add XML import/export compatibility with existing session XML files
-5. Handle backward compatibility: older XML files without these fields should load with defaults (disabled)
-
-**Logging:**
-```
-LogEvent(L"XML: Saving opensshkey=%s", KeyPath)
-LogEvent(L"XML: Loading opensshkey=%s", KeyPath)
-```
-
-**Dependencies:** TASK-1
-
-**Done when:** OpenSSH certificate settings persist correctly in XML session files and load without errors.
+**No separate implementation needed.** Acceptance criteria moved to TASK-1: "Test with both registry and XML storage backends".
 
 ---
 
@@ -358,7 +360,6 @@ LogEvent(L"XML: Loading opensshkey=%s", KeyPath)
 3. Add error messages in Far Manager UI when certificate authentication fails (missing file, expired cert, etc.)
 4. Ensure the plugin correctly handles certificate re-authentication on connection retry
 5. Test with both SFTP (fsSFTP) and SCP (fsSCP) protocols
-6. **Verify new .cpp files are added to CMakeLists.txt** — per project rules, any new source files must be added to the build
 
 **Logging:**
 ```
@@ -372,41 +373,52 @@ LogEvent(L"Plugin: Certificate auth %s for session %s", Enabled ? L"enabled" : L
 
 ---
 
-#### TASK-9: Add Tunnel Support for OpenSSH Certificate Authentication
+#### ~~TASK-9: Add Tunnel Support for OpenSSH Certificate Authentication~~ DEFERRED TO V2
 
-**Description:** Extend tunnel (SSH tunneling) configuration to support OpenSSH certificate authentication.
+**Reason:** Tunnel support doubles the scope (mirror fields + UI + conversion for tunnel). The main feature is already complex with key conversion, cert UI, and auth wiring. The extension pattern is identical to main session and can be implemented after v1 delivery.
+
+**V2 extension notes (for future reference):**
+- Add `FTunnelOpensshPrivateKeyFile` (UnicodeString) and `FTunnelUseOpensshCertificate` (bool) to TSessionData
+- Reuse `FTunnelDetachedCertificate` if it exists, otherwise add it
+- Add UI controls to tunnel configuration tab in TSessionDialog
+- Apply same OpenSSH → PPK conversion flow as TASK-3
+- Follow existing tunnel key file patterns (FTunnelPublicKeyFile, FTunnelPassphrase)
+
+**Dependencies:** TASK-3, TASK-4 (when implemented in v2)
+
+---
+
+### Phase 5: Temp PPK File Lifecycle
+
+#### TASK-10: Manage Temporary PPK File Lifecycle
+
+**Description:** Ensure temporary PPK files created during OpenSSH → PPK conversion are properly managed throughout the connection lifecycle and cleaned up reliably.
 
 **File paths:**
-- `src/core/SessionData.h` — add tunnel certificate fields (FTunnelOpensshPrivateKeyFile, FTunnelUseOpensshCertificate)
-- `src/core/SessionData.cpp` — add getters/setters and serialization for tunnel certificate fields
-- `src/NetBox/WinSCPDialogs.cpp` — add UI controls to tunnel configuration tab
+- `src/core/SecureShell.h` — add `FTempPPKFile` member variable
+- `src/core/SecureShell.cpp` — add cleanup in `Close()` and destructor
 
 **Changes:**
-1. Add tunnel-specific OpenSSH certificate fields mirroring the main session fields:
-   - `FTunnelOpensshPrivateKeyFile` (UnicodeString)
-   - `FTunnelUseOpensshCertificate` (bool)
-   - **Reuse `FTunnelDetachedCertificate`** if it exists, otherwise add it
-2. Implement getters/setters and storage serialization
-3. Add UI controls to the tunnel configuration tab in TSessionDialog
-4. Ensure tunnel connection uses certificate auth when configured
-5. Follow existing tunnel key file patterns (FTunnelPublicKeyFile, FTunnelPassphrase)
-6. Apply same OpenSSH → PPK conversion for tunnel keys
+1. Add `UnicodeString FTempPPKFile` private member to `TSecureShell` class
+2. In `StoreToConfig()` (or pre-connection setup), after converting OpenSSH key → temp PPK:
+   - Store temp file path in `FTempPPKFile`
+3. In `TSecureShell::Close()`:
+   - If `!FTempPPKFile.IsEmpty()`: call `DeleteFile(FTempPPKFile)`, clear `FTempPPKFile`
+   - Log cleanup: `LogEvent(L"SSH: Cleaned up temporary PPK file %s", FTempPPKFile)`
+4. In `TSecureShell::~TSecureShell()`:
+   - Same cleanup as `Close()` as a safety net for crash scenarios
+5. Consider `FILE_FLAG_DELETE_ON_CLOSE` on Windows for additional crash safety (via `CreateFile()` when creating temp PPK, then `ppk_save_f()` with that handle)
+6. Ensure temp file path is unique per session to avoid conflicts between concurrent connections
 
-**Logging:**
-```
-LogEvent(L"SSH: Tunnel using OpenSSH certificate authentication")
-LogEvent(L"SSH: Tunnel certificate: %s", CertPath)
-```
+**Dependencies:** TASK-3
 
-**Dependencies:** TASK-3, TASK-4
-
-**Done when:** SSH tunnels can use OpenSSH certificate authentication with the same workflow as primary sessions.
+**Done when:** Temporary PPK files are reliably cleaned up on normal disconnect, explicit close, and destructor invocation; no temp files remain after crash.
 
 ---
 
 ## Commit Plan
 
-Given 10 tasks (TASK-0 through TASK-9, TASK-0 already resolved) across 5 phases, use the following commit checkpoints:
+Given 9 active tasks (TASK-0 resolved, TASK-7 merged, TASK-9 deferred, TASK-10 added) across 4 phases, use the following commit checkpoints:
 
 ### Commit 1: Data Model & UI (after TASK-2)
 ```
@@ -414,9 +426,11 @@ feat(session): add OpenSSH certificate fields and UI controls
 
 - Add FOpensshPrivateKeyFile and FUseOpensshCertificate to TSessionData
 - Reuse existing FDetachedCertificate for certificate file path
+- Add PROPERTY macro entries for automatic getter/setter generation
+- Add serialization in DoLoad()/DoSave() (covers both registry and XML storage)
+- Add IsSame() comparison for new fields
 - Add certificate auth controls to tabAuthentication in TSessionDialog
-- Wire up Apply handler for new controls
-- Add storage serialization for new fields
+- Wire up dialog population and Apply handler for new controls
 
 Related: #509, #36
 ```
@@ -425,40 +439,32 @@ Related: #509, #36
 ```
 feat(ssh): integrate OpenSSH certificate authentication with PuTTY engine
 
-- Add OpenSSH → PPK key conversion using import_ssh2() (TASK-3)
-- Wire certificate and converted key to PuTTY CONF_detached_cert/CONF_keyfile (TASK-4)
-- Add verbose logging throughout certificate authentication flow (TASK-5)
+- Leverage existing GetKeyType()/LoadKey()/ppk_save_f() for OpenSSH → PPK conversion
+- Wire certificate and converted key to PuTTY CONF_detached_cert/CONF_keyfile
+- Add temp PPK file lifecycle management (creation, cleanup in Close/destructor)
+- Add verbose logging throughout certificate authentication flow
+- Capture certificate validation errors via ScpSeat callbacks
 - Handle passphrase-protected keys and conversion errors
-- PuTTY handles cert validation — we log the results
 
-Note: PuTTY only accepts PPK format for private keys; OpenSSH keys are converted at runtime
+Note: PuTTY only accepts PPK format for private keys; OpenSSH keys are converted
+at runtime using existing NetBox key infrastructure (PuttyIntf.cpp)
 
 Related: #263, #323, #509, #36
 ```
 
-### Commit 3: Configuration & Compatibility (after TASK-7)
+### Commit 3: Configuration & Plugin Integration (after TASK-8 + TASK-10)
 ```
-feat(config): add OpenSSH certificate support to URL parsing and XML storage
+feat(config): add OpenSSH certificate support to URL parsing and plugin flow
 
 - Extend ApplyRawSettings() for cert and opensshkey URL parameters
-- Add XML storage serialization for certificate fields
-- Ensure backward compatibility with older session files
+- Extend GetProtocolUrl() to include certificate parameters in session URLs
 - Support ssh_config import with certificate references
-
-Related: #36, #388
-```
-
-### Commit 4: Integration & Tunnel Support (after TASK-9)
-```
-feat(plugin): integrate OpenSSH cert auth with Far Manager plugin and tunnels
-
 - Wire certificate settings through Far Manager plugin session lifecycle
 - Add error messages in Far Manager UI for certificate auth failures
-- Extend tunnel configuration with OpenSSH certificate fields and UI
 - Support certificate auth for both SFTP and SCP protocols
-- Verify CMakeLists.txt includes all new source files
+- Ensure reliable temp PPK file cleanup across connection lifecycle
 
-Related: #156, #263, #323
+Related: #36, #388, #156
 ```
 
 ## Risk Assessment
@@ -466,9 +472,9 @@ Related: #156, #263, #323
 | Risk | Likelihood | Impact | Mitigation |
 |------|-----------|--------|------------|
 | `import_ssh2()` incompatible with modern OpenSSH key formats | Medium | High | Test with OpenSSH 8.8+ generated keys; fallback to manual PPK conversion with user warning |
-| Temporary PPK file security (left on disk after crash) | Medium | Medium | Use `GetTempPath()` + unique filename; cleanup in destructor; mark as delete-on-close if possible |
-| Passphrase handling for OpenSSH new format keys | Medium | Medium | Test with passphrase-protected OpenSSH keys; reuse existing `FPassphrase` flow |
-| `import_ssh2()` or `save_ssh2_privatekey()` not publicly accessible | Low | High | May need to wrap in PuttyTools; check visibility of these functions in PuTTY headers |
+| Temporary PPK file security (left on disk after crash) | Medium | Medium | Use `GetTempPath()` + unique filename; cleanup in Close() and destructor; consider `FILE_FLAG_DELETE_ON_CLOSE` |
+| Passphrase handling for OpenSSH new format keys | Medium | Medium | Test with passphrase-protected OpenSSH keys; reuse existing `FPassphrase` flow through `LoadKey()` |
+| `ppk_save_f()` parameters change in future PuTTY versions | Low | Medium | Use `ppk_save_default_parameters`; pin to PuTTY 0.81 API surface |
 | Backward compatibility with older session files | Low | Medium | Default new fields to disabled/empty; test with existing saved sessions |
 | UI conflicts with existing auth options | Low | Low | Follow existing checkbox enable/disable patterns; test all auth combinations |
 
@@ -479,40 +485,41 @@ Related: #156, #263, #323
 3. **Unknown CA:** PuTTY validates cert signature independently — log CA fingerprint for debugging
 4. **Missing private key:** Error before connection attempt; prompt user to select valid key
 5. **Certificate/key mismatch:** PuTTY validates match during auth — capture and log the error
-6. **OpenSSH key format detection:** Use `key_type()` to detect OPENSSH_PEM vs OPENSSH_NEW vs SSHCOM
+6. **OpenSSH key format detection:** Use existing `GetKeyType()` to detect OPENSSH_PEM vs OPENSSH_NEW vs SSHCOM
 7. **Certificate with multiple principals:** PuTTY matches against username — log all principals
-8. **Tunnel + main session both using certs:** Ensure independent configuration and temp file cleanup for each
+8. **Temp PPK file left after crash:** Cleanup in destructor; consider `FILE_FLAG_DELETE_ON_CLOSE`
 9. **Both PPK and OpenSSH key configured:** Prefer OpenSSH key when cert auth enabled; log warning
-10. **Temp PPK file left after crash:** Cleanup in destructor; consider `FILE_FLAG_DELETE_ON_CLOSE`
+10. **Concurrent connections with cert auth:** Each session gets its own temp PPK file with unique name
 
 ## Changelog
 
-### 2026-04-26 — aif-improve (Deep Codebase Analysis)
+### 2026-04-26 — aif-improve (Second Pass — Deep Codebase Analysis)
 
-**TASK-0 resolved — Critical findings:**
-- PuTTY 0.81 has full OpenSSH certificate support — no cert field needed, reuse `FDetachedCertificate`
-- **BLOCKER:** PuTTY only accepts PPK format for private keys (`ppk_load_f` at userauth2-client.c:1282)
-- `import_ssh2()` exists for format conversion but is NOT used in auth flow — must be wired up
-- **Added TASK-3:** OpenSSH → PPK key conversion (critical path)
-- **Added TASK-4:** Wire cert + converted key to PuTTY (split from old TASK-3)
-- **Split old TASK-3** into TASK-3 (conversion) + TASK-4 (wiring) + TASK-5 (logging)
-- **Reordered:** TASK-5 (logging) now depends on TASK-4 (wiring)
-- **Reordered:** TASK-8 depends on TASK-5 instead of TASK-3
-- **Reordered:** TASK-9 depends on TASK-3 and TASK-4
+**CRITICAL corrections:**
+- `save_ssh2_privatekey()` does NOT exist in PuTTY — corrected to `ppk_save_f()` (libs/putty/ssh.h:1579)
+- NetBox **already has** complete key conversion infrastructure: `GetKeyType()`, `LoadKey()`, `SaveKey()`, `FreeKey()` in PuttyIntf.cpp (lines 796-1090)
+- TASK-3 rewritten to leverage existing infrastructure — no new conversion functions needed
+- Removed `PuttyTools.cpp` from TASK-3 file paths — no new source files needed
 
-**UI improvements:**
-- No browse buttons in WinSCPDialogs.cpp — use simple TFarEdit controls (matches existing patterns)
-- Space available on tabAuthentication below GSSAPI group
+**TASK improvements:**
+- TASK-1: Added explicit PROPERTY macro block reference (SessionData.cpp:435), `IsSame()` location (line 769), `DoLoad()` (line 878), `DoSave()` (line 1250)
+- TASK-2: Added member variable declaration step for TSessionDialog class
+- TASK-5: Added ScpSeat callback references for cert error capture
+
+**TASK-7 removed:** Merged into TASK-1 — `DoLoad()`/`DoSave()` handle both registry and XML storage via THierarchicalStorage abstraction; no separate XML path exists
+
+**TASK-9 deferred to v2:** Tunnel support doubles scope; extension pattern is identical and can be implemented after v1 delivery
+
+**TASK-10 added:** Temp PPK file lifecycle management (FTempPPKFile member, cleanup in Close/destructor, crash safety)
+
+**Commit plan reduced:** 4 commits → 3 commits (TASK-7 merged, TASK-9 deferred)
 
 **Risk assessment updated:**
-- Added `import_ssh2()` compatibility risk
-- Added temporary PPK file security risk
-- Added PuTTY function visibility risk
+- Removed `import_ssh2()` visibility risk (already used in PuttyIntf.cpp:871)
+- Removed `save_ssh2_privatekey()` risk (function doesn't exist)
+- Added `ppk_save_f()` parameter stability risk
 
-**Edge cases expanded:**
-- Added #6 (key format detection via `key_type()`)
-- Added #10 (temp file cleanup with FILE_FLAG_DELETE_ON_CLOSE)
-
-**CMakeLists.txt verification** added to TASK-8 (per project rules from skill-context)
-
-**Commit plan updated** to reflect new task structure (10 tasks, 4 commits)
+**Edge cases updated:**
+- #6: Changed from `key_type()` to `GetKeyType()` (existing NetBox function)
+- #8: Removed tunnel-related edge case (TASK-9 deferred)
+- #10: Added concurrent connection edge case
