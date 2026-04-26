@@ -16,6 +16,9 @@ Available knowledge references for AI agents.
 | [foundation-stability-research](foundation-stability-research.md) | Foundation stability research | Internal research | 2026-04-22 |
 | [silent-mode-research](silent-mode-research.md) | Silent mode research | Internal research | 2026-04-22 |
 | [winscp-source-architecture](winscp-source-architecture.md) | WinSCP source code architecture and integration guide | D:\Projects\WinSCP-work\winscp-master\source | 2026-04-22 |
+| [winscp-sessiondata-encryption-settings](winscp-sessiondata-encryption-settings.md) | WinSCP encryption field definitions, property macros, and TLS defaults | WinSCP source: SessionData.h, serialization macros | 2026-04-26 |
+| [netbox-s3filesystem-session-mapping](netbox-s3filesystem-session-mapping.md) | NetBox S3 session data fields, serialization gaps, and TLS setup | NetBox core/SessionData.h, core/S3FileSystem.cpp | 2026-04-26 |
+| [netbox-ui-dialogs-s3-config](netbox-ui-dialogs-s3-config.md) | NetBox S3 configuration UI controls and Load/Save patterns | NetBox WinSCPDialogs.cpp/h, FarDialog | 2026-04-26 |
 | [ssh-authentication-exploration](ssh-authentication-exploration.md) | SSH authentication and OpenSSH certificate support | PuTTY internals, WinSCP | 2026-04-26 |
 | [session-config-ui-patterns](session-config-ui-patterns.md) | UI patterns for session configuration dialogs | TFarEdit, WinSCPDialogs.cpp | 2026-04-26 |
 | [logging-subsystem](logging-subsystem.md) | Logging subsystem architecture | tinylog, nbcore/logging.cpp | 2026-04-26 |
