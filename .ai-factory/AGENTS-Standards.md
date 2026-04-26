@@ -1,6 +1,6 @@
 # AGENTS-Standards.md — Coding Standards and Patterns
 
-> Part of the AGENTS documentation series. See also: [AGENTS.md](../AGENTS.md) (entry), [AGENTS-Overview.md](AGENTS-Overview.md), [AGENTS-Structure.md](AGENTS-Structure.md), [AGENTS-Workflows.md](AGENTS-Workflows.md).
+> Part of the AGENTS documentation series. See [AGENTS.md](../AGENTS.md) for the main entry point.
 
 ## Naming Conventions
 
@@ -15,20 +15,20 @@
 
 ## Formatting
 
-- **Brace style**: Allman/BSD (opening brace on new line)
-- **Indentation**: 2 spaces (no tabs)
-- **Line endings**: CRLF (Windows) — see [AGENTS-Workflows.md](AGENTS-Workflows.md) → "Verify CRLF Line Endings" for details
-- **BOM**: No BOM (UTF-8 without BOM) in all source, documentation, and text files
-- **Pointer/reference**: Middle alignment (`int * ptr`, `int & ref`)
-- **Max line length**: 120 characters
-- **No trailing whitespaces** in any source or CMake file
-- See `.clang-format` for automated formatting rules
+- **Brace style:** Allman/BSD (opening brace on new line)
+- **Indentation:** 2 spaces (no tabs)
+- **Line endings:** CRLF (Windows)
+- **Encoding:** UTF-8 without BOM
+- **Pointer/reference:** Middle alignment (`int * ptr`, `int & ref`)
+- **Max line length:** 120 characters
+- **No trailing whitespace** in any source or CMake file
+- See `.clang-format` for automated formatting
 
 ## File Organization
 
-- **Include guards**: `#pragma once`
-- **Include order**: System headers → Project headers → Local headers
-- **Extensions**: `.h`/`.hpp` for headers, `.cpp` for sources, `.rc`/`.lng` for resources
+- **Include guards:** `#pragma once`
+- **Include order:** System headers → Project headers → Local headers
+- **Extensions:** `.h`/`.hpp` for headers, `.cpp` for sources, `.rc`/`.lng` for resources
 
 ## Comments
 
@@ -54,12 +54,12 @@ Exception (base)
     └── EFOpenError
 ```
 
-**Usage**: Throw exceptions for error conditions, not return codes.
+**Usage:** Throw exceptions for error conditions, not return codes.
 
 ## RAII Patterns
 
-**Resource acquisition**: Initialize resources in constructor.
-**Release**: Release in destructor.
+**Resource acquisition:** Initialize resources in constructor.
+**Release:** Release in destructor.
 
 ```cpp
 class TFileHandle
@@ -86,7 +86,7 @@ private:
 };
 ```
 
-**Smart pointers**: Use `std::unique_ptr` for exclusive ownership.
+**Smart pointers:** Use `std::unique_ptr` for exclusive ownership.
 
 ```cpp
 #include <memory>
@@ -96,12 +96,12 @@ auto handle = std::make_unique<TFileHandle>(fileName);
 
 ## Threading
 
-- **Main thread**: All Far Manager API calls must be from the main thread.
-- **Worker threads**: Protocol operations run in background threads.
-- **Synchronization**: Use critical sections (`CRITICAL_SECTION`) or mutexes for shared data.
-- **Inter-thread communication**: Use custom message queues or events.
+- **Main thread:** All Far Manager API calls must be from the main thread
+- **Worker threads:** Protocol operations run in background threads
+- **Synchronization:** Use critical sections (`CRITICAL_SECTION`) or mutexes for shared data
+- **Inter-thread communication:** Use custom message queues or events
 
-**Rule**: Never call Far Manager APIs from worker threads.
+**Rule:** Never call Far Manager APIs from worker threads.
 
 ## Memory Management
 
@@ -122,9 +122,26 @@ auto handle = std::make_unique<TFileHandle>(fileName);
 - `FTerminal->LogEvent()` for debug output (enabled in debug builds)
 - `DebugAssert()` for invariants (fires in debug builds)
 - Logging via `tinylog` (see `src/nbcore/logging.cpp`)
-- **VS debugging**: Generate solution with `-G "Visual Studio 17 2022"`, set Far.exe as debug command
+- **VS debugging:** Generate solution with `-G "Visual Studio 17 2022"`, set Far.exe as debug command
 
-**Log output**: `%LOCALAPPDATA%\NetBox\netbox.log` (production) or `tinylog` output.
+**Log output:** `%LOCALAPPDATA%\NetBox\netbox.log` (production) or `tinylog` output.
+
+## Error Handling
+
+- Use exceptions for error conditions, not return codes
+- Log with `FTerminal->LogEvent()` for debug output
+- Use `DebugAssert()` for invariants
+- Handle network errors gracefully with meaningful messages
+
+**Pattern:**
+
+```cpp
+if (result == ERROR)
+{
+    FTerminal->LogEvent("Operation failed: %s", description.c_str());
+    throw EOperationError(description, errorCode);
+}
+```
 
 ## Code Quality Checklist
 
@@ -134,19 +151,3 @@ auto handle = std::make_unique<TFileHandle>(fileName);
 - [ ] Unicode correctness
 - [ ] No spelling/grammar errors in comments
 - [ ] Common typo check: `loose`→`lose`, `connexion`→`connection`, `authentification`→`authentication`, `occured`→`occurred`, `recieve`→`receive`, `seperate`→`separate`
-
-## Error Handling
-
-- Use exceptions for error conditions, not return codes
-- Log with `FTerminal->LogEvent()` for debug output
-- Use `DebugAssert()` for invariants
-- Handle network errors gracefully with meaningful messages
-
-**Pattern**:
-```cpp
-if (result == ERROR)
-{
-    FTerminal->LogEvent("Operation failed: %s", description.c_str());
-    throw EOperationError(description, errorCode);
-}
-```
