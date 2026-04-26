@@ -1816,7 +1816,19 @@ void CFtpControlSocket::List(BOOL bFinish, int nError /*=FALSE*/, CServerPath pa
     }
 
     size_t num = 0;
-    t_directory::t_direntry *direntry = m_pTransferSocket->m_pListResult->getList(num);
+    t_directory::t_direntry *direntry = nullptr;
+    try
+    {
+      direntry = m_pTransferSocket->m_pListResult->getList(num);
+    }
+    catch(...)
+    {
+      ShowStatus(L"FTP listing parse failed", FZ_LOG_ERROR);
+      delete pData->pDirectoryListing;
+      pData->pDirectoryListing = nullptr;
+      ResetOperation(FZ_REPLY_ERROR);
+      return;
+    }
     pData->pDirectoryListing = new t_directory;
     pData->pDirectoryListing->direntry = direntry;
     pData->pDirectoryListing->num = num;
@@ -2496,7 +2508,17 @@ void CFtpControlSocket::ListFile(CString filename, const CServerPath &path)
       const bool mlst = true;
       CFtpListResult * pListResult = CreateListResult(mlst);
       pListResult->AddData(static_cast<const char *>(Buf), Buf.GetLength());
-      pData->direntry = pListResult->getList(num);
+      try
+      {
+        pData->direntry = pListResult->getList(num);
+      }
+      catch(...)
+      {
+        ShowStatus(L"FTP listing parse failed", FZ_LOG_ERROR);
+        delete pListResult;
+        pData->direntry = nullptr;
+        return;
+      }
       if (pListResult->m_server.nServerType & FZ_SERVERTYPE_SUB_FTP_VMS && m_CurrentServer.nServerType & FZ_SERVERTYPE_FTP)
         m_CurrentServer.nServerType |= FZ_SERVERTYPE_SUB_FTP_VMS;
       delete pListResult;
@@ -2941,7 +2963,19 @@ void CFtpControlSocket::FileTransfer(t_transferfile * transferfile/*=0*/, BOOL b
       }
 
       size_t num=0;
-      t_directory::t_direntry *direntry = m_pTransferSocket->m_pListResult->getList(num);
+      t_directory::t_direntry *direntry = nullptr;
+      try
+      {
+        direntry = m_pTransferSocket->m_pListResult->getList(num);
+      }
+      catch(...)
+      {
+        ShowStatus(L"FTP listing parse failed", FZ_LOG_ERROR);
+        delete pData->pDirectoryListing;
+        pData->pDirectoryListing = nullptr;
+        ResetOperation(FZ_REPLY_ERROR);
+        return;
+      }
       pData->pDirectoryListing=new t_directory;
       pData->pDirectoryListing->direntry=direntry;
       pData->pDirectoryListing->num=num;
