@@ -201,3 +201,11 @@ private:
 │   PuTTY, FileZilla, OpenSSL, neon...   │
 └─────────────────────────────────────────┘
 ```
+
+## Related References
+
+- [SSH Authentication Exploration](.ai-factory/references/ssh-authentication-exploration.md) — detailed analysis of SSH authentication code paths, session configuration UI patterns, and PuTTY integration points for OpenSSH certificate auth implementation
+- [Session Configuration UI Patterns](.ai-factory/references/session-config-ui-patterns.md) — dialog architecture, control types, authentication tab structure, file browse patterns, and extension checklist for OpenSSH certificate controls
+- [Source Code Organization](.ai-factory/SOURCE_ORGANIZATION.md) — directory structure, module details, naming conventions, key interfaces, build artifacts
+- [Third-Party Dependencies](.ai-factory/DEPENDENCIES.md) — dependency list, versions, license compliance, security considerations, build configuration
+- [GitHub Issues](.ai-factory/Github-Issues.md) — issue prioritization, severity-sorted task table, execution phases, risk assessment

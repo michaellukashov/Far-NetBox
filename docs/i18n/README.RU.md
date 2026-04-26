@@ -86,17 +86,13 @@ Far-NetBox: клиент SFTP/FTP(S)/SCP/WebDAV/S3 для Far Manager 3.0 (x86/x
 
    Распакуйте содержимое архива в каталог плагинов Far (...Far\Plugins).
 
-6. Сборка
-
-   Инструкции по сборке см. в [Руководстве разработчика](DEVELOPER.md).
-
 Ссылки
 ------
 
 * Основная страница проекта: [https://github.com/michaellukashov/Far-NetBox](https://github.com/michaellukashov/Far-NetBox)
 * Форум Far Manager: [http://forum.farmanager.com/](http://forum.farmanager.com/)
 * Обсуждение Far-NetBox (на русском): [http://forum.farmanager.com/viewtopic.php?f=5&t=6317](http://forum.farmanager.com/viewtopic.php?f=5&t=6317)
-* Обсуждение Far-NetBox (на английском): [http://forum.farmanager.com/viewtopic.php?f=39§t=6638](http://forum.farmanager.com/viewtopic.php?f=39§t=6638)
+* Обсуждение Far-NetBox (на английском): [http://forum.farmanager.com/viewtopic.php?f=39&t=6638](http://forum.farmanager.com/viewtopic.php?f=39&t=6638)
 * Последние сборки: <https://nightly.link/michaellukashov/Far-NetBox/workflows/release/main?preview>
 
 Данный плагин предоставляется "as is" ("как есть"). Автор не несет

@@ -50,9 +50,6 @@ add_custom_target(NetBoxResources SOURCES
   ${CMAKE_SOURCE_DIR}/appveyor.bat
   ${CMAKE_SOURCE_DIR}/ChangeLog
   ${CMAKE_SOURCE_DIR}/README.md
-  ${CMAKE_SOURCE_DIR}/AGENTS.md
-  ${CMAKE_SOURCE_DIR}/docs/PROJECT_RULES.md
-
 )
 
 #===============================================================================

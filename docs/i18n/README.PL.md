@@ -22,13 +22,8 @@ Linki
 * Strona główna projektu: [https://github.com/michaellukashov/Far-NetBox](https://github.com/michaellukashov/Far-NetBox)
 * Forum Far Manager: [http://forum.farmanager.com/](http://forum.farmanager.com/)
 * Dyskusja o Far-NetBox (po rosyjsku): [http://forum.farmanager.com/viewtopic.php?f=5&t=6317](http://forum.farmanager.com/viewtopic.php?f=5&t=6317)
-* Dyskusja o Far-NetBox (po angielsku): [http://forum.farmanager.com/viewtopic.php?f=39&t=6638](http://forum.farmanager.com/viewtopic.php?f=39§t=6638)
+* Dyskusja o Far-NetBox (po angielsku): [http://forum.farmanager.com/viewtopic.php?f=39&t=6638](http://forum.farmanager.com/viewtopic.php?f=39&t=6638)
 * Najnowsze buildy: <https://nightly.link/michaellukashov/Far-NetBox/workflows/release/main?preview>
-
-Kompilacja
-----------
-
-Instrukcje kompilacji znajdują się w [Przewodniku Dewelopera](DEVELOPER.md).
 
 Licencja
 --------

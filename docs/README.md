@@ -22,13 +22,33 @@ Links
 * Project main page: [https://github.com/michaellukashov/Far-NetBox](https://github.com/michaellukashov/Far-NetBox)
 * Far Manager forum: [http://forum.farmanager.com/](http://forum.farmanager.com/)
 * Far-NetBox discussions (in Russian): [http://forum.farmanager.com/viewtopic.php?f=5&t=6317](http://forum.farmanager.com/viewtopic.php?f=5&t=6317)
-* Far-NetBox discussions (in English): [http://forum.farmanager.com/viewtopic.php?f=39&t=6638](http://forum.farmanager.com/viewtopic.php?f=39§t=6638)
+* Far-NetBox discussions (in English): [http://forum.farmanager.com/viewtopic.php?f=39&t=6638](http://forum.farmanager.com/viewtopic.php?f=39&t=6638)
 * Latest builds: <https://nightly.link/michaellukashov/Far-NetBox/workflows/release/main?preview>
 
-Building
+Features
 --------
 
-For detailed instructions on how to build NetBox from source, please see the [Developer Guide](DEVELOPER.md).
+* **Remote-to-Remote Copy** — Copy files directly between remote directories without downloading them locally ([details](features/remote-to-remote-copy.md))
+* **Editor External Modification Detection** — Automatic reload when files are modified externally ([details](features/editor-external-modification.md))
+
+Supported Protocols
+-------------------
+
+| Protocol | Description |
+|----------|-------------|
+| **SFTP** | SSH File Transfer Protocol (via PuTTY) |
+| **SCP**  | Secure Copy Protocol (via PuTTY) |
+| **FTP/FTPS** | File Transfer Protocol with TLS (via FileZilla) |
+| **WebDAV** | Web-based Distributed Authoring and Versioning |
+| **S3**   | Amazon Simple Storage Service |
+
+Internationalization
+--------------------
+
+Read this document in other languages:
+
+* [Polish](i18n/README.PL.md)
+* [Russian](i18n/README.RU.md)
 
 License
 -------

@@ -805,5 +805,5 @@ If Phase 1 causes crashes or test failures:
 - `AGENTS.md` — NetBox development guide, build commands, conventions
 - `AGENTS-Standards.md` — C++ coding standards, naming conventions
 - `libs/tinylog/tinylog/README.md` — tinylog documentation
-- `docs/logging-subsystem.md` — NetBox logging architecture reference (tinylog internals, log file paths, configuration)
+- `../../.ai-factory/references/logging-subsystem.md` — NetBox logging architecture reference (tinylog internals, log file paths, configuration)
 - Windows `CRITICAL_SECTION` docs — https://learn.microsoft.com/en-us/windows/win32/sync/critical-section-objects
