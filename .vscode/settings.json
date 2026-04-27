@@ -7,7 +7,8 @@
         // Enable MD033: Inline HTML with allowed elements
         "MD033": {
             "allowed_elements": ["br", "img", "a"]
-        }
+        },
+        "MD056": false,
     },
     
     // Other VS Code settings for markdown

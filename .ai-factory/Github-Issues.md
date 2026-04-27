@@ -33,24 +33,22 @@
 
 | # | Issue | Type | Summary | Impact | Est. Time |
 |---|-------|------|---------|--------|-----------|
-| 1 | [#432](https://github.com/michaellukashov/Far-NetBox/issues/432) | Bug | **CLOSED** — Fixed by PR [#433](https://github.com/michaellukashov/Far-NetBox/pull/433). Far silent close on FTP connection. | Resolved. | — |
+| 1 | [#432](https://github.com/michaellukashov/Far-NetBox/issues/432) | Bug | CLOSED — Fixed by PR [#433](https://github.com/michaellukashov/Far-NetBox/pull/433). Far silent close on FTP connection. | Resolved. | — |
 | 2 | [#513](https://github.com/michaellukashov/Far-NetBox/issues/513) | Bug | FTP hangs then crashes with `STATUS_STACK_OVERFLOW` on BusyBox FTP (cameras). 14 comments. | Crash + data loss risk. | 4-8h |
-| 3 | [#506](https://github.com/michaellukashov/Far-NetBox/issues/506) | Bug | Far crashes on FTP connect to specific servers; scans all directories before crash. | Complete app crash. | 4-8h |
-| 4 | [#508](https://github.com/michaellukashov/Far-NetBox/issues/508) | Bug | Far crashes after 2nd file open via SFTP unless Ctrl+R refresh between opens. | Workflow-breaking crash. | 3-5h |
-| 5 | [#497](https://github.com/michaellukashov/Far-NetBox/issues/497) | Bug | `STATUS_STACK_OVERFLOW` on F3 (file info) via SFTP to certain servers. | Crash on info view. | 3-5h |
+| 3 | [#506](https://github.com/michaellukashov/Far-NetBox/issues/506) | Bug | Far crashes on FTP connect to specific servers; scans all directories before crash. | Complete app crash.
+| 4 | [#508](https://github.com/michaellukashov/Far-NetBox/issues/508) | Bug | Far crashes after 2nd file open via SFTP unless Ctrl+R refresh between opens. | Workflow-breaking crash. | FIXED: 26.04.2026
+| 5 | [#497](https://github.com/michaellukashov/Far-NetBox/issues/497) | `STATUS_STACK_OVERFLOW` on F3 (file info) via SFTP to certain servers. | Crash on info view. | FIXED: 26.04.2026
 | 6 | [#501](https://github.com/michaellukashov/Far-NetBox/issues/501) | Bug | Slow SSH/SCP copy + corrupted files on certain SSH servers. | Data corruption risk. | 4-6h |
 
 ### HIGH — Severity 7-8 — Short-term Resolution
 
-| # | Issue | Type | Summary | Impact | Est. Time |
-|---|-------|------|---------|--------|-----------|
-| 7 | [#515](https://github.com/michaellukashov/Far-NetBox/issues/515) | Bug | F7 directory creation ignores autocomplete text; creates partial name. | Broken directory creation UX. | 2-3h | PLANNING
-| 8 | [#514](https://github.com/michaellukashov/Far-NetBox/issues/514) | Bug | S3: lists buckets but cannot enter any bucket. | S3 protocol unusable. | 4-8h |
-| 9 | [#510](https://github.com/michaellukashov/Far-NetBox/issues/510) | Bug | Amazon S3 connects but shows empty directory; can't upload; time encode error. | S3 unusable on AWS. | 4-8h |
-| 10 | [#512](https://github.com/michaellukashov/Far-NetBox/issues/512) | Bug | IdleThread starts too early; crashes on plugin unload (`EXCEPTION_ACCESS_VIOLATION`). By contributor @alabuzhev. | Crash on plugin load/unload. | 2-3h |
-| 11 | [#511](https://github.com/michaellukashov/Far-NetBox/issues/511) | Perf | Download speed limit in transfer dialog has no effect (SSH). | Cannot throttle transfers. | 2-4h | **PLANNED**
-| 12 | [#507](https://github.com/michaellukashov/Far-NetBox/issues/507) | Bug | FTP directory listing hangs; treats every file as directory (vsftpd). | Impossibly slow listing. | 4-6h |
-| 13 | [#486](https://github.com/michaellukashov/Far-NetBox/issues/486) | Bug | Dialog size overflow with proxy+tunnel settings in key exchange panel. | UI corruption. | 1-2h |
+| 7 | [#515](https://github.com/michaellukashov/Far-NetBox/issues/515) | Bug | F7 directory creation ignores autocomplete text; creates partial name. | Broken directory creation UX. | FIXED: 27.04.2026
+| 8 | [#514](https://github.com/michaellukashov/Far-NetBox/issues/514) | Bug | S3: lists buckets but cannot enter any bucket. | S3 protocol unusable.
+| 9 | [#510](https://github.com/michaellukashov/Far-NetBox/issues/510) | Bug | Amazon S3 connects but shows empty directory; can't upload; time encode error. | S3 unusable on AWS.
+| 10 | [#512](https://github.com/michaellukashov/Far-NetBox/issues/512) | Bug | IdleThread starts too early; crashes on plugin unload (`EXCEPTION_ACCESS_VIOLATION`). By contributor @alabuzhev. | Crash on plugin load/unload. | FIXED
+| 11 | [#511](https://github.com/michaellukashov/Far-NetBox/issues/511) | Perf | Download speed limit in transfer dialog has no effect (SSH). | Cannot throttle transfers. | FIXED: 27.04.2026
+| 12 | [#507](https://github.com/michaellukashov/Far-NetBox/issues/507) | Bug | FTP directory listing hangs; treats every file as directory (vsftpd). | Impossibly slow listing.
+| 13 | [#486](https://github.com/michaellukashov/Far-NetBox/issues/486) | Bug | Dialog size overflow with proxy+tunnel settings in key exchange panel. | UI corruption.
 
 ### MEDIUM — Severity 5-6 — Planned Enhancement
 
@@ -68,16 +66,16 @@
 |---|-------|------|---------|
 | 19 | [#502](https://github.com/michaellukashov/Far-NetBox/pull/502) | PR | Patch for NetBox.rc version string (open). |
 | 20 | [#500](https://github.com/michaellukashov/Far-NetBox/pull/500) | PR | Open PR. |
-| 21 | [#504](https://github.com/michaellukashov/Far-NetBox/pull/504) | PR | Fix for #390: DateTimeToTimeStamp timestamp clamping (open). |
+| 21 | [#504](https://github.com/michaellukashov/Far-NetBox/pull/504) | PR | Fix for [#390]: DateTimeToTimeStamp timestamp clamping (open). |
 
 ### FIXED (in this analysis batch)
 
 | # | Fix | Status |
 |---|-----|--------|
-| [#485](https://github.com/michaellukashov/Far-NetBox/issues/485) | SFTP "Cannot create remote folder" | **FIXED** — `lmv/dev` branch, `SftpFileSystem.cpp:3147-3173` |
-| [#432](https://github.com/michaellukashov/Far-NetBox/issues/432) | Far silent close on FTP connect | **CLOSED** — Fixed by PR [#433](https://github.com/michaellukashov/Far-NetBox/pull/433) |
-| [#390](https://github.com/michaellukashov/Far-NetBox/issues/390) | Invalid argument to time encode | **PR open** — [#504](https://github.com/michaellukashov/Far-NetBox/pull/504) |
-| [#503](https://github.com/michaellukashov/Far-NetBox/issues/503) | FTPS implicit doesn't work | **CLOSED** |
+| [#485](https://github.com/michaellukashov/Far-NetBox/issues/485) | SFTP "Cannot create remote folder" | FIXED — `lmv/dev` branch, `SftpFileSystem.cpp:3147-3173` |
+| [#432](https://github.com/michaellukashov/Far-NetBox/issues/432) | Far silent close on FTP connect | CLOSED — Fixed by PR [#433](https://github.com/michaellukashov/Far-NetBox/pull/433) |
+| [#390](https://github.com/michaellukashov/Far-NetBox/issues/390) | Invalid argument to time encode | PR open — [#504](https://github.com/michaellukashov/Far-NetBox/pull/504) |
+| [#503](https://github.com/michaellukashov/Far-NetBox/issues/503) | FTPS implicit doesn't work | CLOSED |
 
 ### OLDER ISSUES (not in last 100, from original PLAN-Issues.md)
 
