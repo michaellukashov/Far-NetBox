@@ -9405,7 +9405,7 @@ bool TWinSCPFileSystem::CreateDirectoryDialog(UnicodeString & Directory,
 
   if (Result)
   {
-    Directory = DirectoryEdit->GetText();
+    Directory = DirectoryEdit->GetTextFromDialog(); // Get fresh text from Far dialog
     SaveSettings = SaveSettingsCheck->GetChecked();
     if (Properties)
     {

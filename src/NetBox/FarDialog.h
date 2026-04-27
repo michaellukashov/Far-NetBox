@@ -478,6 +478,10 @@ public:
   RWProperty<UnicodeString> Text{nb::bind(&TFarEdit::GetText, this), nb::bind(&TFarEdit::SetText, this)};
 
   virtual UnicodeString GetText() const { return GetData(); }
+  // Retrieves text directly from Far dialog control, bypassing cached Data.
+  // Use when autocomplete or other Far-controlled text changes may have
+  // updated the control without firing DN_EDITCHANGE notification.
+  UnicodeString GetTextFromDialog();
   virtual void SetText(const UnicodeString & Value) { SetData(Value); }
   int32_t GetAsInteger() const;
   void SetAsInteger(int32_t Value);

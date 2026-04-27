@@ -2033,6 +2033,51 @@ UnicodeString TFarEdit::GetHistoryMask(size_t Index) const
   return Result;
 }
 
+UnicodeString TFarEdit::GetTextFromDialog()
+{
+  UnicodeString Result;
+
+  // If dialog is not shown, fall back to cached data
+  if (!GetDialog()->GetHandle())
+  {
+    Result = GetData();
+    DEBUG_PRINTF("GetTextFromDialog: Dialog not active, returning cached '%s'",
+      Result.c_str());
+    return Result;
+  }
+
+  // Query Far Manager for actual item data size
+  intptr_t Size = SendDialogMessage(DM_GETDLGITEM, nullptr);
+  if (Size <= 0)
+  {
+    DEBUG_PRINTF("GetTextFromDialog: DM_GETDLGITEM returned %d, using cached",
+      static_cast<int32_t>(Size));
+    return GetData();
+  }
+
+  // Allocate buffer and retrieve full item data
+  std::vector<uint8_t> Buffer(Size);
+  FarGetDialogItem ItemInfo{};
+  ItemInfo.StructSize = sizeof(FarGetDialogItem);
+  ItemInfo.Size = Size;
+  ItemInfo.Item = reinterpret_cast<FarDialogItem*>(Buffer.data());
+
+  SendDialogMessage(DM_GETDLGITEM, &ItemInfo);
+
+  // Extract text from retrieved item (Data field for DI_EDIT controls)
+  // Note: This relies on Far's ABI - FarDialogItem.Data contains text for edit controls
+  if (ItemInfo.Item && ItemInfo.Item->Data)
+  {
+    Result = UnicodeString(ItemInfo.Item->Data);
+  }
+
+  DEBUG_PRINTF("GetTextFromDialog: item=%d, cached='%s', fresh='%s'",
+    GetItemIdx(), GetData().c_str(), Result.c_str());
+
+  return Result;
+}
+
+
 void TFarEdit::SetHistoryMask(size_t Index, const UnicodeString & Value)
 {
   if (GetHistoryMask(Index) != Value)
