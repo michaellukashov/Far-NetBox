@@ -34,6 +34,7 @@ netbox_configure_source_groups()
 
 add_custom_target(NetBoxResources SOURCES
   NetBox/NetBoxEng.lng
+  NetBox/NetBoxFr.lng
   NetBox/NetBoxRus.lng
   NetBox/NetBoxPol.lng
   NetBox/NetBoxSpa.lng
