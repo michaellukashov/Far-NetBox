@@ -1,4 +1,4 @@
-.Language=Polish,Polish (Polski)
+﻿.Language=Polish,Polish (Polski)
 
 "NetBox"
 "NetBox"
@@ -220,6 +220,7 @@
 "FTP"
 "WebDAV"
 "Amazon S3"
+"Certyfikat CA (PEM):"
 "Zezwól na wycofanie S&CP"
 "Niebezpieczne"
 "Użyj przycisków na górze lub klaw. Ctrl+PgUp i Ctrl+PgDn, "
@@ -752,7 +753,7 @@
 "Nazwa sesji nie może zawierać zabronionych znaków (<>:\"/\\|?*)"
 
 //Configure menu
-"NetBox - ustawienia"                             	
+"NetBox - ustawienia"
 "Ustawienia główne"
 "Ustawienia proxy"
 "Ustawienia logowania"
@@ -785,9 +786,9 @@
 "Logowanie włączone"
 " Opcje logowania "
 "Poziom logowania:"
-"Poziom 1"
-"Poziom 2"
-"Poziom 3"
+"Debug 1"
+"Debug 2"
+"Debug 3"
 "Zapisz do pliku:"
 "C:\NetBox.log"
 
@@ -1327,3 +1328,4 @@
 "Requester &pays"
 "Authentication"
 "&Session token:"
+"Nie można odczytać listy katalogów z tego serwera FTP.\nSpróbuj połączyć się z podkatalogiem."

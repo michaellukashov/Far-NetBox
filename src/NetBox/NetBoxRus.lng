@@ -1,4 +1,4 @@
-.Language=Russian,Russian (Русский)
+﻿.Language=Russian,Russian (Русский)
 
 "NetBox"
 "NetBox"
@@ -220,6 +220,7 @@
 "FTP"
 "WebDAV"
 "Amazon S3"
+"CA сертификат (PEM):"
 "Разрешить переход на &SCP"
 "небезопасный"
 "Используйте кнопки вверху или Ctrl+PgUp и Ctrl+PgDn"

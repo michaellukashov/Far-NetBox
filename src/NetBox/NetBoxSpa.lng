@@ -1,4 +1,4 @@
-.Language=Spanish,Spanish (Español)
+﻿.Language=Spanish,Spanish (Español)
 
 "NetBox"
 "NetBox"
@@ -220,6 +220,7 @@
 "FTP"
 "WebDAV"
 "Amazon S3"
+"Certificado CA (PEM):"
 "Permitir &recurrir a SCP"
 "Inseguro"
 "Usar botones arriba o teclas Ctrl+PgUp y Ctrl+PgDn para "
@@ -1327,3 +1328,4 @@
 "Requester &pays"
 "Authentication"
 "&Session token:"
+"No se puede leer la lista de directorios de este servidor FTP.\nIntenta conectar a un subdirectorio."
