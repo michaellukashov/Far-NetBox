@@ -44,11 +44,11 @@
 
 | # | Issue | Type | Summary | Impact | Est. Time |
 |---|-------|------|---------|--------|-----------|
-| 7 | [#515](https://github.com/michaellukashov/Far-NetBox/issues/515) | Bug | F7 directory creation ignores autocomplete text; creates partial name. | Broken directory creation UX. | 2-3h |
+| 7 | [#515](https://github.com/michaellukashov/Far-NetBox/issues/515) | Bug | F7 directory creation ignores autocomplete text; creates partial name. | Broken directory creation UX. | 2-3h | PLANNING
 | 8 | [#514](https://github.com/michaellukashov/Far-NetBox/issues/514) | Bug | S3: lists buckets but cannot enter any bucket. | S3 protocol unusable. | 4-8h |
 | 9 | [#510](https://github.com/michaellukashov/Far-NetBox/issues/510) | Bug | Amazon S3 connects but shows empty directory; can't upload; time encode error. | S3 unusable on AWS. | 4-8h |
 | 10 | [#512](https://github.com/michaellukashov/Far-NetBox/issues/512) | Bug | IdleThread starts too early; crashes on plugin unload (`EXCEPTION_ACCESS_VIOLATION`). By contributor @alabuzhev. | Crash on plugin load/unload. | 2-3h |
-| 11 | [#511](https://github.com/michaellukashov/Far-NetBox/issues/511) | Perf | Download speed limit in transfer dialog has no effect (SSH). | Cannot throttle transfers. | 2-4h |
+| 11 | [#511](https://github.com/michaellukashov/Far-NetBox/issues/511) | Perf | Download speed limit in transfer dialog has no effect (SSH). | Cannot throttle transfers. | 2-4h | **PLANNED**
 | 12 | [#507](https://github.com/michaellukashov/Far-NetBox/issues/507) | Bug | FTP directory listing hangs; treats every file as directory (vsftpd). | Impossibly slow listing. | 4-6h |
 | 13 | [#486](https://github.com/michaellukashov/Far-NetBox/issues/486) | Bug | Dialog size overflow with proxy+tunnel settings in key exchange panel. | UI corruption. | 1-2h |
 

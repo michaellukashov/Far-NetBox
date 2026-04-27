@@ -216,3 +216,4 @@ private:
 - [WinSCP SessionData Encryption Settings](.ai-factory/references/winscp-sessiondata-encryption-settings.md) — WinSCP encryption field definitions, property macros, serialization patterns, TLS version defaults, and cipher/KEX list handling
 - [NetBox S3FileSystem Session Mapping](.ai-factory/references/netbox-s3filesystem-session-mapping.md) — NetBox S3-specific session data fields, serialization gaps, TLS setup via neon, and CA certificate TODO
 - [NetBox UI Dialogs for S3 Config](.ai-factory/references/netbox-ui-dialogs-s3-config.md) — NetBox session dialog architecture, S3 tab controls, FTP encryption pattern, and Load/Save button implementation guide for certificate editing
+- [Far Dialog API: Text Retrieval](.ai-factory/references/far-dialog-api-text-retrieval.md) — Far Manager dialog API analysis for retrieving fresh text from edit controls when autocomplete may bypass DN_EDITCHANGE notification
