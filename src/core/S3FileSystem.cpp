@@ -1109,6 +1109,8 @@ void TS3FileSystem::ParsePath(const UnicodeString & APath, UnicodeString & Bucke
   {
     BucketName = Path.SubString(0, P - 1);
     AKey = Path.SubString(P + 1, Path.Length() - P);
+    // Added logging for debugging path parsing
+    FTerminal->LogEvent(FORMAT("ParsePath: input='%s', bucket='%s', key='%s'", APath, BucketName, AKey));
   }
 }
 
@@ -1158,8 +1160,9 @@ struct TLibS3ListBucketCallbackData : TLibS3CallbackData
 TLibS3BucketContext TS3FileSystem::GetBucketContext(const UnicodeString & ABucketName, const UnicodeString & Prefix)
 {
   TLibS3BucketContext Result{};
-
   bool First = true;
+  int32_t RetryCount = 0;
+  const int32_t MaxRetries = 3;
   bool Retry = false;
   do
   {
@@ -1253,6 +1256,13 @@ TLibS3BucketContext TS3FileSystem::GetBucketContext(const UnicodeString & ABucke
         FTerminal->LogEvent(FORMAT("Will keep using region \"%s\" for bucket \"%s\" from now on.", FAuthRegion, ABucketName));
         FRegions[ABucketName] = FAuthRegion;
       }
+    }
+    // Increment retry counter and enforce limit
+    RetryCount++;
+    if (RetryCount >= MaxRetries)
+    {
+      FTerminal->LogEvent(FORMAT("Max retries (%d) reached for bucket '%s' (region='%s', endpoint='%s'), aborting", MaxRetries, ABucketName, Region, HostName));
+      Retry = false;
     }
   }
   while (Retry);
@@ -1510,7 +1520,7 @@ S3Status TS3FileSystem::LibS3ListBucketCallback(
   // This is being called in chunks, not once for all data in a response.
   Data.KeyCount += ContentsCount;
   Data.NextMarker = StrFromS3(NextMarker);
-  const TTerminal * Terminal = Data.FileSystem->FTerminal;
+  TTerminal * Terminal = Data.FileSystem->FTerminal;
 
   for (int32_t Index = 0; Index < ContentsCount; Index++)
   {
@@ -1524,6 +1534,7 @@ S3Status TS3FileSystem::LibS3ListBucketCallback(
       File->SetFileName(FileName);
       File->SetType(FILETYPE_DEFAULT);
 
+      // ISO8601 timestamp parsing with 24:00 handling
       #define ISO8601_FORMAT "%04d-%02d-%02dT%02d:%02d:%02d"
       int32_t Year = 0;
       int32_t Month = 0;
@@ -1535,15 +1546,42 @@ S3Status TS3FileSystem::LibS3ListBucketCallback(
       // Doing own parting instead as it's easier.
       // Might be replaced with ISO8601ToDate.
       // Keep is sync with WebDAV.
-      const int32_t Filled =
-        sscanf(Content->lastModifiedStr, ISO8601_FORMAT, &Year, &Month, &Day, &Hour, &Min, &Sec);
+      // const int32_t Filled =
+      //   sscanf(Content->lastModifiedStr, ISO8601_FORMAT, &Year, &Month, &Day, &Hour, &Min, &Sec);
+      const int32_t Filled = sscanf(Content->lastModifiedStr, ISO8601_FORMAT, &Year, &Month, &Day, &Hour, &Min, &Sec);
       if (Filled == 6)
       {
-        TDateTime Modification =
-          EncodeDateVerbose(static_cast<uint16_t>(Year), static_cast<uint16_t>(Month), static_cast<uint16_t>(Day)) +
-          EncodeTimeVerbose(static_cast<uint16_t>(Hour), static_cast<uint16_t>(Min), static_cast<uint16_t>(Sec), 0);
-        File->Modification = ConvertTimestampFromUTC(Modification);
-        File->ModificationFmt = mfFull;
+        // TDateTime Modification =
+        //   EncodeDateVerbose(static_cast<uint16_t>(Year), static_cast<uint16_t>(Month), static_cast<uint16_t>(Day)) +
+        //   EncodeTimeVerbose(static_cast<uint16_t>(Hour), static_cast<uint16_t>(Min), static_cast<uint16_t>(Sec), 0);
+        // File->Modification = ConvertTimestampFromUTC(Modification);
+        // File->ModificationFmt = mfFull;
+        // Normalize 24:00:00 to next day 00:00:00 if needed (ISO 8601 allows 24:00)
+        if (Hour == 24)
+        {
+          Hour = 0;
+          // Increment day, letting TDateTime handle month/year rollover
+          TDateTime Date = EncodeDateVerbose(static_cast<uint16_t>(Year), static_cast<uint16_t>(Month), static_cast<uint16_t>(Day));
+          Date = Date + 1; // add one day
+          uint16_t NewYear, NewMonth, NewDay;
+          DecodeDate(Date, NewYear, NewMonth, NewDay);
+          Year = NewYear;
+          Month = NewMonth;
+          Day = NewDay;
+        }
+        // Validate hour range after normalization
+        if (Hour >= 0 && Hour < 24)
+        {
+          TDateTime Modification = EncodeDateVerbose(static_cast<uint16_t>(Year), static_cast<uint16_t>(Month), static_cast<uint16_t>(Day)) +
+            EncodeTimeVerbose(static_cast<uint16_t>(Hour), static_cast<uint16_t>(Min), static_cast<uint16_t>(Sec), 0);
+          File->Modification = ConvertTimestampFromUTC(Modification);
+          File->ModificationFmt = mfFull;
+        }
+        else
+        {
+          Terminal->LogEvent(FORMAT("Invalid hour value %d in timestamp for '%s'", Hour, FileName));
+          File->ModificationFmt = mfNone;
+        }
       }
       else
       {
