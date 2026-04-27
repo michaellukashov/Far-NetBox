@@ -1,3 +1,4 @@
+Reference: https://github.com/michaellukashov/Far-NetBox/issues/511
 # Investigation Plan: NetBox Issue #511 – Download speed limit ineffective (fast mode)
 
 ## Goal
@@ -25,11 +26,17 @@ Determine why the download speed limit set in NetBox’s transfer dialog does no
    - Search the log for entries containing `SpeedLimit`, `TransferThread`, `TSecureShell`, `TSFTPFileSystem`.
 3. **Locate UI handling code**
    - Search for the dialog class that reads the speed‑limit value (likely under `src/NetBox/` or `src/windows/`).
-   - Verify how the value is stored (e.g., in `TSessionData`).
+   - Verify that the value is stored in the `TSessionData::FSpeedLimit` member (or the appropriate field) and that it is propagated to the transfer engine.
 4. **Trace the transfer path**
    - **SSH path**: `TSecureShell::GetFile` → PuTTY SCP implementation.
    - **SFTP path**: `TSFTPFileSystem`.
-   - Look for any throttling logic (`SetSpeedLimit`, `Throttle`, `RateLimiter`). Confirm whether the limit is applied.
+   - Run the following searches to locate throttling logic:
+     ```bash
+     grep -R "SetSpeedLimit" src/
+     grep -R "Throttle" src/
+     grep -R "RateLimiter" src/
+     ```
+   - Confirm whether the limit is applied in either code path.
 5. **Compare with older releases**
    - If a tag where the limit worked exists, checkout that version.
    - Diff the relevant source files to identify regressions.
@@ -50,3 +57,8 @@ Determine why the download speed limit set in NetBox’s transfer dialog does no
 - Reproduction steps are verified and logged.
 - Root cause is pinpointed to a specific code path.
 - No new build warnings or errors are introduced during investigation.
+
+## Success Criteria
+- Log entry `SpeedLimit` appears with the exact value set in the download dialog.
+- Network monitoring (Wireshark or NetStat) shows the transfer rate stays at or below the configured limit for the duration of the download.
+- No regression: other transfer dialogs (upload, remote‑to‑remote) continue to function unchanged.
