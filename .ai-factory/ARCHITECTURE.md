@@ -205,6 +205,8 @@ private:
 ## Related References
 
 - [SFTP Binary Dump Log Protocol](.ai-factory/references/sftp-binary-dump-log-protocol.md) — SFTP packet binary data dump mechanism, Log Protocol configuration levels (0-3), TSFTPPacket::Dump() implementation, and files to modify for adding level 3
+- [Message Loading System](.ai-factory/references/message-loading-system.md) — GetMsg/FmtLoadStr resolution, ID mapping tables, debugging unmapped ID bugs, format string parameter rules
+- [About Dialog Version Fix](.ai-factory/references/about-dialog-version-fix.md) — About dialog version substitution bug analysis, Log Protocol configuration levels (0-3), TSFTPPacket::Dump() implementation, and files to modify for adding level 3
 - [Crash: Second File Open Without Refresh](.ai-factory/references/crash-second-file-open-analysis.md) — analysis of crash when opening files twice without directory refresh, covering TRemoteFile ownership, dangling pointers, and CreateFileList flow
 - [SSH Authentication Exploration](.ai-factory/references/ssh-authentication-exploration.md) — detailed analysis of SSH authentication code paths, session configuration UI patterns, and PuTTY integration points for OpenSSH certificate auth implementation
 - [Session Configuration UI Patterns](.ai-factory/references/session-config-ui-patterns.md) — dialog architecture, control types, authentication tab structure, file browse patterns, and extension checklist for OpenSSH certificate controls

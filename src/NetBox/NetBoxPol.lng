@@ -1328,4 +1328,16 @@
 "Requester &pays"
 "Authentication"
 "&Session token:"
+
 "Nie można odczytać listy katalogów z tego serwera FTP.\nSpróbuj połączyć się z podkatalogiem."
+
+"Master password"
+"&Current master password:"
+"&New master password:
+"&Re-enter master password:"
+"You did not enter the correct current master password."
+"New and re-entered master passwords are not the same."
+"**Your password is too simple and may not provide enough security against dictionary or brute force attacks.\nAre you sure you want to use it?**\n\nNote: good passwords have at least six characters and contain both lowercase and uppercase letters, numbers and special characters, such as delimiters, symbols, letters with accent, etc."
+"Master password successfully changed."
+"**Master password successfully set.**\n\nYour stored passwords are secured by AES cipher now."
+"**You have deleted your master password.**\n\nYour stored passwords are not secured now."

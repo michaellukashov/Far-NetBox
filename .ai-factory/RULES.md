@@ -26,3 +26,4 @@
   - MD060: Enabled - No spaces inside code span elements (e.g., `` `code` `` not `` ` code ` ``)
   - MD033: Enabled with allowed elements `["br", "img", "a"]` - Only these HTML elements are permitted
   - Configuration in `.vscode/settings.json` for VS Code users
+  

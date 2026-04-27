@@ -1060,7 +1060,7 @@ bool TWinSCPPlugin::MasterPasswordConfigurationDialog()
   TWinSCPDialog * Dialog = DialogPtr.get();
 
   Dialog->SetSize(TPoint(70, 18));
-  UnicodeString Caption = FORMAT("%s - %s", GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(MASTER_PASSWORD_CAPTION)));
+  UnicodeString Caption = FORMAT("%s - %s", GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_MASTER_PASSWORD_CAPTION)));
   Dialog->SetCaption(Caption);
   Dialog->SetDialogGuid(&MasterPasswordConfigurationDialogGuid);
 
@@ -1072,7 +1072,7 @@ bool TWinSCPPlugin::MasterPasswordConfigurationDialog()
   if (UseMP)
   {
     TFarText * CurrentLabel = MakeOwnedObject<TFarText>(Dialog);
-    CurrentLabel->SetCaption(GetMsg(MASTER_PASSWORD_CURRENT));
+    CurrentLabel->SetCaption(GetMsg(NB_MASTER_PASSWORD_CURRENT));
     CurrentLabel->SetLeft(3);
     CurrentLabel->SetTop(Top++);
 
@@ -1084,13 +1084,13 @@ bool TWinSCPPlugin::MasterPasswordConfigurationDialog()
   }
 
   TFarCheckBox * EnableCheck = MakeOwnedObject<TFarCheckBox>(Dialog);
-  EnableCheck->SetCaption(GetMsg(MASTER_PASSWORD_CAPTION));
+  EnableCheck->SetCaption(GetMsg(NB_MASTER_PASSWORD_CAPTION));
   EnableCheck->SetLeft(3);
   EnableCheck->SetTop(Top++);
   EnableCheck->SetChecked(UseMP);
 
   TFarText * NewLabel = MakeOwnedObject<TFarText>(Dialog);
-  NewLabel->SetCaption(GetMsg(MASTER_PASSWORD_NEW));
+  NewLabel->SetCaption(GetMsg(NB_MASTER_PASSWORD_NEW));
   NewLabel->SetLeft(3);
   NewLabel->SetTop(Top++);
   NewLabel->SetEnabledDependency(EnableCheck);
@@ -1103,7 +1103,7 @@ bool TWinSCPPlugin::MasterPasswordConfigurationDialog()
   NewEdit->SetEnabledDependency(EnableCheck);
 
   TFarText * ConfirmLabel = MakeOwnedObject<TFarText>(Dialog);
-  ConfirmLabel->SetCaption(GetMsg(MASTER_PASSWORD_CONFIRM));
+  ConfirmLabel->SetCaption(GetMsg(NB_MASTER_PASSWORD_CONFIRM));
   ConfirmLabel->SetLeft(3);
   ConfirmLabel->SetTop(Top++);
   ConfirmLabel->SetEnabledDependency(EnableCheck);
@@ -1135,25 +1135,25 @@ bool TWinSCPPlugin::MasterPasswordConfigurationDialog()
       }
       if (!WinConfiguration->ValidateMasterPassword(CurrentPwd))
       {
-        MessageDialog(GetMsg(MASTER_PASSWORD_INCORRECT), qtError, qaOK);
+        MessageDialog(GetMsg(NB_MASTER_PASSWORD_INCORRECT), qtError, qaOK);
         return false;
       }
       if (NewPwd != ConfirmPwd)
       {
-        MessageDialog(GetMsg(MASTER_PASSWORD_DIFFERENT), qtError, qaOK);
+        MessageDialog(GetMsg(NB_MASTER_PASSWORD_DIFFERENT), qtError, qaOK);
         return false;
       }
       int Valid = IsValidPassword(NewPwd);
       if (Valid <= 0)
       {
-        if (MessageDialog(GetMsg(MASTER_PASSWORD_SIMPLE2), qtWarning, qaOK | qaCancel) == qaCancel)
+        if (MessageDialog(GetMsg(NB_MASTER_PASSWORD_SIMPLE2), qtWarning, qaOK | qaCancel) == qaCancel)
           return false;
       }
       try
       {
         WinConfiguration->ChangeMasterPassword(NewPwd, nullptr);
         GetConfiguration()->DoSave(false, false);
-        MessageDialog(GetMsg(MASTER_PASSWORD_CHANGED), qtInformation, qaOK);
+        MessageDialog(GetMsg(NB_MASTER_PASSWORD_CHANGED), qtInformation, qaOK);
         return true;
       }
       catch (Exception & e)
@@ -1171,20 +1171,20 @@ bool TWinSCPPlugin::MasterPasswordConfigurationDialog()
       }
       if (NewPwd != ConfirmPwd)
       {
-        MessageDialog(GetMsg(MASTER_PASSWORD_DIFFERENT), qtError, qaOK);
+        MessageDialog(GetMsg(NB_MASTER_PASSWORD_DIFFERENT), qtError, qaOK);
         return false;
       }
       int Valid = IsValidPassword(NewPwd);
       if (Valid <= 0)
       {
-        if (MessageDialog(GetMsg(MASTER_PASSWORD_SIMPLE2), qtWarning, qaOK | qaCancel) == qaCancel)
+        if (MessageDialog(GetMsg(NB_MASTER_PASSWORD_SIMPLE2), qtWarning, qaOK | qaCancel) == qaCancel)
           return false;
       }
       try
       {
         WinConfiguration->ChangeMasterPassword(NewPwd, nullptr);
         GetConfiguration()->DoSave(false, false);
-        MessageDialog(GetMsg(MASTER_PASSWORD_SET2), qtInformation, qaOK);
+        MessageDialog(GetMsg(NB_MASTER_PASSWORD_SET2), qtInformation, qaOK);
         return true;
       }
       catch (Exception & e)
@@ -1205,14 +1205,14 @@ bool TWinSCPPlugin::MasterPasswordConfigurationDialog()
       }
       if (!WinConfiguration->ValidateMasterPassword(CurrentPwd))
       {
-        MessageDialog(GetMsg(MASTER_PASSWORD_INCORRECT), qtError, qaOK);
+        MessageDialog(GetMsg(NB_MASTER_PASSWORD_INCORRECT), qtError, qaOK);
         return false;
       }
       try
       {
         WinConfiguration->ClearMasterPassword(nullptr);
         GetConfiguration()->DoSave(false, false);
-        MessageDialog(GetMsg(MASTER_PASSWORD_CLEARED2), qtInformation, qaOK);
+        MessageDialog(GetMsg(NB_MASTER_PASSWORD_CLEARED2), qtInformation, qaOK);
         return true;
       }
       catch (Exception & e)
