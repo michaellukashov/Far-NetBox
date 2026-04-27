@@ -13,11 +13,12 @@
 - After adding/deleting IDs in `src/base/MsgIDs.h`, update all language files:
   - `src/NetBox/NetBoxEng.lng`: add English message
   - `src/NetBox/NetBoxRus.lng`: add Russian translation
-  - Both files must have the same number of lines
+  - and so on for all `*.lng` files
+  - All `*.lng` files must have the same number of lines
   - Ensure proper line endings (CRLF) and newline at end of file
 
 - The code should remain as similar as possible to the source code of the WinSCP project
-  - WinSCP code for reference: https://github.com/winscp/winscp
+  - WinSCP code for reference: `https://github.com/winscp/winscp`
   - Follow WinSCP coding patterns and conventions when making changes
   - Keep compatibility with WinSCP codebase for easier upstream merging
 
