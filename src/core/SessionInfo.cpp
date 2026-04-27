@@ -1240,9 +1240,13 @@ void TSessionLog::DoAddStartupInfo(TAddLogEntryEvent && OnAddLogEntry, TConfigur
   {
     LogStr = L"Debug 1";
   }
-  else if (AConfiguration->LogProtocol >= 2)
+  else if (AConfiguration->LogProtocol == 2)
   {
     LogStr = L"Debug 2";
+  }
+  else if (AConfiguration->LogProtocol >= 3)
+  {
+    LogStr = L"Debug 3";
   }
   if (AConfiguration->FLogSensitive)
   {

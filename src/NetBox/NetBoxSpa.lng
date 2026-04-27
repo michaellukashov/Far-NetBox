@@ -497,6 +497,7 @@
 "Normal"
 "Debug 1"
 "Debug 2"
+"Debug 3"
 "Registrar a archi&vo:"
 "&Anexar"
 "S&obrescribir"
@@ -786,6 +787,7 @@
 "Nivel logging:"
 "Debug 1"
 "Debug 2"
+"Debug 3"
 "Registro a archivo:"
 "C:\NetBox.log"
 

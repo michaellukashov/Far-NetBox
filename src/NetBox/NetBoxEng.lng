@@ -498,6 +498,7 @@
 "Normal"
 "Debug 1"
 "Debug 2"
+"Debug 3"
 "Log to &file:"
 "&Append"
 "O&verwrite"
@@ -787,6 +788,7 @@
 "Logging level:"
 "Debug 1"
 "Debug 2"
+"Debug 3"
 "Log to file:"
 "C:\NetBox.log"
 

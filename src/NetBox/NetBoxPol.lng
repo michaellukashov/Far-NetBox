@@ -497,6 +497,7 @@
 "Normalny"
 "Debug 1"
 "Debug 2"
+"Debug 3"
 "Loguj do &pliku:"
 "&Dołącz"
 "&Zastąp"
@@ -786,6 +787,7 @@
 "Poziom logowania:"
 "Poziom 1"
 "Poziom 2"
+"Poziom 3"
 "Zapisz do pliku:"
 "C:\NetBox.log"
 

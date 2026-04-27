@@ -1,375 +1,113 @@
-# Plan: Fix Crash on Second File Open Without Directory Refresh
+# Plan - SFTP Binary Data Dump at Log Protocol Level 3
 
-> **Exploration:** [crash-second-file-open-analysis.md](../.ai-factory/references/crash-second-file-open-analysis.md)
-> **Stored Plan:** [.ai-factory/plans/fix-crash-second-file-open.md](.ai-factory/plans/fix-crash-second-file-open.md)
-> **GitHub Issue:** [#508](https://github.com/michaellukashov/Far-NetBox/issues/508) - Far Manager crashes after 2x opening file from NetBox
+## Settings
 
-## Metadata
+- **Testing:** No
+- **Logging:** Verbose (recommended for AI-generated code)
+- **Docs:** No mandatory checkpoint (warn-only)
+- **Roadmap:** Version 1.3
 
-| Field | Value |
-|-------|-------|
-| **Branch** | `fix/crash-on-second-file-open` |
-| **Created** | 2026-04-26 |
-| **Type** | Bug fix |
-| **Priority** | High |
-| **Status** | ✅ Verified Fixed |
+## Exploration
 
-## Problem Statement
+- [SFTP Binary Dump Log Protocol](.ai-factory/references/sftp-binary-dump-log-protocol.md)
 
-Far Manager crashes after opening a file via SFTP and then attempting to open another file without refreshing the directory (Ctrl+R). The crash occurs in `TTerminal::ProcessFiles` when accessing `TRemoteFile*` pointers that have become dangling.
+### Exploration Summary
 
-## Root Cause Summary
+**Key Findings:**
 
-1. **Panel stores `TRemoteFile*` in `UserData`**: When the remote directory is listed, `TRemoteFile` objects are created and stored in `TFarPanelItem::UserData`.
+| File | Current State | Required Change |
+|------|--------------|-----------------|
+| `src/base/MsgIDs.h` | Has `NB_LOGGING_LOG_PROTOCOL_0,1,2` | Add `_3` |
+| `src/NetBox/NetBoxEng.lng` | Has 3 levels | Add level 3 |
+| `src/NetBox/WinSCPDialogs.cpp:505` | Loop `Index <= 2` | Change to `<= 3` |
+| `src/core/SftpFileSystem.cpp:2572` | `>= 2` triggers dump | Change to `>= 3` |
+| `src/core/SessionInfo.cpp:1243` | `>= 2` shows "Debug 2" | Add `>= 3` for "Debug 3" |
 
-2. **Directory refresh deletes files**: In `TTerminal::DoReadDirectoryFinish()`, when the directory is refreshed, the old `TRemoteDirectory` calls `Reset()` which deletes all `TRemoteFile` objects (because `TRemoteFileList::OwnsObjects = true`).
+**Protocols using Log Protocol levels:**
+- SFTP (`>= 3` for binary) ← This feature
+- FTP (`>= 2` for mod time)
+- WebDAV (`>= 2` for XML)
+- SCP (`>= 1` for blocks)
+- S3 (`>= 0` for response)
+- SSH (`>= 2` for events)
 
-3. **Dangling pointers**: After the refresh, the panel's `UserData` still contains pointers to deleted `TRemoteFile` objects.
+## Research Context
 
-4. **Crash on second open**: When the user opens another file, `CreateFileList()` extracts these dangling `TRemoteFile*` pointers, and `ProcessFiles()` crashes when accessing them.
+**User Request:** SFTP dump binary data only when debug level = 3 is set.
 
-## Solution
+**Current Behavior:**
+- `SftpFileSystem.cpp:2572` — Binary data dump triggers at `LogProtocol >= 2`
+- The Log Protocol dropdown (`WinSCPDialogs.cpp:505`) only has 3 options (0, 1, 2), so level 3 is unreachable
 
-Make a **deep copy** of `TRemoteFile` objects in `CreateFileList()` to ensure the file list owns its own copies that are independent of the panel's files.
-
-### Key Changes
-
-1. **Set `FileList->SetOwnsObjects(true)`** for remote file lists - ensures duplicated files are cleaned up
-2. **Duplicate `TRemoteFile` objects** using `Duplicate(false)` - creates independent copies
-3. **Add null-pointer check** - handles cases where `GetUserData()` returns nullptr
-4. **Add debug logging** - helps with troubleshooting future issues
-
-### Why `Standalone=true` is Required
-
-The `Duplicate(true)` parameter is required because:
-
-- All critical file properties are copied: `FileName`, `Size`, `Modification`, `LastAccess`, `IsDirectory`, `IsSymLink`, etc.
-- `FTerminal` is copied (pointer to active session)
-- With `Standalone=true`, `FFullFileName` is computed and stored during duplication
-- This ensures `GetFullFileName()` works correctly on the duplicated file
-- Code paths that call `GetFullFileName()` (e.g., `DoAllowRemoteFileTransfer`) will work properly
-
-**Why not `Standalone=false`:** With `Standalone=false`, `FDirectory` is not copied (remains `nullptr`). If `GetFullFileName()` is called on the duplicated file, it will fail an assertion (`GetDirectory() != nullptr`) in debug builds or crash in release builds.
-
-## Code Changes
-
-### File: `src/NetBox/WinSCPFileSystem.cpp`
-
-#### Location: `CreateFileList()` function (lines 3123-3180)
-
-**Current code (lines 3131-3152):**
-```cpp
-std::unique_ptr<TStrings> FileList((AFileList == nullptr) ? new TStringList() : AFileList);
-if (AFileList == nullptr)
-{
-    // FileList->SetOwnsObjects(true);
-    FileList->SetCaseSensitive(true);
-    FileList->SetDuplicates(dupAccept);
-}
-// ...
-for (int32_t Index = 0; Index < PanelItems->GetCount(); ++Index)
-{
-    // ...
-    if (Side == osRemote)
-    {
-        Data = static_cast<TRemoteFile *>(PanelItem->GetUserData());
-        DebugAssert(Data);  // Line 3149
-    }
-    // ...
-}
+**Example of current binary dump output:**
+```
+2026-04-26 18:17:55.620 . Read 318 bytes (0 pending)
+2026-04-26 18:17:55.620 . Skipped  packets
+2026-04-26 18:17:55.620 < Type: SSH_FXP_VERSION, Size: 318, Number: -1
+2026-04-26 18:17:55.620 < 02,00,00,00,03,00,00,00,18,70,6F,73,69,78,2D,72,65,6E,61,6D,65,40,6F,70,65,
 ```
 
-**Replace with:**
-```cpp
-std::unique_ptr<TStrings> FileList((AFileList == nullptr) ? new TStringList() : AFileList);
-if (AFileList == nullptr)
-{
-    FileList->SetOwnsObjects(true);  // Enable ownership for remote file lists
-    FileList->SetCaseSensitive(true);
-    FileList->SetDuplicates(dupAccept);
-}
-// ...
-for (int32_t Index = 0; Index < PanelItems->GetCount(); ++Index)
-{
-    // ...
-    if (Side == osRemote)
-    {
-        TRemoteFile * RemoteFile = static_cast<TRemoteFile *>(PanelItem->GetUserData());
-        if (RemoteFile != nullptr)
-        {
-            // Duplicate the file to avoid dangling pointer issues after directory refresh.
-            // Use Standalone=true to compute and store FFullFileName so that
-            // GetFullFileName() works correctly even when FDirectory is nullptr.
-            Data = RemoteFile->Duplicate(true);
-        }
-        else
-        {
-            Data = nullptr;
-        }
-    }
-    // ...
-}
-```
+### Decision Made
 
-**Add debug logging** after the for-loop (before `return FileList.release();`):
-```cpp
-if (Side == osRemote && FileList->GetCount() > 0)
-{
-    TINYLOG_DEBUG(g_tinylog) << TLogContext::Format()
-        << " CreateFileList: duplicated " << FileList->GetCount()
-        << " remote file objects to prevent stale pointer issues";
-}
-```
-
-### Duplicate() Method Reference
-
-**Location:** `src/core/RemoteFiles.cpp:898-950`
-
-```cpp
-TRemoteFile * TRemoteFile::Duplicate(bool Standalone) const
-{
-    std::unique_ptr<TRemoteFile> Result(std::make_unique<TRemoteFile>());
-    // Copies: Terminal, Owner, ModificationFmt, Size, CalculatedSize,
-    //         FileName, DisplayName, INodeBlocks, Modification, LastAccess,
-    //         Group, IconIndex, TypeName, IsSymLink, LinkTo, Type,
-    //         Tags, CyclicLink, HumanRights, IsEncrypted
-    // If Standalone=true AND (FFullFileName is not empty OR GetDirectory() is not nullptr):
-    //         computes and stores FFullFileName by calling GetFullFileName() on original
-    // Note: FDirectory is NOT copied (remains nullptr)
-    return Result.release();
-}
-```
+- **Level 3 Label:** "Debug 3" (simple, consistent with Debug 1/2)
+- **Level 2 Behavior Change:** After this change, level 2 will show packet headers ONLY (no binary dump)
+  - This is intentional per user request: "dump binary data only when debug level = 3 is set"
+- **Other Protocols:** Unchanged - they continue to use level 2 for their debug output
 
 ## Tasks
 
-### Phase I: Implement Fix
+### I. Implementation
 
-1. ~~**Modify `CreateFileList()` to duplicate remote files**~~ ✅
-   - File: `src/NetBox/WinSCPFileSystem.cpp`
-   - Function: `TStrings * TWinSCPFileSystem::CreateFileList()` (line 3123)
-   - Changes:
-     - Set `FileList->SetOwnsObjects(true)` for remote file lists
-     - Replace direct pointer assignment with `Duplicate()` call
-     - Add null-pointer check for robustness
-     - Add verbose logging (TINYLOG_TRACE, TINYLOG_DEBUG, TINYLOG_WARNING)
-   - Implemented: 2026-04-26
+1. **Add Log Protocol Level 3 Message IDs**
+   - File: `src/base/MsgIDs.h`
+   - Add `NB_LOGGING_LOG_PROTOCOL_3` message ID
+   - Add to enum after `NB_LOGGING_LOG_PROTOCOL_2`
 
-### Phase II: Verification
+2. **Update Language Files for Log Protocol Level 3**
+   - **Format:** Positional strings (NOT key-value). Add AFTER "Debug 2" line in each file.
+   - After adding `NB_LOGGING_LOG_PROTOCOL_3` to MsgIDs.h, update all 4 language files:
+     - `src/NetBox/NetBoxEng.lng` — add `"Debug 3"` after line with "Debug 2"
+     - `src/NetBox/NetBoxRus.lng` — add Russian translation
+     - `src/NetBox/NetBoxPol.lng` — add Polish translation
+     - `src/NetBox/NetBoxSpa.lng` — add Spanish translation
+   - **Note:** Strings must match enum order in MsgIDs.h (index 0=Normal, 1=Debug1, 2=Debug2, 3=Debug3)
 
-2. ~~**Build the plugin**~~ ✅
-   - Build type: `RelWithDebugInfo` (default)
-   - Platform: `x64` (or test platform)
-   - Build command: `cmd /c build-x64.bat`
-   - Expected: Zero warnings, successful compilation
-   - Build completed: 2026-04-26
+3. **Extend Log Protocol Dropdown in Settings Dialog**
+   - File: `src/NetBox/WinSCPDialogs.cpp`
+   - Change loop: `Index <= 3` (from `Index <= 2`)
+   - Add level 3 to combo box
 
-3. **Test the fix**
-   - Manual testing in Far Manager
-   - Verify no crash on second file open
-   - See Testing Plan below for details
+4. **Update SFTP Binary Dump Condition**
+   - File: `src/core/SftpFileSystem.cpp`
+   - Change line 2572: `if (FTerminal->Configuration->ActualLogProtocol >= 3)` (from `>= 2`)
 
-## Architecture Notes
+5. **Update Session Info Display**
+   - File: `src/core/SessionInfo.cpp`
+   - Add handling for level 3 in `LogProtocol` display (show "Debug 3")
+   - Currently line 1243 uses `>= 2` for "Debug 2", change to `== 2` and add `>= 3` for "Debug 3"
 
-### Dependency Flow
+### II. Build & Verify
 
-```
-Plugin (WinSCPFileSystem.cpp)
-  └─ Core (Terminal.cpp)
-      └─ Base (RemoteFiles.cpp)
-          └─ Third-party (None)
-```
+6. **Build Plugin**
+   - Run: `cmd /c build-x64.bat`
+   - Verify: Zero warnings
 
-- Plugin layer calls core layer (CreateFileList → ProcessFiles → CopyToLocal)
-- Core layer uses base classes (TRemoteFile, TStrings)
-- No third-party dependencies affected
-
-### Third-Party Library Boundaries
-
-- No changes to `libs/` directory
-- No CMake changes required
-- Standard MSVC build process applies
-
-### Build Configuration
-
-| Setting | Value |
-|---------|-------|
-| **Build type** | `RelWithDebugInfo` |
-| **Platform** | `x64` (or test platform) |
-| **CMake option** | `OPT_CREATE_PLUGIN_DIR=ON` (for plugin directory) |
-| **Unity build** | Can disable if symbol conflicts: `OPT_USE_UNITY_BUILD=OFF` |
-| **Output** | `Far3_x64/Plugins/NetBox/NetBox.dll` |
-
-## Testing Plan
-
-### Primary Test: Second File Open Without Refresh
-
-**Steps:**
-1. Connect to SFTP server via NetBox
-2. Navigate to a directory containing multiple files
-3. Press Enter on first file → file downloads and opens in associated application
-4. Close the external application
-5. Press Enter on a different file → **should NOT crash** (after fix)
-6. Close the external application
-7. Repeat steps 5-6 multiple times
-
-**Expected result:** No crash, files open successfully each time
-
-### Baseline Test: With Refresh (Should Always Work)
-
-**Steps:**
-1. Same as above, but press Ctrl+R between file opens
-2. Press Enter on file → file opens
-3. Press Ctrl+R to refresh directory
-4. Press Enter on another file → should work
-
-**Expected result:** Works both before and after fix (regression check)
-
-### Edge Case Tests
-
-| Test | Scenario | Expected Result |
-|------|----------|----------------|
-| Single file directory | Open only file, close, reopen same file | Success |
-| Large directory | Open files in directory with 100+ items | Success |
-| Subdirectory | Open file after entering/exiting subdirectory | Success |
-| Rename during session | Rename file while panel shows old name, then open | Graceful handling |
-| Connection drop | Connection drops during file open | Proper error handling |
-| Empty directory | Open file after directory becomes empty | Success |
-| Directory download | Download entire directory (parallel) | Works correctly |
-
-### Debug Logging Verification
-
-Enable debug logging and verify output:
-```
-CreateFileList: duplicated N remote file objects to prevent stale pointer issues
-```
-
-Should appear in log file: `%LOCALAPPDATA%\NetBox\netbox.log`
-
-## Edge Cases and Error Handling
-
-### Null-Pointer Handling
-
-If `PanelItem->GetUserData()` returns nullptr:
-- Set `Data = nullptr` (don't crash)
-- Log warning: `"CreateFileList: panel item has no UserData for file: %s"`
-- File operations may fail gracefully with proper error message
-
-### Duplicate() Exception Safety
-
-The `Duplicate()` method contains a `try__catch` block, so it won't throw:
-```cpp
-TRemoteFile * TRemoteFile::Duplicate(bool Standalone) const
-{
-    std::unique_ptr<TRemoteFile> Result(std::make_unique<TRemoteFile>());
-    try__catch
-    {
-        // ... copy properties ...
-    }
-    __catch__removed
-    {
-#if defined(__BORLANDC__)
-        delete Result;
-        throw;
-#endif
-    } end_try__catch
-    return Result.release();
-}
-```
-
-### Memory Considerations
-
-- Each `Duplicate()` call creates a new `TRemoteFile` object (~1KB per file)
-- `SetOwnsObjects(true)` ensures cleanup when file list is destroyed
-- Memory is freed when file operation completes (via TStrings destructor)
-- For typical usage (1-10 files), memory overhead is negligible
-
-### Directory Download Considerations
-
-When downloading directories with parallel transfers:
-- `CalculateFilesSize()` may call `GetFullFileName()` on duplicated files
-- Duplicated files have `FDirectory = nullptr` (Standalone=false)
-- This is handled by `csIgnoreErrors` flag in `TCalculateSizeParams`
-- Non-critical errors are logged but don't abort the operation
-
-## DebugAssert Behavior
-
-**Before fix:** `DebugAssert(Data)` at line 3149 would fire when pointer is null/dangling.
-
-**After fix:**
-- Null pointers are now handled explicitly with graceful fallback
-- The assertion may still fire for truly unexpected cases
-- Debug builds will still catch programming errors
-
-## Logging Strategy
-
-### Debug Logging (Development)
-
-```cpp
-TINYLOG_DEBUG(g_tinylog) << TLogContext::Format()
-    << " CreateFileList: duplicated " << FileList->GetCount()
-    << " remote file objects to prevent stale pointer issues";
-```
-
-### Warning Logging (Production Safety)
-
-```cpp
-if (RemoteFile == nullptr)
-{
-    TINYLOG_WARNING(g_tinylog) << TLogContext::Format()
-        << " CreateFileList: panel item has no UserData for file: "
-        << FileName.c_str();
-}
-```
-
-### Log Output Location
-
-- Development: `%LOCALAPPDATA%\NetBox\netbox.log`
-- Far Manager tinylog output
-
-## Acceptance Criteria
-
-| Criterion | Verification Method |
-|-----------|-------------------|
-| No crash on second file open | Manual test, 5+ iterations |
-| Debug logging appears | Check `%LOCALAPPDATA%\NetBox\netbox.log` |
-| Build succeeds with zero warnings | `build-x64.bat` output |
-| Regression: refresh still works | Manual test with Ctrl+R |
-| Edge cases handled | All edge case tests pass |
-| Memory stable | No memory leaks after 20+ file opens |
-
-## WinSCP Porting Notes
-
-This fix is based on WinSCP patterns:
-
-1. **Original WinSCP behavior**: WinSCP likely handles this differently (different UI framework)
-2. **NetBox equivalent**: Far Manager plugin requires explicit pointer management
-3. **What was missing**: The commented-out `SetOwnsObjects(true)` and lack of duplication
-
-The fix follows existing patterns in `RemoteFiles.cpp`:
-- `DuplicateTo()` methods use `Duplicate(false)` for same-session operations
-- File ownership is managed by container objects
+7. **Test Log Protocol Level 3**
+   - Launch Far Manager with NetBox plugin
+   - Go to Settings → Logging → Log Protocol = "Debug 3"
+   - Connect via SFTP
+   - Verify: Binary hex dump appears in log
 
 ## Commit Plan
 
-Single commit:
+Single commit after all tasks complete:
 
 ```
-fix(sftp): prevent crash on second file open without directory refresh
+feat(logging): add log protocol level 3 for SFTP binary data dump
 
-Make CreateFileList() duplicate TRemoteFile objects to avoid dangling
-pointers after directory refresh. This fixes a crash where Far Manager
-crashes when opening files twice without pressing Ctrl+R to refresh.
-
-Root cause: TRemoteFile* stored in panel UserData become invalid after
-directory refresh because the original objects are deleted. Duplicating
-the files ensures the file list owns independent copies.
-
-Changes:
-- Enable FileList->SetOwnsObjects(true) for remote file lists
-- Duplicate TRemoteFile using Duplicate(false) before storing
-- Add null-pointer check for robustness
-- Add debug logging for troubleshooting
-
-Fixes: crash on second file open without directory refresh
-Fixes: GitHub issue #508
+- Add NB_LOGGING_LOG_PROTOCOL_3 message ID
+- Update all 4 language files (Eng, Rus, Pol, Spa)
+- Extend log protocol dropdown to 4 levels (0-3)
+- Move SFTP binary dump trigger from level >=2 to >=3
+- Update session info display for level 3
 ```

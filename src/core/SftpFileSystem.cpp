@@ -2569,7 +2569,7 @@ void TSFTPFileSystem::LogPacket(const TSFTPPacket * Packet, TLogLineType Type)
   }
   FTerminal->Log->Add(
     Type, FORMAT(L"Type: %s, Size: %d, Number: %d", Packet->TypeName(), nb::ToInt32(Packet->GetLength()), Packet->GetMessageNumber()));
-  if (FTerminal->Configuration->ActualLogProtocol >= 2)
+  if (FTerminal->Configuration->ActualLogProtocol >= 3)
   {
     FTerminal->Log->Add(Type, Packet->Dump());
   }

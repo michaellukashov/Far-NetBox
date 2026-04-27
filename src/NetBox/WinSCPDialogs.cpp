@@ -502,7 +502,7 @@ bool TWinSCPPlugin::LoggingConfigurationDialog()
   TFarComboBox * LogProtocolCombo = MakeOwnedObject<TFarComboBox>(Dialog);
   LogProtocolCombo->SetDropDownList(true);
   LogProtocolCombo->SetWidth(10);
-  for (int32_t Index = 0; Index <= 2; ++Index)
+  for (int32_t Index = 0; Index <= 3; ++Index)
   {
     LogProtocolCombo->GetItems()->Add(GetMsg(NB_LOGGING_LOG_PROTOCOL_0 + Index));
   }
