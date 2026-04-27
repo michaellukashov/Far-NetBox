@@ -209,6 +209,7 @@ void TFileOperationProgressType::Start(TFileOperation AOperation,
     FTemp = ATemp;
     FInitialOnceDoneOperation = InitialOnceDoneOperation;
     FPersistence.CPSLimit = ACPSLimit;
+    FCPSLimit = ACPSLimit;
   }
 
   try
