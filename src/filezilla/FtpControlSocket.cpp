@@ -5,6 +5,7 @@
 #include "TransferSocket.h"
 #include "AsyncProxySocketLayer.h"
 #include "AsyncSslSocketLayer.h"
+#include "MsgIDs.h"
 #ifndef MPEXT_NO_GSS
 #include "AsyncGssSocketLayer.h"
 #endif
@@ -1823,7 +1824,7 @@ void CFtpControlSocket::List(BOOL bFinish, int nError /*=FALSE*/, CServerPath pa
     }
     catch(...)
     {
-      ShowStatus(L"FTP listing parse failed", FZ_LOG_ERROR);
+    ShowStatus(MSG_FTP_LISTING_PARSE_FAILED, FZ_LOG_ERROR);
       delete pData->pDirectoryListing;
       pData->pDirectoryListing = nullptr;
       ResetOperation(FZ_REPLY_ERROR);
@@ -2514,7 +2515,7 @@ void CFtpControlSocket::ListFile(CString filename, const CServerPath &path)
       }
       catch(...)
       {
-        ShowStatus(L"FTP listing parse failed", FZ_LOG_ERROR);
+          ShowStatus(MSG_FTP_LISTING_PARSE_FAILED, FZ_LOG_ERROR);
         delete pListResult;
         pData->direntry = nullptr;
         return;
@@ -2970,7 +2971,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile * transferfile/*=0*/, BOOL b
       }
       catch(...)
       {
-        ShowStatus(L"FTP listing parse failed", FZ_LOG_ERROR);
+        ShowStatus(MSG_FTP_LISTING_PARSE_FAILED, FZ_LOG_ERROR);
         delete pData->pDirectoryListing;
         pData->pDirectoryListing = nullptr;
         ResetOperation(FZ_REPLY_ERROR);

@@ -33,9 +33,11 @@
 
 | # | Issue | Type | Summary | Impact | Est. Time |
 |---|-------|------|---------|--------|-----------|
-| 1 | [#432](https://github.com/michaellukashov/Far-NetBox/issues/432) | Bug | CLOSED — Fixed by PR [#433](https://github.com/michaellukashov/Far-NetBox/pull/433). Far silent close on FTP connection. | Resolved. | — |
+| 1 | [#432](https://github.com/michaellukashov/Far-NetBox/issues/432) | Bug | CLOSED — Fixed by PR [#433](https://github.com/michaellukashov/Far-NetBox/pull/433). Far silent close on FTP connection. | Resolved. |
 | 2 | [#513](https://github.com/michaellukashov/Far-NetBox/issues/513) | Bug | FTP hangs then crashes with `STATUS_STACK_OVERFLOW` on BusyBox FTP (cameras). 14 comments. | Crash + data loss risk. | 4-8h |
-| 3 | [#506](https://github.com/michaellukashov/Far-NetBox/issues/506) | Bug | Far crashes on FTP connect to specific servers; scans all directories before crash. | Complete app crash.
+| 3 | [#506](https://github.com/michaellukashov/Far-NetBox/issues/506) | Bug | Far crashes on FTP connect to specific servers; scans all directories before crash. | Complete app crash
+Refs: ftp-connection-crash-2026.md
+
 | 4 | [#508](https://github.com/michaellukashov/Far-NetBox/issues/508) | Bug | Far crashes after 2nd file open via SFTP unless Ctrl+R refresh between opens. | Workflow-breaking crash. | FIXED: 26.04.2026
 | 5 | [#497](https://github.com/michaellukashov/Far-NetBox/issues/497) | `STATUS_STACK_OVERFLOW` on F3 (file info) via SFTP to certain servers. | Crash on info view. | FIXED: 26.04.2026
 | 6 | [#501](https://github.com/michaellukashov/Far-NetBox/issues/501) | Bug | Slow SSH/SCP copy + corrupted files on certain SSH servers. | Data corruption risk. | 4-6h |
