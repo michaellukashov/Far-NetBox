@@ -2,12 +2,11 @@
 
 Available knowledge references for AI agents.
 
-## Feature Documentation
+Features
+--------
 
-| Reference | Topic | Audience | Updated |
-|-----------|-------|----------|---------|
-| [remote-to-remote-copy](remote-to-remote-copy.md) | Remote-to-remote file copy support | End-user + internal | 2026-04-26 |
-| [editor-external-modification](editor-external-modification.md) | External file modification detection | End-user + internal | 2026-04-26 |
+* **Remote-to-Remote Copy** — Copy files directly between remote directories without downloading them locally ([details](features/remote-to-remote-copy.md))
+* **Editor External Modification Detection** — Automatic reload when files are modified externally ([details](features/editor-external-modification.md))
 
 ## Research References
 

@@ -27,7 +27,6 @@ This reorganization improves clarity for both humans and AI agents.
 
 - [x] Create docs directory structure: Create `docs/features/` and `docs/i18n/` (docs/ already exists), log each operation with full path, ensure parent directories exist.
 - [x] Move core documentation files: Move from root to `docs/`: `README.md`, `ARCHITECTURE.md`, `SOURCE_ORGANIZATION.md`, `DEPENDENCIES.md`, `PROJECT_RULES.md`, `PROJECT.md`, `REFACTORING_PLAN.md`, `01-RESEARCH.md`, `2026-02-28-prepare-environment-for-winxp-build.md`. Log each move (source → destination). Verify success (file exists at destination, absent at source).
-- [x] Move feature documents: Move `docs/editor-external-modification.md` to `docs/features/editor-external-modification.md`. Log operation, verify success.
 - [x] Move i18n files: Move `README.PL.md` → `docs/i18n/README.PL.md`; `README.RU.md` → `docs/i18n/README.RU.md`. Log each move, verify.
 - [x] Relocate CODEBASE.md and fix links: Move `CODEBASE.md` to `docs/CODEBASE.md`. Update all `./ARCHITECTURE.md`, `./SOURCE_ORGANIZATION.md`, `./DEPENDENCIES.md`, `./PROJECT_RULES.md`, `./README.md` to `./` (same-directory) links. Update `./AGENTS.md` to `../AGENTS.md`. Log each link change (old URL → new URL). Save file.
 - [x] Write root README redirect: Create `README.md` at root with concise content: one-sentence project description, "For user documentation, see `docs/README.md`." and "For AI assistant guidelines, see `AGENTS.md`." Log creation. Ensure CRLF line endings.

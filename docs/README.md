@@ -25,12 +25,6 @@ Links
 * Far-NetBox discussions (in English): [http://forum.farmanager.com/viewtopic.php?f=39&t=6638](http://forum.farmanager.com/viewtopic.php?f=39&t=6638)
 * Latest builds: <https://nightly.link/michaellukashov/Far-NetBox/workflows/release/main?preview>
 
-Features
---------
-
-* **Remote-to-Remote Copy** — Copy files directly between remote directories without downloading them locally ([details](features/remote-to-remote-copy.md))
-* **Editor External Modification Detection** — Automatic reload when files are modified externally ([details](features/editor-external-modification.md))
-
 Supported Protocols
 -------------------
 
