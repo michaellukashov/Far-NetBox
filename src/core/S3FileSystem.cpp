@@ -38,6 +38,7 @@
 #include "Cryptography.h"
 #include <System.JSON.hpp>
 #include <System.DateUtils.hpp>
+#include <System.IOUtils.hpp>
 extern "C" {
 #include <request.h>
 } // extern "C"
@@ -743,18 +744,40 @@ void TS3FileSystem::LibS3SessionCallback(ne_session_s * Session, void * Callback
   FileSystem->FNeonSession = Session;
 }
 
-void TS3FileSystem::InitSslSessionImpl(ssl_st * Ssl, void * /* ne_session * Session */)
+void TS3FileSystem::InitSslSessionImpl(ssl_st * Ssl, void * /* ne_session */ Session)
 {
   SetupSsl(Ssl, FTerminal->SessionData->MinTlsVersion, FTerminal->SessionData->MaxTlsVersion);
 
-  // Custom CA certificate for S3 - log configuration status
   UnicodeString CACert = FTerminal->SessionData->S3CACertificate;
+  FTerminal->LogEvent(FORMAT(L"InitSslSessionImpl: S3CACertificate is %s", CACert.IsEmpty() ? L"(empty)" : L"(configured)"));
+
   if (!CACert.IsEmpty())
   {
-    FTerminal->LogEvent(L"Using custom CA certificate for S3 connection");
-    // Note: For per-session custom CA cert support, the certificate would need
-    // to be written to a temporary file and used via ne_ssl_set_certificates_storage()
-    // This requires temp file handling which is TODO.
+    try
+    {
+      UnicodeString TempPath = SystemTemporaryDirectory();
+      UnicodeString TempFileName = TempPath + L"NetBox_S3_CA_" + ::IntToStr(::GetCurrentProcessId()) + L"_" +
+                                   ::IntToStr(reinterpret_cast<intptr_t>(this)) + L".pem";
+
+      TFile::WriteAllText(TempFileName, CACert);
+
+      FTerminal->LogEvent(FORMAT(L"InitSslSessionImpl: Wrote CA cert to temp file: %s", TempFileName));
+      FS3CACertificateTempFile = TempFileName;
+
+      if (Session != nullptr)
+      {
+        ne_ssl_set_certificates_storage(static_cast<ne_session *>(Session), StrToNeon(FS3CACertificateTempFile));
+        FTerminal->LogEvent(L"InitSslSessionImpl: Custom CA certificate applied to SSL context");
+      }
+      else
+      {
+        FTerminal->LogEvent(L"InitSslSessionImpl: Session is null, cannot apply CA certificate");
+      }
+    }
+    catch(Exception & E)
+    {
+      FTerminal->LogEvent(FORMAT(L"InitSslSessionImpl: Failed to apply custom CA certificate: %s", E.Message));
+    }
   }
 }
 
@@ -1280,6 +1303,12 @@ void TS3FileSystem::Close()
   FTerminal->Closed();
   FActive = false;
   UnregisterFromNeonDebug(FTerminal);
+  // Clean up temporary CA certificate file if created
+  if (!FS3CACertificateTempFile.IsEmpty())
+  {
+    ::DeleteFileW(FS3CACertificateTempFile.c_str());
+    FS3CACertificateTempFile.Clear();
+  }
 }
 
 bool TS3FileSystem::GetActive() const

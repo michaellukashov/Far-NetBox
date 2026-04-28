@@ -935,6 +935,7 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool PuttyImport, bool
   FS3MaxKeys = Storage->ReadEnum("S3MaxKeys", FS3MaxKeys, AutoSwitchMapping);
   FS3CredentialsEnv = Storage->ReadBool("S3CredentialsEnv", FS3CredentialsEnv);
   FS3RequesterPays = Storage->ReadBool("S3RequesterPays", FS3RequesterPays);
+  FS3CACertificate = Storage->ReadString("S3CACertificate", FS3CACertificate);
 
   // PuTTY defaults to TcpNoDelay, but the psftp/pscp ignores this preference, and always set this to off (what is our default too)
   if (!PuttyImport)
@@ -1308,6 +1309,7 @@ void TSessionData::DoSave(THierarchicalStorage * Storage,
     WRITE_DATA3(Integer, S3MaxKeys);
     WRITE_DATA3(Bool, S3CredentialsEnv);
     WRITE_DATA3(Bool, S3RequesterPays);
+  WRITE_DATA4(String, S3CACertificate);
     WRITE_DATA(Integer, SendBuf);
     WRITE_DATA4(String, SourceAddress);
     WRITE_DATA4(String, ProtocolFeatures);
