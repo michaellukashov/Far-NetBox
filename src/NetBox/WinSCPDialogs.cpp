@@ -3157,15 +3157,16 @@ void TSessionDialog::Change()
     {
       FProxyComboIndex = GetProxyMethodCombo()->GetItemIndex();
     }
-    if (TransferProtocolCombo->GetSetChanged(false))
+    const int32_t NewProtocolIndex = TransferProtocolCombo->GetItemIndex();
+    if (TransferProtocolCombo->GetSetChanged(false) && NewProtocolIndex != FTransferProtocolIndex)
     {
-      FTransferProtocolIndex = TransferProtocolCombo->GetItemIndex();
+      FTransferProtocolIndex = NewProtocolIndex;
       DoChange = true;
     }
-    if (FtpEncryptionCombo->GetSetChanged(false))
+    const int32_t NewEncryptionIndex = FtpEncryptionCombo->GetItemIndex();
+    if (FtpEncryptionCombo->GetSetChanged(false) && NewEncryptionIndex != FFtpEncryptionComboIndex)
     {
-      FFtpEncryptionComboIndex = FtpEncryptionCombo->GetItemIndex();
-      // DEBUG_PRINTF("FFtpEncryptionComboIndex: %d", FFtpEncryptionComboIndex);
+      FFtpEncryptionComboIndex = NewEncryptionIndex;
       DoChange = true;
     }
     if (DoChange)
