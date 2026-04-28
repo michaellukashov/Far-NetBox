@@ -2941,7 +2941,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   CipherListBox = MakeOwnedObject<TFarListBox>(this);
   CipherListBox->SetRight(CipherListBox->GetRight() - 15);
-  CipherListBox->SetHeight(1 + CIPHER_COUNT + 1);
+  CipherListBox->SetHeight(6); // 4 visible items + margins (was 1 + CIPHER_COUNT + 1 = 10)
   int32_t Pos = CipherListBox->GetBottom();
 
   SetNextItemPosition(ipRight);
@@ -3009,7 +3009,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   KexListBox = MakeOwnedObject<TFarListBox>(this);
   KexListBox->SetRight(KexListBox->GetRight() - 15);
-  KexListBox->SetHeight(1 + KEX_COUNT + 1);
+  KexListBox->SetHeight(8); // 6 visible items + margins (was 1 + KEX_COUNT + 1 = 15)
 
   SetNextItemPosition(ipRight);
 
