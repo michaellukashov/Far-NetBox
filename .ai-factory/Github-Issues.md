@@ -31,9 +31,7 @@
 
 ### CRITICAL — Severity 9-10 — Immediate Action Required
 
-| # | Issue | Type | Summary | Impact | Est. Time |
-|---|-------|------|---------|--------|-----------|
-| 1 | [#432](https://github.com/michaellukashov/Far-NetBox/issues/432) | Bug | CLOSED — Fixed by PR [#433](https://github.com/michaellukashov/Far-NetBox/pull/433). Far silent close on FTP connection. | Resolved. |
+| 1 | [#432](https://github.com/michaellukashov/Far-NetBox/issues/432) | Bug | CLOSED — Fixed by PR [#433](https://github.com/michaellukashov/Far-NetBox/pull/433). Far silent close on FTP connection. | Resolved.
 | 2 | [#513](https://github.com/michaellukashov/Far-NetBox/issues/513) | Bug | FTP hangs then crashes with `STATUS_STACK_OVERFLOW` on BusyBox FTP (cameras). 14 comments. | Crash + data loss risk. | IMPLEMENTING
 | 3 | [#506](https://github.com/michaellukashov/Far-NetBox/issues/506) | Bug | Far crashes on FTP connect to specific servers; scans all directories before crash. | Complete app crash
 Refs: ftp-connection-crash-2026.md | FIXED: 27.04.2026
@@ -126,7 +124,6 @@ These issues are older than the 100-issue window and need re-verification:
 
 ### Phase 2: Protocol Functionality — S3 + FTP
 
-1. [#514](https://github.com/michaellukashov/Far-NetBox/issues/514) / [#510](https://github.com/michaellukashov/Far-NetBox/issues/510) — S3 bucket access (combine investigation)
 2. [#507](https://github.com/michaellukashov/Far-NetBox/issues/507) — FTP directory listing hang
 3. [#515](https://github.com/michaellukashov/Far-NetBox/issues/515) — F7 autocomplete directory name
 
