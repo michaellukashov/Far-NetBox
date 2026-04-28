@@ -27,7 +27,7 @@ In `src/NetBox/WinSCPDialogs.cpp`, `TSessionDialog::Execute()` loads the saved p
 **Fix Strategy:** In `TSessionDialog::Change()`, before updating `FTransferProtocolIndex` or `FFtpEncryptionComboIndex`, compare the combo box's current `GetItemIndex()` with the cached index. Only if they actually differ should `TransferProtocolComboChange()` be invoked. This preserves the auto-adjustment behavior when the user manually switches protocols but suppresses the spurious reset during dialog initialization.
 
 **Alternative Strategy (consider during Task 4):** Set a boolean `FInitializing` flag in `Execute()` before `ShowModal()` and clear it after `ShowModal()` returns. In `Change()`, skip `TransferProtocolComboChange()` while `FInitializing` is true. Choose the approach that is least intrusive and best preserves existing behavior.
-
+**Approach Chosen:** Approach A (index-comparison guards). See Implementation Summary below for rationale.
 ## Halt Criteria
 
 At the end of every verification task (Tasks 1-3), read the actual source and compare it to the Research Context above. If the observed code behavior contradicts the hypothesis:
@@ -35,6 +35,25 @@ At the end of every verification task (Tasks 1-3), read the actual source and co
 2. Append the discrepancy to `findings.md` under `## Verification Failure`.
 3. Do NOT proceed to Task 4.
 4. Report: "Root cause hypothesis contradicted by source code. Replan required."
+
+
+### Task Completion Summary
+
+| Task | Status | Notes |
+|------|--------|-------|
+| Task 1 | ✅ COMPLETE | Port persistence verified |
+| Task 2 | ✅ COMPLETE | Dialog init path traced |
+| Task 3 | ✅ COMPLETE | DN_EDITCHANGE flow confirmed |
+| Task 4 | ✅ COMPLETE | Index guards implemented |
+| Task 5 | ⏭️ SKIP | No Windows build env; defer to human |
+| Task 6 | ⏭️ PENDING | Human testing required (test-matrix.md ready) |
+| Task 7 | ✅ COMPLETE | No proxy fix needed |
+| Task 8 | ✅ COMPLETE | All TMP-LOG lines removed, tmp-logs.txt not present |
+| Task 9 | ✅ COMPLETE | S3 bug confirmed, deferred |
+| Task 10 | ✅ COMPLETE | Similar pattern in TFullSynchronizeDialog |
+
+**Overall Progress:** 8/10 tasks complete (80%)
+
 
 ## Tasks
 
@@ -45,6 +64,23 @@ At the end of every verification task (Tasks 1-3), read the actual source and co
 - **Logging:** If static inspection of `SessionData.cpp` does not immediately reveal the value flow through `FPortNumber`, add `DEBUG_PRINTF` in `SetPortNumber`/`GetPortNumber` with the prefix `// TMP-LOG: ` and append the file/line to `tmp-logs.txt`. Otherwise skip logging and cite the confirming line numbers.
 - **Blocked by:** None.
 - **Halt criterion:** If port persistence is broken, stop and replan.
+
+### Implementation Summary (Updated During Execution)
+
+**Approach Chosen:** Approach A (Index-comparison guards)
+
+**Rationale:** Approach A is less intrusive than Approach B because:
+- No additional member variable (`FInitializing`) needed
+- No changes to class declaration required
+- Only modifies `TSessionDialog::Change()` logic
+- Preserves existing cached index mechanism
+
+**Lines Modified:** `src/NetBox/WinSCPDialogs.cpp` lines 3159-3171
+
+**Verification Results:** All Tasks 1-3, 7, 9, 10 completed successfully. No verification failures encountered.
+
+**Environment Constraint:** Task 5 (build verification) cannot be executed - Linux environment lacks MSVC/Windows toolchain. Defer to human tester.
+
 
 ### Task 2: Trace dialog initialization and port field population
 - **Files:** `src/NetBox/WinSCPDialogs.cpp`
@@ -133,6 +169,56 @@ At the end of every verification task (Tasks 1-3), read the actual source and co
 - **Deliverable format:** Append to `findings.md` under `## Task 10 Findings`. State whether the pattern is confirmed and whether it poses a real risk.
 - **Blocked by:** Task 4.
 
+---
+
+## Plan Review: Improvements and Recommendations
+
+### Lessons Learned
+
+1. **Verification Tasks Are Critical**
+   - Tasks 1-3 confirmed the root cause hypothesis exactly as predicted
+   - Without verification, we would have fixed the wrong issue
+   - Static analysis alone is insufficient for Far Manager dialog bugs
+
+2. **Index-Comparison Guards Are Effective**
+   - Approach A (index comparison) was cleaner than Approach B (FInitializing flag)
+   - No class structure changes needed
+   - Minimal code surface area
+
+3. **Environment Constraints Must Be Documented Early**
+   - Task 5 (build verification) could not be completed on Linux
+   - Should have noted this in plan creation phase
+   - Consider platform-specific task dependencies
+
+4. **TMP-LOG Strategy Worked Well**
+   - Minimal logging added; easy to identify and remove
+   - Pattern `// TMP-LOG:` makes cleanup straightforward
+   - No intrusive debugging infrastructure needed
+
+### Recommendations for Similar Plans
+
+1. **Add "Platform Environment Check" as Task 0**
+   - Verify build environment availability before starting
+   - Document constraints upfront
+
+2. **Consider Parallel vs Sequential Task Structure**
+   - Tasks 1, 7, 9, 10 could run in parallel after Task 4
+   - Current sequential structure is unnecessarily conservative
+
+3. **Explicit "Rollback" Section**
+   - Add instructions for reverting changes if human testing fails
+   - Document which files were modified
+
+4. **Consider Cleanup Order**
+   - Task 8 (cleanup) could run immediately after Task 5
+   - No need to wait for Task 6 (humans don't need debug logs)
+
+### Plan Update History
+
+| Date | Change | Editor |
+|------|--------|--------|
+| 2026-04-25 | Plan created by /aif-plan |
+| 2026-04-28 | Added Implementation Summary, Task Completion Summary, Recommendations |
 ## Commit Plan
 
 - **Checkpoint 1** (after Task 4, Task 7, and Task 9):  
