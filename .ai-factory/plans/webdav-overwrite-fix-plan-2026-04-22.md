@@ -2,7 +2,7 @@
 
 **Created:** 2026-04-22
 **Branch:** main (fast mode - no branch)
-**Status:** Ready for implementation
+**Status:** Implemented & Verified
 
 ---
 
@@ -58,7 +58,7 @@ HANDLE LocalFileHandle = FTerminal->CreateLocalFile(DestFullName,
 
 ### Phase 2: Implementation
 
-- [ ] **task-2:** Fix WebDAV file creation disposition
+- [x] **task-2:** Fix WebDAV file creation disposition
   - **File:** `src/core/WebDAVFileSystem.cpp`
   - **Function:** `TWebDAVFileSystem::Sink`
   - **Line:** ~1922
@@ -66,7 +66,7 @@ HANDLE LocalFileHandle = FTerminal->CreateLocalFile(DestFullName,
   - **Pattern:** Match FTP/SFTP behavior - always use `CREATE_ALWAYS` for confirmed overwrites
   - **Logging:** Add FTerminal->LogEvent() before the change to log the disposition being used
 
-- [ ] **task-3:** Add debug logging for overwrite flow
+- [x] **task-3:** Add debug logging for overwrite flow
   - **File:** `src/core/WebDAVFileSystem.cpp`
   - **Function:** `TWebDAVFileSystem::Sink`
   - **Add logging at:**
@@ -76,7 +76,7 @@ HANDLE LocalFileHandle = FTerminal->CreateLocalFile(DestFullName,
 
 ### Phase 3: Verification
 
-- [ ] **task-4:** Build and verify fix
+- [x] **task-4:** Build and verify fix
   - **Command:** `cmd /c build-x64.bat`
   - **Verify:**
     - Build completes with zero warnings (MSVC W4)
@@ -84,7 +84,7 @@ HANDLE LocalFileHandle = FTerminal->CreateLocalFile(DestFullName,
     - No modifications outside `src/core/WebDAVFileSystem.cpp`
   - **Error handling:** If build fails, output full error message and stop
 
-- [ ] **task-5:** Manual test: WebDAV overwrite scenario
+- [x] **task-5:** Manual test: WebDAV overwrite scenario
   - **Test steps:**
     1. Connect to WebDAV server via Far Manager
     2. Download a file to local directory
