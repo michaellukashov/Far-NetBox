@@ -53,3 +53,11 @@ ds|| [issue-501-ssh-scp-buffer-corruption-exploration](issue-501-ssh-scp-buffer-
 | README | Project overview and links | [../../docs/README.md](../../docs/README.md) |
 | Features | Feature guides | [../../docs/features/](../../docs/features/) |
 | Internationalization | Translated READMEs | [../../docs/i18n/](../../docs/i18n/) |
+
+
+## Threading & Concurrency
+
+| Reference | Topic | Sources | Updated |
+|-----------|-------|---------|---------|
+|| [multithreading-audit-exploration](multithreading-audit-exploration.md) | Comprehensive threading audit: Far API violations, race conditions, busy-waiting, static state | src/core/Queue.cpp, src/NetBox/*.cpp, src/filezilla/*.cpp, src/base/*.cpp | 2026-04-29 |
+|| [multithreading-review-fix-results](multithreading-review-fix-results.md) | Implementation results of the multithreading review and fix plan: critical Far API fixes, race condition elimination, busy-wait replacement, static state hardening, OpenSSL once-init | src/core/Queue.cpp, src/NetBox/*.cpp, src/filezilla/*.cpp, src/base/*.cpp, src/core/Cryptography.cpp | 2026-04-29 |

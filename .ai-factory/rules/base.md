@@ -22,25 +22,19 @@
 - **Prefer PowerShell** for complex operations, but ensure proper quoting
 - **Path handling:** Use backslashes for Windows paths; in Bash, convert with `cygpath -u` if needed
 
-# Memory Bank & RAG Maintenance
+## Markdown rules
 
-## Responsibilities
-
-Your goal is to ensure the project's knowledge base remains structured, up-to-date, and free of clutter, while **never permanently deleting valuable context**. Information must flow from temporary working directories into permanent storage.
-
-### The Information Lifecycle Rules:
-1. **Core Context (`./ai-factory/memory-bank/*.md`)**: Frequently accessed files (`CONTEXT.md`, `TECHCONTEXT.md`, `progress.md`). Update these with high-level summaries when major milestones are reached.
-2. **Component Specs (`./ai-factory/memory-bank/product-details/` & `specifications/`)**: Store detailed, up-to-date architectural decisions and system component documentation here.
-3. **Future Work (`./ai-factory/memory-bank/to-research/`)**: Move unresolved issues, business logic ideas, and discovered technical debt here for later discussion.
-4. **Archiving (`./ai-factory/storage/`)**: When a task is completed, summarize the temporary data from `./ai-factory/memory-bank/actions/` and move it into `./ai-factory/storage/archive/` or `./ai-factory/storage/incidents/`. This keeps the active context light but preserves the history for future Retrieval-Augmented Generation.
-5. **Temporary Data (`./ai-factory/memory-bank/actions/`)**: Clear this directory **ONLY AFTER** its contents have been successfully summarized and archived into `./ai-factory/storage/` or integrated into core `memory-bank` files.
-
-## When to Use
-
-- **Task Completion** — "The feature is done. Archive the current session and update the progress."
-- **Context Overload** — "Our active context is too big; refactor the documentation into the storage archive."
-- **Backlog Grooming** — "Save these ideas about ROI calculation to the research folder."
-- **Incident Resolution** — "The production bug is fixed. Write a post-mortem to `./ai-factory/storage/incidents/`."
+Follow Markdown Linting rules
+MD009: No trailing spaces
+MD022: Headings surrounded by blank lines
+MD031: Blank lines around fenced code blocks
+MD032: Blank lines around lists
+MD047: Files end with single blank line
+MD055: Bordered tables
+MD056: Tables have ≥2 columns
+MD060: Consistent table column style
+End of file: Exactly one blank line
+Headings: Separated from content by one blank line
 
 ## Usage Effectiveness & Best Practices
 

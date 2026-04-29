@@ -148,7 +148,7 @@ TCustomFileSystem *CreateFileSystem(TSessionData * Data)
 4. **No third-party modifications** — Use patches instead of direct changes
 5. **WinXP compatibility** — Avoid modern Windows APIs that break compatibility
 6. **Build verification** — All code must compile with MSVC W4 (no warnings)
-
+7. **Thread safety** — All Far Manager API calls from main thread only; worker threads use event-driven waits; static mutable state requires explicit synchronization. See [.ai-factory/rules/threading.md](.ai-factory/rules/threading.md).
 ## Protocol Implementation Pattern
 
 ```cpp
@@ -222,4 +222,6 @@ private:
 - [Issue #511: Cancel "Yes" Hang Deep Dive](.ai-factory/references/issue-511-cancel-yes-hang-deep-dive.md) — Post-dialog hang after pressing "Yes" in cancel dialog, reentrancy guard failure analysis, CheckForEsc console input buffer interaction, and exception unwinding progress callback hazards
 |
 nw|- [CMake Refactoring Plan Exploration](.ai-factory/references/cmake-refactoring-plan-exploration.md) — Reconciliation of the CMake modularization plan against actual codebase state, missing modules (Libraries.cmake, PlatformDetection.cmake, SourceGroups.cmake, TargetConfiguration.cmake), line-count corrections, and structural findings from plan refinement
-xw|- [Issue #501: SSH/SCP Buffer Corruption](.ai-factory/references/issue-501-ssh-scp-buffer-corruption-exploration.md) — Root-cause analysis of slow SSH/SCP transfers and file corruption caused by dynamic TCP send buffer resizing via `WSAIoctl(SIO_IDEAL_SEND_BACKLOG_QUERY)`
+- [Issue #501: SSH/SCP Buffer Corruption](.ai-factory/references/issue-501-ssh-scp-buffer-corruption-exploration.md) — Root-cause analysis of slow SSH/SCP transfers and file corruption caused by dynamic TCP send buffer resizing via `WSAIoctl(SIO_IDEAL_SEND_BACKLOG_QUERY)`
+- [Multithreading Audit Exploration](.ai-factory/references/multithreading-audit-exploration.md) — Comprehensive threading audit: Far Manager API thread affinity violations, race conditions, busy-waiting loops, static mutable state synchronization gaps, and recommended fixes
+- [Multithreading Review and Fix Results](.ai-factory/references/multithreading-review-fix-results.md) — Implementation results: Far API marshaling fixes, race condition elimination, event-driven wait replacement, static state hardening, OpenSSL once-init, and threading rule conventions
