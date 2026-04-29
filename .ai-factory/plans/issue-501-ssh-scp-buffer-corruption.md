@@ -22,7 +22,7 @@ Copying files via SSH/SCP in NetBox with default settings produces corrupted fil
 
 ## Root Cause Summary
 
-1. **Default `SendBuf` is `DefaultSendBuf` (262144)**: The `TSessionData` constructor initializes `SendBuf` to a non-zero value, which enables dynamic TCP send buffer resizing.
+1. **Default `SendBuf` is `DefaultSendBuf` (262144)**: The `TSessionData::DefaultSettings()` method initializes `SendBuf` to a non-zero value, which enables dynamic TCP send buffer resizing.
 
 2. **Dynamic buffer resize in `EventSelectLoop`**: Every 1000ms, `TSecureShell::EventSelectLoop()` queries `SIO_IDEAL_SEND_BACKLOG_QUERY` and grows `SO_SNDBUF` if the queried backlog exceeds the current size. This runs during active SCP transfers.
 
@@ -38,7 +38,7 @@ xx|Existing saved sessions retain their stored values and are not affected. User
 
 ### Key Changes
 
-1. **Set `SendBuf` default to `0`** in `TSessionData` constructor — new sessions will not enable dynamic buffer resizing
+1. **Set `SendBuf` default to `0`** in `TSessionData::DefaultSettings()` — new sessions will not enable dynamic buffer resizing
 2. **Add verbose logging** in `TSecureShell::EventSelectLoop()` — record when buffer resize is skipped or performed
 3. **Add inline comment** in session dialog code — document the coupling between `SendBuf` and `SshSimple` and reference issue #501
 
@@ -46,7 +46,7 @@ xx|Existing saved sessions retain their stored values and are not affected. User
 
 ### File: `src/core/SessionData.cpp`
 
-#### Location: `TSessionData` constructor (line 246-250)
+#### Location: `TSessionData::DefaultSettings()` (line ~248)
 
 **Current:**
 
@@ -160,14 +160,16 @@ ur|   - If symbol conflicts: disable unity build with `-DOPT_USE_UNITY_BUILD=OFF
 - [x] 5. **Update knowledge references**
 jc|   - File: `.ai-factory/references/INDEX.md`
 wc|   - Already completed: link to `issue-501-ssh-scp-buffer-corruption-exploration.md`
-gx|   - File: `.ai-factory/ARCHITECTURE.md`
-vj|   - Already completed: link in Related References section
+   - File: `.ai-factory/ARCHITECTURE.md`
+   - **Status: NOT DONE** — add link in References section to `issue-501-ssh-scp-buffer-corruption-exploration.md`
 th|
 - [x] 6. **Update `NetBoxRus.lng` timeout hint and add docs note**
 dz|   - File: `src/NetBox/NetBoxRus.lng` (and other `.lng` files)
-yk|   - Update message at ID 1104: append "This setting is now disabled by default." or similar
-ex|   - Check other language files (`NetBoxEng.lng`, etc.) for the same message ID
-ia|   - If standalone help docs exist, note that buffer optimization defaults off for compatibility
+   - Update message at ID 1104: append "This setting is now disabled by default." or similar
+
+   - Check other language files (`NetBoxEng.lng`, `NetBoxFr.lng`, `NetBoxSpa.lng`, etc.) for the same message ID
+   - **Note:** `NetBoxPol.lng` does not contain message 1104 (pre-existing incomplete translation)
+   - If standalone help docs exist, note that buffer optimization defaults off for compatibility
 
 ## Architecture Notes
 
@@ -267,3 +269,29 @@ rq|Fixes: file corruption during SCP copy
 es|Refs: GitHub issue #501
 ki|```
 
+
+
+### Phase III: Post-Implementation (identified during /aif-improve review)
+
+- [x] 7. **Fix missing ARCHITECTURE.md reference**
+   - File: `.ai-factory/ARCHITECTURE.md`
+   - Add link to `issue-501-ssh-scp-buffer-corruption-exploration.md` in the References table
+   - This was overlooked during initial documentation pass
+
+- [x] 8. **Commit changes with conventional commit message**
+   - Main fix committed as `49cd79e49` with message from `## Commit Plan` block
+   - Remaining docs updates (Task 7 + plan changelog) to be committed separately
+
+- [ ] 9. **Manual smoke-test verification** (requires Far Manager runtime)
+   - [ ] Open a new session dialog and confirm `SshBufferSizeCheck` is unchecked by default
+   - [ ] Perform an SCP transfer with a new session and verify `netbox.log` does NOT contain "Querying ideal send backlog"
+   - [ ] Verify existing session with buffer optimization enabled still logs "Querying ideal send backlog" and functions correctly
+   - **Code-level verification completed:** `SetChecked((0>0)&&false)` → unchecked confirmed; logging paths verified in review
+## Changelog
+
+| Date | Change | Reason |
+|------|--------|--------|
+| 2026-04-29 | Corrected `TSessionData` constructor → `DefaultSettings()` in plan text and code block locations | Actual code change is in `DefaultSettings()`, not constructor |
+| 2026-04-29 | Added Phase III tasks (missing ARCHITECTURE.md reference, commit, smoke-test) | Gaps found during /aif-improve review |
+| 2026-04-29 | Updated Task 5 to flag ARCHITECTURE.md link as NOT DONE | Reference was not actually added to file |
+| 2026-04-29 | Added note about `NetBoxPol.lng` missing message 1104 | Pre-existing incomplete translation discovered during review |
