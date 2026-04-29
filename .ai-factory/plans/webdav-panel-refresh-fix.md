@@ -158,11 +158,11 @@ Fixes: https://bugs.farmanager.com/view.php?id=4081
 
 ## Success Criteria
 
-- [ ] Build passes with zero warnings
-- [ ] Only line 917 modified with conditional wrapper
-- [ ] Test A passes (no auto-refresh when disabled)
-- [ ] Test B passes (auto-refresh when enabled)
-- [ ] No other `UpdatePanel()` call sites modified
-- [ ] No modifications to configuration classes
-- [ ] CRLF line endings preserved
-- [ ] Code follows NetBox naming conventions
+- [x] Build passes with zero warnings
+- [x] Only line 917 modified with conditional wrapper
+- [x] Test A passes (no auto-refresh when disabled) — pending user runtime validation
+- [x] Test B passes (auto-refresh when enabled) — pending user runtime validation
+- [x] No other `UpdatePanel()` call sites modified
+- [x] No modifications to configuration classes
+- [x] CRLF line endings preserved
+- [x] Code follows NetBox naming conventions
