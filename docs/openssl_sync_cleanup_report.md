@@ -1,3 +1,5 @@
+[← Architecture](architecture.md) · [Back to README](../README.md)
+
 # OpenSSL Sync and Cleanup Report
 
 ## Summary
@@ -143,3 +145,9 @@ rsync -a removed/ .
 ```
 
 Full backup of removed files is preserved in `libs/openssl-3/removed/`.
+
+
+## See Also
+
+- [Architecture](architecture.md) — Project structure and third-party dependencies
+- [Contributing](contributing.md) — Build instructions and development workflow

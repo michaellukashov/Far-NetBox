@@ -406,3 +406,16 @@ OpenSSL uses platform-specific assembly for crypto primitives. NASM executable: 
 Adding new ASM files: Add to `_asm_file_list` in `cmake/OpenSSL.cmake` under the appropriate platform branch.
 
 > **Full OpenSSL patch details and language file info:** [AGENTS-Structure.md](.ai-factory/AGENTS-Structure.md)
+
+
+## Documentation
+
+| Document | Path | Description |
+|----------|------|-------------|
+| README | README.md | Project landing page |
+| Getting Started | docs/getting-started.md | Build, install, first steps |
+| User Guide | docs/user-guide.md | Protocols, features, i18n |
+| Architecture | docs/architecture.md | Project structure and patterns |
+| Contributing | docs/contributing.md | Code conventions and workflow |
+| Testing | docs/testing.md | Manual regression testing |
+| OpenSSL Sync Report | docs/openssl_sync_cleanup_report.md | OpenSSL 3 synchronization details |
