@@ -67,6 +67,15 @@ See [.ai-factory/ARCHITECTURE.md](./ARCHITECTURE.md) for detailed architecture g
 - UI/UX improvements
 - Maintain WinXP compatibility
 
+## OpenSSL Sync and Cleanup (2026-04-17)
+
+- Synchronized NetBox's OpenSSL 3 library with WinSCP 6.5.6 baseline.
+- Re-applied NetBox-specific patches (threading, Windows compatibility, warning suppressions).
+- Removed 300 unused files (QUIC, Engine API, deprecated crypto, platform-specific ASM), freeing ~12 MB.
+- NetBox-only files (`CMakeLists.txt`, `0001-openssl-NetBox-patches.patch`) retained and flagged for future review.
+- CMake configure verified on Linux (Ninja generator) — no missing file references.
+- Windows MSVC build verification pending. See `docs/openssl_sync_cleanup_report.md` for details.
+
 ## Out of Scope
 - Major architectural rewrites
 - New protocol support (in v1)
