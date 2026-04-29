@@ -158,6 +158,7 @@ protected:
   void HomeDirectory();
   void ToggleSynchronizeBrowsing();
   bool IsSynchronizedBrowsing() const;
+  void SetPrevSessionName(const UnicodeString & Value);
   bool PropertiesDialog(TStrings * AFileList,
     const UnicodeString & Directory,
     const TRemoteTokenList * GroupList, const TRemoteTokenList * UserList,
@@ -220,6 +221,7 @@ protected:
   void MultipleEdit(const UnicodeString Directory, const UnicodeString AFileName, const TRemoteFile * AFile);
   void EditViewCopyParam(TCopyParamType & CopyParam);
   bool SynchronizeBrowsing(const UnicodeString & NewPath);
+  void UpdatePanelDirectoryParam();
   bool IsEditHistoryEmpty() const;
   void EditHistory();
   UnicodeString ProgressBar(int32_t Percentage, int32_t Width);
@@ -361,6 +363,7 @@ private:
   bool FOutputLog{false};
   bool FLoadingSessionList{false};
   bool FCurrentDirectoryWasChanged{false};
+  bool FUpdatingPanelParam{false};
 };
 
 class TSessionPanelItem final : public TCustomFarPanelItem

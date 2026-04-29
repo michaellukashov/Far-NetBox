@@ -13,6 +13,7 @@
 #include "WinSCPFileSystem.h"
 #include "FarConfiguration.h"
 #include "XmlStorage.h"
+#include <SessionHistory.h>
 
 TCustomFarPlugin * CreateFarPlugin(HINSTANCE HInst)
 {
@@ -322,7 +323,16 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t I
         CommandLine = Info->CommandLine;
       }
       // DEBUG_PRINTF("CommandLine: %s", CommandLine);
-      if (OpenFrom == OPEN_SHORTCUT)
+      const nb::TSessionHistoryEntry Entry = nb::DecodeSessionParam(CommandLine);
+      AppLogFmt(L"OpenPluginEx: DecodeSessionParam from %s -> Valid=%d, SessionName=%s, Directory=%s",
+        CommandLine, Entry.Valid ? 1 : 0, Entry.SessionName, Entry.RemoteDirectory);
+      if (Entry.Valid)
+      {
+        UnicodeString SessionName = Entry.SessionName;
+        Directory = Entry.RemoteDirectory;
+        CommandLine = FORMAT(L"netbox:%s", SessionName);
+      }
+      else
       {
         const int32_t P = CommandLine.Pos(SHORTCUT_DELIMITER);
         if (P > 0)
@@ -330,6 +340,9 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t I
           Directory = CommandLine.SubString(P + 1, CommandLine.Length() - P);
           CommandLine.SetLength(P - 1);
         }
+      }
+      if (OpenFrom == OPEN_SHORTCUT)
+      {
         // DEBUG_PRINTF("Directory: %s", Directory);
         // DEBUG_PRINTF("CommandLine: %s", CommandLine);
 
@@ -369,6 +382,11 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t I
         }
         FileSystem->SetConnectedDirectly();
         Success = FileSystem->Connect(Session.get());
+        if (Success)
+        {
+          FileSystem->SetPrevSessionName(Session->GetName());
+          AppLogFmt(L"OpenPluginEx: Connected to session %s, PrevSessionName set", Session->GetName());
+        }
         if (Success && !Directory.IsEmpty())
         {
           FileSystem->SetDirectoryEx(Directory, OPM_SILENT);

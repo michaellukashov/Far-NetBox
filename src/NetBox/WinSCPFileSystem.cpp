@@ -18,6 +18,7 @@
 #include <Sysutils.hpp>
 #include <FormatUtils.h>
 #include "guid.h"
+#include <SessionHistory.h>
 
 #include "PuttyIntf.h"
 #include "XmlStorage.h"
@@ -438,7 +439,8 @@ void TWinSCPFileSystem::GetOpenPanelInfoEx(OPENPANELINFO_FLAGS & Flags,
       FolderAndSessionName = FORMAT("%s/%s", FolderName, SessionName);
     else
       FolderAndSessionName = FORMAT("%s", SessionName);
-    ShortcutData = FORMAT(L"netbox:%s\1%s", FolderAndSessionName, CurDir);
+    ShortcutData = nb::EncodeSessionParam(FolderAndSessionName, CurDir);
+    FTerminal->LogEvent(FORMAT(L"GetOpenPanelInfoEx: ShortcutData=%s", ShortcutData));
 
     /*DEBUG_PRINTF("FolderName: %s", FolderName);
     DEBUG_PRINTF("SessionName: %s", SessionName);
@@ -2216,6 +2218,14 @@ bool TWinSCPFileSystem::SynchronizeBrowsing(const UnicodeString & NewPath)
   nb::ClearStruct(fpd);
   fpd.StructSize = sizeof(fpd);
   fpd.Name = LocalPath.c_str();
+  if (!IsSessionList() && Connected() && FTerminal)
+  {
+    const UnicodeString Param = nb::EncodeSessionParam(
+      GetSessionData()->GetLocalName(),
+      FTerminal->GetCurrentDirectory());
+    fpd.Param = Param.c_str();
+    fpd.PluginId = NetBoxPluginGuid;
+  }
   if (!FarControl(FCTL_SETPANELDIRECTORY, 0, &fpd, PANEL_PASSIVE))
   {
     Result = false;
@@ -2244,6 +2254,36 @@ bool TWinSCPFileSystem::SynchronizeBrowsing(const UnicodeString & NewPath)
   }
 
   return Result;
+}
+
+void TWinSCPFileSystem::UpdatePanelDirectoryParam()
+{
+  if (FUpdatingPanelParam)
+  {
+    return;
+  }
+  FUpdatingPanelParam = true;
+  try__finally
+  {
+    if (!IsSessionList() && Connected() && FTerminal)
+    {
+      const UnicodeString Param = nb::EncodeSessionParam(
+        GetSessionData()->GetLocalName(),
+        FTerminal->GetCurrentDirectory());
+      FarPanelDirectory fpd{};
+      nb::ClearStruct(fpd);
+      fpd.StructSize = sizeof(fpd);
+      fpd.Name = FTerminal->GetCurrentDirectory().c_str();
+      fpd.Param = Param.c_str();
+      fpd.PluginId = NetBoxPluginGuid;
+      FTerminal->LogEvent(FORMAT(L"UpdatePanelDirectoryParam: Param=%s", Param));
+      FarControl(FCTL_SETPANELDIRECTORY, 0, &fpd, PANEL_ACTIVE);
+    }
+  }
+  __finally
+  {
+    FUpdatingPanelParam = false;
+  } end_try__finally
 }
 
 bool TWinSCPFileSystem::SetDirectoryEx(const UnicodeString & ADir, OPERATION_MODES OpMode)
@@ -2401,6 +2441,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const UnicodeString & ADir, OPERATION_MOD
     }
   }
 
+  UpdatePanelDirectoryParam();
   return true;
 }
 
@@ -3311,6 +3352,11 @@ bool TWinSCPFileSystem::Connect(TSessionData * Data)
     FSynchronisingBrowse = GetSessionData()->GetSynchronizeBrowsing();
   }
   return Result;
+}
+
+void TWinSCPFileSystem::SetPrevSessionName(const UnicodeString & Value)
+{
+  FPrevSessionName = Value;
 }
 
 void TWinSCPFileSystem::Disconnect()

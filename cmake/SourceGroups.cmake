@@ -101,6 +101,7 @@ function(netbox_define_base_sources)
     nbcore/nbstring.cpp
     nbcore/nbmemory.cpp
     nbcore/nbutils.cpp
+    nbcore/SessionHistory.cpp
     base/UnicodeString.cpp
     base/Classes.cpp
     base/Masks.cpp
