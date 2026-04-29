@@ -207,7 +207,7 @@ std::wstring TFileZillaImpl::CustomReason(int32_t Err)
     TSessionData * SessionData = FFileSystem->FTerminal->SessionData;
     Result =
       FMTLOAD(
-        TLS_UNSUPPORTED, 
+        TLS_UNSUPPORTED,
           GetTlsVersionName(SessionData->MinTlsVersion), GetTlsVersionName(SessionData->MaxTlsVersion),
           GetTlsVersionName(tlsMin), GetTlsVersionName(tlsMax)).c_str();
   }
@@ -2232,7 +2232,11 @@ void TFTPFileSystem::DoReadDirectory(TRemoteFileList * AFileList)
   // FZAPI does not list parent directory, add it
   AFileList->AddFile(new TRemoteParentDirectory(FTerminal));
 
-  FLastReadDirectoryProgress = 0;
+  if (FTerminal->GetConfiguration()->GetActualLogProtocol() >= 2)
+  {
+    FTerminal->LogEvent(FORMAT("FTP: DoReadDirectory starting, Directory=%s MLSD=%d",
+      Directory.c_str(), nb::ToInt32(FFileZillaIntf->UsingMlsd())));
+  }
 
   const TFTPFileListHelper Helper(this, AFileList, false);
 
@@ -2267,6 +2271,10 @@ void TFTPFileSystem::DoReadDirectory(TRemoteFileList * AFileList)
 
   FLastDataSent = Now();
   FAnyTransferSucceeded = true;
+  if (FTerminal->GetConfiguration()->GetActualLogProtocol() >= 2)
+  {
+    FTerminal->LogEvent(FORMAT("FTP: DoReadDirectory finished, entries=%d", AFileList->GetCount()));
+  }
 }
 
 void TFTPFileSystem::CheckTimeDifference()
@@ -2467,6 +2475,36 @@ void TFTPFileSystem::AutoDetectTimeDifference(
 
 void TFTPFileSystem::ReadDirectory(TRemoteFileList * AFileList)
 {
+  // Guard against recursive directory reads on file paths (Issue #507)
+  const UnicodeString Directory = AFileList->Directory();
+  const int32_t DotPos = Directory.LastDelimiter(L"/");
+  const UnicodeString LastComponent = (DotPos > 0) ? Directory.SubString(DotPos + 1) : Directory;
+  const int32_t ExtPos = LastComponent.LastDelimiter(L".");
+  if (ExtPos > 0 && !Directory.IsEmpty() && (Directory[Directory.Length()] != L'/'))
+  {
+    const UnicodeString Ext = LastComponent.SubString(ExtPos + 1);
+    static const wchar_t * FileExts[] = {
+      L"exe", L"dll", L"zip", L"rar", L"tar", L"gz", L"7z",
+      L"pdf", L"doc", L"docx", L"xls", L"xlsx", L"ppt", L"pptx",
+      L"jpg", L"jpeg", L"png", L"gif", L"bmp", L"ico",
+      L"txt", L"rtf", L"csv", L"xml", L"json", L"html", L"htm",
+      L"mp3", L"mp4", L"avi", L"mkv", L"mov", L"wmv",
+      L"c", L"cpp", L"h", L"hpp", L"cs", L"java", L"py", L"js", L"php",
+      L"bat", L"cmd", L"sh", L"ps1", L"msi", L"msp", L"iso", L"img"
+    };
+    for (const auto & FileExt : FileExts)
+    {
+      if (SameText(Ext, FileExt))
+      {
+        if (FTerminal->GetConfiguration()->GetActualLogProtocol() >= 1)
+        {
+          FTerminal->LogEvent(FORMAT("FTP guard: ReadDirectory called on path %s that looks like a file, skipping listing", Directory.c_str()));
+        }
+        return;
+      }
+    }
+  }
+
   // whole below "-a" logic is for LIST,
   // if we know we are going to use MLSD, skip it
   if (FFileZillaIntf->UsingMlsd())
@@ -4648,6 +4686,12 @@ bool TFTPFileSystem::HandleListData(const wchar_t * Path,
     for (uint32_t Index = 0; Index < Count; ++Index)
     {
       const TListDataEntry * Entry = &Entries[Index];
+      if (FTerminal->GetConfiguration()->GetActualLogProtocol() >= 2)
+      {
+        FTerminal->LogEvent(FORMAT("FTP list entry: Name=%s Dir=%d Link=%d Size=%s Perms=%s",
+          Entry->Name, nb::ToInt32(Entry->Dir), nb::ToInt32(Entry->Link),
+          ::Int64ToStr(Entry->Size), Entry->Permissions));
+      }
       std::unique_ptr<TRemoteFile> File(std::make_unique<TRemoteFile>());
       try
       {
@@ -4701,7 +4745,43 @@ bool TFTPFileSystem::HandleListData(const wchar_t * Path,
         }
         else if (Entry->Dir)
         {
-          File->SetType(FILETYPE_DIRECTORY);
+          // Guard against misclassified files (Issue #507)
+          bool ForceFile = false;
+          const UnicodeString Name = Entry->Name;
+          const int32_t DotPos = Name.LastDelimiter(L".");
+          if (DotPos > 0)
+          {
+            const UnicodeString Ext = Name.SubString(DotPos + 1);
+            static const wchar_t * FileExts[] = {
+              L"exe", L"dll", L"zip", L"rar", L"tar", L"gz", L"7z",
+              L"pdf", L"doc", L"docx", L"xls", L"xlsx", L"ppt", L"pptx",
+              L"jpg", L"jpeg", L"png", L"gif", L"bmp", L"ico",
+              L"txt", L"rtf", L"csv", L"xml", L"json", L"html", L"htm",
+              L"mp3", L"mp4", L"avi", L"mkv", L"mov", L"wmv",
+              L"c", L"cpp", L"h", L"hpp", L"cs", L"java", L"py", L"js", L"php",
+              L"bat", L"cmd", L"sh", L"ps1", L"msi", L"msp", L"iso", L"img"
+            };
+            for (const auto & FileExt : FileExts)
+            {
+              if (SameText(Ext, FileExt))
+              {
+                ForceFile = true;
+                break;
+              }
+            }
+          }
+          if (ForceFile)
+          {
+            if (FTerminal->GetConfiguration()->GetActualLogProtocol() >= 1)
+            {
+              FTerminal->LogEvent(FORMAT("FTP guard: entry %s has file extension but was marked as directory, forcing file type", Name.c_str()));
+            }
+            File->SetType(FILETYPE_DEFAULT);
+          }
+          else
+          {
+            File->SetType(FILETYPE_DIRECTORY);
+          }
         }
         else
         {
