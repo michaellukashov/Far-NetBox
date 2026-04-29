@@ -2628,22 +2628,31 @@ intptr_t TFarComboBox::ItemProc(intptr_t Msg, void * Param)
       {
         const WORD Key = Event.wVirtualKeyCode;
         const WORD ControlState = Event.dwControlKeyState;
-        if (GetDropDownList() && ((Key == VK_DOWN) || (Key == VK_NUMPAD2)) && (CheckControlMaskSet(ControlState, ALTMASK) || ((ControlState & CTRLMASK) != 0)))
+        if (GetDropDownList() && ((Key == VK_DOWN) || (Key == VK_NUMPAD2)) &&
+          (CheckControlMaskSet(ControlState, ALTMASK) ||
+            (((ControlState & CTRLMASK) != 0) && ((ControlState & SHIFTMASK) != 0)) ||
+            ((ControlState & CTRLMASK) != 0)))
         {
           if (CheckControlMaskSet(ControlState, ALTMASK))
           {
+            // Alt+Down — primary shortcut; works reliably in all terminals
             SendDialogMessage(DM_SETDROPDOWNOPENED, nb::ToPtr(1));
             return 1;
           }
-          else if ((ControlState & CTRLMASK) != 0)
+          else if (((ControlState & CTRLMASK) != 0) && ((ControlState & SHIFTMASK) != 0))
           {
+            // Ctrl+Shift+Down — fallback for terminals that intercept plain Ctrl+Down (e.g. Windows Terminal scroll)
             return DefaultItemProc(DM_SETDROPDOWNOPENED, nb::ToPtr(1));
           }
-      }
+          else if ((ControlState & CTRLMASK) != 0)
+          {
+            // Ctrl+Down — native Far Manager shortcut; may be intercepted by terminal host
+            return DefaultItemProc(DM_SETDROPDOWNOPENED, nb::ToPtr(1));
+          }
+        }
       }
     }
   }
-
   if (FList->ItemProc(Msg, Param))
   {
     return 1;
