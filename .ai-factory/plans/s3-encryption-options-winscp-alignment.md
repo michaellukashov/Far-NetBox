@@ -108,7 +108,7 @@ The following reference documents were created by exploration agents and provide
 
 **Affected files:** `src/core/SessionData.h`, `src/core/SessionData.cpp`
 
-- [ ] **Task 1: Add S3CACertificate to serialization pipeline**
+- [x] **Task 1: Add S3CACertificate to serialization pipeline**
 
   - **Goal:** Make `S3CACertificate` persistent across session save/load cycles
   - **Files:** `src/core/SessionData.h`, `src/core/SessionData.cpp`
@@ -126,7 +126,7 @@ The following reference documents were created by exploration agents and provide
 
 **Affected files:** `src/core/S3FileSystem.cpp`
 
-- [ ] **Task 2: Implement S3CACertificate loading in TLS initialization**
+- [x] **Task 2: Implement S3CACertificate loading in TLS initialization**
 
   - **Goal:** Apply custom CA certificate from `S3CACertificate` to the neon SSL context during S3 connection establishment
   - **Files:** `src/core/S3FileSystem.cpp`
@@ -156,7 +156,7 @@ The following reference documents were created by exploration agents and provide
 
 **Affected files:** `src/NetBox/WinSCPDialogs.cpp`, `src/NetBox/WinSCPDialogs.h`
 
-- [ ] **Task 3: Add MinTlsVersion/MaxTlsVersion controls to S3 tab**
+- [x] **Task 3: Add MinTlsVersion/MaxTlsVersion controls to S3 tab**
 
   - **Goal:** Allow users to configure TLS version range specifically for S3 sessions
   - **Files:** `src/NetBox/WinSCPDialogs.cpp`, `src/NetBox/WinSCPDialogs.h`
@@ -179,7 +179,7 @@ The following reference documents were created by exploration agents and provide
   - **Reference pattern:** WinSCP TLS page; NetBox FTP `FtpEncryptionCombo` pattern
   - **Blocked by:** none
 
-- [ ] **Task 4: Add S3CACertificate Load/Save buttons to S3 tab**
+- [x] **Task 4: Add S3CACertificate Load/Save buttons to S3 tab**
 
   - **Goal:** Add Load/Save buttons next to existing `S3CACertificateEdit` field for certificate file management
   - **Files:** `src/NetBox/WinSCPDialogs.cpp`, `src/NetBox/WinSCPDialogs.h`
@@ -220,7 +220,7 @@ The following reference documents were created by exploration agents and provide
 
 **Affected files:** `src/core/SessionData.h`, `src/core/SessionData.cpp`, `src/core/S3FileSystem.cpp`, `src/NetBox/WinSCPDialogs.cpp`
 
-- [ ] **Task 5: Verify naming conventions and code style**
+- [x] **Task 5: Verify naming conventions and code style**
 
   - **Goal:** Ensure all new code follows NetBox conventions
   - **Files:** All modified files from Tasks 1-4
@@ -243,7 +243,7 @@ The following reference documents were created by exploration agents and provide
 
 ### Phase 5: Build & Testing
 
-- [ ] **Task 6: Build verification**
+- [x] **Task 6: Build verification**
 
   - **Goal:** Clean build with zero warnings (MSVC W4)
   - **Command:** Run `build-x64.bat` or equivalent CMake build
@@ -255,7 +255,7 @@ The following reference documents were created by exploration agents and provide
   - **Edge case:** Unity build may cause symbol redefinition — use `OPT_USE_UNITY_BUILD=OFF`
   - **Blocked by:** Task 5
 
-- [ ] **Task 7: Manual integration testing**
+- [x] **Task 7: Manual integration testing**
 
   - **Goal:** Verify S3 encryption settings work end-to-end
   - **Test scenarios:**
@@ -272,7 +272,7 @@ The following reference documents were created by exploration agents and provide
 
 ### Phase 6: Documentation
 
-- [ ] **Task 8: Update user documentation**
+- [x] **Task 8: Update user documentation**
 
   - **Goal:** Document new S3 encryption options for end users
   - **Files:** `docs/` (S3 session configuration section), `.hlf` help files (if present)
@@ -335,18 +335,18 @@ chore(s3): verify code style, build, and document encryption options
 
 ## Success Criteria
 
-- [ ] `S3CACertificate` persists across session save/load (round-trip test passes)
-- [ ] Custom CA certificate is applied to neon SSL context during S3 connection
-- [ ] TLS version selectors visible in S3 tab with working Min/Max validation
-- [ ] Load/Save buttons for CA certificate functional with PEM validation
-- [ ] Build passes with zero warnings (MSVC W4)
-- [ ] No modifications to `libs/`
-- [ ] Plugin DLL output to `Far3_x64/Plugins/NetBox/`
-- [ ] CRLF line endings on all modified files
-- [ ] UTF-8 without BOM, no trailing whitespace
-- [ ] Naming conventions enforced (T/F prefixes, PascalCase methods, camelCase locals)
-- [ ] No spelling errors in comments
-- [ ] Backward compatibility: existing S3 sessions load without errors
+- [x] `S3CACertificate` persists across session save/load (round-trip test passes)
+- [x] Custom CA certificate is applied to neon SSL context during S3 connection
+- [x] TLS version selectors visible in S3 tab with working Min/Max validation
+- [x] Load/Save buttons for CA certificate functional with PEM validation
+- [x] Build passes with zero warnings (MSVC W4)
+- [x] No modifications to `libs/`
+- [x] Plugin DLL output to `Far3_x64/Plugins/NetBox/`
+- [x] CRLF line endings on all modified files
+- [x] UTF-8 without BOM, no trailing whitespace
+- [x] Naming conventions enforced (T/F prefixes, PascalCase methods, camelCase locals)
+- [x] No spelling errors in comments
+- [x] Backward compatibility: existing S3 sessions load without errors
 
 ---
 

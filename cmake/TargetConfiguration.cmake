@@ -89,6 +89,7 @@ function(netbox_configure_library_dependencies TARGET)
     secur32.lib
     shell32.lib
     shlwapi.lib
+    comdlg32.lib
     delayimp.lib
   )
 

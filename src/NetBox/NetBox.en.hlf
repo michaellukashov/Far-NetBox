@@ -338,6 +338,7 @@ $# Supported Protocols
 
   #S3#
      Amazon S3 and S3-compatible storage.
+     Supports TLS version configuration and custom CA certificates.
 
   Each protocol has its own configuration options in the session dialog.
 

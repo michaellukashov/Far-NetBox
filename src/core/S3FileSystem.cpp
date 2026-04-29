@@ -761,13 +761,19 @@ void TS3FileSystem::InitSslSessionImpl(ssl_st * Ssl, void * /* ne_session */ Ses
 
       TFile::WriteAllText(TempFileName, CACert);
 
-      FTerminal->LogEvent(FORMAT(L"InitSslSessionImpl: Wrote CA cert to temp file: %s", TempFileName));
+      FTerminal->LogEvent(L"InitSslSessionImpl: Wrote CA cert to temp file");
       FS3CACertificateTempFile = TempFileName;
 
       if (Session != nullptr)
       {
-        ne_ssl_set_certificates_storage(static_cast<ne_session *>(Session), StrToNeon(FS3CACertificateTempFile));
-        FTerminal->LogEvent(L"InitSslSessionImpl: Custom CA certificate applied to SSL context");
+        if (ne_ssl_set_certificates_storage(static_cast<ne_session *>(Session), StrToNeon(FS3CACertificateTempFile)) != NE_OK)
+        {
+          FTerminal->LogEvent(L"InitSslSessionImpl: ne_ssl_set_certificates_storage failed");
+        }
+        else
+        {
+          FTerminal->LogEvent(L"InitSslSessionImpl: Custom CA certificate applied to SSL context");
+        }
       }
       else
       {

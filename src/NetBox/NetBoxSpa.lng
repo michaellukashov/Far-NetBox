@@ -1341,3 +1341,8 @@
 "Master password successfully changed."
 "**Master password successfully set.**\n\nYour stored passwords are secured by AES cipher now."
 "**You have deleted your master password.**\n\nYour stored passwords are not secured now."
+
+"Min TLS version:"
+"Max TLS version:"
+"&Load"
+"&Save"
