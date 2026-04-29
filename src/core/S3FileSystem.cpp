@@ -1189,6 +1189,7 @@ TLibS3BucketContext TS3FileSystem::GetBucketContext(const UnicodeString & ABucke
   bool Retry = false;
   do
   {
+      FTerminal->LogEvent(FORMAT("GetBucketContext: bucket='%s', retry=%d (count=%d)", ABucketName, Retry, RetryCount));
     TRegions::const_iterator I = FRegions.find(ABucketName);
     UnicodeString Region;
     if (I != FRegions.end())
@@ -1551,6 +1552,7 @@ S3Status TS3FileSystem::LibS3ListBucketCallback(
   Data.NextMarker = StrFromS3(NextMarker);
   TTerminal * Terminal = Data.FileSystem->FTerminal;
 
+  FTerminal->LogEvent(1, FORMAT("ListBucket callback: contents=%d, prefixes=%d", ContentsCount, CommonPrefixesCount));
   for (int32_t Index = 0; Index < ContentsCount; Index++)
   {
     Data.Any = true;
@@ -1740,6 +1742,7 @@ void TS3FileSystem::ReadDirectoryInternal(
 
     do
     {
+      FTerminal->LogEvent(FORMAT("ReadDirectoryInternal: path='%s', bucket='%s', prefix='%s', maxKeys=%d", Path, BucketName, Prefix, AMaxKeys));
       DoListBucket(Prefix, FileList, AMaxKeys, BucketContext, Data);
       CheckLibS3Error(Data);
 
@@ -1762,6 +1765,7 @@ void TS3FileSystem::ReadDirectoryInternal(
         }
       }
     } while (Continue);
+    FTerminal->LogEvent(FORMAT("ListBucket result: keyCount=%d, truncated=%d, any=%d", Data.KeyCount, Data.IsTruncated, Data.Any));
 
     // Listing bucket root directory will report an error if the bucket does not exist.
     // But there won't be any prefix/ entry, so if the bucket is empty, the Data.Any is false.
@@ -1909,6 +1913,7 @@ void TS3FileSystem::CopyFile(
 
   if (DestKey.IsEmpty())
   {
+      FTerminal->LogEvent(FORMAT("Upload rejected: Key is empty. Bucket='%s', path='%s'", DestBucketName, NewName));
     throw Exception(LoadStr(MISSING_TARGET_BUCKET));
   }
 
@@ -2688,6 +2693,7 @@ void TS3FileSystem::Source(
 
   if (Key.IsEmpty())
   {
+      FTerminal->LogEvent(FORMAT("Upload rejected: Key is empty. Bucket='%s', path='%s'", BucketName, DestFullName));
     throw Exception(LoadStr(MISSING_TARGET_BUCKET));
   }
 

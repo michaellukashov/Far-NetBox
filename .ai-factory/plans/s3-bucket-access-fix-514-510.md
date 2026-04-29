@@ -2,7 +2,7 @@
 
 **Created:** 2026-04-27T20:23:20Z
 **Issues:** [#514](https://github.com/michaellukashov/Far-NetBox/issues/514), [#510](https://github.com/michaellukashov/Far-NetBox/issues/510)
-**Status:** Ready for Implementation
+**Status:** Implemented (2026-04-29)
 
 ## Settings
 
