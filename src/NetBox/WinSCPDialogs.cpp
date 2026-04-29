@@ -3226,7 +3226,7 @@ void TSessionDialog::TransferProtocolComboChange()
 
   LoadPing(FSessionData);
   const TFSProtocol FSProtocol = GetFSProtocol();
-  if (FSProtocol == fsSFTPonly || FSProtocol == fsSCPonly)
+  if (GetIsSshProtocol(FSProtocol))
   {
     if (Port == FtpPortNumber)
     {
@@ -3269,7 +3269,7 @@ void TSessionDialog::TransferProtocolComboChange()
   }
   else if (FSProtocol == fsS3)
   {
-    if (Port == HTTPSPortNumber)
+    if ((Port == FtpPortNumber) || (Port == SshPortNumber) || (Port == HTTPPortNumber) || (Port == FtpsImplicitPortNumber))
     {
       PortNumberEdit->SetAsInteger(HTTPSPortNumber);
       UnicodeString HostName = HostNameEdit->GetText();
