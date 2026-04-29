@@ -252,8 +252,8 @@ chore(openssl): move unused files to removed/
 - [x] Custom patch `0001-openssl-apply-NetBox-patches.patch` applies cleanly
 - [x] CMakeLists.txt remains functional (build succeeds)
 - [x] NetBox-specific files preserved (CMakeLists.txt, .gitignore, removed/)
-- [ ] Unused files identified and moved to removed/ (after confirmation)
-- [ ] No unintended modifications to third-party code outside openssl-3/
+- [x] Unused files identified and moved to removed/ (300 files, see openssl-sync-cleanup plan)
+- [x] No unintended modifications to third-party code outside openssl-3/
 
 ---
 
