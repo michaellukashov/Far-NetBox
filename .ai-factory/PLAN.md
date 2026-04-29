@@ -1,113 +1,125 @@
-# Fix: Issue #511 — Speed Limit & Esc Hang
+# Enable TKeepAliveThread for Session Keepalives
 
-Reference: https://github.com/michaellukashov/Far-NetBox/issues/511
+**Branch:** none (fast plan)
+**Created:** 2026-04-29
+**Plan Type:** fast
 
 ## Settings
 
-- **Testing:** no
-- **Logging:** verbose
-- **Docs:** yes
+- **Testing:** yes — verify no crash on connect/disconnect, no deadlock during idle
+- **Logging:** standard — key lifecycle events only
+- **Docs:** no — warn-only
 
-## Research Context
+## Overview
 
-See [issue-511-speed-limit-esc-hang-exploration](.ai-factory/references/issue-511-speed-limit-esc-hang-exploration.md) for full root-cause analysis.
+The `TKeepAliveThread` class (`src/NetBox/WinSCPFileSystem.cpp` lines 247-296) is fully implemented but never instantiated. The `TODO` at line 3323 marks it as intentionally deferred ("Not finished nor used."). Enabling it moves keepalive pings to a background thread, matching WinSCP behavior and preventing protocol stalls during idle detection.
 
-### Bug 1: Download Speed Limit Has No Effect (SSH/SFTP/SCP)
+**Problems addressed:**
+1. Keepalive pings are currently only done synchronously within protocol threads (SFTP/SCP/FTP), risking stalls
+2. `TKeepAliveThread` exists with complete `Execute()`, `Terminate()`, and `InitKeepaliveThread()` but is dead code
+3. `FKeepaliveThread` member is only destroyed (`SAFE_DESTROY` in `Close()`) but never created
 
-`TParallelTransferQueueItem::DoExecute` (`src/core/Queue.cpp:2543`) creates child `TFileOperationProgressType` with `CPSLimit = 0`:
-
-```cpp
-OperationProgress.Start(
-    Operation, FParallelOperation->GetSide(), -1, Temp,
-    FParallelOperation->GetTargetDir(), 0, odoIdle);
-```
-
-The comment claims "CPS limit inherited from parent" but this only works for `GetCPSLimit()`, not for `AdjustToCPSLimit()` which reads `FCPSLimit` directly. FTP is unaffected because it calls `GetCPSLimit()`. SFTP/SCP/WebDAV/S3 are broken because they rely on `AdjustToCPSLimit`/`ThrottleToCPSLimit`.
-
-**Fix:** Pass the parent operation progress CPS limit into `OperationProgress.Start`.
-
-### Bug 2: Esc Causes Plugin Hang After Transfer Begins
-
-When Esc is pressed during transfer, `ShowOperationProgress` calls `CancelConfiguration`, which calls `ProgressData.Suspend()` → `DoProgress()` → reentrant `ShowOperationProgress()`. This reentrancy combined with Far Manager dialog/message display can corrupt screen state or deadlock. Additionally, `qaCancel` is not handled in `CancelConfiguration`'s switch statement.
-
-**Fix directions:**
-- Guard `CancelConfiguration` against reentrancy
-- Handle `qaCancel` explicitly in `CancelConfiguration`
-- Add `FSuspended` check in `ShowOperationProgress` to skip `CancelConfiguration` during reentrant callbacks
+**Out of scope:**
+- Keepalive interval UI controls (already in SessionData/Terminal)
+- Ping type logic (dummy command vs TCP keepalive)
 
 ## Tasks
 
-### Task 1: Fix CPS limit propagation for parallel transfers
-
-**File:** `src/core/Queue.cpp`
-
-**Change:**
-In `TParallelTransferQueueItem::DoExecute` (around line 2543), replace the hard-coded `0` CPS limit with the parent progress object's limit:
-
-```cpp
-DebugAssert(FParallelOperation->GetMainOperationProgress() != nullptr);
-OperationProgress.Start(
-    Operation, FParallelOperation->GetSide(), -1, Temp,
-    FParallelOperation->GetTargetDir(),
-    FParallelOperation->GetMainOperationProgress()->GetCPSLimit(),
-    odoIdle);
-```
-
-**Logging:** Add `FTerminal->LogEvent(FORMAT(L"Parallel transfer CPS limit: %u", ...))` before `OperationProgress.Start` to confirm the limit value.
-
-**Acceptance:**
-- Parallel SFTP download with 100 KB/s limit stays below ~120 KB/s.
-- No regression for single-threaded (non-parallel) transfers.
-
-### Task 2: Add reentrancy guard to ShowOperationProgress
+### Task 1: Instantiate TKeepAliveThread after successful connect ✅
 
 **File:** `src/NetBox/WinSCPFileSystem.cpp`
 
-**Change:**
-In `ShowOperationProgress` (around line 3763), add `!ProgressData.GetSuspended()` to the main time-check condition. This skips the entire progress display — including `Message()`, `CheckForEsc()`, and `CancelConfiguration()` — while suspended, making the reentrancy protection intentional rather than relying on the accidental `LastTicks` guard:
+1. Replace the `TODO` at line 3323 with thread creation:
+   ```cpp
+   const TDateTime Interval = FTerminal->GetSessionData()->GetPingIntervalDT();
+   if (Interval.GetValue() > 0)
+   {
+     FKeepaliveThread = new TKeepAliveThread(this, Interval);
+     FKeepaliveThread->InitKeepaliveThread();
+   }
+   ```
 
-```cpp
-if ((Ticks - LastTicks > 500 || Force) && !ProgressData.GetSuspended())
-{
-    LastTicks = Ticks;
-    ...
-```
+2. Ensure `FKeepaliveThread` is `gsl::owner<TKeepAliveThread *>` (already declared in header line 338).
 
-**Logging:** Add `FTerminal->LogEvent(L"Esc pressed during transfer")` inside the `CheckForEsc` block.
+**Acceptance Criteria:**
+- Code compiles with zero warnings
+- Thread starts after `FTerminal->GetActive()` succeeds
+- No thread creation when `PingInterval == 0` (keepalives disabled)
+- `FKeepaliveThread` remains `nullptr` if terminal connect fails
 
-**Acceptance:**
-- Pressing Esc during direct transfer shows cancel dialog once; no reentrant dialog cascade.
-- Pressing Esc during queue transfer does not hang the plugin.
+**Logging:**
+- DEBUG: "Keepalive thread created, interval=%.1fs"
+- DEBUG: "Keepalive thread skipped, interval=0"
 
-### Task 3: Handle qaCancel in CancelConfiguration
+---
+
+### Task 2: Guard against double-start and ensure safe shutdown order ✅
 
 **File:** `src/NetBox/WinSCPFileSystem.cpp`
 
-**Change:**
-In `CancelConfiguration` (around line 4050), add explicit `qaCancel` handling to replace the implicit `default` fallthrough:
+1. In `Close()` (line 386), ensure `SAFE_DESTROY(FKeepaliveThread)` happens BEFORE `FQueue` / `FQueueStatus` teardown, since the thread may call `KeepaliveThreadCallback` which touches `FTerminal`.
 
-```cpp
-case qaCancel:
-    ACancel = csContinue;
-    break;
+2. Verify `TKeepAliveThread::Terminate()` signals `FEvent` and `Execute()` exits cleanly before `SAFE_DESTROY` deletes the object.
+
+3. Add null guard before `InitKeepaliveThread()` to prevent double-start on reconnect.
+
+**Acceptance Criteria:**
+- No use-after-free when `Close()` is called while keepalive thread is active
+- Thread terminates within 2× interval seconds
+- No crash on rapid connect/disconnect cycles
+
+**Logging:**
+- DEBUG: "Keepalive thread terminating"
+- DEBUG: "Keepalive thread destroyed"
+
+---
+
+### Task 3: Verify TKeepAliveThread::Execute is thread-safe ✅
+
+**File:** `src/NetBox/WinSCPFileSystem.cpp`
+
+1. Review `KeepaliveThreadCallback` (line 350): it acquires `GetCriticalSection()` and calls `FTerminal->Idle()`.
+2. Confirm `FTerminal->Idle()` is safe from background threads (does not call Far Manager APIs).
+3. If `Idle()` may throw, wrap in try/catch to prevent thread crash.
+
+**Acceptance Criteria:**
+- `Execute()` does not crash on `Idle()` exceptions
+- No deadlock between keepalive thread and protocol worker threads
+- ThreadSanitizer/AddressSanitizer clean (if available)
+
+**Logging:**
+- WARN: "Keepalive thread caught exception: %s"
+
+---
+
+### Task 4: Manual integration test ✅
+
+**File:** `tests/integration/test_keepalive.md` (new, manual test plan)
+
+1. Connect to SFTP server with PingInterval = 30s
+2. Leave session idle for 60s
+3. Verify session remains connected (no timeout/disconnect)
+4. Disconnect and verify no crash
+5. Repeat with PingInterval = 0 (keepalive disabled) — verify no thread created
+
+**Acceptance Criteria:**
+- Session stays alive with keepalives enabled
+- No crash on disconnect
+- No regression in file transfer operations
+
+---
+
+## Commit Plan
+
+Single commit at completion:
+
 ```
+feat(netbox): enable TKeepAliveThread for background session keepalives
 
-This preserves existing behavior. The cancel confirmation dialog text (`NetBoxEng.lng:131`) explicitly states: "Press 'Cancel' to continue operation." The explicit case improves code clarity and prevents accidental behavioral changes if the `switch` is extended in future.
-
-**Acceptance:**
-- Dialog closes cleanly when user presses Cancel or Esc inside the cancel confirmation dialog.
-- No compiler warnings.
-
-### Task 4: Build and verify both fixes
-
-**Command:**
-```cmd
-rmdir /s /q build-RelWithDebugInfo
-cmd /c build-x64.bat
+- Instantiate TKeepAliveThread after successful terminal connect
+  using SessionData->GetPingIntervalDT()
+- Remove deferred TODO marking thread as unfinished
+- Ensure SAFE_DESTROY runs before queue/terminal teardown
+- Add exception guard in Execute() to prevent thread crash
+- Add lifecycle logging for debug diagnostics
 ```
-
-**Acceptance:**
-- Zero warnings (MSVC W4).
-- Plugin DLL present in `Far3_x64/Plugins/NetBox/`.
-- Manual test: connect to local SFTP, download 10 MB file with 500 KB/s limit, verify speed is throttled.
-- Manual test: press Esc during active transfer, verify dialog appears and can be dismissed without hang.

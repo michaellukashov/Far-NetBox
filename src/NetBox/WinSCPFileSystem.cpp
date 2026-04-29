@@ -353,7 +353,15 @@ void TWinSCPFileSystem::KeepaliveThreadCallback()
 
   if (Connected())
   {
-    FTerminal->Idle();
+    try
+    {
+      FTerminal->Idle();
+    }
+    catch (Exception & E)
+    {
+      TINYLOG_WARNING(g_tinylog) << TLogContext::Format()
+          << " Keepalive thread caught exception: " << UTF8String(E.Message).c_str();
+    }
   }
 }
 
@@ -3320,12 +3328,23 @@ bool TWinSCPFileSystem::Connect(TSessionData * Data)
     DebugAssert(FQueue == nullptr);
     DebugAssert(FQueueStatus == nullptr);
 
-    TODO("Create instance of TKeepaliveThread here, once its implementation is complete");
-
     Result = FTerminal->GetActive();
     if (!Result)
     {
       throw Exception(FORMAT(GetMsg(NB_CANNOT_INIT_SESSION), Data->GetSessionName()));
+
+    const TDateTime Interval = FTerminal->GetSessionData()->GetPingIntervalDT();
+    if (Interval.GetValue() > 0 && FKeepaliveThread == nullptr)
+    {
+      FKeepaliveThread = new TKeepAliveThread(this, Interval);
+      FKeepaliveThread->InitKeepaliveThread();
+      TINYLOG_DEBUG(g_tinylog) << TLogContext::Format()
+          << " Keepalive thread created, interval=" << std::to_string(FTerminal->GetSessionData()->GetPingInterval()) << "s";
+    }
+    else
+    {
+      TINYLOG_DEBUG(g_tinylog) << TLogContext::Format()
+          << " Keepalive thread skipped, interval=0 or already running";
     }
   }
   catch(Exception & E)
@@ -3369,6 +3388,9 @@ void TWinSCPFileSystem::Disconnect()
     }
     SaveSession();
   }
+  SAFE_DESTROY(FKeepaliveThread);
+  TINYLOG_DEBUG(g_tinylog) << TLogContext::Format()
+      << " Keepalive thread destroyed";
   DebugAssert(FSynchronizeController == nullptr);
   DebugAssert(!FAuthenticationSaveScreenHandle);
   DebugAssert(!FProgressSaveScreenHandle);
