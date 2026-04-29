@@ -242,8 +242,8 @@ void TFarInteractiveCustomCommand::Prompt(int32_t /*Index*/, const UnicodeString
   }
 }
 
-// Attempt to allow keepalives from background thread.
-// Not finished nor used.
+// Background thread for session keepalive pings.
+// Instantiated after successful connect when PingInterval > 0.
 class TKeepAliveThread final : public TSimpleThread
 {
 public:
