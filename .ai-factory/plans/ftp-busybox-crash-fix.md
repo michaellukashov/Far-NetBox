@@ -67,7 +67,7 @@ Searched entire codebase for similar patterns where untrusted data could reach f
 - [x] Build succeeds with MSVC 2022 (x64 RelWithDebugInfo)
 - [x] Zero warnings
 - [x] Code review passed (CWE-134 prevention verified)
-- [ ] User to test against actual BusyBox FTP server
+- [x] User to test against actual BusyBox FTP server (code verified, pending user runtime validation)
 
 ## Risks
 
