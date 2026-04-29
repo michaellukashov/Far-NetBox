@@ -23,10 +23,10 @@ NetBox session dialogs use `TFarComboBox` controls with `SetDropDownList(true)` 
 **File:** `src/NetBox/FarDialog.cpp`  
 **Function:** `TFarComboBox::ItemProc()` (lines ~2621-2655)
 
-Added `DN_CONTROLINPUT` handler detecting `VK_DOWN` with modifier masks:
-- `ALTMASK` → `SendDialogMessage(DM_SETDROPDOWNOPENED, nb::ToPtr(1))`
-- `CTRLMASK + SHIFTMASK` → `DefaultItemProc(DM_SETDROPDOWNOPENED, nb::ToPtr(1))`
-- `CTRLMASK` only → `DefaultItemProc(DM_SETDROPDOWNOPENED, nb::ToPtr(1))`
+Added `DN_CONTROLINPUT` handler detecting `VK_DOWN` with modifier masks. **All three shortcuts use `SendDialogMessage`** (`DefaultItemProc` / `DefDlgProc` does NOT handle `DM_SETDROPDOWNOPENED`):
+- `ALTMASK` → `SendDialogMessage(DM_SETDROPDOWNOPENED, nb::ToPtr(1)); return 1;`
+- `CTRLMASK + SHIFTMASK` → `SendDialogMessage(DM_SETDROPDOWNOPENED, nb::ToPtr(1)); return 1;`
+- `CTRLMASK` only → `SendDialogMessage(DM_SETDROPDOWNOPENED, nb::ToPtr(1)); return 1;`
 
 ## Root Cause: Ctrl+Down Terminal Interception
 
@@ -63,7 +63,7 @@ Ctrl+Down fails in many terminal hosts (Windows Terminal, ConEmu) because they i
 | Test | Result |
 |------|--------|
 | Alt+Down opens Protocol dropdown | ✅ PASS |
-| Ctrl+Shift+Down opens Protocol dropdown | ⏳ Pending human test |
+| Ctrl+Shift+Down opens Protocol dropdown | ✅ PASS (user confirmed 2026-04-29) |
 | Ctrl+Down opens Protocol dropdown (in affected terminals) | ❌ FAIL (known terminal limitation) |
 | Plain Down still moves focus | ✅ PASS |
 | Queue dialog unaffected | ✅ PASS |

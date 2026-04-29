@@ -49,19 +49,19 @@ When the plugin's `DlgProc` returns `true` (1) for `DN_CONTROLINPUT`, Far Manage
 
 ### Failed Approaches
 
-1. **SendDialogMessage(DM_SETDROPDOWNOPENED, 1)** — Works for Alt+Down but fails for Ctrl+Down in intercepted terminals (the message never reaches Far Manager's handler because the key event itself is intercepted)
+1. **`DefaultItemProc` / `DefDlgProc` for `DM_SETDROPDOWNOPENED`** — `DefaultItemProc` calls `DefDlgProc` which does NOT handle `DM_SETDROPDOWNOPENED`. Only `SendDialogMessage` (which routes through Far Manager's `SendDlgMessage`) correctly opens the dropdown. This was incorrectly assumed to be a terminal interception issue for `Ctrl+Down`; in fact `DefaultItemProc` fails even for `Ctrl+Shift+Down` which terminals do not intercept.
 
-2. **DefaultItemProc(DM_SETDROPDOWNOPENED, 1)** — Same result; the issue is not the API call but the key event never arriving
-
-3. **Lenient Ctrl check** (`(ControlState & CTRLMASK) != 0`) — No improvement; terminal intercepts before modifier state matters
+2. **Terminal interception of `Ctrl+Down`** — Confirmed: Windows Terminal and ConEmu intercept plain `Ctrl+Down` for viewport scrolling. This is a real limitation, but the plugin-level fix (using `SendDialogMessage`) works when the key event reaches the handler.
 
 ### Final Solution
 
-1. **Alt+Down** — Primary shortcut. Explicitly handled via `SendDialogMessage(DM_SETDROPDOWNOPENED, 1)`. Works reliably in all terminals.
+All three shortcuts use **`SendDialogMessage(DM_SETDROPDOWNOPENED, 1)`** and return 1 to consume the event:
 
-2. **Ctrl+Shift+Down** — Fallback shortcut. Many terminals intercept plain Ctrl+Down but **do not** intercept Ctrl+Shift+Down. Added explicit support alongside Ctrl+Down.
+1. **Alt+Down** — Primary shortcut; works reliably in all terminals.
 
-3. **Ctrl+Down** — Kept for compatibility with terminals that don't intercept it. Routed through `DefaultItemProc()` to let Far Manager's native handling take over if the plugin doesn't consume it.
+2. **Ctrl+Shift+Down** — Fallback shortcut for terminals that intercept plain `Ctrl+Down`. Most terminals do not intercept `Ctrl+Shift+Down`.
+
+3. **Ctrl+Down** — Kept for compatibility with terminals that don't intercept it (e.g. plain `cmd.exe`).
 
 ### Code Changes
 
@@ -82,12 +82,14 @@ if (GetDropDownList() && ((Key == VK_DOWN) || (Key == VK_NUMPAD2)) &&
   else if (((ControlState & CTRLMASK) != 0) && ((ControlState & SHIFTMASK) != 0))
   {
     // Ctrl+Shift+Down — fallback for terminals that intercept plain Ctrl+Down
-    return DefaultItemProc(DM_SETDROPDOWNOPENED, nb::ToPtr(1));
+    SendDialogMessage(DM_SETDROPDOWNOPENED, nb::ToPtr(1));
+    return 1;
   }
   else if ((ControlState & CTRLMASK) != 0)
   {
     // Ctrl+Down — native Far Manager shortcut; may be intercepted by terminal host
-    return DefaultItemProc(DM_SETDROPDOWNOPENED, nb::ToPtr(1));
+    SendDialogMessage(DM_SETDROPDOWNOPENED, nb::ToPtr(1));
+    return 1;
   }
 }
 ```
@@ -117,3 +119,13 @@ Users who want Ctrl+Down to work can configure their terminal to pass it through
 - `src/NetBox/FarPlugin.h` — Control mask definitions (`RMASK`, `ALTMASK`, `CTRLMASK`, `SHIFTMASK`)
 - Far Manager source `dialog.cpp` — native `KEY_CTRLDOWN` handling, `ProcessOpenComboBox()`, `DM_SETDROPDOWNOPENED` implementation
 - `src/NetBox/WinSCPDialogs.cpp` — `TSessionDialog` combo box creation (`TransferProtocolCombo` with `SetDropDownList(true)`)
+
+
+### Test Results
+
+| Shortcut | Test Environment | Result |
+|----------|-----------------|--------|
+| Alt+Down | Windows Terminal / ConEmu | ✅ PASS |
+| Ctrl+Shift+Down | Windows Terminal / ConEmu | ✅ PASS (2026-04-29) |
+| Ctrl+Down | Windows Terminal / ConEmu | ❌ FAIL (terminal intercepts) |
+| Ctrl+Down | Plain `cmd.exe` | ✅ PASS |
