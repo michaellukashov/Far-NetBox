@@ -14,6 +14,7 @@
 #include "Cryptography.h"
 #include "Certificates.hpp"
 #include <TextsCore.h>
+#include <FormatUtils.h>
 #ifndef WINSCP
 #define WINSCP
 #endif
@@ -209,7 +210,7 @@ void CheckNeonStatus(ne_session * Session, int32_t NeonStatus,
         case NE_REDIRECT:
           {
             char * Uri = ne_uri_unparse(ne_redirect_location(Session));
-            Error = FMTLOAD(REQUEST_REDIRECTED, Uri);
+            Error = FMTLOAD(REQUEST_REDIRECTED, nb::EscapeFmtChars(UnicodeString(Uri)));
             ne_free(Uri);
           }
           break;

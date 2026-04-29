@@ -52,6 +52,24 @@ UnicodeString FmtLoadStr(int32_t id, fmt::ArgList args)
   return UnicodeString();
 }
 
+UnicodeString EscapeFmtChars(const UnicodeString & Str)
+{
+  UnicodeString Result;
+  for (int32_t I = 0; I < Str.GetLength(); ++I)
+  {
+    if (Str[I] == '%')
+    {
+      Result += '%';
+      Result += '%';
+    }
+    else
+    {
+      Result += Str[I];
+    }
+  }
+  return Result;
+}
+
 UnicodeString DateTimeToStr(const TDateTime & DateTime)
 {
 

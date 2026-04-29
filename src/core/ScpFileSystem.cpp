@@ -9,6 +9,7 @@
 #include <Exceptions.h>
 #include "Interface.h"
 #include "TextsCore.h"
+#include <FormatUtils.h>
 #include "HelpCore.h"
 #include "SecureShell.h"
 #include <StrUtils.hpp>
@@ -744,7 +745,7 @@ void TSCPFileSystem::ReadCommandOutput(int32_t Params, const UnicodeString * Cmd
 
 NORETURN void TSCPFileSystem::InvalidOutputError(const UnicodeString & Command)
 {
-  FTerminal->TerminalError(FMTLOAD(INVALID_OUTPUT_ERROR, Command, Output->Text));
+  FTerminal->TerminalError(FMTLOAD(INVALID_OUTPUT_ERROR, Command, nb::EscapeFmtChars(Output->Text)));
 }
 
 #if defined(__BORLANDC__)

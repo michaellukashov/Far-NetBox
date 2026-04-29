@@ -14,6 +14,7 @@
 
 #include <Common.h>
 #include <nbutils.h>
+#include <FormatUtils.h>
 #include <Exceptions.h>
 #include "Terminal.h"
 #include "TextsCore.h"
@@ -1373,7 +1374,7 @@ UnicodeString TFTPFileSystem::DoCalculateFileChecksum(const UnicodeString & Alg,
 
   if (Hash.IsEmpty())
   {
-    throw Exception(FMTLOAD(FTP_RESPONSE_ERROR, CommandName, ResponseText));
+    throw Exception(FMTLOAD(FTP_RESPONSE_ERROR, CommandName, nb::EscapeFmtChars(ResponseText)));
   }
 
   return LowerCase(Hash);
@@ -2207,7 +2208,7 @@ void TFTPFileSystem::ReadCurrentDirectory()
       }
       else
       {
-        throw Exception(FMTLOAD(FTP_RESPONSE_ERROR, Command, Response->GetText()));
+        throw Exception(FMTLOAD(FTP_RESPONSE_ERROR, Command, nb::EscapeFmtChars(Response->GetText())));
       }
     }
     __finally__removed
@@ -3603,7 +3604,7 @@ UnicodeString TFTPFileSystem::GotReply(uint32_t Reply, uint32_t Flags,
     {
       if (FLastResponse->GetCount() != 1)
       {
-        throw Exception(FMTLOAD(FTP_RESPONSE_ERROR, FLastCommandSent, FLastResponse->GetText()));
+        throw Exception(FMTLOAD(FTP_RESPONSE_ERROR, FLastCommandSent, nb::EscapeFmtChars(FLastResponse->GetText())));
       }
       Result = FLastResponse->GetString(0);
     }

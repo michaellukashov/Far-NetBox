@@ -300,3 +300,13 @@ catch (const std::exception &E)
 - ❌ **Dangling remote file pointers** — Directory listing objects can be invalidated by navigation; always duplicate `TRemoteFile` with `Standalone=true` when retaining references
 - ❌ **Missing cycle detection in traversal** — Recursive directory operations must track visited paths to prevent infinite loops
 - ❌ **MSG_* enum without .lng update** — Adding a message ID to `MsgIDs.h` without adding the corresponding entry in all `.lng` files causes crashes or missing strings
+- ❌ **Unescaped server data in FMTLOAD** — Never pass server responses, redirect URIs, or remote shell output directly to `FMTLOAD` / `FORMAT` — `%` characters will be interpreted as format specifiers (CWE-134). Use `EscapeFmtChars()` to sanitize untrusted strings before passing them as format arguments
+
+## References
+
+| Reference | Topic |
+|-----------|-------|
+| [cwe134-fmtload-vulnerability-scan](references/cwe134-fmtload-vulnerability-scan.md) | CWE-134 format string vulnerability scan: all vulnerable FMTLOAD call sites, risk levels, EscapeFmtChars utility |
+| [message-loading-system](references/message-loading-system.md) | GetMsg/FmtLoadStr resolution, ID mapping tables, debugging unmapped IDs |
+| [multithreading-audit-exploration](references/multithreading-audit-exploration.md) | Far API thread affinity violations, race conditions, busy-waiting, static state |
+| [crash-second-file-open-analysis](references/crash-second-file-open-analysis.md) | Dangling TRemoteFile pointers, directory listing invalidation |

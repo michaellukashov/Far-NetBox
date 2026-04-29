@@ -25,6 +25,11 @@ FMT_VARIADIC_W(UnicodeString, FmtLoadStr, int32_t)
 
 NB_CORE_EXPORT UnicodeString DateTimeToStr(const TDateTime & DateTime);
 
+// Escape % characters in a string to prevent CWE-134 format string
+// vulnerability when passing untrusted data to FMTLOAD/FORMAT.
+// Doubles every % to %% which fmt interprets as a literal %.
+NB_CORE_EXPORT UnicodeString EscapeFmtChars(const UnicodeString & Str);
+
 } // namespace nb
 
 inline std::basic_ostream<wchar_t> & operator <<(std::basic_ostream<wchar_t> & os, const CMStringW & Value)
