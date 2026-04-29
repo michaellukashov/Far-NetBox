@@ -19,6 +19,7 @@
 - FTP heartbeat / NOOP keep‑alive
 - Inactive session crash fix (WinSCP #2426)
 - Static RTTI improvements
+- **Issue #511** – Fix parallel transfer CPS limit propagation + Esc hang during cancel dialog (2026-04-29)
 
 ## Technical Debt / Refactoring
 
@@ -32,3 +33,4 @@
 - Each milestone is tracked via a feature plan in `.ai-factory/plans/`.
 - When a plan is completed, update the milestone status in this file.
 - Use `/aif-commit` for conventional commits after each checkpoint.
+
