@@ -265,26 +265,42 @@ t_directory::t_direntry * CFtpListResult::getList(size_t & Num)
   return Result;
 }
 
-BOOL CFtpListResult::parseLine(const char *lineToParse, const int linelen, t_directory::t_direntry &direntry)
+BOOL CFtpListResult::parseLine(const char *lineToParse, const int linelen, t_directory::t_direntry &direntry, const char ** parserName)
 {
+  // Issue #507: fully reset direntry before trying each parser to prevent cross-contamination
+  // from partial parser failures leaving stale state (e.g. dir, bLink, bUnsure).
+  direntry = t_directory::t_direntry();
   direntry.ownergroup = L"";
   direntry.owner = L"";
   direntry.group = L"";
 
   if (parseAsMlsd(lineToParse, linelen, direntry))
+  {
+    if (parserName) *parserName = "MLSD";
     return TRUE;
+  }
 
   if (parseAsUnix(lineToParse, linelen, direntry))
+  {
+    if (parserName) *parserName = "Unix";
     return TRUE;
+  }
 
   if (parseAsDos(lineToParse, linelen, direntry))
+  {
+    if (parserName) *parserName = "DOS";
     return TRUE;
+  }
 
   if (parseAsEPLF(lineToParse, linelen, direntry))
+  {
+    if (parserName) *parserName = "EPLF";
     return TRUE;
+  }
 
   if (parseAsVMS(lineToParse, linelen, direntry))
   {
+    if (parserName) *parserName = "VMS";
 #ifndef LISTDEBUG
     m_server.nServerType |= FZ_SERVERTYPE_SUB_FTP_VMS;
 #endif // LISTDEBUG
@@ -292,23 +308,41 @@ BOOL CFtpListResult::parseLine(const char *lineToParse, const int linelen, t_dir
   }
 
   if (parseAsOther(lineToParse, linelen, direntry))
+  {
+    if (parserName) *parserName = "Other";
     return TRUE;
+  }
 
   if (parseAsIBMMVS(lineToParse, linelen, direntry))
+  {
+    if (parserName) *parserName = "IBMMVS";
     return TRUE;
+  }
 
   if (parseAsIBMMVSPDS(lineToParse, linelen, direntry))
+  {
+    if (parserName) *parserName = "IBMMVSPDS";
     return TRUE;
+  }
 
   if (parseAsIBM(lineToParse, linelen, direntry))
+  {
+    if (parserName) *parserName = "IBM";
     return TRUE;
+  }
 
   if (parseAsWfFtp(lineToParse, linelen, direntry))
+  {
+    if (parserName) *parserName = "WfFtp";
     return TRUE;
+  }
 
   // Should be last
   if (parseAsIBMMVSPDS2(lineToParse, linelen, direntry))
+  {
+    if (parserName) *parserName = "IBMMVSPDS2";
     return TRUE;
+  }
 
   // name-only entries
   // (multiline VMS entries have only a name on the first line, so for VMS we have to skip this)
@@ -321,6 +355,7 @@ BOOL CFtpListResult::parseLine(const char *lineToParse, const int linelen, t_dir
     {
       direntry = t_directory::t_direntry();
       direntry.name = Buf.c_str();
+      if (parserName) *parserName = "NameOnly";
       return TRUE;
     }
   }
@@ -396,7 +431,7 @@ void CFtpListResult::AddData(const char * Data, int Size)
         FBuffer.Clear();
         break;
       }
-      
+
       Count++;
       RawByteString Record = FBuffer.SubString(1, Pos - 1);
       while ((Pos <= FBuffer.Length()) && IsNewLineChar(FBuffer[Pos]))
@@ -416,13 +451,23 @@ void CFtpListResult::AddData(const char * Data, int Size)
           Line[Index] = ' ';
         }
       }
-      if (parseLine(Line.c_str(), Line.Length(), DirEntry))
+      const char * ParserName = nullptr;
+      if (parseLine(Line.c_str(), Line.Length(), DirEntry, &ParserName))
       {
         // Parse successful - reset failure counter
         m_ConsecutiveParseFailures = 0;
         if ((DirEntry.name != L".") && (DirEntry.name != L".."))
         {
           AddLine(DirEntry);
+        }
+        if (m_debugShowListing && ParserName && (m_SuccessfulEntryLogCount < 20))
+        {
+          LogMessage(FZ_LOG_DEBUG,
+            _T("FTP listing: line %d parsed as %s, dir=%d link=%d size=%s name=%s"),
+            m_TotalLinesProcessed, ParserName,
+            nb::ToInt32(DirEntry.dir), nb::ToInt32(DirEntry.bLink),
+            ::Int64ToStr(DirEntry.size), DirEntry.name);
+          m_SuccessfulEntryLogCount++;
         }
         FBuffer.Delete(1, Pos - 1);
         Restart = true;
@@ -432,7 +477,14 @@ void CFtpListResult::AddData(const char * Data, int Size)
       {
         // Parse failed - increment failure counter
         m_ConsecutiveParseFailures++;
-        
+
+        if (m_debugShowListing)
+        {
+          LogMessage(FZ_LOG_WARNING,
+            _T("FTP listing: line %d parse failed, raw=%s"),
+            m_TotalLinesProcessed, UnicodeString(Record).c_str());
+        }
+
         // Safety check: consecutive parse failure limit (Issue #513)
         if (m_ConsecutiveParseFailures >= MAX_CONSECUTIVE_PARSE_FAILURES)
         {
@@ -443,7 +495,7 @@ void CFtpListResult::AddData(const char * Data, int Size)
           FBuffer.Clear();
           break;
         }
-        
+
         // Skip unparseable line immediately (improved handling)
         SendLineToMessageLog("Cannot parse line:");
         SendLineToMessageLog(Record);
@@ -1091,6 +1143,11 @@ BOOL CFtpListResult::parseAsMlsd(const char *line, const int linelen, t_director
         direntry.name = L"..";
         direntry.dir = TRUE;
       }
+      else if (!value.CompareNoCase(L"file"))
+      {
+        // Explicitly mark as file for defensive coding (Issue #507)
+        direntry.dir = FALSE;
+      }
     }
     else if (factname == L"size")
     {
@@ -1311,6 +1368,8 @@ BOOL CFtpListResult::parseAsUnix(const char *line, const int linelen, t_director
     direntry.bLink = true;
   else
     direntry.bLink = false;
+  // Issue #507: all other successful parsers reset bUnsure; parseAsUnix was missing it.
+  direntry.bUnsure = FALSE;
 
   bool bNetPresenz = false;
   if (!bNetWare) //On non-netware servers, expect at least two unused tokens

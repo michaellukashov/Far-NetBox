@@ -40,7 +40,7 @@ private:
   typedef nb::list_t<t_directory::t_direntry> tEntryList;
   tEntryList m_EntryList;
 
-  BOOL parseLine(const char * lineToParse, const int linelen, t_directory::t_direntry & direntry);
+  BOOL parseLine(const char * lineToParse, const int linelen, t_directory::t_direntry & direntry, const char ** parserName = nullptr);
 
   BOOL parseAsVMS(const char * line, const int linelen, t_directory::t_direntry & direntry);
   BOOL parseAsEPLF(const char * line, const int linelen, t_directory::t_direntry & direntry);
@@ -78,6 +78,7 @@ private:
   // Safety limits to prevent infinite loops (Issue #513)
   int m_ConsecutiveParseFailures{0};
   int m_TotalLinesProcessed{0};
+  int m_SuccessfulEntryLogCount{0};
   bool m_listingParseFailed{false};
   static constexpr int MAX_CONSECUTIVE_PARSE_FAILURES = 100;
   static constexpr int MAX_TOTAL_LINES = 100000;
