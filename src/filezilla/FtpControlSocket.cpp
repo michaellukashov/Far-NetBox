@@ -6070,9 +6070,9 @@ _int64 CFtpControlSocket::GetAbleToUDSize( bool &beenWaiting, CTime &curTime, _i
             return 0;
           }
         }
-        m_SpeedLimitSync.Unlock();
         if (m_SpeedLimitEvent == nullptr)
           m_SpeedLimitEvent = ::CreateEvent(nullptr, FALSE, FALSE, nullptr);
+        m_SpeedLimitSync.Unlock();
         ::WaitForSingleObject(m_SpeedLimitEvent, 100);
         m_SpeedLimitSync.Lock();
         nowTime = CTime::GetCurrentTime();

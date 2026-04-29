@@ -55,7 +55,7 @@ Third-Party (libs/)     <-- no modifications; patch if required
 
 ## Phase I. Foundation — Audit & Static State Hardening
 
-### Task 1: Audit and document all static/global mutable state
+### [x] Task 1: Audit and document all static/global mutable state
 
 **File(s):** `src/base/Classes.cpp`, `src/base/Global.cpp`, `src/base/Common.cpp`, `src/base/Exceptions.cpp`, `src/core/SessionData.cpp`, `src/core/NeonIntf.cpp`, `src/core/S3FileSystem.cpp`
 
@@ -70,7 +70,21 @@ Third-Party (libs/)     <-- no modifications; patch if required
 
 ---
 
-### Task 2: Harden reference-counted string operations
+### [x] Task 1.5: Fix `TGuard` dereference bug in `S3FileSystem.cpp`
+
+**File(s):** `src/core/S3FileSystem.cpp`
+
+**Change:**
+- During Task 1 audit, a real bug was discovered: `TGuard Guard(LibS3Section.get())` passed a pointer instead of a reference to `TGuard`.
+- Correct to `TGuard Guard(*LibS3Section.get())` at all four call sites (`S3ReadFile`, `S3GetAccessControl`, `InitLibS3`, `CleanupLibS3`).
+
+**Logging:**
+- N/A (defensive fix discovered during audit).
+
+---
+
+
+### [x] Task 2: Harden reference-counted string operations
 
 **File(s):** `src/base/include/nbstring.h`, `src/base/nbstring.cpp`
 
@@ -84,7 +98,7 @@ Third-Party (libs/)     <-- no modifications; patch if required
 
 ---
 
-### Task 3: Establish and document lock ordering hierarchy
+### [x] Task 3: Establish and document lock ordering hierarchy
 
 **File(s):** `src/core/Queue.h`, `src/core/Terminal.h`, `src/core/FileOperationProgress.h`, `src/filezilla/FtpControlSocket.h`
 
@@ -98,9 +112,24 @@ Third-Party (libs/)     <-- no modifications; patch if required
 
 ---
 
+### [x] Task 3.5: Evaluate address-based lock ordering for `FileOperationProgress::Assign()`
+
+**File(s):** `src/core/FileOperationProgress.cpp`, `src/core/FileOperationProgress.h`
+
+**Change:**
+- `Assign()` acquires `this->FSection` then `Other.FSection` in fixed order. This is safe only if assignments are strictly unidirectional.
+- Evaluate whether `std::lock`-style address-based ordering is needed to prevent deadlocks under concurrent cross-assignment scenarios.
+- Document the decision in `FileOperationProgress.h` comments (deferred or implemented).
+
+**Logging:**
+- N/A (analysis task).
+
+---
+
+
 ## Phase II. Critical — Far Manager Thread Safety
 
-### Task 4: Fix `TFarDialogIdleThread` Far API thread affinity
+### [x] Task 4: Fix `TFarDialogIdleThread` Far API thread affinity
 
 **File(s):** `src/NetBox/FarDialog.cpp`
 
@@ -114,7 +143,7 @@ Third-Party (libs/)     <-- no modifications; patch if required
 
 ---
 
-### Task 5: Fix `TPluginIdleThread` Far API thread affinity
+### [x] Task 5: Fix `TPluginIdleThread` Far API thread affinity
 
 **File(s):** `src/NetBox/FarPlugin.cpp`
 
@@ -127,7 +156,7 @@ Third-Party (libs/)     <-- no modifications; patch if required
 
 ---
 
-### Task 6: Fix `TTerminalThread` UI callback marshaling
+### [x] Task 6: Fix `TTerminalThread` UI callback marshaling
 
 **File(s):** `src/core/Queue.cpp`, `src/NetBox/WinSCPFileSystem.cpp`, `src/NetBox/WinSCPFileSystem.h`
 
@@ -139,7 +168,7 @@ Third-Party (libs/)     <-- no modifications; patch if required
 
 ---
 
-### Task 7: Fix `TQueueDialog::Idle` thread affinity
+### [x] Task 7: Fix `TQueueDialog::Idle` thread affinity
 
 **File(s):** `src/NetBox/WinSCPDialogs.cpp`
 
@@ -154,7 +183,7 @@ Third-Party (libs/)     <-- no modifications; patch if required
 
 ## Phase III. Protocol — Race Conditions & Busy-Waiting
 
-### Task 8: Fix `FtpControlSocket` unlock-sleep-relock race
+### [x] Task 8: Fix `FtpControlSocket` unlock-sleep-relock race
 
 **File(s):** `src/filezilla/FtpControlSocket.cpp` (around lines 6072-6074)
 
@@ -167,7 +196,7 @@ Third-Party (libs/)     <-- no modifications; patch if required
 
 ---
 
-### Task 9: Replace busy-waiting loops with event-driven waits
+### [x] Task 9: Replace busy-waiting loops with event-driven waits
 
 **File(s):** `src/core/Terminal.cpp` (lines 833, 7705), `src/filezilla/MainThread.cpp` (line 403)
 
@@ -183,7 +212,7 @@ Third-Party (libs/)     <-- no modifications; patch if required
 
 ---
 
-### Task 10: Harden `FileOperationProgress` callback reentrancy
+### [x] Task 10: Harden `FileOperationProgress` callback reentrancy
 
 **File(s):** `src/core/FileOperationProgress.cpp`, `src/core/FileOperationProgress.h`
 
@@ -198,7 +227,7 @@ Third-Party (libs/)     <-- no modifications; patch if required
 
 ---
 
-### Task 11: Evaluate and fix OpenSSL background thread initialization
+### [x] Task 11: Evaluate and fix OpenSSL background thread initialization
 
 **File(s):** `src/core/Cryptography.cpp` (lines 658-667)
 
@@ -215,7 +244,7 @@ Third-Party (libs/)     <-- no modifications; patch if required
 
 ## Phase IV. Verification & Documentation
 
-### Task 12: Build verification with zero warnings
+### [x] Task 12: Build verification with zero warnings (completed on Windows/MSVC)
 
 **File(s):** All modified files, `CMakeLists.txt` (if new event handles require includes)
 
@@ -230,7 +259,7 @@ Third-Party (libs/)     <-- no modifications; patch if required
 
 ---
 
-### Task 13: Update memory-bank with threading findings and decisions
+### [x] Task 13: Update memory-bank with threading findings and decisions
 
 **File(s):** `./memory-bank/activeContext.md`, `./memory-bank/progress.md`, `./memory-bank/systemPatterns.md`
 
@@ -248,7 +277,7 @@ Third-Party (libs/)     <-- no modifications; patch if required
 
 ---
 
-### Task 14: Add threading rules to project conventions
+### [x] Task 14: Add threading rules to project conventions
 
 **File(s):** `.ai-factory/rules/threading.md`, `.ai-factory/ARCHITECTURE.md`
 
@@ -267,20 +296,33 @@ Third-Party (libs/)     <-- no modifications; patch if required
 
 ---
 
+## Changelog
+
+| Item | Task | Note |
+|------|------|------|
+| `m_SpeedLimitEvent` introduced | Task 8 | Replaces `Sleep(100)` in `FtpControlSocket` |
+| `m_hStartedEvent` introduced | Task 9 | Replaces `Sleep(10)` poll in `MainThread.cpp` |
+| `FClientsZeroEvent` introduced | Task 9 | Replaces `Sleep(200)` in `TParallelOperation::WaitFor()` |
+| `FDirectoryCreatedEvent` introduced | Task 9 | Replaces `Sleep(100)` in `CopyParallel()` |
+| `PostMainThreadSynchro()` created | Task 5 | Sanctioned wrapper for `ACTL_SYNCHRO` |
+| `FInCallback` guard added | Task 10 | Suppresses reentrant `FOnProgress` calls |
+| `std::call_once` in `InitOpenssl()` | Task 11 | Thread-safe lazy initialization |
+| S3 `TGuard` dereference fixed | Task 1.5 | Real bug discovered during audit |
+
+
 ## Commit Plan
 
 | Checkpoint | Tasks | Message |
 |------------|-------|---------|
-| After Phase I | 1-3 | `refactor(thread-safety): audit and harden static global state` |
+| After Phase I | 1-3, 1.5, 3.5 | `refactor(thread-safety): audit and harden static global state` |
 | After Phase II | 4-7 | `fix(threading): marshal all Far Manager API calls to main thread` |
 | After Phase III | 8-11 | `fix(threading): eliminate race conditions and busy-waiting in protocol code` |
 | After Phase IV | 12-14 | `docs(threading): document threading model and verification` |
 
 ## Verification
 
-- [x] Tasks 1-11, 13-14 implemented and committed.
-- [ ] Task 12: Build verification — requires Windows/MSVC environment (blocked on Linux workstation).
-- [ ] Plugin DLL produced in `Far3_x64/Plugins/NetBox/` — requires Windows/MSVC build.
+- [x] Tasks 1-11, 1.5, 3.5, 13-14 implemented and committed.
+- [x] Task 12: Build verification completed on Windows/MSVC x64 RelWithDebugInfo.
 - [x] No `Sleep`-based polling remains for thread synchronization, except `SleepEx(100, true)` in `FileOperationProgress.cpp` which is an intentional alertable wait for APC completion (documented exception). Short timeouts on event waits are acceptable.
 - [x] No Far Manager API calls from worker threads remain (verified by code review of all `CreateThread` / `_beginthreadex` / `std::thread` entry points).
 - [x] Lock ordering documented and cycle-free.

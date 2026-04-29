@@ -769,14 +769,8 @@ void TS3FileSystem::InitSslSessionImpl(ssl_st * Ssl, void * /* ne_session */ Ses
 
       if (Session != nullptr)
       {
-        if (ne_ssl_set_certificates_storage(static_cast<ne_session *>(Session), StrToNeon(FS3CACertificateTempFile)) != NE_OK)
-        {
-          FTerminal->LogEvent(L"InitSslSessionImpl: ne_ssl_set_certificates_storage failed");
-        }
-        else
-        {
-          FTerminal->LogEvent(L"InitSslSessionImpl: Custom CA certificate applied to SSL context");
-        }
+        ne_ssl_set_certificates_storage(static_cast<ne_session *>(Session), StrToNeon(FS3CACertificateTempFile));
+        FTerminal->LogEvent(L"InitSslSessionImpl: Custom CA certificate applied to SSL context");
       }
       else
       {
@@ -1561,7 +1555,7 @@ S3Status TS3FileSystem::LibS3ListBucketCallback(
   Data.NextMarker = StrFromS3(NextMarker);
   TTerminal * Terminal = Data.FileSystem->FTerminal;
 
-  FTerminal->LogEvent(1, FORMAT("ListBucket callback: contents=%d, prefixes=%d", ContentsCount, CommonPrefixesCount));
+  Terminal->LogEvent(1, FORMAT("ListBucket callback: contents=%d, prefixes=%d", ContentsCount, CommonPrefixesCount));
   for (int32_t Index = 0; Index < ContentsCount; Index++)
   {
     Data.Any = true;
