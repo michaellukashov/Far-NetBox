@@ -124,12 +124,13 @@ These issues are older than the 100-issue window and need re-verification:
 
 ### Phase 2: Protocol Functionality — S3 + FTP
 
-2. [#507](https://github.com/michaellukashov/Far-NetBox/issues/507) — FTP directory listing hang
-3. [#515](https://github.com/michaellukashov/Far-NetBox/issues/515) — F7 autocomplete directory name
+2. [#507](https://github.com/michaellukashov/Far-NetBox/issues/507) — FTP directory listing hang | FIXED
+3. [#515](https://github.com/michaellukashov/Far-NetBox/issues/515) — F7 autocomplete directory name | FIXED
 
 ### Phase 3: UX & Polish
 
 1. [#511](https://github.com/michaellukashov/Far-NetBox/issues/511) — Speed limit not working
+
 2. [#486](https://github.com/michaellukashov/Far-NetBox/issues/486) — Dialog overflow
 3. [#505](https://github.com/michaellukashov/Far-NetBox/issues/505) — FTP URL file fallback
 4. [#472](https://github.com/michaellukashov/Far-NetBox/issues/472) — False import prompts

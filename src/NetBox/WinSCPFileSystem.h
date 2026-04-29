@@ -316,6 +316,7 @@ private:
   gsl::owner<TTerminalQueueStatus *> FQueueStatus{nullptr};
   TCriticalSection FQueueStatusSection;
   TQueueEventType FQueueEvent{qeEmpty};
+  bool FInShowOperationProgress{false};
   HANDLE FProgressSaveScreenHandle{nullptr};
   HANDLE FSynchronizationSaveScreenHandle{nullptr};
   HANDLE FAuthenticationSaveScreenHandle{nullptr};

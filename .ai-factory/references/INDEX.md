@@ -32,8 +32,8 @@ Features
 | [ssh-authentication-exploration](ssh-authentication-exploration.md) | SSH authentication and OpenSSH certificate support | PuTTY internals, WinSCP | 2026-04-26 |
 | [session-config-ui-patterns](session-config-ui-patterns.md) | UI patterns for session configuration dialogs | TFarEdit, WinSCPDialogs.cpp | 2026-04-26 |
 | [logging-subsystem](logging-subsystem.md) | Logging subsystem architecture | tinylog, nbcore/logging.cpp | 2026-04-26 |
-|| [far-dialog-api-text-retrieval](far-dialog-api-text-retrieval.md) | Far Manager dialog API for retrieving text from edit controls | DM_GETTEXT, DM_GETDLGITEM, CreateDirectoryDialog | 2026-04-27 |
-
+| [far-dialog-api-text-retrieval](far-dialog-api-text-retrieval.md) | Far Manager dialog API for retrieving text from edit controls | DM_GETTEXT, DM_GETDLGITEM, CreateDirectoryDialog | 2026-04-27 |
+| [issue-511-speed-limit-esc-hang-exploration](issue-511-speed-limit-esc-hang-exploration.md) | Speed limit ineffective for SSH/SFTP and Esc key hang during transfer | Queue.cpp, FileOperationProgress.cpp, WinSCPFileSystem.cpp, FarPlugin.cpp | 2026-04-29 |
 ## Internal Documentation (development)
 
 | Document | Purpose | Path |

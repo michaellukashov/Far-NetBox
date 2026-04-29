@@ -2540,10 +2540,13 @@ void TParallelTransferQueueItem::DoExecute(gsl::not_null<TTerminal *> Terminal)
   const TFileOperation Operation = (FLAGSET(FParallelOperation->GetParams(), cpDelete) ? foMove : foCopy);
   const bool Temp = FLAGSET(FParallelOperation->GetParams(), cpTemporary);
 
+  Terminal->LogEvent(FORMAT("Parallel transfer CPS limit: %u", FParallelOperation->GetMainOperationProgress()->GetCPSLimit()));
+  DebugAssert(FParallelOperation->GetMainOperationProgress() != nullptr);
   OperationProgress.Start(
     // CPS limit inherited from parent OperationProgress.
     // Count not known and won't be needed as we will always have TotalSize as  we always transfer a single file at a time.
-    Operation, FParallelOperation->GetSide(), -1, Temp, FParallelOperation->GetTargetDir(), 0, odoIdle);
+    Operation, FParallelOperation->GetSide(), -1, Temp, FParallelOperation->GetTargetDir(),
+    FParallelOperation->GetMainOperationProgress()->GetCPSLimit(), odoIdle);
 
   try__finally
   {

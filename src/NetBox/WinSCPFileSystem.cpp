@@ -3757,10 +3757,19 @@ void TWinSCPFileSystem::OperationFinished(TFileOperation Operation,
 void TWinSCPFileSystem::ShowOperationProgress(
   TFileOperationProgressType & ProgressData, bool Force)
 {
+  if (FInShowOperationProgress)
+  {
+    return;
+  }
+  FInShowOperationProgress = true;
+  SCOPE_EXIT
+  {
+    FInShowOperationProgress = false;
+  };
   static uint32_t LastTicks;
   const uint32_t Ticks = ::GetTickCount();
   const uint16_t percents = static_cast<uint16_t>(ProgressData.OverallProgress());
-  if (Ticks - LastTicks > 500 || Force)
+  if ((Ticks - LastTicks > 500 || Force) && !ProgressData.GetSuspended())
   {
     LastTicks = Ticks;
 
@@ -3860,6 +3869,7 @@ void TWinSCPFileSystem::ShowOperationProgress(
 
     if (GetWinSCPPlugin()->CheckForEsc())
     {
+      FTerminal->LogEvent("Esc pressed during transfer");
       CancelConfiguration(ProgressData);
     }
   }

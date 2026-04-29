@@ -37,6 +37,10 @@ When Esc is pressed during transfer, `ShowOperationProgress` calls `CancelConfig
 
 ## Tasks
 
+- [x] Task 1: Fix CPS limit propagation for parallel transfers
+- [x] Task 2: Add reentrancy guard to ShowOperationProgress
+- [x] Task 3: Handle qaCancel in CancelConfiguration
+- [x] Task 4: Build and verify both fixes
 ### Task 1: Fix CPS limit propagation for parallel transfers
 
 **File:** `src/core/Queue.cpp`
@@ -61,7 +65,7 @@ OperationProgress.Start(
 
 ### Task 2: Add reentrancy guard to ShowOperationProgress
 
-**File:** `src/NetBox/WinSCPFileSystem.cpp`
+**Files:** `src/NetBox/WinSCPFileSystem.cpp`, `src/NetBox/WinSCPFileSystem.h`
 
 **Change:**
 In `ShowOperationProgress` (around line 3763), add `!ProgressData.GetSuspended()` to the main time-check condition. This skips the entire progress display — including `Message()`, `CheckForEsc()`, and `CancelConfiguration()` — while suspended, making the reentrancy protection intentional rather than relying on the accidental `LastTicks` guard:
@@ -72,6 +76,8 @@ if ((Ticks - LastTicks > 500 || Force) && !ProgressData.GetSuspended())
     LastTicks = Ticks;
     ...
 ```
+
+Additionally, add a `FInShowOperationProgress` boolean guard to prevent reentrant execution of `ShowOperationProgress` from `Suspend()`/`Resume()` callbacks in `CancelConfiguration`. This prevents nested progress display calls that can corrupt Far Manager screen state or cause dialog hangs when 'Yes' is pressed in the cancel confirmation dialog.
 
 **Logging:** Add `FTerminal->LogEvent(L"Esc pressed during transfer")` inside the `CheckForEsc` block.
 
