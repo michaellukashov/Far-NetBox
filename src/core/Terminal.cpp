@@ -861,6 +861,18 @@ void TParallelOperation::WaitFor()
   }
 }
 
+bool TParallelOperation::WaitForDirectoryCreated(uint32_t TimeoutMs)
+{
+  if (FDirectoryCreatedEvent != nullptr)
+  {
+    const DWORD WaitResult = ::WaitForSingleObject(FDirectoryCreatedEvent, TimeoutMs);
+    ::ResetEvent(FDirectoryCreatedEvent);
+    return (WaitResult == WAIT_OBJECT_0);
+  }
+  return false;
+}
+
+
 void TParallelOperation::Done(
   const UnicodeString & FileName, bool Dir, bool Success, const UnicodeString & TargetDir,
   const TCopyParamType * CopyParam, TTerminal * Terminal)
@@ -7722,12 +7734,7 @@ void TTerminal::CopyParallel(TParallelOperation * ParallelOperation, TFileOperat
       }
       else if (GotNext == 0)
       {
-        if (ParallelOperation->FDirectoryCreatedEvent != nullptr)
-        {
-          ::WaitForSingleObject(ParallelOperation->FDirectoryCreatedEvent, 100);
-          ::ResetEvent(ParallelOperation->FDirectoryCreatedEvent);
-        }
-        else
+        if (!ParallelOperation->WaitForDirectoryCreated(100))
         {
           Sleep(100);
         }

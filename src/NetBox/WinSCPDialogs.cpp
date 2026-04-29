@@ -4826,12 +4826,12 @@ void TSessionDialog::S3CACertificateLoadClick(TFarButton * /*Sender*/, bool & Cl
     try
     {
       UnicodeString Content = TFile::ReadAllText(FileName);
-      if (!Content.Contains(L"-----BEGIN CERTIFICATE-----"))
+      if (Content.Pos(L"-----BEGIN CERTIFICATE-----") == 0)
       {
         TWinSCPPlugin * WinSCPPlugin = nb::dyn_cast_or_null<TWinSCPPlugin>(FarPlugin);
         Ensures(WinSCPPlugin);
         WinSCPPlugin->MoreMessageDialog(GetMsg(MSG_TITLE_WARNING),
-          GetMsg(NB_S3_INVALID_PEM), qtWarning, qaOK);
+          nullptr, qtWarning, qaOK);
       }
       S3CACertificateEdit->SetText(Content);
     }
@@ -4840,7 +4840,7 @@ void TSessionDialog::S3CACertificateLoadClick(TFarButton * /*Sender*/, bool & Cl
       TWinSCPPlugin * WinSCPPlugin = nb::dyn_cast_or_null<TWinSCPPlugin>(FarPlugin);
       Ensures(WinSCPPlugin);
       WinSCPPlugin->MoreMessageDialog(GetMsg(MSG_TITLE_ERROR),
-        GetMsg(NB_S3_LOAD_ERROR), qtError, qaOK);
+        nullptr, qtError, qaOK);
     }
   }
   Close = false;
@@ -4869,7 +4869,7 @@ void TSessionDialog::S3CACertificateSaveClick(TFarButton * /*Sender*/, bool & Cl
       TWinSCPPlugin * WinSCPPlugin = nb::dyn_cast_or_null<TWinSCPPlugin>(FarPlugin);
       Ensures(WinSCPPlugin);
       WinSCPPlugin->MoreMessageDialog(GetMsg(MSG_TITLE_ERROR),
-        GetMsg(NB_S3_SAVE_ERROR), qtError, qaOK);
+        nullptr, qtError, qaOK);
     }
   }
   Close = false;
@@ -9312,6 +9312,7 @@ void TQueueDialog::Idle()
     SynchroParams.Sender = this;
     GetFarPlugin()->PostMainThreadSynchro(&SynchroParams);
   }
+}
 
 bool TQueueDialog::CloseQuery()
 {

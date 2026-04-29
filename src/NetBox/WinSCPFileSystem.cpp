@@ -3332,6 +3332,7 @@ bool TWinSCPFileSystem::Connect(TSessionData * Data)
     if (!Result)
     {
       throw Exception(FORMAT(GetMsg(NB_CANNOT_INIT_SESSION), Data->GetSessionName()));
+    }
 
     const TDateTime Interval = FTerminal->GetSessionData()->GetPingIntervalDT();
     if (Interval.GetValue() > 0 && FKeepaliveThread == nullptr)

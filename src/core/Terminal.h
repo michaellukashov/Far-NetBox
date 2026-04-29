@@ -1182,6 +1182,8 @@ public:
   TFileOperationProgressType * GetMainOperationProgress() const { return FMainOperationProgress; }
   UnicodeString GetMainName() const { return FMainName; }
 
+  bool WaitForDirectoryCreated(uint32_t TimeoutMs);
+
 private:
   struct TDirectoryData
   {

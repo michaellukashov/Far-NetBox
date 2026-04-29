@@ -1250,9 +1250,9 @@ void TSessionData::DoSave(THierarchicalStorage * Storage,
     // To allow relative paths in our sessions, we have to expand them for PuTTY.
     WRITE_DATA_EX(StringRaw, "PublicKeyFile", GetPublicKeyFile(), ExpandFileName);
     WRITE_DATA_EX(StringRaw, "DetachedCertificate", DetachedCertificate, ExpandFileName);
-  }
     WRITE_DATA_EX(StringRaw, "OpensshPrivateKeyFile", OpensshPrivateKeyFile, ExpandFileName);
     WRITE_DATA(Bool, UseOpensshCertificate);
+  }
   else
   {
     WRITE_DATA_EX(String, "UserName", GetUserName(), );

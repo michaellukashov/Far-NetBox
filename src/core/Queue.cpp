@@ -2858,6 +2858,7 @@ void TTerminalThread::RunAction(TNotifyEvent && Action)
           {
             if (FUserAction != nullptr)
             {
+              try
               {
                 DebugAssert(GetCurrentThreadId() == FMainThread);
                 FUserAction->Execute(nullptr);

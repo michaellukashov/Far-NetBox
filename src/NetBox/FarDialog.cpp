@@ -44,7 +44,7 @@ public:
         {
           // Marshal Idle() to the main thread; Far Manager APIs must not be
           // called from worker threads.
-          FDialog->Synchronize(nb::bind(&TFarDialog::Idle, FDialog));
+          FDialog->Synchronize(nb::bind(&TFarDialog::Idle, FDialog.get()));
         }
       }
     }
