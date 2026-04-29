@@ -50,7 +50,8 @@ public:
         const int Result = pthread_cond_timedwait(&FCond, &FMutex, Timeout);
         if ((Result == WAIT_TIMEOUT) && IsActive() && !IsFinished() && FPlugin && FPlugin->GetPluginHandle())
         {
-          FPlugin->FarAdvControl(ACTL_SYNCHRO, 0, nullptr);
+          // Marshal idle processing to the main thread via the sanctioned synchro path.
+          FPlugin->PostMainThreadSynchro(nullptr);
         }
       }
       FCheckCondition = false;
@@ -278,6 +279,13 @@ void TCustomFarPlugin::GetPluginInfo(struct PluginInfo * Info)
     DEBUG_PRINTF("before HandleException");
     HandleException(&E);
   }
+}
+
+void TCustomFarPlugin::PostMainThreadSynchro(void * Param) const
+{
+  // ACTL_SYNCHRO is explicitly designed for cross-thread synchronization.
+  // This is the only Far Manager API permitted from worker threads.
+  FarAdvControl(ACTL_SYNCHRO, 0, Param);
 }
 
 intptr_t TCustomFarPlugin::ProcessSynchroEvent(const ProcessSynchroEventInfo * Info)

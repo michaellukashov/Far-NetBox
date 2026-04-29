@@ -152,6 +152,12 @@ protected:
   std::unique_ptr<TList> FDoneItems;
   int32_t FItemsInProcess{0};
   TCriticalSection FItemsSection;
+  // Lock ordering hierarchy (observed):
+  // 1. TTerminalQueue::FItemsSection
+  // 2. TQueueItem::FSection
+  // Cross-lock acquisition: FItemsSection may call Item->GetStatus() which
+  // acquires FSection. No reverse ordering has been observed.
+  // TCriticalSection wraps a Windows CRITICAL_SECTION and is recursive.
   int32_t FFreeTerminals{0};
   std::unique_ptr<TList> FTerminals;
   std::unique_ptr<TList> FForcedItems;

@@ -1201,6 +1201,8 @@ private:
   bool FProbablyEmpty{false};
   int32_t FClients{0};
   std::unique_ptr<TCriticalSection> FSection;
+  HANDLE FClientsZeroEvent{nullptr};
+  HANDLE FDirectoryCreatedEvent{nullptr};
   TFileOperationProgressType * FMainOperationProgress{nullptr};
   TOperationSide FSide{osLocal};
   UnicodeString FMainName;

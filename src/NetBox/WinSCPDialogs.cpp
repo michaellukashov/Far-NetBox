@@ -9263,9 +9263,8 @@ void TQueueDialog::Idle()
     TSynchroParams & SynchroParams = GetFarPlugin()->FSynchroParams;
     SynchroParams.SynchroEvent = nb::bind(&TQueueDialog::OnIdle, this);
     SynchroParams.Sender = this;
-    GetFarPlugin()->FarAdvControl(ACTL_SYNCHRO, 0, &SynchroParams);
+    GetFarPlugin()->PostMainThreadSynchro(&SynchroParams);
   }
-}
 
 bool TQueueDialog::CloseQuery()
 {

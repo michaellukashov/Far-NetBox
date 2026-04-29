@@ -15,6 +15,7 @@
 #include <openssl/rand.h>
 #include <openssl/err.h>
 #include <openssl/ssl.h>
+#include <mutex>
 #if defined(__BORLANDC__)
 #include <Soap.EncdDecd.hpp>
 #endif // defined(__BORLANDC__)
@@ -630,15 +631,20 @@ bool UnscramblePassword(const RawByteString & Scrambled, UnicodeString & Passwor
 
 static UnicodeString OpensslInitializationErrors;
 
+static std::once_flag OpenSSLInitOnce;
 static bool InitOpenssl()
 {
-  // RAND_poll already calls OPENSSL_init_crypto with OPENSSL_INIT_LOAD_CONFIG and other flags.
-  // OPENSSL_init_ssl does not do much more, so it is not really big overhead.
-  // And we need to call OPENSSL_init_ssl, as it we need to use OPENSSL_INIT_LOAD_SSL_STRINGS to match what SSL_CTX_new does
-  // OPENSSL_init_ssl passes all flags to OPENSSL_init_crypto (even those it does not understand, like the very  OPENSSL_INIT_LOAD_SSL_STRINGS).
-  // And OPENSSL_init_ssl caches the initialization results based on the flags
-  ERR_clear_error();
-  return OPENSSL_init_ssl(OPENSSL_INIT_LOAD_SSL_STRINGS, nullptr);
+  bool Result = false;
+  std::call_once(OpenSSLInitOnce, [&Result]() {
+    // RAND_poll already calls OPENSSL_init_crypto with OPENSSL_INIT_LOAD_CONFIG and other flags.
+    // OPENSSL_init_ssl does not do much more, so it is not really big overhead.
+    // And we need to call OPENSSL_init_ssl, as it we need to use OPENSSL_INIT_LOAD_SSL_STRINGS to match what SSL_CTX_new does
+    // OPENSSL_init_ssl passes all flags to OPENSSL_init_crypto (even those it does not understand, like the very  OPENSSL_INIT_LOAD_SSL_STRINGS).
+    // OPENSSL_init_ssl caches the initialization results based on the flags
+    ERR_clear_error();
+    Result = OPENSSL_init_ssl(OPENSSL_INIT_LOAD_SSL_STRINGS, nullptr);
+  });
+  return Result;
 }
 
 void CryptographyInitialize()

@@ -122,6 +122,11 @@ private:
   TPersistence FPersistence{};
   TCriticalSection FSection;
   TCriticalSection FUserSelectionsSection;
+  // Lock ordering: When acquiring both FSection and Other.FSection,
+  // there is no established address-based ordering. Assign() is the only
+  // dual-acquisition site; TCriticalSection is recursive, preventing
+  // self-deadlock.
+  bool FInCallback{false};
 
   bool FCounterSet{false};
   bool FSkipToAll{false};

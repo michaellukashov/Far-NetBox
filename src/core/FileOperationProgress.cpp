@@ -342,7 +342,19 @@ void TFileOperationProgressType::Progress()
 void TFileOperationProgressType::DoProgress()
 {
   SystemRequired();
-  FOnProgress(*this);
+  // Reentrancy guard: FOnProgress may call back into FileOperationProgress
+  // methods (e.g., Suspend). TCriticalSection is recursive, so locks are safe,
+  // but nested callbacks can recurse infinitely if the caller isn't careful.
+  if (!FInCallback)
+  {
+    TValueRestorer<bool> InCallbackRestorer(FInCallback);
+    FInCallback = true;
+    FOnProgress(*this);
+  }
+  else
+  {
+    // Reentrant callback suppressed; no progress update dispatched.
+  }
 }
 
 void TFileOperationProgressType::Finish(const UnicodeString & AFileName,
@@ -481,6 +493,7 @@ int64_t TFileOperationProgressType::AdjustToCPSLimit(
       }
 
       if (FRemainingCPS == 0)
+        // Intentional alertable wait for APC completion; do NOT convert to event wait.
       {
         SleepEx(100, true);
         DoProgress();

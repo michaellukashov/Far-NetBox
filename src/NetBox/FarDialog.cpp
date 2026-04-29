@@ -41,7 +41,11 @@ public:
       if (::WaitForSingleObject(FEvent, FMillisecs) != WAIT_FAILED)
       {
         if (!IsFinished() && FDialog && FDialog->GetHandle())
-          FDialog->Idle();
+        {
+          // Marshal Idle() to the main thread; Far Manager APIs must not be
+          // called from worker threads.
+          FDialog->Synchronize(nb::bind(&TFarDialog::Idle, FDialog));
+        }
       }
     }
     if (!IsFinished())

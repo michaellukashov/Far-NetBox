@@ -745,6 +745,8 @@ TParallelOperation::TParallelOperation(TOperationSide Side) noexcept
   DebugAssert((Side == osLocal) || (Side == osRemote));
   FSide = Side;
   FVersion = 0;
+  FClientsZeroEvent = ::CreateEvent(nullptr, TRUE, FALSE, nullptr);
+  FDirectoryCreatedEvent = ::CreateEvent(nullptr, TRUE, FALSE, nullptr);
 }
 
 void TParallelOperation::Init(
@@ -776,6 +778,10 @@ void TParallelOperation::Init(
 TParallelOperation::~TParallelOperation() noexcept
 {
   WaitFor();
+  if (FClientsZeroEvent != nullptr)
+    ::CloseHandle(FClientsZeroEvent);
+  if (FDirectoryCreatedEvent != nullptr)
+    ::CloseHandle(FDirectoryCreatedEvent);
 }
 
 bool TParallelOperation::IsInitialized() const
@@ -809,6 +815,11 @@ void TParallelOperation::RemoveClient()
 {
   const TGuard Guard(*FSection.get());
   FClients--;
+  if (FClients == 0)
+  {
+    if (FClientsZeroEvent != nullptr)
+      ::SetEvent(FClientsZeroEvent);
+  }
 }
 
 void TParallelOperation::WaitFor()
@@ -830,7 +841,15 @@ void TParallelOperation::WaitFor()
       {
         // propagate the total progress incremented by the parallel operations
         FMainOperationProgress->Progress();
-        Sleep(200);
+        if (FClientsZeroEvent != nullptr)
+        {
+          ::WaitForSingleObject(FClientsZeroEvent, 200);
+          ::ResetEvent(FClientsZeroEvent);
+        }
+        else
+        {
+          Sleep(200);
+        }
       }
     }
     while (!Done);
@@ -840,7 +859,6 @@ void TParallelOperation::WaitFor()
   {
     DebugAssert(FClients == 0);
   }
-
 }
 
 void TParallelOperation::Done(
@@ -858,6 +876,8 @@ void TParallelOperation::Done(
       {
         DebugAssert(!DirectoryIterator->second.Exists);
         DirectoryIterator->second.Exists = true;
+        if (FDirectoryCreatedEvent != nullptr)
+          ::SetEvent(FDirectoryCreatedEvent);
       }
       else
       {
@@ -7702,7 +7722,15 @@ void TTerminal::CopyParallel(TParallelOperation * ParallelOperation, TFileOperat
       }
       else if (GotNext == 0)
       {
-        Sleep(100);
+        if (ParallelOperation->FDirectoryCreatedEvent != nullptr)
+        {
+          ::WaitForSingleObject(ParallelOperation->FDirectoryCreatedEvent, 100);
+          ::ResetEvent(ParallelOperation->FDirectoryCreatedEvent);
+        }
+        else
+        {
+          Sleep(100);
+        }
       }
     }
     while (Continue && !AOperationProgress->GetCancel());

@@ -2826,6 +2826,8 @@ void TTerminalThread::DiscardException()
 }
 
 void TTerminalThread::RunAction(TNotifyEvent && Action)
+  // Main-thread side of the marshal handshake. Waits on FActionEvent while
+  // periodically servicing FUserAction callbacks (which must run on main thread).
 {
   DebugAssert(!FAction.empty());
   DebugAssert(FException == nullptr);
@@ -2856,8 +2858,8 @@ void TTerminalThread::RunAction(TNotifyEvent && Action)
           {
             if (FUserAction != nullptr)
             {
-              try
               {
+                DebugAssert(GetCurrentThreadId() == FMainThread);
                 FUserAction->Execute(nullptr);
               }
               catch (Exception & E)
@@ -3007,6 +3009,8 @@ void TTerminalThread::CheckCancel()
 }
 
 void TTerminalThread::WaitForUserAction(TUserAction * UserAction)
+  // Worker-thread side of the marshal handshake. Stores UserAction and blocks
+  // until RunAction on the main thread executes it and signals FActionEvent.
 {
   const DWORD Thread = GetCurrentThreadId();
   // we can get called from the main thread from within Idle,

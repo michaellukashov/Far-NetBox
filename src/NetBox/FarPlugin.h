@@ -182,6 +182,9 @@ public:
   bool Editor(const UnicodeString & AFileName, const UnicodeString & Title, EDITOR_FLAGS Flags);
   intptr_t FarControl(FILE_CONTROL_COMMANDS Command, intptr_t Param1, void * Param2, HANDLE Plugin = INVALID_HANDLE_VALUE);
   intptr_t FarAdvControl(ADVANCED_CONTROL_COMMANDS Command, intptr_t Param1, void * Param2 = nullptr) const;
+  // Worker-to-main thread marshal. ACTL_SYNCHRO is the sanctioned Far Manager
+  // primitive for requesting main-thread execution; it may be called from any thread.
+  void PostMainThreadSynchro(void * Param = nullptr) const;
   intptr_t FarEditorControl(EDITOR_CONTROL_COMMANDS Command, intptr_t Param1, void * Param2) const;
   intptr_t GetFarSystemSettings() const;
   void Text(int32_t X, int32_t Y, int32_t Color, const UnicodeString & Str);
