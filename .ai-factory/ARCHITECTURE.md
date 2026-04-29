@@ -220,3 +220,5 @@ private:
 - [Far Dialog API: Text Retrieval](.ai-factory/references/far-dialog-api-text-retrieval.md) — Far Manager dialog API analysis for retrieving fresh text from edit controls when autocomplete may bypass DN_EDITCHANGE notification
 - [Issue #511: Speed Limit & Esc Hang](.ai-factory/references/issue-511-speed-limit-esc-hang-exploration.md) — Root-cause analysis of CPS limit not propagated to parallel transfer progress objects, and reentrant progress callback / cancel dialog interaction during transfer
 - [Issue #511: Cancel "Yes" Hang Deep Dive](.ai-factory/references/issue-511-cancel-yes-hang-deep-dive.md) — Post-dialog hang after pressing "Yes" in cancel dialog, reentrancy guard failure analysis, CheckForEsc console input buffer interaction, and exception unwinding progress callback hazards
+|
+nw|- [CMake Refactoring Plan Exploration](.ai-factory/references/cmake-refactoring-plan-exploration.md) — Reconciliation of the CMake modularization plan against actual codebase state, missing modules (Libraries.cmake, PlatformDetection.cmake, SourceGroups.cmake, TargetConfiguration.cmake), line-count corrections, and structural findings from plan refinement

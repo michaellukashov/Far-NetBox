@@ -18,6 +18,7 @@ Features
 | [sftp-binary-dump-log-protocol](sftp-binary-dump-log-protocol.md) | SFTP binary dump at Log Protocol level 3 | SftpFileSystem.cpp, WinSCPDialogs.cpp, MsgIDs.h | 2026-04-27 |
 | [crash-second-file-open-analysis](crash-second-file-open-analysis.md) | Crash when opening files twice without refresh | Code analysis | 2026-04-26 |
 | [foundation-stability-research](foundation-stability-research.md) | Foundation stability research | Internal research | 2026-04-22 |
+qt|| [cmake-refactoring-plan-exploration](cmake-refactoring-plan-exploration.md) | CMake modularization plan vs actual codebase reconciliation, missing modules, line-count corrections | CMakeLists.txt, cmake/*.cmake, libs/*/CMakeLists.txt | 2026-04-29 |
 
 ## Implementation Plans
 
