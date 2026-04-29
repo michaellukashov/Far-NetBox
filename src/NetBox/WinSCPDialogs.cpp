@@ -26,6 +26,8 @@
 //#include <farcolor.hpp>
 #include "plugin_version.hpp"
 #include "resource.h"
+#include <System.IOUtils.hpp>
+#include <commdlg.h>
 
 #ifdef max
 #undef max
@@ -1756,6 +1758,10 @@ private:
   void FtpProxyMethodComboAddNewItem(int32_t ProxyTypeId, TProxyMethod ProxyType);
   void SshProxyMethodComboAddNewItem(int32_t ProxyTypeId, TProxyMethod ProxyType);
   void S3DefaultReqionComboAddNewItem(const UnicodeString &Region, int32_t Idx);
+  static TTlsVersion IndexToTlsVersion(int32_t Index);
+  static int32_t TlsVersionToIndex(TTlsVersion Version);
+  void S3CACertificateLoadClick(TFarButton * Sender, bool & Close);
+  void S3CACertificateSaveClick(TFarButton * Sender, bool & Close);
   static bool IsSshProtocol(TFSProtocol FSProtocol);
   bool IsWebDAVProtocol(TFSProtocol FSProtocol) const;
   bool IsSshOrWebDAVProtocol(TFSProtocol FSProtocol) const;
@@ -1897,6 +1903,10 @@ private:
   TFarComboBox * S3UrlStyleCombo{nullptr};
   TFarComboBox * S3DefaultRegionCombo{nullptr};
   TFarCheckBox * S3RequesterPaysCheck{nullptr};
+  TFarButton * S3CACertificateLoadBtn{nullptr};
+  TFarButton * S3CACertificateSaveBtn{nullptr};
+  TFarComboBox * S3MinTlsVersionCombo{nullptr};
+  TFarComboBox * S3MaxTlsVersionCombo{nullptr};
   // TFarEdit * S3SessionTokenEdits[3]{nullptr};
 
   std::unique_ptr<TObjectList> FTabs{std::make_unique<TObjectList>()};
@@ -2579,6 +2589,52 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   S3CACertificateEdit = MakeOwnedObject<TFarEdit>(this);
   S3CACertificateEdit->SetWidth(30);
   S3CACertificateEdit->SetVisible(false);
+
+  // CA Certificate Load/Save buttons
+  SetNextItemPosition(ipRight);
+  S3CACertificateLoadBtn = MakeOwnedObject<TFarButton>(this);
+  S3CACertificateLoadBtn->SetCaption(GetMsg(NB_S3_LOAD_CA_CERT));
+  S3CACertificateLoadBtn->SetOnClick(nb::bind(&TSessionDialog::S3CACertificateLoadClick, this));
+  S3CACertificateLoadBtn->SetVisible(false);
+
+  SetNextItemPosition(ipRight);
+  S3CACertificateSaveBtn = MakeOwnedObject<TFarButton>(this);
+  S3CACertificateSaveBtn->SetCaption(GetMsg(NB_S3_SAVE_CA_CERT));
+  S3CACertificateSaveBtn->SetOnClick(nb::bind(&TSessionDialog::S3CACertificateSaveClick, this));
+  S3CACertificateSaveBtn->SetVisible(false);
+
+  // Min/Max TLS version
+  SetNextItemPosition(ipNewLine);
+  Text = MakeOwnedObject<TFarText>(this);
+  Text->SetCaption(GetMsg(NB_S3_MIN_TLS_VERSION));
+  Text->SetWidth(20);
+  Text->SetVisible(false);
+
+  SetNextItemPosition(ipRight);
+  S3MinTlsVersionCombo = MakeOwnedObject<TFarComboBox>(this);
+  S3MinTlsVersionCombo->SetDropDownList(true);
+  S3MinTlsVersionCombo->SetWidth(12);
+  S3MinTlsVersionCombo->SetVisible(false);
+  S3MinTlsVersionCombo->GetItems()->AddObject(GetTlsVersionName(tls10), ToObj(nb::ToPtr(tls10)));
+  S3MinTlsVersionCombo->GetItems()->AddObject(GetTlsVersionName(tls11), ToObj(nb::ToPtr(tls11)));
+  S3MinTlsVersionCombo->GetItems()->AddObject(GetTlsVersionName(tls12), ToObj(nb::ToPtr(tls12)));
+  S3MinTlsVersionCombo->GetItems()->AddObject(GetTlsVersionName(tls13), ToObj(nb::ToPtr(tls13)));
+
+  SetNextItemPosition(ipRight);
+  Text = MakeOwnedObject<TFarText>(this);
+  Text->SetCaption(GetMsg(NB_S3_MAX_TLS_VERSION));
+  Text->SetWidth(3);
+  Text->SetVisible(false);
+
+  SetNextItemPosition(ipRight);
+  S3MaxTlsVersionCombo = MakeOwnedObject<TFarComboBox>(this);
+  S3MaxTlsVersionCombo->SetDropDownList(true);
+  S3MaxTlsVersionCombo->SetWidth(12);
+  S3MaxTlsVersionCombo->SetVisible(false);
+  S3MaxTlsVersionCombo->GetItems()->AddObject(GetTlsVersionName(tls10), ToObj(nb::ToPtr(tls10)));
+  S3MaxTlsVersionCombo->GetItems()->AddObject(GetTlsVersionName(tls11), ToObj(nb::ToPtr(tls11)));
+  S3MaxTlsVersionCombo->GetItems()->AddObject(GetTlsVersionName(tls12), ToObj(nb::ToPtr(tls12)));
+  S3MaxTlsVersionCombo->GetItems()->AddObject(GetTlsVersionName(tls13), ToObj(nb::ToPtr(tls13)));
 
   // Authentication
   /*SetNextItemPosition(ipNewLine);
@@ -3341,6 +3397,11 @@ void TSessionDialog::UpdateControls()
   PasswordLabel->SetVisible(IsMainTab && !aS3Protocol);
   S3SecretAccessKeyLabel->SetVisible(IsMainTab && aS3Protocol);
   S3CACertificateLabel->SetVisible(IsMainTab && aS3Protocol);
+  S3CACertificateEdit->SetVisible(IsMainTab && aS3Protocol);
+  S3CACertificateLoadBtn->SetVisible(IsMainTab && aS3Protocol);
+  S3CACertificateSaveBtn->SetVisible(IsMainTab && aS3Protocol);
+  S3MinTlsVersionCombo->SetVisible(IsMainTab && aS3Protocol);
+  S3MaxTlsVersionCombo->SetVisible(IsMainTab && aS3Protocol);
 
   // Connection sheet
   FtpPasvModeCheck->SetEnabled(aFtpProtocol);
@@ -3372,6 +3433,10 @@ void TSessionDialog::UpdateControls()
   S3DefaultRegionCombo->Enabled = aS3Protocol;
   S3RequesterPaysCheck->Enabled = aS3Protocol;
   S3CACertificateEdit->Enabled = aS3Protocol;
+  S3CACertificateLoadBtn->SetEnabled(aS3Protocol);
+  S3CACertificateSaveBtn->SetEnabled(aS3Protocol);
+  S3MinTlsVersionCombo->SetEnabled(aS3Protocol);
+  S3MaxTlsVersionCombo->SetEnabled(aS3Protocol);
 
   // SSH tab
   SshTab->SetEnabled(aSshProtocol);
@@ -3654,6 +3719,8 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
   }
   S3RequesterPaysCheck->Checked = FSessionData->S3RequesterPays;
   S3CACertificateEdit->SetText(FSessionData->S3CACertificate);
+  S3MinTlsVersionCombo->ItemIndex = TlsVersionToIndex(FSessionData->MinTlsVersion);
+  S3MaxTlsVersionCombo->ItemIndex = TlsVersionToIndex(FSessionData->MaxTlsVersion);
   /*std::unique_ptr<TStrings> S3SessionToken(std::make_unique<TStringList>());
   S3SessionToken->SetText(SessionData->S3SessionToken());
   for (int32_t Index = 0; (Index < S3SessionToken->GetCount()) &&
@@ -3980,6 +4047,15 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     FSessionData->S3UrlStyle = S3UrlStyleCombo->ItemIndex == 0 ? s3usVirtualHost : s3usPath;
     FSessionData->S3RequesterPays = S3RequesterPaysCheck->Checked;
     FSessionData->SetS3CACertificate(S3CACertificateEdit->GetText());
+    TTlsVersion MinTls = IndexToTlsVersion(S3MinTlsVersionCombo->ItemIndex);
+    TTlsVersion MaxTls = IndexToTlsVersion(S3MaxTlsVersionCombo->ItemIndex);
+    if (MaxTls < MinTls)
+    {
+      MessageDialog(L"Maximum TLS version must be greater than or equal to minimum version.", qtError, qaOK);
+      return false;
+    }
+    FSessionData->MinTlsVersion = MinTls;
+    FSessionData->MaxTlsVersion = MaxTls;
     /*std::unique_ptr<TStrings> S3SessionTokens(std::make_unique<TStringList>());
     for (int32_t Index4 = 0; Index4 < nb::ToInt32(_countof(S3SessionTokenEdits)); ++Index4)
     {
@@ -4659,6 +4735,95 @@ void TSessionDialog::WindowsEnvironmentButtonClick(
 {
   EOLTypeCombo->SetItemIndex(1);
   DSTModeWinCheck->SetChecked(true);
+}
+
+TTlsVersion TSessionDialog::IndexToTlsVersion(int32_t Index)
+{
+  switch (Index)
+  {
+    case 0: return tls10;
+    case 1: return tls11;
+    case 2: return tls12;
+    case 3: return tls13;
+    default: return tlsDefaultMin;
+  }
+}
+
+int32_t TSessionDialog::TlsVersionToIndex(TTlsVersion Version)
+{
+  switch (Version)
+  {
+    case tls10: return 0;
+    case tls11: return 1;
+    case tls12: return 2;
+    case tls13: return 3;
+    default: return 2;
+  }
+}
+
+void TSessionDialog::S3CACertificateLoadClick(TFarButton * /*Sender*/, bool & Close)
+{
+  wchar_t FileName[MAX_PATH] = { 0 };
+  OPENFILENAMEW ofn = { 0 };
+  ofn.lStructSize = sizeof(ofn);
+  ofn.hwndOwner = GetActiveWindow();
+  ofn.lpstrFile = FileName;
+  ofn.nMaxFile = MAX_PATH;
+  ofn.lpstrFilter = L"PEM Files (*.pem)\0*.pem\0All Files (*.*)\0*.*\0";
+  ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
+
+  if (GetOpenFileNameW(&ofn))
+  {
+    try
+    {
+      UnicodeString Content = TFile::ReadAllText(FileName);
+      if (Content.Pos(L"-----BEGIN CERTIFICATE-----") == 0)
+      {
+        TWinSCPPlugin * WinSCPPlugin = nb::dyn_cast_or_null<TWinSCPPlugin>(FarPlugin);
+        Ensures(WinSCPPlugin);
+        WinSCPPlugin->MoreMessageDialog(GetMsg(MSG_TITLE_WARNING),
+          nullptr, qtWarning, qaOK);
+      }
+      S3CACertificateEdit->SetText(Content);
+    }
+    catch(Exception & E)
+    {
+      TWinSCPPlugin * WinSCPPlugin = nb::dyn_cast_or_null<TWinSCPPlugin>(FarPlugin);
+      Ensures(WinSCPPlugin);
+      WinSCPPlugin->MoreMessageDialog(GetMsg(MSG_TITLE_ERROR),
+        nullptr, qtError, qaOK);
+    }
+  }
+  Close = false;
+}
+
+void TSessionDialog::S3CACertificateSaveClick(TFarButton * /*Sender*/, bool & Close)
+{
+  wchar_t FileName[MAX_PATH] = { 0 };
+  OPENFILENAMEW ofn = { 0 };
+  ofn.lStructSize = sizeof(ofn);
+  ofn.hwndOwner = GetActiveWindow();
+  ofn.lpstrFile = FileName;
+  ofn.nMaxFile = MAX_PATH;
+  ofn.lpstrFilter = L"PEM Files (*.pem)\0*.pem\0All Files (*.*)\0*.*\0";
+  ofn.lpstrDefExt = L"pem";
+  ofn.Flags = OFN_OVERWRITEPROMPT | OFN_HIDEREADONLY;
+
+  if (GetSaveFileNameW(&ofn))
+  {
+    try
+    {
+      TFile::WriteAllText(FileName, S3CACertificateEdit->GetText());
+    }
+    catch(Exception & E)
+    {
+      TWinSCPPlugin * WinSCPPlugin = nb::dyn_cast_or_null<TWinSCPPlugin>(FarPlugin);
+      Ensures(WinSCPPlugin);
+      WinSCPPlugin->MoreMessageDialog(GetMsg(MSG_TITLE_ERROR),
+        nullptr, qtError, qaOK);
+    }
+  }
+  Close = false;
 }
 
 void TSessionDialog::FillCodePageEdit()
