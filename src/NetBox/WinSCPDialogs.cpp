@@ -4777,7 +4777,7 @@ void TSessionDialog::S3CACertificateLoadClick(TFarButton * /*Sender*/, bool & Cl
     try
     {
       UnicodeString Content = TFile::ReadAllText(FileName);
-      if (Content.Pos(L"-----BEGIN CERTIFICATE-----") == 0)
+      if (!Content.Contains(L"-----BEGIN CERTIFICATE-----"))
       {
         TWinSCPPlugin * WinSCPPlugin = nb::dyn_cast_or_null<TWinSCPPlugin>(FarPlugin);
         Ensures(WinSCPPlugin);
