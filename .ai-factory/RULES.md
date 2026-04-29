@@ -15,6 +15,7 @@
   - `src/NetBox/NetBoxRus.lng`: add Russian translation
   - and so on for all `*.lng` files
   - All `*.lng` files must have the same number of lines
+  - All `*.lng` files must have Encoding: UTF-8 with BOM
   - Ensure proper line endings (CRLF) and newline at end of file
 
 - The code should remain as similar as possible to the source code of the WinSCP project
