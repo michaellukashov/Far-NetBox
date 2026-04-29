@@ -1346,3 +1346,6 @@
 "Max TLS version:"
 "&Load"
 "&Save"
+"The selected file does not contain a valid PEM certificate."
+"Failed to load the CA certificate file."
+"Failed to save the CA certificate file."

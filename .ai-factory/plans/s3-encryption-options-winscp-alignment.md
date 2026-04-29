@@ -117,7 +117,6 @@ The following reference documents were created by exploration agents and provide
     1. In `SessionData.cpp` `DoLoad()`: Add `FS3CACertificate = Storage->ReadString(L"S3CACertificate", FS3CACertificate);` following the same pattern as `S3DefaultRegion`
     2. In `SessionData.cpp` `DoSave()` (non-Putty path): Add `WRITE_DATA(String, S3CACertificate);` following the same pattern as `S3DefaultRegion`
   - **Testing:** Add Catch2 unit test for serialization round-trip (not just manual test)
-  - **LOGGING:** Add INFO log in `SetS3CACertificate()` for audit trail: `FTerminal->LogEvent(L"S3CACertificate set: %s", value.IsEmpty() ? L"(none)" : L"(configured)");`
   - **Edge case:** Existing sessions without this property will load with empty string default — no migration needed
   - **Verification:** Round-trip test — set value, save session, reload, verify value persists + automated unit test
   - **Blocked by:** none
@@ -209,11 +208,11 @@ The following reference documents were created by exploration agents and provide
     - DEBUG: `TSessionDialog: S3 CA certificate loaded from: %s`
     - INFO: `TSessionDialog: S3 CA certificate saved to: %s`
     - ERROR: `TSessionDialog: Failed to load S3 CA certificate: %s`, error
-    - WARN: `TSessionDialog: Certificate file does not contain valid PEM`
   - **Edge cases:**
     - Non-existent file → log ERROR, show error dialog
     - Invalid PEM → warn but allow override (user decision)
     - Read-only file → log ERROR, disable Save button
+  - **UX Gap (Post-Implement):** Dialog handlers call `MoreMessageDialog(GetMsg(MSG_TITLE_...), nullptr, ...)` — passing `nullptr` as the body message. Add `MsgIDs` for `NB_S3_INVALID_PEM`, `NB_S3_LOAD_ERROR`, `NB_S3_SAVE_ERROR` and wire them into `.lng` files so users see meaningful error text, not just a titled empty dialog.
   - **Blocked by:** none
 
 ### Phase 4: Code Consistency & Quality
@@ -283,6 +282,44 @@ The following reference documents were created by exploration agents and provide
     4. Add troubleshooting section for common certificate issues
   - **Blocked by:** Task 7
 
+### Phase 7: Post-Implementation Follow-ups
+
+The following items were discovered during `/aif-improve` refinement (2026-04-29) and are **not** critical to the original feature scope, but should be addressed for completeness.
+
+- [ ] **Task 9: Add Catch2 unit test for S3CACertificate serialization round-trip**
+
+  - **Goal:** Automated verification that `S3CACertificate` persists across save/load
+  - **Files:** `tests/nbcore/SessionDataTest.cpp` (or equivalent)
+  - **Status:** INFEASIBLE with current test infrastructure
+  - **Reason:** `TSessionData` is a 6000+ line class with heavy VCL/Borland dependencies (`vcl.h`, `CoreMain.h`, `PuttyIntf.h`, `XMLDoc.hpp`, etc.). Existing project tests (`test_sessionhistory`, `test_tinylog`, `DatetimeUnitTest`) only exercise small, self-contained utility classes with minimal source-file linking. Adding a `TSessionData` test target would require pulling in the majority of the core library and likely VCL runtime, far exceeding the scope of a focused unit test. Integration testing (Task 7) already covers serialization round-trip manually.
+
+- [x] **Task 10: Localize new UI strings in non-English `.lng` files**
+
+  - **Goal:** Replace English placeholder strings with proper translations
+  - **Files:** `src/NetBox/NetBoxRus.lng`, `src/NetBox/NetBoxPol.lng`, `src/NetBox/NetBoxFr.lng`, `src/NetBox/NetBoxSpa.lng`
+  - **Strings to translate:**
+    - `"Min TLS version:"` / `"Max TLS version:"`
+    - `"&Load"` / `"&Save"`
+  - **Note:** These strings were added with English placeholders during implementation. They appear at message IDs `NB_S3_MIN_TLS_VERSION`, `NB_S3_MAX_TLS_VERSION`, `NB_S3_LOAD_CA_CERT`, `NB_S3_SAVE_CA_CERT`.
+  - **Blocked by:** none
+
+- [x] **Task 11: Add user-facing error message bodies for Load/Save button failures**
+
+  - **Goal:** Show meaningful text when certificate load/save fails, instead of an empty dialog with just a title
+  - **Files:** `src/base/MsgIDs.h`, `src/NetBox/NetBoxEng.lng` (and other `.lng` files), `src/NetBox/WinSCPDialogs.cpp`
+  - **Changes:**
+    1. Add `NB_S3_INVALID_PEM`, `NB_S3_LOAD_ERROR`, `NB_S3_SAVE_ERROR` to `MsgIDs.h`
+    2. Add corresponding strings to all `.lng` files
+    3. Update `S3CACertificateLoadClick()` and `S3CACertificateSaveClick()` to pass the new `MsgID` as the second argument to `MoreMessageDialog()` instead of `nullptr`
+  - **Blocked by:** none
+
+- [x] **Task 12: Update `docs/README.md` with S3 encryption documentation**
+
+  - **Goal:** The project README should mention S3 TLS version configuration and custom CA certificate support
+  - **Files:** `docs/README.md`
+  - **Note:** Task 8 updated `.hlf` help files, but `docs/README.md` still does not mention S3 TLS/CA features under the Supported Protocols section.
+  - **Blocked by:** none
+
 ---
 
 ## Dependencies
@@ -297,7 +334,7 @@ Task 4 ───────────→ Task 5
 - Task 2 depends on Task 1 (serialization must work before applying cert)
 - Task 5 depends on all implementation tasks (1-4)
 - Tasks 6, 7, 8 are sequential (build → test → docs)
-
+- Tasks 9-12 are independent follow-ups; none block the original plan
 ---
 
 ## Commit Plan
@@ -385,3 +422,5 @@ chore(s3): verify code style, build, and document encryption options
 |2026-04-26|aif-improve: added temp file cleanup note to Task 2 (delete in Close())|
 |2026-04-26|aif-improve: added Design Note to Task 3 (shared TLS settings)|
 |2026-04-26|aif-improve: added API details to Task 4 (GetOpenFileNameW/GetSaveFileNameW)|
+|2026-04-29|Post-merge security audit: redacted temp file path from logs (LOW-1), checked `ne_ssl_set_certificates_storage` return value (LOW-2), used `Contains()` for PEM validation (LOW-3)|
+|2026-04-29|aif-improve refinement: removed infeasible `FTerminal->LogEvent()` from Task 1, documented empty-dialog UX gap in Task 4, added Tasks 9-12 as post-implementation follow-ups|

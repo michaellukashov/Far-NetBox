@@ -34,7 +34,7 @@ Supported Protocols
 | **SCP**  | Secure Copy Protocol (via PuTTY) |
 | **FTP/FTPS** | File Transfer Protocol with TLS (via FileZilla) |
 | **WebDAV** | Web-based Distributed Authoring and Versioning |
-| **S3**   | Amazon Simple Storage Service |
+| **S3**   | Amazon Simple Storage Service (TLS version selection and custom CA certificate support) |
 
 Internationalization
 --------------------

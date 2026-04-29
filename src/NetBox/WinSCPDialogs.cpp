@@ -4784,7 +4784,7 @@ void TSessionDialog::S3CACertificateLoadClick(TFarButton * /*Sender*/, bool & Cl
         TWinSCPPlugin * WinSCPPlugin = nb::dyn_cast_or_null<TWinSCPPlugin>(FarPlugin);
         Ensures(WinSCPPlugin);
         WinSCPPlugin->MoreMessageDialog(GetMsg(MSG_TITLE_WARNING),
-          nullptr, qtWarning, qaOK);
+          GetMsg(NB_S3_INVALID_PEM), qtWarning, qaOK);
       }
       S3CACertificateEdit->SetText(Content);
     }
@@ -4793,7 +4793,7 @@ void TSessionDialog::S3CACertificateLoadClick(TFarButton * /*Sender*/, bool & Cl
       TWinSCPPlugin * WinSCPPlugin = nb::dyn_cast_or_null<TWinSCPPlugin>(FarPlugin);
       Ensures(WinSCPPlugin);
       WinSCPPlugin->MoreMessageDialog(GetMsg(MSG_TITLE_ERROR),
-        nullptr, qtError, qaOK);
+        GetMsg(NB_S3_LOAD_ERROR), qtError, qaOK);
     }
   }
   Close = false;
@@ -4822,7 +4822,7 @@ void TSessionDialog::S3CACertificateSaveClick(TFarButton * /*Sender*/, bool & Cl
       TWinSCPPlugin * WinSCPPlugin = nb::dyn_cast_or_null<TWinSCPPlugin>(FarPlugin);
       Ensures(WinSCPPlugin);
       WinSCPPlugin->MoreMessageDialog(GetMsg(MSG_TITLE_ERROR),
-        nullptr, qtError, qaOK);
+        GetMsg(NB_S3_SAVE_ERROR), qtError, qaOK);
     }
   }
   Close = false;
