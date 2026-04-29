@@ -10,8 +10,8 @@ Reference: https://github.com/michaellukashov/Far-NetBox/issues/511
 
 ## Research Context
 
-See [issue-511-speed-limit-esc-hang-exploration](.ai-factory/references/issue-511-speed-limit-esc-hang-exploration.md) for full root-cause analysis.
-
+See [issue-511-speed-limit-esc-hang-exploration](.ai-factory/references/issue-511-speed-limit-esc-hang-exploration.md) for initial root-cause analysis.
+See [issue-511-cancel-yes-hang-deep-dive](.ai-factory/references/issue-511-cancel-yes-hang-deep-dive.md) for detailed analysis of the post-dialog "Yes" hang, reentrancy guard failure, and exception unwinding hazards.
 ### Bug 1: Download Speed Limit Has No Effect (SSH/SFTP/SCP)
 
 `TParallelTransferQueueItem::DoExecute` (`src/core/Queue.cpp:2543`) creates child `TFileOperationProgressType` with `CPSLimit = 0`:
@@ -28,18 +28,21 @@ The comment claims "CPS limit inherited from parent" but this only works for `Ge
 
 ### Bug 2: Esc Causes Plugin Hang After Transfer Begins
 
-When Esc is pressed during transfer, `ShowOperationProgress` calls `CancelConfiguration`, which calls `ProgressData.Suspend()` → `DoProgress()` → reentrant `ShowOperationProgress()`. This reentrancy combined with Far Manager dialog/message display can corrupt screen state or deadlock. Additionally, `qaCancel` is not handled in `CancelConfiguration`'s switch statement.
+When Esc is pressed during transfer, `ShowOperationProgress` calls `CancelConfiguration`, which calls `ProgressData.Suspend()` → `DoProgress()` → reentrant `ShowOperationProgress()`. This reentrancy combined with Far Manager dialog/message display can corrupt screen state or deadlock.
+
+Additionally, after pressing "Yes" in the cancel dialog, the exception unwinding path (`OperationStop()` → `DoProgress()` → `ShowOperationProgress()`) runs without any guard, calling `Message()` and `CheckForEsc()` while the stack is unwinding. `CheckForEsc()` may consume a second Esc event from the console input buffer, triggering `CancelConfiguration()` again and causing a hang.
 
 **Fix directions:**
-- Guard `CancelConfiguration` against reentrancy
-- Handle `qaCancel` explicitly in `CancelConfiguration`
-- Add `FSuspended` check in `ShowOperationProgress` to skip `CancelConfiguration` during reentrant callbacks
-
+- Add `FInShowOperationProgress` reentrancy guard in `ShowOperationProgress`
+- Add `!ProgressData.GetSuspended()` check to skip progress during dialog
+- Add `ProgressData.GetCancel() < csCancel` to suppress progress display once cancellation is initiated
+- Add early return in `CancelConfiguration` if `GetCancel() > csContinue`
+- Add Esc press logging
 ## Tasks
 
 - [x] Task 1: Fix CPS limit propagation for parallel transfers
-- [x] Task 2: Add reentrancy guard to ShowOperationProgress
-- [x] Task 3: Handle qaCancel in CancelConfiguration
+- [x] Task 2: Add reentrancy guards to ShowOperationProgress
+- [x] Task 3: Add cancel-state guards to CancelConfiguration and ShowOperationProgress
 - [x] Task 4: Build and verify both fixes
 ### Task 1: Fix CPS limit propagation for parallel transfers
 
@@ -68,42 +71,55 @@ OperationProgress.Start(
 **Files:** `src/NetBox/WinSCPFileSystem.cpp`, `src/NetBox/WinSCPFileSystem.h`
 
 **Change:**
-In `ShowOperationProgress` (around line 3763), add `!ProgressData.GetSuspended()` to the main time-check condition. This skips the entire progress display — including `Message()`, `CheckForEsc()`, and `CancelConfiguration()` — while suspended, making the reentrancy protection intentional rather than relying on the accidental `LastTicks` guard:
+In `ShowOperationProgress` (around line 3772), add three guards to the main time-check condition:
 
 ```cpp
-if ((Ticks - LastTicks > 500 || Force) && !ProgressData.GetSuspended())
+if ((Ticks - LastTicks > 500 || Force) && !ProgressData.GetSuspended() &&
+    (ProgressData.GetCancel() < csCancel))
 {
     LastTicks = Ticks;
     ...
+}
 ```
 
-Additionally, add a `FInShowOperationProgress` boolean guard to prevent reentrant execution of `ShowOperationProgress` from `Suspend()`/`Resume()` callbacks in `CancelConfiguration`. This prevents nested progress display calls that can corrupt Far Manager screen state or cause dialog hangs when 'Yes' is pressed in the cancel confirmation dialog.
+- `!ProgressData.GetSuspended()` — skips progress while cancel dialog is open
+- `GetCancel() < csCancel` — allows normal progress (`csContinue`, `csCancelFile`) but suppresses display once actual cancel is initiated (`csCancel`, `csCancelTransfer`, `csRemoteAbort`)
+
+**Important:** An initial attempt used `GetCancel() == csContinue`, which caused a regression where progress was never shown because `csCancelFile` is used internally for skip-file handling during normal operation. The correct condition is `< csCancel`.
+
+Additionally, add a `FInShowOperationProgress` boolean guard to prevent reentrant execution of `ShowOperationProgress` from the `Suspend()` callback in `CancelConfiguration`.
 
 **Logging:** Add `FTerminal->LogEvent(L"Esc pressed during transfer")` inside the `CheckForEsc` block.
 
 **Acceptance:**
 - Pressing Esc during direct transfer shows cancel dialog once; no reentrant dialog cascade.
-- Pressing Esc during queue transfer does not hang the plugin.
-
-### Task 3: Handle qaCancel in CancelConfiguration
+- Pressing "Yes" in cancel dialog cancels transfer without hang.
+- Normal progress display still works during transfer (no regression).
+### Task 3: Add cancel-state guards
 
 **File:** `src/NetBox/WinSCPFileSystem.cpp`
 
-**Change:**
-In `CancelConfiguration` (around line 4050), add explicit `qaCancel` handling to replace the implicit `default` fallthrough:
+**Change 1:** In `CancelConfiguration` (around line 4040), add early return if already cancelled:
 
 ```cpp
-case qaCancel:
-    ACancel = csContinue;
-    break;
+void TWinSCPFileSystem::CancelConfiguration(TFileOperationProgressType & ProgressData)
+{
+  if (ProgressData.GetCancel() > csContinue)
+  {
+    return;
+  }
+  // ... existing dialog logic
+}
 ```
 
-This preserves existing behavior. The cancel confirmation dialog text (`NetBoxEng.lng:131`) explicitly states: "Press 'Cancel' to continue operation." The explicit case improves code clarity and prevents accidental behavioral changes if the `switch` is extended in future.
+This prevents re-showing the fatal cancel dialog if the operation is already being cancelled.
+
+**Note:** Explicit `qaCancel` handling (`case qaCancel: ACancel = csContinue; break;`) was considered but omitted per user request. The default case (`csContinue`) preserves existing behavior.
 
 **Acceptance:**
 - Dialog closes cleanly when user presses Cancel or Esc inside the cancel confirmation dialog.
 - No compiler warnings.
-
+- No duplicate cancel dialogs after pressing "Yes".
 ### Task 4: Build and verify both fixes
 
 **Command:**

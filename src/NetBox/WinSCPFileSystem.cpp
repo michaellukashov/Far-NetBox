@@ -3769,7 +3769,8 @@ void TWinSCPFileSystem::ShowOperationProgress(
   static uint32_t LastTicks;
   const uint32_t Ticks = ::GetTickCount();
   const uint16_t percents = static_cast<uint16_t>(ProgressData.OverallProgress());
-  if ((Ticks - LastTicks > 500 || Force) && !ProgressData.GetSuspended())
+  if ((Ticks - LastTicks > 500 || Force) && !ProgressData.GetSuspended() &&
+      (ProgressData.GetCancel() < csCancel))
   {
     LastTicks = Ticks;
 
@@ -4037,6 +4038,10 @@ void TWinSCPFileSystem::QueueEvent(TTerminalQueue * Queue,
 
 void TWinSCPFileSystem::CancelConfiguration(TFileOperationProgressType & ProgressData)
 {
+  if (ProgressData.GetCancel() > csContinue)
+  {
+    return;
+  }
   if (!ProgressData.GetSuspended())
   {
     ProgressData.Suspend();
