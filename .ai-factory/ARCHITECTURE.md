@@ -222,3 +222,4 @@ private:
 - [Issue #511: Cancel "Yes" Hang Deep Dive](.ai-factory/references/issue-511-cancel-yes-hang-deep-dive.md) — Post-dialog hang after pressing "Yes" in cancel dialog, reentrancy guard failure analysis, CheckForEsc console input buffer interaction, and exception unwinding progress callback hazards
 |
 nw|- [CMake Refactoring Plan Exploration](.ai-factory/references/cmake-refactoring-plan-exploration.md) — Reconciliation of the CMake modularization plan against actual codebase state, missing modules (Libraries.cmake, PlatformDetection.cmake, SourceGroups.cmake, TargetConfiguration.cmake), line-count corrections, and structural findings from plan refinement
+xw|- [Issue #501: SSH/SCP Buffer Corruption](.ai-factory/references/issue-501-ssh-scp-buffer-corruption-exploration.md) — Root-cause analysis of slow SSH/SCP transfers and file corruption caused by dynamic TCP send buffer resizing via `WSAIoctl(SIO_IDEAL_SEND_BACKLOG_QUERY)`

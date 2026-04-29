@@ -18,7 +18,8 @@
 | Feature | Date | Notes |
 |---------|------|-------|
 | FTP heartbeat / NOOP keep-alive | 2026-04 | Prevents server-side timeout on FTP control connections |
-| Issue #511 — CPS limit + Esc hang | 2026-04 | Speed limit propagation and cancel dialog hang fixes |
+|| Issue #511 — CPS limit + Esc hang | 2026-04 | Speed limit propagation and cancel dialog hang fixes |
+|| Issue #501 — SSH/SCP buffer corruption | 2026-04 | Disable dynamic send buffer by default (SendBuf=0, SshSimple=false) |
 | DateTime format functions | 2026-04 | `FormatDateTime` token parsing, `ISO8601ToDate` parser |
 | WinSCP #2426 — Inactive session fix | 2026-04 | External file modification detection for inactive sessions |
 | Static RTTI replacement | 2026-04 | Replaced `dynamic_cast` with static type checks |

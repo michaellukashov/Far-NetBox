@@ -19,6 +19,7 @@ Features
 | [crash-second-file-open-analysis](crash-second-file-open-analysis.md) | Crash when opening files twice without refresh | Code analysis | 2026-04-26 |
 | [foundation-stability-research](foundation-stability-research.md) | Foundation stability research | Internal research | 2026-04-22 |
 qt|| [cmake-refactoring-plan-exploration](cmake-refactoring-plan-exploration.md) | CMake modularization plan vs actual codebase reconciliation, missing modules, line-count corrections | CMakeLists.txt, cmake/*.cmake, libs/*/CMakeLists.txt | 2026-04-29 |
+ds|| [issue-501-ssh-scp-buffer-corruption-exploration](issue-501-ssh-scp-buffer-corruption-exploration.md) | Root-cause analysis of slow SSH/SCP transfers and file corruption caused by dynamic TCP send buffer resizing | SessionData.cpp, SecureShell.cpp, WinSCPDialogs.cpp | 2026-04-29 |
 
 ## Implementation Plans
 
