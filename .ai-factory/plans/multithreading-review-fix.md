@@ -278,9 +278,9 @@ Third-Party (libs/)     <-- no modifications; patch if required
 
 ## Verification
 
-- [x] All tasks 1-14 implemented (source-level on Linux; build verification pending Windows/MSVC).
-- [ ] All modified files compile with MSVC W4 zero warnings on x86 and x64.
-- [ ] Plugin DLL produced in `Far3_x64/Plugins/NetBox/`.
+- [x] Tasks 1-11, 13-14 implemented and committed.
+- [ ] Task 12: Build verification — requires Windows/MSVC environment (blocked on Linux workstation).
+- [ ] Plugin DLL produced in `Far3_x64/Plugins/NetBox/` — requires Windows/MSVC build.
 - [x] No `Sleep`-based polling remains for thread synchronization, except `SleepEx(100, true)` in `FileOperationProgress.cpp` which is an intentional alertable wait for APC completion (documented exception). Short timeouts on event waits are acceptable.
 - [x] No Far Manager API calls from worker threads remain (verified by code review of all `CreateThread` / `_beginthreadex` / `std::thread` entry points).
 - [x] Lock ordering documented and cycle-free.
