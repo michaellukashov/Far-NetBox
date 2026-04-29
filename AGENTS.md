@@ -8,6 +8,7 @@ You are an AI coding assistant working on **NetBox** — a Far Manager plugin (S
 
 | File | Purpose |
 |------|---------|
+| [ARCHITECTURE.md](.ai-factory/ARCHITECTURE.md) | Layered plugin architecture, dependency rules, protocol interface |
 | [AGENTS-Standards.md](.ai-factory/AGENTS-Standards.md) | Code conventions, RAII patterns, exception hierarchy |
 | [AGENTS-Structure.md](.ai-factory/AGENTS-Structure.md) | CMake details, OpenSSL NASM, language files |
 | [AGENTS-Workflows.md](.ai-factory/AGENTS-Workflows.md) | Full build scripts, debugging, CI, shell rules |

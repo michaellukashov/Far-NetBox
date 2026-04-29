@@ -38,13 +38,15 @@ Far-NetBox is a Far Manager 3.0 plugin providing SFTP/FTP/SCP/WebDAV/S3 client c
 
 ## Architecture Notes
 See [.ai-factory/ARCHITECTURE.md](./ARCHITECTURE.md) for detailed architecture guidelines.
-- Pattern: Plugin Architecture (Layered)
+- Pattern: Layered Plugin Architecture
 - Layered architecture: Plugin Layer → Core Layer → Base Layer → Third-Party Libraries
 - All protocol implementations inherit from `TCustomFileSystem` interface
 - Factory pattern for protocol-specific filesystem creation
 - RAII pattern for resource management
 - Exception-based error handling with debug logging via `FTerminal->LogEvent()`
-- Unity builds enabled for x86 Release builds (faster compilation)
+- Thread safety: Far Manager API calls on main thread only
+- No direct modifications to `libs/` — use patches
+- Incremental evolution — no major architectural rewrites
 
 ## Non-Functional Requirements
 - **Logging:** Configurable via tinylog integration, debug output via `FTerminal->LogEvent()`
