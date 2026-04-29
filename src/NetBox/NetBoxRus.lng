@@ -1101,7 +1101,7 @@
 "File «%s» is read-only. Overwrite?"
 "**Overwrite local file «%s»?**\n\nDestination directory already contains file «%s».\nChoose, if you want to overwrite the file or skip this transfer and keep existing file."
 "**Overwrite remote file «%s»?**\n\nDestination directory already contains file «%s».\nChoose, if you want to overwrite the file or skip this transfer and keep existing file."
-"Host is not communicating for more than %d seconds.\nStill waiting...\n\nNote: If the problem repeats, try turning off «Optimize connection buffer size»."
+"Host is not communicating for more than %d seconds.\nStill waiting...\n\nNote: If the problem repeats, try turning off «Optimize connection buffer size». (Отключен по умолчанию.)"
 "&Reconnect"
 "New na&me"
 "Tunnel for %s"

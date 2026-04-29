@@ -3993,6 +3993,8 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
 
     // Connection tab
     SessionData->SetFtpPasvMode(FtpPasvModeCheck->GetChecked());
+    // This checkbox couples SendBuf and SshSimple. Disabling it (SendBuf=0) avoids
+    // dynamic SO_SNDBUF resizing that causes corruption/slow SCP (GitHub issue #501).
     SessionData->SetSendBuf(SshBufferSizeCheck->GetChecked() ? DefaultSendBuf : 0);
     SessionData->SetSshSimple(SshBufferSizeCheck->GetChecked());
     if (PingOffButton->GetChecked())

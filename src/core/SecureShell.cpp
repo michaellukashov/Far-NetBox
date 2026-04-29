@@ -467,6 +467,8 @@ void TSecureShell::Open()
     const char * InitError{nullptr};
     Conf * conf = StoreToConfig(FSessionData, GetSimple());
     FSendBuf = FSessionData->GetSendBuf();
+    LogEvent(FORMAT("Send buffer optimization: %s (FSendBuf=%d)",
+      (FSendBuf > 0 ? "enabled" : "disabled"), FSendBuf));
     FInteractive = FSessionData->GetInteractiveTerminal();
     FTerminalWidth = FSessionData->GetTerminalWidth();
     FTerminalHeight = FSessionData->GetTerminalHeight();
@@ -2459,6 +2461,7 @@ bool TSecureShell::EventSelectLoop(uint32_t MSec, bool ReadEventRequired,
     if ((FSocket != INVALID_SOCKET) &&
         (FSendBuf > 0) && (TicksAfter - FLastSendBufferUpdate >= 1000))
     {
+      LogEvent(FORMAT("Querying ideal send backlog (current FSendBuf=%d)", FSendBuf));
       DWORD BufferLen = 0;
       DWORD OutBuffLen = 0;
       if (::WSAIoctl(FSocket, SIO_IDEAL_SEND_BACKLOG_QUERY, nullptr, 0, &BufferLen, sizeof(BufferLen), &OutBuffLen, nullptr, nullptr) == 0)
@@ -2466,7 +2469,7 @@ bool TSecureShell::EventSelectLoop(uint32_t MSec, bool ReadEventRequired,
         DebugAssert(OutBuffLen == sizeof(BufferLen));
         if (FSendBuf < nb::ToInt32(BufferLen))
         {
-          LogEvent(FORMAT("Increasing send buffer from %d to %d", FSendBuf, nb::ToInt32(BufferLen)));
+          LogEvent(FORMAT("Increasing send buffer from %d to %d (issue #501 diagnostic)", FSendBuf, nb::ToInt32(BufferLen)));
           FSendBuf = nb::ToInt32(BufferLen);
           setsockopt(FSocket, SOL_SOCKET, SO_SNDBUF, reinterpret_cast<const char *>(&BufferLen), sizeof(BufferLen));
         }

@@ -244,10 +244,10 @@ void TSessionData::DefaultSettings()
   SetPassphrase("");
   SetPuttyProtocol("");
   SetTcpNoDelay(true);
-  SetSendBuf(DefaultSendBuf);
+  SetSendBuf(0);  // Disabled by default: dynamic buffer resize causes corruption/slow SCP (GitHub issue #501)
   FSourceAddress = L"";
   FProtocolFeatures = L"";
-  SetSshSimple(true);
+  SetSshSimple(false);  // Default matches dialog unchecked state (issue #501)
   FNotUtf = asAuto;
   FIsWorkspace = false;
   SetHostKey("");
