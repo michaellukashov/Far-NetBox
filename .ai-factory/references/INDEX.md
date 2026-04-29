@@ -12,6 +12,7 @@ Features
 
 | Reference | Topic | Sources | Updated |
 |-----------|-------|---------|---------|
+| [combo-box-dropdown-keyboard-exploration](combo-box-dropdown-keyboard-exploration.md) | Terminal host interception of Ctrl+Down, Alt+Down fallback, DefaultItemProc approach | FarDialog.cpp, FarPlugin.h, WinSCPDialogs.cpp, Far Manager dialog.cpp | 2026-04-29 |
 | [message-loading-system](message-loading-system.md) | GetMsg/FmtLoadStr resolution, mapping tables, missing ID bug | FarPluginStrings.cpp, MsgIDs.h, NetBoxEng.lng | 2026-04-27 |
 | [about-dialog-version-fix](about-dialog-version-fix.md) | About dialog version substitution bug | NetBoxEng.lng, TextsCore.h, WinSCPDialogs.cpp | 2026-04-27 |
 | [sftp-binary-dump-log-protocol](sftp-binary-dump-log-protocol.md) | SFTP binary dump at Log Protocol level 3 | SftpFileSystem.cpp, WinSCPDialogs.cpp, MsgIDs.h | 2026-04-27 |

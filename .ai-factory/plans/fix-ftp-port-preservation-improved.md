@@ -245,3 +245,8 @@ At the end of every verification task (Tasks 1-3), read the actual source and co
 4. Only `src/NetBox/WinSCPDialogs.cpp` is modified for the functional fix.
 5. Human tester confirms all 9 test cases in `test-matrix.md` pass.
 6. `findings.md` documents the S3 no-op bug (Task 9) and the TFullSynchronizeDialog follow-up (Task 10).
+
+
+## Related Explorations (Discovered During This Work)
+
+- [Combo Box Dropdown Keyboard Shortcuts](../references/combo-box-dropdown-keyboard-exploration.md) — terminal host interception of Ctrl+Down, Alt+Down fallback, `DefaultItemProc` vs `SendDialogMessage` for `DM_SETDROPDOWNOPENED`
