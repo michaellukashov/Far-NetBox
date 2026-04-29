@@ -1,3 +1,4 @@
+#include "FormatUtils.h"
 
 #include <vcl.h>
 #pragma hdrstop
@@ -1372,7 +1373,7 @@ void ParseCertificatePublicKey(const UnicodeString & Str, RawByteString & Public
       const char * Error;
       if (!ppk_loadpub_s(Src, nullptr, BinarySink_UPCAST(Blob), nullptr, &Error))
       {
-        throw Exception(FMTLOAD(SSH_HOST_CA_DECODE_ERROR, Error));
+        throw Exception(FMTLOAD(SSH_HOST_CA_DECODE_ERROR, nb::EscapeFmtChars(UnicodeString(Error))));
       }
     }
 
