@@ -1330,7 +1330,6 @@ enum MsgIDs {
     NB_S3_SESSIONTOKEN,
 
     MSG_FTP_LISTING_PARSE_FAILED,
-
     // Master Password configuration
     NB_MASTER_PASSWORD_CAPTION,
     NB_MASTER_PASSWORD_CURRENT,
