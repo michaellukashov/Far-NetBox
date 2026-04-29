@@ -120,7 +120,36 @@ git -C libs\openssl-3 apply -p3 0001-openssl-apply-NetBox-patches.patch
 - Skip exception handling — network errors must be caught
 - Mix layers — plugin code should not call third-party directly
 
-## See Also
+## Windows XP Compatible Builds
+
+NetBox maintains Windows XP compatibility for the x86 (Win32) platform because the Far Manager ecosystem includes users on legacy Windows systems.
+
+### CI Configuration
+
+The GitHub Actions `release.yml` workflow includes a dedicated `cl_x86_winxp_release` matrix entry that produces XP-compatible binaries:
+
+- **Subsystem version:** The CMake linker flag is set to `/SUBSYSTEM:WINDOWS,5.01` for x86 builds (see `cmake/NetBox.cmake`)
+- **Toolset:** The workflow attempts to use the v141 toolset (`toolset: 14.1`) via `ilammy/msvc-dev-cmd`; if unavailable on the `windows-2022` runner, it falls back to v143 with a warning
+- **Build isolation:** Each matrix job uses a separate build directory (`build-${{ matrix.build }}`) to prevent CMake cache conflicts
+- **Binary verification:** The CI runs `dumpbin /headers` to verify subsystem `5.01` and checks for API set dependencies
+
+### Local Verification
+
+To verify that a locally built x86 binary is XP-compatible:
+
+```cmd
+dumpbin /headers Far3_x86\Plugins\NetBox\NetBox.dll | findstr /i "subsystem"
+```
+
+The output must contain `5.01`. If it shows `6.00`, the binary requires Windows Vista or later.
+
+### Known Limitations
+
+- v141_xp (the historical XP-targeting toolset) is not available in Visual Studio 2022
+- The v143 fallback relies on `vc_crt_fix_impl.cpp` API shims and the manual subsystem version fix
+- WinXP x64 builds are intentionally out of scope
+
+
 
 - [Testing](testing.md) — Manual regression testing guide
 - [Architecture](architecture.md) — Project structure and patterns

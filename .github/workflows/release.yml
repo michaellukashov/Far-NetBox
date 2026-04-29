@@ -26,16 +26,28 @@ jobs:
           - cl_x64_release
           - cl_x86_release
           - cl_ARM64_release
+          - cl_x86_winxp_release
         include:
           - build: cl_x64_release
             arch: amd64
             platform: x64
+            platform_label: x64
+            toolset: default
           - build: cl_x86_release
             arch: amd64_x86
             platform: x86
+            platform_label: x86
+            toolset: default
           - build: cl_ARM64_release
             arch: amd64_arm64
             platform: ARM64
+            platform_label: ARM64
+            toolset: default
+          - build: cl_x86_winxp_release
+            arch: amd64_x86
+            platform: x86
+            platform_label: WinXP.x86
+            toolset: 14.1
 
     env:
       BUILD_TYPE: RelWithDebInfo
@@ -85,35 +97,50 @@ jobs:
       - name: Set artifact names
         shell: bash
         run: |
-          echo "netbox_name=NetBox.${{ matrix.platform }}.${{ env.version }}.7z" >> "$GITHUB_ENV"
-          echo "netbox_pdb_name=NetBox.${{ matrix.platform }}.${{ env.version }}.pdb.7z" >> "$GITHUB_ENV"
-          echo "DEBUG: platform=${{ matrix.platform }}, version=${{ env.version }}"
-          echo "DEBUG: netbox_name=NetBox.${{ matrix.platform }}.${{ env.version }}.7z"
+          echo "netbox_name=NetBox.${{ matrix.platform_label }}.${{ env.version }}.7z" >> "$GITHUB_ENV"
+          echo "netbox_pdb_name=NetBox.${{ matrix.platform_label }}.${{ env.version }}.pdb.7z" >> "$GITHUB_ENV"
 
       - name: Add C++ build tools to PATH
         uses: ilammy/msvc-dev-cmd@v1
         with:
           arch: ${{ matrix.arch }}
+          toolset: ${{ matrix.toolset != 'default' && matrix.toolset || '' }}
+        continue-on-error: ${{ matrix.toolset != 'default' }}
+        id: msvc-setup
 
+      - name: Fallback to default toolset
+        if: matrix.toolset != 'default' && steps.msvc-setup.outcome == 'failure'
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: ${{ matrix.arch }}
+
+      - name: Verify MSVC toolset
+        shell: bash
+        run: |
+          echo "=== MSVC Toolset Version ==="
+          cl.exe -Bv 2>&1 | head -n 5
+          if [[ "${{ matrix.toolset }}" != "default" && "${{ steps.msvc-setup.outcome }}" == "failure" ]]; then
+            echo "::warning::v141 toolset not available; falling back to v143"
+          fi
       - name: Cache CMake build
         uses: actions/cache@v4
         with:
           path: |
-            build/CMakeFiles
-            build/.ninja_deps
-            build/.ninja_log
-            build/CMakeCache.txt
-          key: ${{ runner.os }}-cmake-${{ matrix.platform }}-${{ hashFiles('**/CMakeLists.txt', '**/*.cmake') }}
+            build-${{ matrix.build }}/CMakeFiles
+            build-${{ matrix.build }}/.ninja_deps
+            build-${{ matrix.build }}/.ninja_log
+            build-${{ matrix.build }}/CMakeCache.txt
+          key: ${{ runner.os }}-cmake-${{ matrix.build }}-${{ hashFiles('**/CMakeLists.txt', '**/*.cmake') }}
           restore-keys: |
-            ${{ runner.os }}-cmake-${{ matrix.platform }}-
+            ${{ runner.os }}-cmake-${{ matrix.build }}-
             ${{ runner.os }}-cmake-
 
       - name: Create Build folder
-        run: cmake -E make_directory build
+        run: cmake -E make_directory build-${{ matrix.build }}
 
       - name: Configure CMake
         shell: bash
-        working-directory: build
+        working-directory: build-${{ matrix.build }}
         run: >
           cmake -G "Ninja"
           -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
@@ -123,7 +150,7 @@ jobs:
           $GITHUB_WORKSPACE
 
       - name: Build
-        working-directory: build
+        working-directory: build-${{ matrix.build }}
         shell: bash
         run: cmake --build . --config ${{ env.BUILD_TYPE }} --target all
 
@@ -137,6 +164,38 @@ jobs:
           fi
           echo "Plugin directory contents:"
           ls -la "$PLUGIN_DIR"
+
+      - name: Verify WinXP binary compatibility
+        if: matrix.build == 'cl_x86_winxp_release'
+        shell: bash
+        run: |
+          DLL_PATH="./Far3_${{ matrix.platform }}/Plugins/NetBox/NetBox.dll"
+
+          echo "=== DLL Headers ==="
+          dumpbin /headers "$DLL_PATH"
+
+          echo "=== Subsystem Check ==="
+          SUBSYSTEM=$(dumpbin /headers "$DLL_PATH" | findstr /i "subsystem" || true)
+          echo "$SUBSYSTEM"
+
+          if ! echo "$SUBSYSTEM" | findstr "5.01" > /dev/null; then
+            echo "::error::Subsystem version is not 5.01 — binary is not Windows XP compatible"
+            exit 1
+          fi
+
+          echo "=== Dependents ==="
+          dumpbin /dependents "$DLL_PATH"
+
+          echo "=== API Set Imports Check ==="
+          APISET=$(dumpbin /imports "$DLL_PATH" | findstr /i "api-ms-win-core" || true)
+          if [[ -n "$APISET" ]]; then
+            echo "::warning::Found API set dependencies (may indicate Vista+ compatibility issues):"
+            echo "$APISET"
+          else
+            echo "No API set dependencies found"
+          fi
+
+          echo "=== WinXP compatibility verified ==="
 
       - name: Pack artifacts
         shell: bash
@@ -170,7 +229,7 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v5
         with:
-          name: FarNetBox.${{ matrix.platform }}
+          name: FarNetBox.${{ matrix.platform_label }}
           path: ./*.7z
           overwrite: true
           retention-days: 30
