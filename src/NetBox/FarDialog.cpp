@@ -2618,6 +2618,31 @@ intptr_t TFarComboBox::ItemProc(intptr_t Msg, void * Param)
     GetDialogItem()->Data = TCustomFarPlugin::DuplicateStr(Data, /*AllowEmpty=*/true);
     FItemChanged = true;
   }
+  else if (Msg == DN_CONTROLINPUT)
+  {
+    const INPUT_RECORD * Rec = static_cast<const INPUT_RECORD *>(Param);
+    if (Rec->EventType == KEY_EVENT)
+    {
+      const KEY_EVENT_RECORD & Event = Rec->Event.KeyEvent;
+      if (Event.bKeyDown)
+      {
+        const WORD Key = Event.wVirtualKeyCode;
+        const WORD ControlState = Event.dwControlKeyState;
+        if (GetDropDownList() && ((Key == VK_DOWN) || (Key == VK_NUMPAD2)) && (CheckControlMaskSet(ControlState, ALTMASK) || ((ControlState & CTRLMASK) != 0)))
+        {
+          if (CheckControlMaskSet(ControlState, ALTMASK))
+          {
+            SendDialogMessage(DM_SETDROPDOWNOPENED, nb::ToPtr(1));
+            return 1;
+          }
+          else if ((ControlState & CTRLMASK) != 0)
+          {
+            return DefaultItemProc(DM_SETDROPDOWNOPENED, nb::ToPtr(1));
+          }
+      }
+      }
+    }
+  }
 
   if (FList->ItemProc(Msg, Param))
   {
