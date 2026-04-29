@@ -438,6 +438,8 @@ void TSessionData::NonPersistent()
   PROPERTY2(DetachedCertificate); \
   PROPERTY_HANDLER(Passphrase, F); \
   PROPERTY(FSProtocol); \
+ PROPERTY2(OpensshPrivateKeyFile); \
+ PROPERTY(UseOpensshCertificate); \
   PROPERTY(Ftps); \
   PROPERTY(LocalDirectory); \
   PROPERTY2(OtherLocalDirectory); \
@@ -878,6 +880,8 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool PuttyImport, bool
   SetGssLibCustom(Storage->ReadString("GSSCustom", GetGssLibCustom()));
   SetPublicKeyFile(Storage->ReadString("PublicKeyFile", GetPublicKeyFile()));
   DetachedCertificate = Storage->ReadString("DetachedCertificate", DetachedCertificate);
+  OpensshPrivateKeyFile = Storage->ReadString("OpensshPrivateKeyFile", OpensshPrivateKeyFile);
+  UseOpensshCertificate = Storage->ReadBool("UseOpensshCertificate", UseOpensshCertificate);
   SetAddressFamily(static_cast<TAddressFamily>
     (Storage->ReadInteger("AddressFamily", GetAddressFamily())));
   SetRekeyData(Storage->ReadString("RekeyBytes", GetRekeyData()));
@@ -1247,6 +1251,8 @@ void TSessionData::DoSave(THierarchicalStorage * Storage,
     WRITE_DATA_EX(StringRaw, "PublicKeyFile", GetPublicKeyFile(), ExpandFileName);
     WRITE_DATA_EX(StringRaw, "DetachedCertificate", DetachedCertificate, ExpandFileName);
   }
+    WRITE_DATA_EX(StringRaw, "OpensshPrivateKeyFile", OpensshPrivateKeyFile, ExpandFileName);
+    WRITE_DATA(Bool, UseOpensshCertificate);
   else
   {
     WRITE_DATA_EX(String, "UserName", GetUserName(), );
@@ -1254,6 +1260,8 @@ void TSessionData::DoSave(THierarchicalStorage * Storage,
     WRITE_DATA_EX(String, "DetachedCertificate", FDetachedCertificate, );
     WRITE_DATA_EX2(String, "FSProtocol", GetFSProtocolStr(), );
     WRITE_DATA(String, LocalDirectory);
+    WRITE_DATA_EX(String, "OpensshPrivateKeyFile", FOpensshPrivateKeyFile, );
+    WRITE_DATA(Bool, UseOpensshCertificate);
     WRITE_DATA_EX(String, "OtherLocalDirectory", FOtherLocalDirectory, );
     WRITE_DATA(String, RemoteDirectory);
     WRITE_DATA(Bool, SynchronizeBrowsing);
@@ -3510,6 +3518,16 @@ void TSessionData::SetDetachedCertificate(const UnicodeString & value)
   SET_SESSION_PROPERTY(DetachedCertificate);
 }
 
+
+void TSessionData::SetOpensshPrivateKeyFile(const UnicodeString & value)
+{
+  SET_SESSION_PROPERTY(OpensshPrivateKeyFile);
+}
+
+void TSessionData::SetUseOpensshCertificate(bool value)
+{
+  SET_SESSION_PROPERTY(UseOpensshCertificate);
+}
 void TSessionData::SetS3CACertificate(const UnicodeString & value)
 {
   SET_SESSION_PROPERTY(S3CACertificate);

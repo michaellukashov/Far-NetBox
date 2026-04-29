@@ -1748,6 +1748,7 @@ private:
   void CipherButtonClick(TFarButton * Sender, bool & Close);
   void KexButtonClick(TFarButton * Sender, bool & Close);
   void AuthGSSAPICheckAllowChange(TFarDialogItem * Sender, void * NewState, bool & Allow);
+  void UseOpensshCertCheckAllowChange(TFarDialogItem * Sender, void * NewState, bool & Allow);
   void UnixEnvironmentButtonClick(TFarButton * Sender, bool & Close);
   void WindowsEnvironmentButtonClick(TFarButton * Sender, bool & Close);
   void UpdateControls();
@@ -1874,6 +1875,11 @@ private:
   TFarCheckBox * AgentFwdCheck{nullptr};
   TFarCheckBox * AuthGSSAPICheck3{nullptr};
   TFarCheckBox * GSSAPIFwdTGTCheck{nullptr};
+  TFarCheckBox * UseOpensshCertCheck{nullptr};
+  TFarText * OpensshCertLabel{nullptr};
+  TFarEdit * OpensshCertEdit{nullptr};
+  TFarText * OpensshKeyLabel{nullptr};
+  TFarEdit * OpensshKeyEdit{nullptr};
   TFarCheckBox * DeleteToRecycleBinCheck{nullptr};
   TFarCheckBox * OverwrittenToRecycleBinCheck{nullptr};
   TFarEdit * RecycleBinPathEdit{nullptr};
@@ -3126,6 +3132,26 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   MakeOwnedObject<TFarSeparator>(this);
 
+  // OpenSSH Certificate
+  Separator = MakeOwnedObject<TFarSeparator>(this);
+  Separator->SetCaption(GetMsg(NB_LOGIN_AUTH_OPENSSH_CERT_GROUP));
+
+  UseOpensshCertCheck = MakeOwnedObject<TFarCheckBox>(this);
+  UseOpensshCertCheck->SetCaption(GetMsg(NB_LOGIN_AUTH_USE_OPENSSH_CERT));
+  UseOpensshCertCheck->SetOnAllowChange(nb::bind(&TSessionDialog::UseOpensshCertCheckAllowChange, this));
+
+  OpensshCertLabel = MakeOwnedObject<TFarText>(this);
+  OpensshCertLabel->SetCaption(GetMsg(NB_LOGIN_AUTH_OPENSSH_CERT_FILE));
+
+  OpensshCertEdit = MakeOwnedObject<TFarEdit>(this);
+  OpensshCertEdit->SetWidth(30);
+
+  OpensshKeyLabel = MakeOwnedObject<TFarText>(this);
+  OpensshKeyLabel->SetCaption(GetMsg(NB_LOGIN_AUTH_OPENSSH_KEY_FILE));
+
+  OpensshKeyEdit = MakeOwnedObject<TFarEdit>(this);
+  OpensshKeyEdit->SetWidth(30);
+
   // Bugs tab
 
   SetDefaultGroup(tabBugs);
@@ -3454,6 +3480,13 @@ void TSessionDialog::UpdateControls()
     AuthKICheck->GetEnabled() && AuthKICheck->GetChecked());
   AuthGSSAPICheck3->SetEnabled(Authentication);
   GSSAPIFwdTGTCheck->SetEnabled(Authentication);
+
+  const bool UseOpensshCert = UseOpensshCertCheck->GetChecked();
+  UseOpensshCertCheck->SetEnabled(aSshProtocol && Authentication);
+  OpensshCertLabel->SetEnabled(aSshProtocol && Authentication && UseOpensshCert);
+  OpensshCertEdit->SetEnabled(aSshProtocol && Authentication && UseOpensshCert);
+  OpensshKeyLabel->SetEnabled(aSshProtocol && Authentication && UseOpensshCert);
+  OpensshKeyEdit->SetEnabled(aSshProtocol && Authentication && UseOpensshCert);
 
   // Directories tab
   CacheDirectoryChangesCheck->SetEnabled(
@@ -3862,6 +3895,10 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
   AuthGSSAPICheck3->SetChecked(SessionData->GetAuthGSSAPI());
   GSSAPIFwdTGTCheck->SetChecked(SessionData->GetGSSAPIFwdTGT());
 
+  UseOpensshCertCheck->SetChecked(SessionData->GetUseOpensshCertificate());
+  OpensshCertEdit->SetText(SessionData->DetachedCertificate);
+  OpensshKeyEdit->SetText(SessionData->GetOpensshPrivateKeyFile());
+
   // Bugs tab
 
   BUGS();
@@ -4200,6 +4237,10 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     SessionData->SetAgentFwd(AgentFwdCheck->GetChecked());
     SessionData->SetAuthGSSAPI(AuthGSSAPICheck3->GetChecked());
     SessionData->SetGSSAPIFwdTGT(GSSAPIFwdTGTCheck->GetChecked());
+
+    SessionData->SetUseOpensshCertificate(UseOpensshCertCheck->GetChecked());
+    SessionData->SetDetachedCertificate(OpensshCertEdit->GetText());
+    SessionData->SetOpensshPrivateKeyFile(OpensshKeyEdit->GetText());
 
     // Bugs tab
     // BUGS();
@@ -4723,6 +4764,12 @@ void TSessionDialog::AuthGSSAPICheckAllowChange(TFarDialogItem * /*Sender*/,
     WinSCPPlugin->MoreMessageDialog(GetMsg(NB_GSSAPI_NOT_INSTALLED),
       nullptr, qtError, qaOK);
   }
+}
+
+void TSessionDialog::UseOpensshCertCheckAllowChange(TFarDialogItem * /*Sender*/,
+  void * /*NewState*/, bool & /*Allow*/)
+{
+  UpdateControls();
 }
 
 void TSessionDialog::UnixEnvironmentButtonClick(
