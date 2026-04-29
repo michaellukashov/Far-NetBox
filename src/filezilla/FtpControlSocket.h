@@ -177,6 +177,9 @@ protected:
   static CTime m_CurrentTransferTime[2];
   static _int64 m_CurrentTransferLimit[2];
   static CCriticalSectionWrapper m_SpeedLimitSync;
+  static HANDLE m_SpeedLimitEvent;
+  // Lock ordering: m_SpeedLimitSync is a leaf lock; no other lock should be
+  // held while acquiring it. Avoid Unlock/Sleep/Lock patterns.
   _int64 GetAbleToUDSize(bool & beenWaiting, CTime & curTime, _int64 & curLimit, nb::list_t<t_ActiveList>::iterator & iter, enum transferDirection direction, int nBufSize);
   _int64 GetSpeedLimit(CTime & time, int valType, int valValue);
 

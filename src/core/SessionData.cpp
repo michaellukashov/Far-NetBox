@@ -49,6 +49,8 @@ const wchar_t * FtpPingTypeNames = L"Off;Dummy;Dummy;List";
 const wchar_t * ProxyMethodNames = L"None;SOCKS4;SOCKS5;HTTP;Telnet;Cmd";
 #endif // defined(__BORLANDC__)
 static TIntMapping ProxyMethodMapping = CreateIntMappingFromEnumNames(LowerCase(ProxyMethodNames));
+// Thread-safety: MSVC guarantees thread-safe initialization of namespace-level
+// statics since VS2015 (C++11). No additional synchronization required.
 constexpr const wchar_t * DefaultName = L"Default Settings";
 #if defined(__BORLANDC__)
 // moved to SessionData.h

@@ -160,6 +160,7 @@ CTime CFtpControlSocket::m_CurrentTransferTime[2] = { CTime::GetCurrentTime(), C
 _int64 CFtpControlSocket::m_CurrentTransferLimit[2] = {0, 0};
 
 CCriticalSectionWrapper CFtpControlSocket::m_SpeedLimitSync;
+HANDLE CFtpControlSocket::m_SpeedLimitEvent = nullptr;
 
 #define BUFSIZE 16384
 
@@ -6070,7 +6071,9 @@ _int64 CFtpControlSocket::GetAbleToUDSize( bool &beenWaiting, CTime &curTime, _i
           }
         }
         m_SpeedLimitSync.Unlock();
-        Sleep(100);
+        if (m_SpeedLimitEvent == nullptr)
+          m_SpeedLimitEvent = ::CreateEvent(nullptr, FALSE, FALSE, nullptr);
+        ::WaitForSingleObject(m_SpeedLimitEvent, 100);
         m_SpeedLimitSync.Lock();
         nowTime = CTime::GetCurrentTime();
         beenWaiting = true;
@@ -6188,6 +6191,8 @@ BOOL CFtpControlSocket::SpeedLimitAddTransferredBytes(enum transferDirection dir
       else
         iter->nBytesAvailable = 0;
       iter->nBytesTransferred += nBytesTransferred;
+      if (m_SpeedLimitEvent != nullptr)
+        ::SetEvent(m_SpeedLimitEvent);
       m_SpeedLimitSync.Unlock();
       return TRUE;
     }

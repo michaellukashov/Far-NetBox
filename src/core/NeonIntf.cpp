@@ -423,6 +423,7 @@ UnicodeString NeonCertificateFailuresErrorStr(int32_t Failures, const UnicodeStr
 }
 
 static std::unique_ptr<TCriticalSection> DebugSection(TraceInitPtr(std::make_unique<TCriticalSection>()));
+// Thread-safety: DebugSection protects NeonTerminals.
 static nb::set_t<TTerminal *> NeonTerminals;
 
 extern "C"

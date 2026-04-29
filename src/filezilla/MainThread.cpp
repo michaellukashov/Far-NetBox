@@ -23,6 +23,8 @@ CMainThread::CMainThread()
   m_pWorkingDir = 0;
   m_nAsyncRequestID = 0;
   m_bQuit = FALSE;
+  m_Started = false;
+  m_hStartedEvent = ::CreateEvent(nullptr, TRUE, FALSE, nullptr);
   m_hThread = 0;
   m_dwThreadId = 0;
 }
@@ -31,6 +33,8 @@ CMainThread::~CMainThread()
 {
   delete m_pWorkingDir;
   ::CloseHandle(m_hThread);
+  if (m_hStartedEvent != nullptr)
+    ::CloseHandle(m_hStartedEvent);
 }
 
 BOOL CMainThread::InitInstance()
@@ -395,12 +399,13 @@ BOOL CMainThread::PostThreadMessage(UINT message, WPARAM wParam, LPARAM lParam)
 DWORD CMainThread::ResumeThread()
 {
   m_Started = false;
-  BOOL res=::ResumeThread(m_hThread);
+  BOOL res = ::ResumeThread(m_hThread);
   if (res)
   {
-    while (!m_Started)
+    if (m_hStartedEvent != nullptr)
     {
-      Sleep(10);
+      ::WaitForSingleObject(m_hStartedEvent, INFINITE);
+      ::ResetEvent(m_hStartedEvent);
     }
   }
   return res;
@@ -416,6 +421,8 @@ DWORD CMainThread::Run()
   ECS;
   InitInstance();
   m_Started = true;
+  if (m_hStartedEvent != nullptr)
+    ::SetEvent(m_hStartedEvent);
   LCS;
   MSG msg;
   while (GetMessage(&msg, 0, 0, 0))

@@ -149,6 +149,9 @@ static bool S3SecurityProfileChecked = false;
 static TDateTime S3CredentialsExpiration;
 static UnicodeString S3SessionToken;
 static UnicodeString S3SecurityProfile;
+// Thread-safety: LibS3Section protects S3Profile, S3Credentials, S3SessionToken,
+// S3SecurityProfile, S3SecurityProfileChecked, and S3CredentialsExpiration.
+// All accesses must be under LibS3Section.
 #if defined(__BORLANDC__)
 typedef std::map<UnicodeString, UnicodeString> TS3Credentials;
 #endif // defined(__BORLANDC__)
@@ -292,7 +295,7 @@ static UnicodeString GetS3ConfigValue(
 {
   UnicodeString Result;
   UnicodeString ASource;
-  TGuard Guard(LibS3Section.get());
+  TGuard Guard(*LibS3Section.get());
   bool TryCredentials = true;
 
   try
