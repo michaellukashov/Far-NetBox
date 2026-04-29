@@ -123,6 +123,8 @@ After completing TASK-5:
   - **Dependency:** TASK-3
 
 - [ ] **TASK-10: Manual testing checklist and plugin verification**
+  - **Status:** Implementation complete. Manual testing deferred to user/runtime verification in Far Manager.
+  - **Build verification:** x64 RelWithDebugInfo passes with zero new warnings (pre-existing WinConfiguration.h warnings only).
   - **Files:** `src/NetBox/`, `Far3_x64/Plugins/NetBox/`
   - **Deliverable:** Verify with measurable criteria:
     - Build succeeds with zero warnings (MSVC W4) across x86, x64, ARM64
