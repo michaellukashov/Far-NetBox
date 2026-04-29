@@ -2461,6 +2461,7 @@ struct TDateTimeParams : public TObject
 using TYearlyDateTimeParams = nb::map_t<int, TDateTimeParams>;
 static TYearlyDateTimeParams YearlyDateTimeParams;
 static TCriticalSection DateTimeParamsSection;
+// Thread-safety: DateTimeParamsSection protects YearlyDateTimeParams.
 static void EncodeDSTMargin(const SYSTEMTIME & Date, uint16_t Year,
   TDateTime & Result);
 

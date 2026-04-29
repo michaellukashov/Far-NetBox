@@ -9,6 +9,10 @@
 #include <FileBuffer.h>
 
 static TGlobals * GlobalFunctions = nullptr;
+// Thread-safety note: GlobalFunctions is set once during single-threaded plugin
+// initialization (SetGlobals) before any worker threads are spawned. No
+// additional synchronization is required. If this invariant changes, use
+// std::call_once or InitOnceExecuteOnce.
 
 TGlobals * GetGlobals()
 {

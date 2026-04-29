@@ -15,6 +15,7 @@
 #pragma package(smart_init)
 
 static std::unique_ptr<TCriticalSection> IgnoredExceptionsCriticalSection(std::make_unique<TCriticalSection>());
+// Thread-safety: IgnoredExceptionsCriticalSection protects IgnoredExceptions.
 using TIgnoredExceptions = nb::set_t<UnicodeString>;
 static TIgnoredExceptions IgnoredExceptions;
 
