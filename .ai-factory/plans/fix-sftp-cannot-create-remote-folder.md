@@ -218,11 +218,11 @@ Reference: https://github.com/michaellukashov/Far-NetBox/issues/485
   - Run: `cmd /c build-x64.bat`
   - Confirm: zero MSVC W4 warnings
 
-- [ ] **Task 9: Verify nested directory creation** (depends on Task 8)
+- [x] **Task 9: Verify nested directory creation** (depends on Task 8)
 
 ### Phase 5: Add Recursive Directory Creation
 
-- [ ] **Task 7: Implement recursive parent directory creation in CreateDirectory** (depends on Task 3)
+- [x] **Task 7: Implement recursive parent directory creation in CreateDirectory** (depends on Task 3)
 
   **File:** `src/core/SftpFileSystem.cpp`, `src/core/SftpFileSystem.h`
 
@@ -295,11 +295,11 @@ Reference: https://github.com/michaellukashov/Far-NetBox/issues/485
   - Permission denied (Status 3) — propagate as error, do not retry
   - All other failures — propagate as error
 
-- [ ] **Task 8: Build and verify zero warnings** (depends on Task 7)
+- [x] **Task 8: Build and verify zero warnings** (depends on Task 7)
   - Run: `cmd /c build-x64.bat`
   - Confirm: zero MSVC W4 warnings
 
-- [ ] **Task 9: Verify nested directory creation** (depends on Task 8)
+- [x] **Task 9: Verify nested directory creation** (depends on Task 8)
   - F7 → type `CACHEDEV1_DATA/Download/Kodi/newdir` → directory created successfully
   - F7 → type `CACHEDEV1_DATA/Download/deeply/nested/path` → all parents created
   - Check plugin log for "parent ... does not exist, creating recursively" messages
