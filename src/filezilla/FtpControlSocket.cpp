@@ -1824,7 +1824,7 @@ void CFtpControlSocket::List(BOOL bFinish, int nError /*=FALSE*/, CServerPath pa
     }
     catch(...)
     {
-    ShowStatus(MSG_FTP_LISTING_PARSE_FAILED, FZ_LOG_ERROR);
+      ShowStatus(MSG_FTP_LISTING_PARSE_FAILED, FZ_LOG_ERROR);
       delete pData->pDirectoryListing;
       pData->pDirectoryListing = nullptr;
       ResetOperation(FZ_REPLY_ERROR);
@@ -2515,7 +2515,7 @@ void CFtpControlSocket::ListFile(CString filename, const CServerPath &path)
       }
       catch(...)
       {
-          ShowStatus(MSG_FTP_LISTING_PARSE_FAILED, FZ_LOG_ERROR);
+        ShowStatus(MSG_FTP_LISTING_PARSE_FAILED, FZ_LOG_ERROR);
         delete pListResult;
         pData->direntry = nullptr;
         return;
