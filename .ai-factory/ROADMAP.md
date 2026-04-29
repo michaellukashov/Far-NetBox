@@ -3,7 +3,7 @@
 ## Milestones
 
 - **Version 1.0** – Core functionality stable
-- **Version 1.1** – ✅ Remote‑to‑Remote copy for all protocols (SFTP, WebDAV, S3, SCP) — **COMPLETE**
+- **Version 1.1** – ✅ Remote-to-Remote copy for all protocols (SFTP, WebDAV, S3, SCP) — **COMPLETE**
   - Status: Already implemented (2011-2023)
   - SCP: Uses `cp -r` command (added 2011-2014)
   - SFTP: Uses SFTP protocol extensions (added 2023-06-11)
@@ -13,24 +13,44 @@
 - **Version 1.3** – Win32/KiTTY input mode, WinXP compatible builds
 - **Version 2.0** – Full plugin refactor, modular architecture
 
+## Completed Features
+
+| Feature | Date | Notes |
+|---------|------|-------|
+| FTP heartbeat / NOOP keep-alive | 2026-04 | Prevents server-side timeout on FTP control connections |
+| Issue #511 — CPS limit + Esc hang | 2026-04 | Speed limit propagation and cancel dialog hang fixes |
+| DateTime format functions | 2026-04 | `FormatDateTime` token parsing, `ISO8601ToDate` parser |
+| WinSCP #2426 — Inactive session fix | 2026-04 | External file modification detection for inactive sessions |
+| Static RTTI replacement | 2026-04 | Replaced `dynamic_cast` with static type checks |
+| Folder history navigation | 2026-04 | Far Manager folder history integration via `FarPanelDirectory::Param` |
+| FTP port preservation | 2026-04 | Fix non-default FTP port handling |
+| FTP vsftpd directory listing | 2026-04 | Defensive logging for misclassified files (#507) |
+| SFTP remote folder creation | 2026-04 | Fix cannot-create-remote-folder scenarios |
+| Logging thread safety | 2026-04 | Safe multi-threaded logging |
+| S3 TLS version + CA cert | 2026-04 | Per-session TLS and CA certificate controls |
+| Combo box keyboard shortcuts | 2026-04 | Alt+Down / Ctrl+Down dropdown open |
+| WebDAV panel refresh | 2026-04 | Fix overwrite and refresh issues |
+| OpenSSL sync cleanup | 2026-04 | Synced with WinSCP 6.5.6 baseline, removed 300 unused files |
+
 ## Upcoming Features
 
-- DateTime format functions (custom tokens, locale support)
-- FTP heartbeat / NOOP keep‑alive
-- Inactive session crash fix (WinSCP #2426)
-- Static RTTI improvements
-- **Issue #511** – Fix parallel transfer CPS limit propagation + Esc hang during cancel dialog (2026-04-29)
+- Background copy & progress UI (Version 1.2)
+- KiTTY keyboard protocol full implementation
+- OpenSSH certificate authentication
+- S3 bucket access fix
+- Local background copy optimization
+- Editor external modification handling improvements
 
 ## Technical Debt / Refactoring
 
-- Consolidate `TODO` items into tracked tasks (`/aif-implement`)
-- Review and improve static RTTI usage
-- Clean up OpenSSL sync scripts
-- Add comprehensive documentation for all new features
+- [ ] Consolidate `TODO` items into tracked tasks (`/aif-implement`)
+- [x] Review and improve static RTTI usage — **COMPLETE** (2026-04)
+- [x] Clean up OpenSSL sync scripts — **COMPLETE** (2026-04-17)
+- [ ] Add comprehensive documentation for all new features
+- [ ] Refactor monolithic CMakeLists.txt (see `REFACTORING_PLAN.md`)
 
 ## Process
 
 - Each milestone is tracked via a feature plan in `.ai-factory/plans/`.
 - When a plan is completed, update the milestone status in this file.
 - Use `/aif-commit` for conventional commits after each checkpoint.
-
