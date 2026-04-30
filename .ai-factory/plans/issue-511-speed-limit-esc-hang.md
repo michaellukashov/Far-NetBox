@@ -46,6 +46,8 @@ Additionally, after pressing "Yes" in the cancel dialog, the exception unwinding
 - Add `ProgressData.GetCancel() < csCancel` to suppress progress display once cancellation is initiated
 - Add early return in `CancelConfiguration` if `GetCancel() > csContinue`
 - Add explicit `case qaCancel: ACancel = csCancel; break;` in `CancelConfiguration`
+- Add `FInCancelDialog` guard to `ShowOperationProgress` (prevents `Message()`/`CheckForEsc()` during cancel dialog)
+
 - Add Esc press logging
 
 ## Tasks
@@ -56,6 +58,10 @@ Additionally, after pressing "Yes" in the cancel dialog, the exception unwinding
 - [x] Task 4: Build and verify both fixes
 - [x] Task 5: Fix assert ordering and misleading comment in Queue.cpp
 - [x] Task 6: Update documentation and changelog
+
+- [x] Task 8: Edge case verification and guards
+- [x] Task 7: Fix pre-existing build errors in Queue.cpp
+
 
 ### Task 1: Fix CPS limit propagation for parallel transfers
 
@@ -210,4 +216,40 @@ The comment "CPS limit inherited from parent OperationProgress" is incorrect bec
 
 - Changelog/ROADMAP entry exists referencing issue #511.
 - No missing documentation for `Docs: yes` setting.
+
+### Task 8: Edge case verification and guards
+
+**Files:** `src/NetBox/WinSCPFileSystem.cpp`, `src/NetBox/WinSCPFileSystem.h`, `src/NetBox/FarPlugin.cpp`, `src/NetBox/FarPlugin.h`, `src/core/FileOperationProgress.cpp`
+
+**Change 1 -- `FInCancelDialog` guard:**
+Added `FInCancelDialog` boolean member to `TWinSCPFileSystem`. When `CancelConfiguration` opens the cancel dialog, it sets `FInCancelDialog = true` and resets it via `SCOPE_EXIT` after the dialog closes. `ShowOperationProgress` checks `!FInCancelDialog` in its main progress block to prevent `Message()` and `CheckForEsc()` from running during the dialog display window. This closes the timing gap between `Suspend()` and dialog display.
+
+**Change 2 -- Console buffer flush:**
+Added `FlushEscBuffer()` method to `TCustomFarPlugin` which drains all pending `VK_ESCAPE` events from the console input buffer before the cancel dialog is shown. This prevents race conditions where Esc keypresses intended for the dialog's message loop are also consumed by `CheckForEsc()` after the dialog closes.
+
+**Change 3 -- Dynamic CPS limit propagation:**
+Modified `AdjustToCPSLimit()` in `FileOperationProgress.cpp` to use `GetCPSLimit()` instead of directly reading `FCPSLimit`. This ensures child progress objects in parallel transfers see updates to the parent's CPS limit, supporting dynamic limit changes mid-flight. The lock overhead is negligible compared to the `SleepEx()` throttling wait.
+
+**Acceptance:**
+
+- No `Message()` or `CheckForEsc()` calls during cancel dialog display.
+- Esc keypresses during dialog do not trigger duplicate cancel dialogs.
+- Parallel transfers respect dynamic CPS limit changes.
+- No new compiler warnings on modified files.
+
+
+### Task 7: Fix pre-existing build errors in Queue.cpp
+
+**File:** `src/core/Queue.cpp`, `src/core/Queue.h`
+
+**Problem 1 (line 316-317):** `TSimpleThread->ClassName()` — `TSimpleThread` has no `ClassName()` method. Replaced with string literal `"TSimpleThread"`.
+
+**Problem 2 (line 1158):** `Item1->GetInfo()` — `TQueueItem` has no `GetInfo()` accessor. Added `TInfo * GetInfo() const { return FInfo.get(); }` to `TQueueItem` in `Queue.h`.
+
+**Problem 3 (line 1158):** `TLogContext` takes `std::string`, but `Source` is `UnicodeString` (`wchar_t*`). Wrapped with `AnsiString()` conversion.
+
+**Acceptance:**
+
+- Build succeeds with no new warnings.
+- Plugin DLL generated in `Far3_x64/Plugins/NetBox/`.
 

@@ -365,7 +365,8 @@ Add convenience macros for structured logging.
 ---
 
 #### Task 2.3: Instrument TSimpleThread
-**Status:** [x]
+**Status:** [x]  
+**Refined:** 2026-04-30 — added `TLogContext ctx_class("class", SimpleThread->ClassName())` to match plan spec.
 **File:** `src/core/Queue.cpp`
 
 Add logging to `TSimpleThread::ThreadProc` and `TSimpleThread::Execute`.
@@ -401,7 +402,8 @@ Add logging to `TSimpleThread::ThreadProc` and `TSimpleThread::Execute`.
 ---
 
 #### Task 2.4: Instrument TTerminalQueue
-**Status:** [x]
+**Status:** [x]  
+**Refined:** 2026-04-30 — added item-level `TLogContext ctx_item` and `LOG_QUEUE_EVENT("processing")` when dispatching queue items.
 **File:** `src/core/Queue.cpp`
 
 Add logging to `TTerminalQueue::ProcessEvent` and queue item processing.
@@ -439,7 +441,8 @@ Add logging to `TTerminalQueue::ProcessEvent` and queue item processing.
 ---
 
 #### Task 2.5: Instrument TQueueItem
-**Status:** [x]
+**Status:** [x]  
+**Refined:** 2026-04-30 — added completion log after `DoExecute()` returns.
 **File:** `src/core/Queue.cpp`
 
 Add logging to `TQueueItem::Execute` and status changes.
