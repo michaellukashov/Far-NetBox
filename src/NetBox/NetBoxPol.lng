@@ -1085,6 +1085,7 @@
 "Access denied."
 "Direct duplication of folders is not supported. Use a duplication via a local temporary copy."
 "Specify target bucket."
+"Cannot upload to bucket '%s': S3 requires a filename (object name). Use format: /bucket-name/file.txt"
 
 "CORE_CONFIRMATION"
 "Serwer nie komunikuje się od %d sekund.\n\nCzekać kolejne %d sekund?"
