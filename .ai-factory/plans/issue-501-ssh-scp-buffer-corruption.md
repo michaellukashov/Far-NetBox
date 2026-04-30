@@ -168,7 +168,8 @@ dz|   - File: `src/NetBox/NetBoxRus.lng` (and other `.lng` files)
    - Update message at ID 1104: append "This setting is now disabled by default." or similar
 
    - Check other language files (`NetBoxEng.lng`, `NetBoxFr.lng`, `NetBoxSpa.lng`, etc.) for the same message ID
-   - **Note:** `NetBoxPol.lng` does not contain message 1104 (pre-existing incomplete translation)
+   - **Note:** `NetBoxPol.lng` contains message 1104 but lacks the "Disabled by default." suffix (pre‑existing incomplete translation). Append the same suffix as in other language files.
+   - [ ] Update `NetBoxPol.lng` message 1104 with "Disabled by default." suffix
    - If standalone help docs exist, note that buffer optimization defaults off for compatibility
 
 ## Architecture Notes
@@ -286,6 +287,7 @@ ki|```
    - [ ] Open a new session dialog and confirm `SshBufferSizeCheck` is unchecked by default
    - [ ] Perform an SCP transfer with a new session and verify `netbox.log` does NOT contain "Querying ideal send backlog"
    - [ ] Verify existing session with buffer optimization enabled still logs "Querying ideal send backlog" and functions correctly
+   - [ ] Test FTP transfer with a new session (SendBuf=0) to confirm no regression
    - **Code-level verification completed:** `SetChecked((0>0)&&false)` → unchecked confirmed; logging paths verified in review
 ## Changelog
 
@@ -294,4 +296,4 @@ ki|```
 | 2026-04-29 | Corrected `TSessionData` constructor → `DefaultSettings()` in plan text and code block locations | Actual code change is in `DefaultSettings()`, not constructor |
 | 2026-04-29 | Added Phase III tasks (missing ARCHITECTURE.md reference, commit, smoke-test) | Gaps found during /aif-improve review |
 | 2026-04-29 | Updated Task 5 to flag ARCHITECTURE.md link as NOT DONE | Reference was not actually added to file |
-| 2026-04-29 | Added note about `NetBoxPol.lng` missing message 1104 | Pre-existing incomplete translation discovered during review |
+|| 2026-04-29 | Corrected note: `NetBoxPol.lng` contains message 1104 but lacks the "Disabled by default." suffix | Pre‑existing incomplete translation identified during review |

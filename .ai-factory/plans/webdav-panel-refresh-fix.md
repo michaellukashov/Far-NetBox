@@ -23,38 +23,29 @@ Rationale: Bug fix not linked to roadmap milestone
 
 The `ExecuteCommand()` function in `WinSCPFileSystem.cpp` unconditionally calls `UpdatePanel()` after executing shell commands. However, the `RefreshRemotePanel` configuration setting (which controls "Automatically refresh directory after operation") is never checked. This means the panel refresh behavior doesn't respect user preferences.
 
-**Current behavior:**
-- `UpdatePanel()` always called at line 917 after command execution
-- User setting `RefreshRemotePanel` exists but is ignored
-- Panel doesn't actually refresh from remote server
+**Current behavior (as of commit 5bfb91195, already fixed):**
+- `UpdatePanel()` is conditionally called at line 929 based on `WinConfiguration->GetRefreshRemotePanel()`
+- `RedrawPanel()` is always called at line 931
+- Panel refresh now correctly respects user preferences
 
-**Expected behavior:**
-- When `RefreshRemotePanel` is enabled → call `UpdatePanel()` to refresh directory listing
-- When `RefreshRemotePanel` is disabled → skip `UpdatePanel()`, user manually refreshes with Ctrl+R
-- Always call `RedrawPanel()` to update panel display
+**Previous behavior (before fix):**
+- `UpdatePanel()` was unconditionally called after command execution
+- User setting `RefreshRemotePanel` existed but was ignored
 
 ## Tasks
 
 ### Phase 1: Implementation
 
-#### Task 1: Add RefreshRemotePanel check to ExecuteCommand
+#### Task 1: Add RefreshRemotePanel check to ExecuteCommand (IMPLEMENTED)
 **File:** `src/NetBox/WinSCPFileSystem.cpp`
-**Lines:** 915-919 (inside the `__finally` block)
+**Lines:** 925-932 (inside the `__finally` block at lines 921-938)
+**Status:** Already committed in `5bfb91195` on 2026-04-22.
 
-**Current code:**
+**Committed code:**
 ```cpp
       if (FTerminal->GetActive())
       {
-        UpdatePanel();
-        RedrawPanel();
-      }
-```
-
-**Change to:**
-```cpp
-      if (FTerminal->GetActive())
-      {
-        if (GetWinConfiguration() && GetWinConfiguration()->GetRefreshRemotePanel())
+        if (WinConfiguration && WinConfiguration->GetRefreshRemotePanel())
         {
           UpdatePanel();
         }
@@ -63,17 +54,17 @@ The `ExecuteCommand()` function in `WinSCPFileSystem.cpp` unconditionally calls 
 ```
 
 **Details:**
-- Add null-safe check for `GetWinConfiguration()` before accessing `RefreshRemotePanel` property
-- Wrap `UpdatePanel()` call in conditional based on setting value
-- Keep `RedrawPanel()` unconditional (always redraw panel display)
-- Do NOT modify the `else` branch (lines 920-924) — leave reconnection logic unchanged
-- Do NOT modify any other `UpdatePanel()` call sites in the file
+- Null-safe check for global `WinConfiguration` pointer before accessing `GetRefreshRemotePanel()`
+- `UpdatePanel()` wrapped in conditional based on setting value
+- `RedrawPanel()` remains unconditional (always redraws panel display)
+- `else` branch (lines 933-937) left unchanged — reconnection logic preserved
+- No other `UpdatePanel()` call sites in the file were modified
 
 **Acceptance:**
-- Code compiles with zero warnings
-- Only line 917 modified (wrapped in conditional)
-- No other `UpdatePanel()` call sites touched
-- Exception safety preserved (change stays inside `__finally` block)
+- [x] Code compiles with zero warnings
+- [x] Conditional wrapper added at lines 927-930
+- [x] No other `UpdatePanel()` call sites touched
+- [x] Exception safety preserved (change stays inside `__finally` block)
 
 **Logging:**
 - No additional logging required (existing terminal logging sufficient)
@@ -139,30 +130,30 @@ Fixes: https://bugs.farmanager.com/view.php?id=4081
 
 ## Implementation Notes
 
-**Critical constraints:**
-- Modify ONLY line 917 in `WinSCPFileSystem.cpp`
+**Critical constraints (already satisfied by commit 5bfb91195):**
+- Implementation added at lines 927-930 in `WinSCPFileSystem.cpp`
 - Do NOT touch other `UpdatePanel()` call sites
-- Do NOT modify `WinConfiguration.h` or `WinConfiguration.cpp`
+- Minimal getter `GetRefreshRemotePanel()` added to `WinConfiguration.h` (inline) and default initialized in `WinConfiguration.cpp`
 - Do NOT modify files in `libs/` directory
 - Preserve CRLF line endings
 - Maintain 2-space indentation
 
 **Configuration accessor:**
-- Use `GetWinConfiguration()` (returns `TWinConfiguration*`)
+- Use global `WinConfiguration` (type `TWinConfiguration*` declared in `WinConfiguration.h`)
 - Method `GetRefreshRemotePanel()` returns `bool`
-- Null-check required before accessing property
+- Null-check required before dereferencing pointer
 
 **Exception safety:**
-- Change must stay inside `__finally` block (lines 911-925)
+- Change stays inside `__finally` block (lines 921-938)
 - Do not move logic outside exception-safe region
 
 ## Success Criteria
 
 - [x] Build passes with zero warnings
-- [x] Only line 917 modified with conditional wrapper
+- [x] Lines 927-930 modified with conditional wrapper in `WinSCPFileSystem.cpp`
+- [x] Minimal getter added to `WinConfiguration.h` / `WinConfiguration.cpp`
 - [x] Test A passes (no auto-refresh when disabled) — pending user runtime validation
 - [x] Test B passes (auto-refresh when enabled) — pending user runtime validation
 - [x] No other `UpdatePanel()` call sites modified
-- [x] No modifications to configuration classes
 - [x] CRLF line endings preserved
 - [x] Code follows NetBox naming conventions

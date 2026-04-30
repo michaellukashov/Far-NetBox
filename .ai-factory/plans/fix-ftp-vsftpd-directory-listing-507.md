@@ -54,6 +54,7 @@ Open questions:
     - INFO: listing start/end, parser mode (MLSD vs LIST), entry count
     - WARN: parser fallback or parse failure on individual lines
     - ERROR: none expected in this task
+  - **Refinement gap (2026-04-30):** The `m_SuccessfulEntryLogCount` counter is never reset, so the "first 20 per listing" becomes "first 20 per session." Also, raw line content is only logged on parse failures, not on successes. These are addressed in follow-up tasks.
 
 - [x] Task 2: Identify exact parser path for vsftpd output and trace `direntry.dir` propagation
   - Review `CFtpListResult::parseLine()` (`src/filezilla/FtpListResult.cpp:268`) and all sub-parsers to trace how `direntry.dir` is set for vsftpd LIST and MLSD responses.
@@ -122,6 +123,7 @@ Open questions:
   - Update `.ai-factory/references/` or `docs/` with a short note on vsftpd compatibility, parser reset requirements, and the directory detection guard.
   - Run `build-x64.bat` to verify zero warnings and successful compilation.
   - Confirm plugin DLL is produced in `Far3_x64/Plugins/NetBox/`.
+  - **Refinement gap (2026-04-30):** The build verification acceptance criterion was checked but no durable artifact (build log or marker file) was retained. Future tasks should produce a `.build-verified` log or equivalent for independent confirmation.
   - Files: `src/filezilla/FtpListResult.cpp`, `src/core/FtpFileSystem.cpp`, `docs/` or `.ai-factory/references/`
   - Logging requirements:
     - INFO: log build success and artifact location
@@ -151,3 +153,61 @@ Open questions:
 - **2026-04-29 (Improvement)** — Added `direntry.bUnsure` trace to logging requirements.
 - **2026-04-29 (Improvement)** — Updated Commit Plan to 4 commits (added Commit 2 for parser state fixes).
 
+
+### Phase 5: Follow-up Refinements
+
+- [ ] Task 8: Reset `m_SuccessfulEntryLogCount` per listing to enforce "first 20 per listing" intent
+  - In `CFtpListResult::AddData()` (`src/filezilla/FtpListResult.cpp:374`), reset `m_SuccessfulEntryLogCount = 0` when `FBuffer` is empty at the start of a new listing batch (i.e., when `Restart` becomes true and `FBuffer.Length() == 0` before processing lines).
+  - The `CFtpListResult` object may be reused across multiple listings via `TransferSocket`; the counter is currently only reset on object creation, causing debug output to stop after 20 entries total.
+  - Implementation: Add `if (FBuffer.IsEmpty()) m_SuccessfulEntryLogCount = 0;` at the top of the `do` loop (line 401) or inside the `Restart` block (line 403).
+  - Without this reset, successful-entry debug output stops after 20 entries across the entire session, making later listings impossible to diagnose.
+  - Files: `src/filezilla/FtpListResult.cpp`, `src/filezilla/FtpListResult.h`
+  - Logging requirements:
+    - DEBUG: log counter reset event (`"FTP listing: resetting successful-entry log counter, buffer empty"`)
+    - INFO: none
+    - WARN: none
+    - ERROR: none
+
+- [ ] Task 9: Include raw line content in successful parse debug logs
+  - In `CFtpListResult::AddData()` (`src/filezilla/FtpListResult.cpp:463`), append the raw `Record` string to the existing success log format, e.g., change the format string to:
+    `"FTP listing: line %d parsed as %s, raw=%s, dir=%d link=%d size=%s name=%s"`
+  - The raw line is already logged on parse failure (line 483); this change ensures successful parses also show the original input for debugging.
+  - This closes the gap between the Task 1 requirement ("raw line content for the first 20 entries per listing") and the committed implementation.
+  - Files: `src/filezilla/FtpListResult.cpp`
+  - Logging requirements:
+    - DEBUG: raw line + parsed result for first 20 entries per listing
+    - INFO: none
+    - WARN: none
+    - ERROR: none
+
+- [ ] Task 10: Extract duplicated `FileExts` heuristic array into a shared constant
+  - Both `TFTPFileSystem::HandleListData()` (line 2487) and `TFTPFileSystem::ReadDirectory()` (line 4756) contain identical 40‑element `FileExts` arrays (introduced in Task 6).
+  - Move the array to a single `constexpr` location — e.g., an unnamed namespace at the top of `src/core/FtpFileSystem.cpp` — and replace both local copies with a reference to `s_FileExts`.
+  - This heuristic is a fallback guard for vsftpd misclassification; consolidating it prevents future drift when extensions are added or removed, and reduces binary bloat.
+  - Files: `src/core/FtpFileSystem.cpp`
+  - Logging requirements:
+    - DEBUG: none
+    - INFO: none
+    - WARN: none
+    - ERROR: none
+  - Acceptance criterion: both guards still compile and behave identically; no change in behavior.
+
+## Commit Plan (Updated)
+
+- **Commit 1** (after tasks 1-3): `fix(ftp): resolve vsftpd directory misidentification in listing parser`
+- **Commit 2** (after tasks 4-5): `fix(ftp): prevent stale direntry state and parser cross-contamination`
+- **Commit 3** (after task 6): `perf(ftp): prevent recursive directory read hang on misclassified files`
+- **Commit 4** (after task 7): `docs(ftp): document listing parser defensive logging and vsftpd compatibility`
+- **Commit 5** (after tasks 8-10): `refactor(ftp): consolidate listing logging and file-extension heuristics`
+
+## Changelog
+
+- **2026-04-30 (Improvement)** — Added Phase 5 with Tasks 8-10: counter reset, raw-line success logging, and shared `FileExts` constant.
+- **2026-04-30 (Improvement)** — Documented refinement gaps in Task 1 (`m_SuccessfulEntryLogCount` reset, raw line on success) and Task 7 (durable build verification artifact).
+- **2026-04-29 (Improvement)** — Added Task 4: `parseLine` full reset of `direntry` state to prevent cross-contamination between parsers.
+- **2026-04-29 (Improvement)** — Added Task 5: Verify parser ordering and tighten first-token checks.
+- **2026-04-29 (Improvement)** — Added explicit `direntry.dir = FALSE` for `type=file` in `parseAsMlsd` to Task 3.
+- **2026-04-29 (Improvement)** — Split Task 4 (original) into Task 6 (hang guard) and improved `HandleListData` validation.
+- **2026-04-29 (Improvement)** — Added line number references to all file mentions for faster navigation.
+- **2026-04-29 (Improvement)** — Added `direntry.bUnsure` trace to logging requirements.
+- **2026-04-29 (Improvement)** — Updated Commit Plan to 4 commits (added Commit 2 for parser state fixes).

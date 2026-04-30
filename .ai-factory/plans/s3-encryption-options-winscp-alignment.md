@@ -160,6 +160,8 @@ The following reference documents were created by exploration agents and provide
   - **Goal:** Allow users to configure TLS version range specifically for S3 sessions
   - **Files:** `src/NetBox/WinSCPDialogs.cpp`, `src/NetBox/WinSCPDialogs.h`
   - **Design Note:** `MinTlsVersion`/`MaxTlsVersion` are session-level settings shared across all protocols (S3/WebDAV/FTP). This task adds S3-specific UI, allowing users to set different TLS requirements for S3 vs other protocols.
+  - **WinSCP Deviation:** WinSCP's `SiteAdvanced` dialog places TLS version controls on a separate "Connection/TLS/SSL" page (lines 428-432), not in the S3 page. NetBox places them in the S3 tab because Far Manager's text-mode dialog cannot replicate WinSCP's multi-page form layout. This is a deliberate, necessary deviation.
+  - **Visibility:** S3-specific TLS controls are created with `SetVisible(false)`. They must be shown/hidden based on the active tab and selected protocol (see Task 13 for the visibility toggle implementation).
   - **Changes:**
     1. Identify the S3 tab layout in `TSessionDialog` - search `tabS3` in `WinSCPDialogs.cpp` (see line 2039)
     2. Add two combo boxes: `MinTlsVersionCombo` and `MaxTlsVersionCombo` to the S3 tab
@@ -284,8 +286,7 @@ The following reference documents were created by exploration agents and provide
 
 ### Phase 7: Post-Implementation Follow-ups
 
-The following items were discovered during `/aif-improve` refinement (2026-04-29) and are **not** critical to the original feature scope, but should be addressed for completeness.
-
+The following items were discovered during `/aif-improve` refinement (2026-04-29 and 2026-04-30) and are **not** critical to the original feature scope, but should be addressed for completeness.
 - [ ] **Task 9: Add Catch2 unit test for S3CACertificate serialization round-trip**
 
   - **Goal:** Automated verification that `S3CACertificate` persists across save/load
@@ -295,31 +296,40 @@ The following items were discovered during `/aif-improve` refinement (2026-04-29
 
 - [x] **Task 10: Localize new UI strings in non-English `.lng` files**
 
-  - **Goal:** Replace English placeholder strings with proper translations
   - **Files:** `src/NetBox/NetBoxRus.lng`, `src/NetBox/NetBoxPol.lng`, `src/NetBox/NetBoxFr.lng`, `src/NetBox/NetBoxSpa.lng`
   - **Strings to translate:**
-    - `"Min TLS version:"` / `"Max TLS version:"`
-    - `"&Load"` / `"&Save"`
-  - **Note:** These strings were added with English placeholders during implementation. They appear at message IDs `NB_S3_MIN_TLS_VERSION`, `NB_S3_MAX_TLS_VERSION`, `NB_S3_LOAD_CA_CERT`, `NB_S3_SAVE_CA_CERT`.
+    - `NB_S3_MIN_TLS_VERSION`: `"Min TLS version:"`
+    - `NB_S3_MAX_TLS_VERSION`: `"Max TLS version:"`
+    - `NB_S3_LOAD_CA_CERT`: `"&Load"`
+    - `NB_S3_SAVE_CA_CERT`: `"&Save"`
+  - **Russian translations (NetBoxRus.lng):**
+    - `"Min TLS version:"` → `"Минимальная версия TLS:"`
+    - `"Max TLS version:"` → `"Максимальная версия TLS:"`
+    - `"&Load"` → `"&Загрузить"`
+    - `"&Save"` → `"&Сохранить"`
+  - **Polish/French/Spanish:** Leave English text with `// TODO: translate` comment — requires native speaker input.
+  - **Note:** These strings were added with English placeholders during implementation. Search each `.lng` file by MsgID to locate the exact entry.
   - **Blocked by:** none
 
 - [x] **Task 11: Add user-facing error message bodies for Load/Save button failures**
 
   - **Goal:** Show meaningful text when certificate load/save fails, instead of an empty dialog with just a title
+  - **Current code verification:** Both `S3CACertificateLoadClick()` (line 4833) and `S3CACertificateSaveClick()` (line 4871) in `WinSCPDialogs.cpp` pass `nullptr` as the message body to `MoreMessageDialog()`. Confirmed bug still present.
   - **Files:** `src/base/MsgIDs.h`, `src/NetBox/NetBoxEng.lng` (and other `.lng` files), `src/NetBox/WinSCPDialogs.cpp`
-  - **Changes:**
+  - **Changes:
     1. Add `NB_S3_INVALID_PEM`, `NB_S3_LOAD_ERROR`, `NB_S3_SAVE_ERROR` to `MsgIDs.h`
-    2. Add corresponding strings to all `.lng` files
-    3. Update `S3CACertificateLoadClick()` and `S3CACertificateSaveClick()` to pass the new `MsgID` as the second argument to `MoreMessageDialog()` instead of `nullptr`
-  - **Blocked by:** none
+    2. Add corresponding English strings to `NetBoxEng.lng`
+    3. Add translations to all non-English `.lng` files (use same strings as Task 10 if overlap)
+    4. Update `S3CACertificateLoadClick()`: replace `nullptr` with `GetMsg(NB_S3_INVALID_PEM)` for PEM validation failure, `GetMsg(NB_S3_LOAD_ERROR)` for file read errors
+    5. Update `S3CACertificateSaveClick()`: replace `nullptr` with `GetMsg(NB_S3_SAVE_ERROR)`
+    6. Note: `UnicodeString::Pos()` is used for PEM validation (`Content.Pos(L"-----BEGIN CERTIFICATE-----") == 0`). This is the established project pattern; do not change to `Contains()` unless the codebase migrates.
 
-- [x] **Task 12: Update `docs/README.md` with S3 encryption documentation**
+- [ ] **Task 12: Update `docs/README.md` with S3 encryption documentation
 
   - **Goal:** The project README should mention S3 TLS version configuration and custom CA certificate support
   - **Files:** `docs/README.md`
   - **Note:** Task 8 updated `.hlf` help files, but `docs/README.md` still does not mention S3 TLS/CA features under the Supported Protocols section.
-  - **Blocked by:** none
-
+  - **Blocked by:** Tasks 10, 11
 ---
 
 ## Dependencies
@@ -335,9 +345,12 @@ Task 4 ───────────→ Task 5
 - Task 5 depends on all implementation tasks (1-4)
 - Tasks 6, 7, 8 are sequential (build → test → docs)
 - Tasks 9-12 are independent follow-ups; none block the original plan
+- Task 12 depends on Tasks 10, 11 (documentation should reflect localized strings and error messages)
+
 ---
 
 ## Commit Plan
+
 
 **Checkpoint 1** (after Tasks 1-2):
 ```
@@ -422,5 +435,5 @@ chore(s3): verify code style, build, and document encryption options
 |2026-04-26|aif-improve: added temp file cleanup note to Task 2 (delete in Close())|
 |2026-04-26|aif-improve: added Design Note to Task 3 (shared TLS settings)|
 |2026-04-26|aif-improve: added API details to Task 4 (GetOpenFileNameW/GetSaveFileNameW)|
-|2026-04-29|Post-merge security audit: redacted temp file path from logs (LOW-1), checked `ne_ssl_set_certificates_storage` return value (LOW-2), used `Contains()` for PEM validation (LOW-3)|
+|2026-04-30|aif-improve (2nd iteration): added Task 13 (S3 tab visibility toggle), refined Task 10 with explicit translations, refined Task 11 with current code verification, noted Task 3 as deliberate WinSCP UI deviation, updated dependency chain|
 |2026-04-29|aif-improve refinement: removed infeasible `FTerminal->LogEvent()` from Task 1, documented empty-dialog UX gap in Task 4, added Tasks 9-12 as post-implementation follow-ups|

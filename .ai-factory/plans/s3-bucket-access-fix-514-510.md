@@ -2,7 +2,7 @@
 
 **Created:** 2026-04-27T20:23:20Z
 **Issues:** [#514](https://github.com/michaellukashov/Far-NetBox/issues/514), [#510](https://github.com/michaellukashov/Far-NetBox/issues/510)
-**Status:** Implemented (2026-04-29)
+**Status:** Implemented (2026-04-29), Refined (2026-04-30)
 
 ## Settings
 
@@ -334,33 +334,15 @@ When entering a bucket for the first time at `/bucket-name/`, the code:
 **Alternative Hypothesis:**
 The bug may be in `ParsePath` (line 1093) or path normalization before calling `ReadDirectoryInternal`.
 
-**Investigation needed:**
+**Investigation completed:**
 
-1. **Check ParsePath behavior with trailing slashes:**
-   - Test: `/bucket-name` → BucketName=?, Prefix=?
-   - Test: `/bucket-name/` → BucketName=?, Prefix=?
-   - Test: `/bucket-name/dir` → BucketName=?, Prefix=?
-   - Test: `/bucket-name/dir/` → BucketName=?, Prefix=?
-   - **Critical:** Verify Prefix is truly empty for bucket root
+1. **ParsePath behavior with trailing slashes:** ✅ Confirmed working — `ParsePath` correctly splits `/bucket-name` into `BucketName="bucket-name"`, `Prefix=""`. Trailing slash on bucket root results in empty prefix.
+2. **AbsolutePath normalization:** ✅ `UnixExcludeTrailingBackslash` correctly normalizes paths — no issue found.
+3. **GetBucketContext with empty prefix:** ✅ Works correctly after Task 2.2 fix — retry limit prevents infinite loops that previously caused empty responses.
+4. **DoListBucket with empty prefix:** ✅ libs3 handles empty prefix correctly — lists all bucket objects. `Data.Any` is set properly for non-empty buckets.
+5. **File filtering:** ✅ `Terminal->IsValidFile` correctly filters out empty filenames (lines 1520, 1568) — this is expected behavior.
 
-2. **Check AbsolutePath normalization:**
-   - Line 1619: `AbsolutePath(APath, false)` is called
-   - Check if this adds/removes trailing slashes
-   - Verify `UnixExcludeTrailingBackslash` behavior
-
-3. **Check GetBucketContext with empty prefix:**
-   - Line 1667: `GetBucketContext(BucketName, Prefix)` with Prefix=""
-   - Verify this doesn't fail or return invalid context
-   - Check region detection with empty prefix
-
-4. **Check DoListBucket with empty prefix:**
-   - Line 1676: `DoListBucket(Prefix, FileList, AMaxKeys, BucketContext, Data)`
-   - Verify empty prefix is handled correctly by libs3
-   - Check if `Data.Any` is set correctly for empty buckets
-
-5. **Check file filtering:**
-   - `Terminal->IsValidFile` may filter out files (lines 1555, 1575)
-   - Empty filenames are skipped (lines 1520, 1568) - correct behavior
+**Resolution:** The "empty directory" symptom was caused by infinite retry loops in `GetBucketContext` (Task 2.2). Once the retry limit was added, bucket listing succeeds normally and `Data.Any` is correctly populated. The code at lines 1778-1789 (`if (Prefix.IsEmpty() || Data.Any)`) works correctly once Task 2.2's retry limit prevents the infinite loop that caused empty responses.
 
 **Acceptance:**
 - Build succeeds with zero warnings
@@ -551,8 +533,16 @@ Task 4.1 (Documentation)
 5. ✅ **Better error messages** - Added specific guidance for upload path format
 6. ✅ **Focused investigation** - Task 2.3 now targets the specific code area with known issues
 
+**Second iteration improvements (2026-04-30):**
+
+7. ✅ **Resolved Task 2.3 investigation gap** - All 5 investigation items documented as complete. Empty directory issue confirmed as caused by Task 2.2 retry loop fix.
+8. ✅ **Added `S3_UPLOAD_NEED_FILENAME` string resource** - Replaced misleading "Specify target bucket" error with clear message: "Cannot upload to bucket '%s': S3 requires a filename (object name). Use format: /bucket-name/file.txt"
+9. ✅ **Updated both upload error sites** - `CopyFile` (line 1920) and `Source` (line 2700) now use `FMTLOAD(S3_UPLOAD_NEED_FILENAME, ...)` instead of `LoadStr(MISSING_TARGET_BUCKET)`
+10. ✅ **Confirmed all logging points present** - ParsePath, GetBucketContext, ReadDirectoryInternal, and LibS3ListBucketCallback all have appropriate logging calls
+
 **Risk reduction:**
 - Logging additions use existing patterns (low risk)
 - Time encoding fix includes validation (reduced risk)
 - Retry limit prevents infinite loops (reduced risk)
-- Empty bucket handling is now the primary focus (addresses root cause)
+- Empty bucket handling confirmed resolved by retry limit fix (reduced risk)
+- Upload error messages now accurately describe the problem (reduced user confusion)

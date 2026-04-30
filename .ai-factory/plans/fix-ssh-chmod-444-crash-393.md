@@ -56,6 +56,8 @@ Base Layer (src/base/)
 
 ### Phase I. Investigation
 
+**Note:** All tasks in Phase I are investigation steps; execution order is flexible but Tasks 2.6‑2.7 should follow Task 2's findings.
+
 #### Task 1: Analyze crash path in SFTP `ChangeFileProperties`, rights handling, and dialog initialization
 
 **Target files:**
@@ -66,11 +68,32 @@ Base Layer (src/base/)
 **Steps:**
 1. Trace `TSFTPFileSystem::ChangeFileProperties()` from `ReadFile()` through `Packet.AddProperties()` and `SendPacketAndReceiveResponse()`. Verify `File->GetRights()` is non-null before `Packet.AddProperties(&Properties, *File->GetRights(), ...)` (~line 4412).
 1a. **Critical:** `ReadFile(RealFileName, File)` at line 4373 may set `File` to nullptr on failure (e.g., permission denied). Line 4378 has `DebugAssert(FilePtr.get())` which fires in debug but is a no-op in release. If `ReadFile` fails, line 4412 dereferences null `File`. Add step to verify this path and plan a null-guard.
-2. Examine `TRights::Combine()` bit-clearing behavior via `NumberUnset`. Verify that `TRightsContainer::SetRights()` and `TRemoteProperties::ChangedProperties()` populate `NumberUnset` for `444` so that execute bits are actually cleared, not just OR'd in.
+2. Examine `TRights::Combine()` bit-clearing behavior via `NumberUnset`.
+   a. Trace `TRightsContainer::SetRights()` → `TRights::SetRight()` → `TRights::SetNumberSet/Unset()` when the dialog returns `444`. Verify `NumberUnset` is set for execute bits (owner, group, other).
+   b. Trace `TRemoteProperties::ChangedProperties()` to confirm `NumberUnset` survives the `OriginalProperties → NewProperties` diff.
+   c. Verify `TRights::Combine()` receives a `Properties->Rights` with `NumberUnset` execute bits set, so `Result &= ~Other.NumberUnset` actually clears them.
+   d. If `NumberUnset` is zero for `444`, document this as a pre-existing functional bug (chmod sends wrong value) and note whether it contributes to the crash.
+   e. **Note:** `TRights::operator==` uses dual-mode comparison: `AllowUndef==true` compares per-right (`FSet` and `FUnset`), `AllowUndef==false` compares only `GetNumber()` (`FSet`). For chmod 444 on a standard Unix directory, both sides are fully-defined, so the comparison is correct. This is a **functional bug** that could silently skip rights changes in edge cases (S3, WebDAV, incomplete parsing), but is **unlikely to be the direct crash cause**. Classify accordingly.
 3. Check `AddProperties()` (`SftpFileSystem.cpp` ~line 502) for unexpected rights values. Verify `File->GetRights()` is non-null (defensive) and that `Properties->Rights` has `NumberUnset` set for execute bits so `Combine()` produces `0x124` (444), not a value with leftover execute bits.
 4. Add verbose `LogEvent()` instrumentation around rights calculation and packet construction.
 
 **Deliverable:** Written findings on whether the crash originates in the pre-chmod `ReadFile`, the `AddProperties` packet build, the `NumberUnset` propagation, or the post-chmod response handling.
+
+#### Task 1.5: Add concrete logging instrumentation to track crash path
+
+**Target files:** `src/core/SftpFileSystem.cpp`, `src/core/Terminal.cpp`, `src/NetBox/WinSCPFileSystem.cpp`
+
+**Steps:**
+1. In `TSFTPFileSystem::ChangeFileProperties()` (line 4373‑4412), add `FTerminal->LogEvent()` calls:
+   - Before `ReadFile()`: log `"ChangeFileProperties: reading file %s"`, `RealFileName`.
+   - After `ReadFile()`: log `"ChangeFileProperties: ReadFile returned %p"`, `File`.
+   - Before `Packet.AddProperties()`: log `"ChangeFileProperties: rights set=%04x unset=%04x"`, `Properties.Rights.GetNumberSet()`, `Properties.Rights.GetNumberUnset()`.
+   - After `SendPacketAndReceiveResponse()`: log `"ChangeFileProperties: chmod completed"`.
+2. In `TTerminal::ReadDirectory()` catch block (line 3816), add log: `"ReadDirectory catch: FFiles=%p"`, `FFiles`.
+3. In `TWinSCPFileSystem::GetFindDataEx()` (line 497), add log: `"GetFindDataEx: GetTerminal()->Files=%p"`, `GetTerminal()->Files`.
+4. All logs must respect `FTerminal->GetConfiguration()->GetActualLogProtocol() >= 2` for DEBUG, `>= 1` for INFO.
+
+**Deliverable:** Concrete logging points inserted; enable verbose logging to capture crash state.
 
 ---
 
@@ -83,45 +106,18 @@ Base Layer (src/base/)
 
 **Steps:**
 1. Trace `TTerminal::ChangeFileProperties()` → `FileModified()` → `ReactOnCommand(fsChangeProperties)` → `ReadDirectory(true)`.
-2. Examine `ReadDirectory()` exception handling (`catch(Exception & E) { CommandError(...) }`). Verify `FFiles` is non-null before `FFiles->GetDirectory()` in the catch block. Check that `FMTLOAD(LIST_DIR_ERROR, ...)` receives a valid directory string and does not crash `fmt::format`.
-3. Examine `DoReadDirectoryFinish()`: verify `AFiles` is non-null and valid before `FFiles.reset(AFiles)`. Check if `DoReadDirectory(ReloadOnly)` (which calls `FOnReadDirectory`) dereferences `FFiles` when it is null or empty.
-4. Examine `DoReadDirectory()` callback (`FOnReadDirectory`) in the plugin layer: verify it handles an empty or permission-denied directory gracefully without dereferencing null `TRemoteFile` objects.
+2. Examine `ReadDirectory()` exception handling (`catch(Exception & E) { CommandError(...) }`). Verify `FFiles` is non-null before `FFiles->GetDirectory()` in the catch block. Check that `FMTLOAD(LIST_DIR_ERROR, ...)` receives a valid directory string and does not crash `fmt::format`. **Critical:** If `FFiles` is in a corrupted state (not null but with invalid internal data), `GetDirectory()` could return bad data that crashes `fmt::format`.
+3. Examine `DoReadDirectory()` callback (`FOnReadDirectory`) in the plugin layer: verify it handles an empty or permission-denied directory gracefully without dereferencing null `TRemoteFile` objects.
+3a. **Note:** `CreateSelectedFileList` duplicates `TRemoteFile` objects (via `RemoteFile->Duplicate(true)`), so stale pointer risk is mitigated for the dialog path. Focus investigation on the post-chmod `UpdatePanel()` → `GetFindDataEx()` path where `FFiles` is accessed directly without duplication.
+4. Examine `DoReadDirectoryFinish()`: verify `AFiles` is non-null and valid before `FFiles.reset(AFiles)`. Check if `DoReadDirectory(ReloadOnly)` (which calls `FOnReadDirectory`) dereferences `FFiles` when it is null or empty.
 5. Examine `TWinSCPFileSystem::FileProperties()` → `UpdatePanel()` / `RedrawPanel()` for invalid panel-item or `UserData` access after a failed refresh. Check `CreateSelectedFileList` for stale `TRemoteFile` pointers from a previous directory listing.
 6. Add verbose `LogEvent()` instrumentation in `ReadDirectory`, `DoReadDirectoryFinish`, `DoReadDirectory`, and `FileModified`.
+7. Examine `GetFindDataEx()` (`WinSCPFileSystem.cpp` ~line 497): `for (int32_t Index = 0; Index < GetTerminal()->Files->Count; ++Index)`. Plan a defensive `if (GetTerminal()->Files != nullptr)` guard before the loop. If null, log a DEBUG event and return empty panel items.
 
 **Deliverable:** Written findings on whether the crash is a null dereference, use-after-free, unhandled exception during panel refresh, or invalid `FFiles` state after the directory becomes permission-denied.
 
 ---
 
-#### Task 1.5: Verify `TRights::Combine()` `NumberUnset` propagation from dialog to packet
-
-**Target files:**
-- `src/core/RemoteFiles.cpp`
-- `src/NetBox/WinSCPDialogs.cpp`
-
-**Steps:**
-1. Trace `TRightsContainer::SetRights()` → `TRights::SetRight()` → `TRights::SetNumberSet/Unset()` when the dialog returns `444`. Verify `NumberUnset` is set for execute bits (owner, group, other).
-2. Trace `TRemoteProperties::ChangedProperties()` to confirm `NumberUnset` survives the `OriginalProperties → NewProperties` diff.
-3. Verify `TRights::Combine()` receives a `Properties->Rights` with `NumberUnset` execute bits set, so `Result &= ~Other.NumberUnset` actually clears them.
-4. If `NumberUnset` is zero for `444`, document this as a pre-existing functional bug (chmod sends wrong value) and note whether it contributes to the crash.
-
-**Deliverable:** Confirmation that `Combine()` produces the expected `0x124` (444) or identification of a `NumberUnset` propagation gap.
-
----
-
-#### Task 2.5: Add defensive null-check for `GetTerminal()->Files` in `GetFindDataEx`
-
-**Target files:**
-- `src/NetBox/WinSCPFileSystem.cpp`
-
-**Steps:**
-1. Examine `GetFindDataEx()` (`WinSCPFileSystem.cpp` ~line 497): `for (int32_t Index = 0; Index < GetTerminal()->Files->Count; ++Index)`.
-2. Add a defensive `if (GetTerminal()->Files != nullptr)` guard before the loop. If null, log a DEBUG event and return empty panel items.
-3. Follow naming conventions and add `FTerminal->LogEvent()` at INFO level for the defensive path.
-
-**Deliverable:** Hardened `GetFindDataEx()` that does not crash if `FFiles` is unexpectedly null during panel refresh.
-
-**Depends on:** Task 2 (must understand panel refresh flow first).
 
 #### Task 2.6: Harden `DoReadDirectoryFinish` against exceptions in `FOnReadDirectory` callback
 
@@ -155,7 +151,8 @@ catch (Exception & E)
 }
 ```
 2. If `FFiles` is null when this executes (possible if `CustomReadDirectory` throws before `DoReadDirectoryFinish` sets `FFiles`), dereferencing `FFiles->GetDirectory()` crashes.
-3. Add null check: if `FFiles` is null, use a fallback directory string (e.g., `GetCurrentDirectory()`) for the error message.
+2a. **Refinement:** The `__finally` block in `ReadDirectory` ensures `DoReadDirectoryFinish` runs before the catch block, so `FFiles` should be set by then. The crash risk is more about `FFiles` being in a **corrupted** state than being **null**. Verify `Files.release()` is non-null when `CustomReadDirectory` throws. If `Files` was created but `SetDirectory` or `CustomReadDirectory` failed partway, `Files` may be in an inconsistent state. Check `TRemoteDirectory` constructor and `SetDirectory` for null-safety.
+3. Add null check: if `FFiles` is null or corrupted, use a fallback directory string (e.g., `GetCurrentDirectory()`) for the error message.
 4. Add verbose `LogEvent()` instrumentation in the catch block.
 
 **Deliverable:** `ReadDirectory` catch block that does not crash when `FFiles` is null.
@@ -164,24 +161,72 @@ catch (Exception & E)
 
 ### Phase II. Fix
 
-#### Task 3: Implement defensive null-checks and error handling in critical paths
 
-**Target files:** Primary: `src/core/Terminal.cpp`, `src/NetBox/WinSCPFileSystem.cpp`. Secondary investigation: `src/core/RemoteFiles.cpp`, `src/NetBox/WinSCPDialogs.cpp`, `src/core/SftpFileSystem.cpp`.
+#### Task 3.1: Guard `TSFTPFileSystem::ChangeFileProperties()` against null `File` after `ReadFile()` failure
 
-**Depends on:** Tasks 1, 1.5, 2, 2.5, 2.6, 2.7 (all investigation tasks must complete before fix is applied).
+**Target files:** `src/core/SftpFileSystem.cpp`
+
+**Depends on:** Task 1 findings.
 
 **Steps:**
-1. **Pre-chmod null guard** (from Task 1 findings): In `TSFTPFileSystem::ChangeFileProperties()` (`SftpFileSystem.cpp` ~line 4373-4412), add defensive null check after `ReadFile()` returns. If `File` is null, log the failure and throw a meaningful exception instead of dereferencing null at line 4412 (`File->GetRights()`).
-2. **ReadDirectory catch block guard** (from Task 2.7 findings): In `TTerminal::ReadDirectory()` (`Terminal.cpp` line 3816), guard against null `FFiles` in the catch block. Use `GetCurrentDirectory()` as fallback for the error message if `FFiles` is null.
-3. **GetFindDataEx null guard** (from Task 2.5 findings): In `TWinSCPFileSystem::GetFindDataEx()` (`WinSCPFileSystem.cpp` line 497), add `if (GetTerminal()->Files != nullptr)` check before the loop. Return empty panel items if null.
-4. **DoReadDirectoryFinish hardening** (from Task 2.6 findings): If investigation shows `FOnReadDirectory` callback can throw and corrupt state, add `try/catch` around the callback invocation. Ensure `FFiles` is set before `DoReadDirectory` is called.
-5. **NumberUnset propagation fix** (from Task 1.5 findings): If `TRights::Combine()` or `TRightsContainer::SetRights()` does not properly populate `NumberUnset` for execute bits when setting `444`, fix the propagation so `Result &= ~Other.NumberUnset` actually clears execute bits.
-6. Ensure all new code paths log via `FTerminal->LogEvent()` at appropriate levels (INFO for success paths, DEBUG for internal state).
-7. Follow naming conventions (`T` prefix for classes, `F` prefix for members, PascalCase methods, 2-space indent, CRLF, UTF-8 no BOM).
+1. In `TSFTPFileSystem::ChangeFileProperties()` (line 4373‑4412), add defensive null check after `ReadFile()` returns.
+2. If `File` is null, log the failure (`"ChangeFileProperties: ReadFile failed for %s"`, `RealFileName`) and throw a meaningful exception (e.g., `EFatal`) instead of dereferencing null at line 4412 (`File->GetRights()`).
+3. Ensure logging respects `FTerminal->GetConfiguration()->GetActualLogProtocol() >= 1`.
 
-**Deliverable:** Crash-free chmod operation on remote directories with `444` permissions, with zero compiler warnings.
+**Deliverable:** Null‑safe `ChangeFileProperties()` that does not crash when `ReadFile` fails.
 
----
+#### Task 3.2: Guard `TTerminal::ReadDirectory()` catch block against null `FFiles`
+
+**Target files:** `src/core/Terminal.cpp`
+
+**Depends on:** Task 2.7 findings.
+
+**Steps:**
+1. In `TTerminal::ReadDirectory()` catch block (line 3816), add null check: if `FFiles` is null, use `GetCurrentDirectory()` as fallback for the error message.
+2. Log the condition: `"ReadDirectory catch: FFiles=%p, using fallback directory"`, `FFiles`.
+3. Ensure `FMTLOAD(LIST_DIR_ERROR, …)` receives a valid directory string (non‑null).
+
+**Deliverable:** `ReadDirectory` catch block that does not crash when `FFiles` is null.
+
+#### Task 3.3: Guard `TWinSCPFileSystem::GetFindDataEx()` against null `GetTerminal()->Files`
+
+**Target files:** `src/NetBox/WinSCPFileSystem.cpp`
+
+**Depends on:** Task 2 findings.
+
+**Steps:**
+1. In `TWinSCPFileSystem::GetFindDataEx()` (line 497), add `if (GetTerminal()->Files != nullptr)` guard before the loop.
+2. If null, log a DEBUG event (`"GetFindDataEx: GetTerminal()->Files is null, returning empty panel"`) and return empty panel items.
+3. Follow naming conventions and add `FTerminal->LogEvent()` at INFO level for the defensive path.
+
+**Deliverable:** Hardened `GetFindDataEx()` that does not crash if `FFiles` is unexpectedly null during panel refresh.
+
+#### Task 3.4: Harden `DoReadDirectoryFinish()` against exceptions in `FOnReadDirectory` callback
+
+**Target files:** `src/core/Terminal.cpp`, `src/NetBox/WinSCPFileSystem.cpp`
+
+**Depends on:** Task 2.6 findings.
+
+**Steps:**
+1. If investigation shows `FOnReadDirectory` callback can throw and corrupt state, add `try/catch` around the callback invocation in `DoReadDirectoryFinish()`.
+2. Ensure `FFiles` is set before `DoReadDirectory` is called (already done via `FFiles.reset(AFiles)`).
+3. Log any caught exception with `FTerminal->LogEvent()` at WARN level.
+
+**Deliverable:** `DoReadDirectoryFinish()` that isolates plugin‑layer exceptions from core state.
+
+#### Task 3.5: Fix `TRights::Combine()` `NumberUnset` propagation (if bug confirmed)
+
+**Target files:** `src/core/RemoteFiles.cpp`, `src/NetBox/WinSCPDialogs.cpp`
+
+**Depends on:** Task 1 findings (NumberUnset verification).
+
+**Steps:**
+1. If investigation confirms `TRights::Combine()` or `TRightsContainer::SetRights()` does not properly populate `NumberUnset` for execute bits when setting `444`, fix the propagation so `Result &= ~Other.NumberUnset` actually clears execute bits.
+2. Ensure the fix does not break other rights‑combination scenarios (e.g., `AllowUndef` modes).
+3. Add a test‑comment referencing Issue #393.
+
+**Deliverable:** Correct `NumberUnset` propagation for `444` chmod, ensuring execute bits are cleared.
+
 
 ### Phase III. Verification & Documentation
 
@@ -197,9 +242,25 @@ catch (Exception & E)
 
 ---
 
+#### Task 5: Manual verification steps
+
+**Target:** Far Manager with NetBox plugin, connected to an SSH/SFTP server.
+
+**Steps:**
+1. After building the plugin (Task 4), launch Far Manager (`Far3_x64\Far.exe`).
+2. Connect to an SSH/SFTP server with a directory that you have write permissions to.
+3. Navigate to that directory in NetBox panel.
+4. Select the directory, press `Ctrl+A` to open the Attributes dialog.
+5. Change permissions to `444` (`r--r--r--`), uncheck all execute bits, and apply.
+6. Verify that Far Manager does not crash.
+7. If the directory becomes non‑traversable (expected), verify that the panel updates gracefully (shows empty listing or error message).
+8. Repeat the test with a file (non‑directory) to ensure the fix does not break normal chmod.
+
+**Deliverable:** Confirmation that the crash is resolved and no regression introduced.
+
 ## Fix Summary
 
-> *To be filled in after Task 3 is complete. Record the actual root cause and the exact files/lines changed.*
+> *To be filled in after Tasks 3.1‑3.5 are complete. Record the actual root cause and the exact files/lines changed.*
 
 ---
 

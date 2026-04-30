@@ -59,9 +59,9 @@ Implement integration with Far Manager's folder history mechanism so that when u
 - [x] **TASK-4: Update panel directory Param and ShortcutData with encoded session state**
   - **Files:** `src/NetBox/WinSCPFileSystem.cpp` (`SynchronizeBrowsing()`, `UpdatePanelDirectoryParam()`, `GetOpenPanelInfoEx()`)
   - **Deliverable:**
-    - Modify `SynchronizeBrowsing()` to set `FarPanelDirectory::Param` with encoded session state for the passive panel
-    - Add `UpdatePanelDirectoryParam()` to centralize active-panel `Param` updates (called from `SetDirectoryEx()`), guarded by `FUpdatingPanelParam` to prevent reentrancy
-    - Update `GetOpenPanelInfoEx()` to set `ShortcutData` via `EncodeSessionParam()` so Far Manager history captures the current session and directory
+  - Modify `SynchronizeBrowsing()` to set `FarPanelDirectory::Param` with encoded session state for the passive panel. **Consistency fix:** Use `FolderAndSessionName` (folder + local name) instead of `GetLocalName()` alone, matching `GetOpenPanelInfoEx()`'s `ShortcutData` format. This ensures Far Manager's folder history and shortcut history use the same session identifier, enabling correct session matching in `OpenPluginEx` line 358 for sessions inside folders.
+  - Add `UpdatePanelDirectoryParam()` to centralize active-panel `Param` updates (called from `SetDirectoryEx()`), guarded by `FUpdatingPanelParam` to prevent reentrancy. **Same consistency fix:** Use `FolderAndSessionName` for `Param` encoding, matching `GetOpenPanelInfoEx()`.
+  - Update `GetOpenPanelInfoEx()` to set `ShortcutData` via `EncodeSessionParam()` so Far Manager history captures the current session and directory
   - **Pattern:** Follow existing `FarPanelDirectory` usage pattern
   - **Error handling:** `EncodeSessionParam` is a pure string-formatting operation (noexcept by design); encoding failures are not expected. If future extensions add fallible steps, degrade by setting `Param = nullptr`
   - **Logging:** `FTerminal->LogEvent()` in `UpdatePanelDirectoryParam()`; `SynchronizeBrowsing()` logs via the same path indirectly. NOTE: `GetOpenPanelInfoEx` also logs the encoded `ShortcutData`
@@ -69,7 +69,7 @@ Implement integration with Far Manager's folder history mechanism so that when u
 
 - [x] **TASK-5: Handle panel restoration from FarManager history**
   - **Files:** `src/NetBox/WinSCPPlugin.cpp` (`OpenPluginEx()`), `src/NetBox/FarPlugin.cpp` (`OpenPlugin()`)
-  - **Deliverable:** When `OpenPluginEx()` is called with `OPEN_SHORTCUT` or `OPEN_COMMANDLINE` from Far Manager history, parse the `Param` field to extract session name and directory, then restore the session automatically without showing session list
+  - **Deliverable:** When `OpenPluginEx()` is called with `OPEN_SHORTCUT` or `OPEN_COMMANDLINE` from Far Manager history, parse the `Param` field to extract session name and directory, then restore the session automatically without showing session list. After `ParseUrl`, if `Entry.Valid` was true but the resulting `Session` is ad-hoc (not found in stored sessions), log WARNING and show user-facing message before falling back to session list (aligns with error handling matrix: 'Session not found' → ERROR dialog → fallback to session list).
   - **Integration:** Reuse existing `OPEN_SHORTCUT` parsing flow -- extend to handle `Param`-based session restoration
   - **Error handling matrix:**
     | Failure Scenario | User-Facing Behavior | Log Level | Fallback |
@@ -101,19 +101,26 @@ After completing TASK-5:
 - [x] **TASK-7: Handle multi-panel scenarios and panel lifecycle**
   - **Files:** `src/NetBox/WinSCPFileSystem.cpp` (`ClearConnectedState()`), `src/NetBox/FarPlugin.cpp` (panel lifecycle)
   - **Deliverable:**
-    - Verify that each panel maintains independent `Param` state. No cross-panel synchronization required. Each panel's history entry is self-contained.
-    - Clear history state on `ClearConnectedState()` to prevent stale entries
-    - Handle case where user has two NetBox panels open with different sessions -- each panel's history entry is independent
+  - Verify that each panel maintains independent `Param` state. No cross-panel synchronization required. Each panel's history entry is self-contained.
+  - Clear `FarPanelDirectory.Param` on `Disconnect()` / `ClearConnectedState()` by calling `FCTL_SETPANELDIRECTORY` with `Param = nullptr` on the active panel. This prevents stale history entries from referencing disconnected sessions.
+  - Handle case where user has two NetBox panels open with different sessions -- each panel's history entry is independent
   - **Logging:** DEBUG log panel lifecycle events affecting history
   - **Dependency:** TASK-4, TASK-5
 
-- [-] **TASK-8: Ensure compatibility with existing path history (FPathHistory)**
+- [x] **TASK-8: Ensure compatibility with existing path history (FPathHistory)**
   - **Files:** `src/NetBox/WinSCPFileSystem.cpp` (`TerminalChangeDirectory`, `FPathHistory`), `src/NetBox/WinSCPDialogs.cpp` (Open Directory dialog)
   - **Deliverable:** Write integration test that opens session, navigates, triggers history restore, and asserts no `FPathHistory` corruption; both mechanisms should coexist
-  - **Note:** Integration test deliverable deferred pending test framework setup (same blocker as TASK-9). Coexistence with `FPathHistory` verified by code review only.
+  - **Status:** Coexistence with `FPathHistory` verified by code review. Integration test deferred pending test framework setup (same blocker as TASK-9).
   - **Logging:** DEBUG log when both history systems are updated
-  - **Dependency:** TASK-4
+  - **Dependency:** TASK-4, TASK-5
 
+
+- [ ] **TASK-11: Clear stale FarPanelDirectory::Param on session disconnect**
+ - **Files:** `src/NetBox/WinSCPFileSystem.cpp` (`Disconnect()`, `ClearConnectedState()`)
+ - **Deliverable:** In `Disconnect()` (or `ClearConnectedState()`), call `FCTL_SETPANELDIRECTORY` on the active panel with `Param = nullptr` and `PluginId = NetBoxPluginGuid` to invalidate the stale history entry. This prevents Far Manager's folder history from referencing a disconnected session. Must handle the case where the panel is already being closed (no active panel to update).
+ - **Error handling:** If `FCTL_SETPANELDIRECTORY` fails (e.g., panel already closed), log DEBUG and continue silently -- this is a best-effort cleanup.
+ - **Logging:** DEBUG log when `Param` is cleared on disconnect
+ - **Dependency:** TASK-7
 ### Phase 4: Testing and Verification
 
 - [x] **TASK-9: Write unit tests for session history utilities**
@@ -144,5 +151,15 @@ After completing TASK-5:
   - **Manual testing:** ⏭️ Deferred to runtime verification in Far Manager (requires live session)
   - **Pass criteria for history restoration:** (1) Session connects within 5s, (2) Remote directory matches history entry, (3) File list displays without errors, (4) Console title shows session name
   - **Files:** `src/NetBox/`, `Far3_x64/Plugins/NetBox/`
-  - **Dependency:** TASK-5, TASK-6, TASK-7, TASK-8
+ - **Dependency:** TASK-5, TASK-6, TASK-7, TASK-8, TASK-11
+
+- [ ] **TASK-12: Document folder history feature in user guide**
+ - **Files:** `docs/user-guide.md`
+ - **Deliverable:** Add a section to `docs/user-guide.md` explaining:
+   - Far Manager's folder history (`Alt-F12` or equivalent) now works with NetBox sessions
+   - How to navigate back to a previously visited session/directory via folder history
+   - The `netbox://<session_name>/<remote_directory>` URL format used in history entries
+   - Backward compatibility with legacy `netbox:SessionName\1RemoteDirectory` format
+ - **Constraint:** Keep documentation concise and user-facing; avoid internal implementation details
+ - **Dependency:** TASK-5, TASK-11
 </content>
