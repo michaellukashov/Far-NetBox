@@ -8,7 +8,7 @@
 
 | Setting | Value |
 |---------|-------|
-| Testing | no |
+| Build verification | pending | x86/x64/ARM64 MSVC W4 `RelWithDebugInfo` |
 | Logging | verbose |
 | Docs    | yes |
 
@@ -95,6 +95,18 @@ Third-Party (libs/)     <-- no modifications; patch if required
 
 **Logging:**
 - `LOG_DEBUG` on string ref count underflow/overflow detection (add defensive checks).
+- Task 2 also hardened `nbstr_getNil()` race: replaced lazy-init global with C++11 thread-safe function-local static in `nbstring.cpp`. Documented intentional non-atomic `nbstr_lock`/`nbstr_unlock` behavior.
+
+### Lock Acquisition Order (from systemPatterns.md)
+
+Observed hierarchy (from leaf to root):
+
+1. `m_SpeedLimitSync` (`CFtpControlSocket`) — leaf lock; never held with other locks.
+2. `TTerminalQueue::FItemsSection` — queue container lock.
+3. `TQueueItem::FSection` — item state lock; may be acquired under `FItemsSection`.
+4. `TFileOperationProgressType::FSection` — progress lock; recursive.
+
+Cross-lock rule: `FItemsSection` may call `Item->GetStatus()` which acquires `FSection`. No reverse ordering has been observed. `TCriticalSection` wraps a Windows `CRITICAL_SECTION` and is recursive.
 
 ---
 
@@ -206,6 +218,7 @@ Third-Party (libs/)     <-- no modifications; patch if required
 - **Exclude** `src/core/FileOperationProgress.cpp` line 485: `SleepEx(100, true)` is an intentional alertable wait for APC completion; converting to an event wait would break APC delivery. Document this exception in comments.
 - **Exclude** `src/core/Queue.cpp`: `TSignalThread::WaitForEvent` already uses event objects with timeout.
 - Preserve existing timeout behavior so that no functional timing changes are introduced.
+- **Note:** In `Terminal.cpp`, when event creation fails (`FClientsZeroEvent == nullptr` or `FDirectoryCreatedEvent == nullptr`), the original `Sleep` polling is retained as a safe fallback (lines 851, 7739). This is a defensive design choice, not a bug.
 
 **Logging:**
 - `LOG_DEBUG` on event creation, wait entry, and wake source (event vs timeout).
@@ -253,6 +266,7 @@ Third-Party (libs/)     <-- no modifications; patch if required
 - Build x86 using `build-x86.bat`.
 - Verify MSVC W4 produces zero warnings.
 - If `OPT_USE_UNITY_BUILD` causes symbol redefinition, disable it (`-DOPT_USE_UNITY_BUILD=OFF`) for the verification build.
+- Also verify that CMake configure succeeds on Linux (`cmake -S . -B build‑linux‑ninja -G Ninja`) with no missing file references.
 
 **Logging:**
 - `LOG_INFO` build artifacts and warning counts.
@@ -309,6 +323,11 @@ Third-Party (libs/)     <-- no modifications; patch if required
 | `std::call_once` in `InitOpenssl()` | Task 11 | Thread-safe lazy initialization |
 | S3 `TGuard` dereference fixed | Task 1.5 | Real bug discovered during audit |
 
+## Edge Cases and Implementation Notes
+
+- **Event‑fallback pattern:** In `Terminal.cpp`, when event creation fails or is omitted (`FClientsZeroEvent == nullptr` or `FDirectoryCreatedEvent == nullptr`), the original `Sleep` polling is retained as a safe fallback (lines 851, 7739). This preserves functionality under resource‑constrained scenarios.
+- **Linux CMake configure verification:** Although the primary target is Windows/MSVC, the CMake configuration must also succeed on Linux for cross‑compilation CI. Verify with `cmake -S . -B build‑linux‑ninja -G Ninja` that no missing file references appear (already validated during OpenSSL cleanup).
+
 
 ## Commit Plan
 
@@ -318,11 +337,17 @@ Third-Party (libs/)     <-- no modifications; patch if required
 | After Phase II | 4-7 | `fix(threading): marshal all Far Manager API calls to main thread` |
 | After Phase III | 8-11 | `fix(threading): eliminate race conditions and busy-waiting in protocol code` |
 | After Phase IV | 12-14 | `docs(threading): document threading model and verification` |
+## Open Items
 
+- Build verification (MSVC W4, x86/x64, `RelWithDebugInfo`) requires a Windows environment.
+- Verify no `Sleep`-based polling remains except the documented `SleepEx` alertable wait in `FileOperationProgress.cpp`.
+- Consider adding address-based lock ordering for `FileOperationProgress::Assign()` dual-section acquisition.
+
+---
 ## Verification
 
 - [x] Tasks 1-11, 1.5, 3.5, 13-14 implemented and committed.
-- [x] Task 12: Build verification completed on Windows/MSVC x64 RelWithDebugInfo.
+- [ ] Task 12: Build verification pending Windows/MSVC environment (x64/x86/ARM64 `RelWithDebugInfo`).
 - [x] No `Sleep`-based polling remains for thread synchronization, except `SleepEx(100, true)` in `FileOperationProgress.cpp` which is an intentional alertable wait for APC completion (documented exception). Short timeouts on event waits are acceptable.
 - [x] No Far Manager API calls from worker threads remain (verified by code review of all `CreateThread` / `_beginthreadex` / `std::thread` entry points).
 - [x] Lock ordering documented and cycle-free.
