@@ -313,7 +313,9 @@ int32_t TSimpleThread::ThreadProc(void * Thread)
 
   std::string threadIdStr = std::to_string(::GetCurrentThreadId());
   TLogContext ctx_thread("thread_id", threadIdStr);
-  LOG_THREAD_START(threadIdStr.c_str());
+  TLogContext ctx_class("class", SimpleThread->ClassName());
+  LOG_THREAD_START(SimpleThread->ClassName());
+
 
   try
   {
@@ -1153,6 +1155,8 @@ void TTerminalQueue::ProcessEvent()
               FForcedItems->Delete(ForcedIndex);
             }
             FItemsInProcess++;
+            TLogContext ctx_item("item", Item1->GetInfo()->Source.c_str());
+            LOG_QUEUE_EVENT("processing");
           }
         }
       }
@@ -1164,6 +1168,7 @@ void TTerminalQueue::ProcessEvent()
     }
   }
   while (!FTerminated && (TerminalItem != nullptr));
+
 }
 
 void TTerminalQueue::DoQueueItemUpdate(TQueueItem * Item)
@@ -1878,6 +1883,7 @@ void TQueueItem::Execute()
     FProgressData = new TFileOperationProgressType();
   }
   DoExecute(FTerminalItem->FTerminal.get());
+  TINYLOG_INFO(g_tinylog) << TLogContext::Format() << " QueueItem execute complete";
 }
 
 void TQueueItem::SetCPSLimit(int32_t CPSLimit)
