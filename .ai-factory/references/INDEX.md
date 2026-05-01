@@ -66,3 +66,4 @@ qt|| [cmake-refactoring-plan-exploration](cmake-refactoring-plan-exploration.md)
 | Reference | Topic | Sources | Updated |
 |-----------|-------|---------|---------|
 | [cwe134-fmtload-vulnerability-scan](cwe134-fmtload-vulnerability-scan.md) | CWE-134 format string vulnerability scan: 6 vulnerable FMTLOAD call sites with untrusted server data, EscapeFmtChars utility proposal, risk assessment | FtpControlSocket.cpp, FtpFileSystem.cpp, NeonIntf.cpp, ScpFileSystem.cpp, FormatUtils.cpp, TextsCore1.rc | 2026-04-29 |
+| [esc-cancellation-comprehensive-fix](esc-cancellation-comprehensive-fix.md) | Four-layer root-cause fix for SCP Esc cancellation, console input buffer, cancel-state semantics, exception conversion, and cleanup hang | ScpFileSystem.cpp, Terminal.cpp, FarPlugin.cpp, WinSCPFileSystem.cpp | 2026-05-01 |

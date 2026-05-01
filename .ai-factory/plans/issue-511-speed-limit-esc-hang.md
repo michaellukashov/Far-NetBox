@@ -12,6 +12,7 @@ Reference: https://github.com/michaellukashov/Far-NetBox/issues/511
 
 See [issue-511-speed-limit-esc-hang-exploration](.ai-factory/references/issue-511-speed-limit-esc-hang-exploration.md) for initial root-cause analysis.
 See [issue-511-cancel-yes-hang-deep-dive](.ai-factory/references/issue-511-cancel-yes-hang-deep-dive.md) for detailed analysis of the post-dialog "Yes" hang, reentrancy guard failure, and exception unwinding hazards.
+See [esc-cancellation-comprehensive-fix](.ai-factory/references/esc-cancellation-comprehensive-fix.md) for the four-layer root-cause fix (console input buffer, cancel-state semantics, exception conversion, and cleanup hang) discovered during implementation verification of Issue [#511](https://github.com/michaellukashov/Far-NetBox/issues/511).
 
 ## Bugs Description
 
@@ -253,3 +254,42 @@ Modified `AdjustToCPSLimit()` in `FileOperationProgress.cpp` to use `GetCPSLimit
 - Build succeeds with no new warnings.
 - Plugin DLL generated in `Far3_x64/Plugins/NetBox/`.
 
+
+
+## Review Findings (2026-05-01)
+
+### Scope
+Staged changes reviewed against this plan. Files: `src/NetBox/FarPlugin.cpp`, `src/NetBox/WinSCPFileSystem.cpp`, `src/core/ScpFileSystem.cpp`, `src/core/SecureShell.cpp`, `src/core/Terminal.cpp`.
+
+### Critical Issues
+
+1. **`src/core/Terminal.cpp` — Broken indentation in `CopyToLocal` catch block**
+   - The `catch` keyword and its body were indented at 2 spaces instead of 6, making it appear mismatched with the `try` at line 8468. The internal `if/else` braces were further misaligned (8 spaces instead of 4 relative to the catch body).
+   - **Status:** Fixed in-place during review and re-staged.
+
+### Suggestions
+
+2. **`src/core/Terminal.cpp` — Cancel-state granularity in catch blocks**
+   - Both `CopyToRemote` and `CopyToLocal` now throw `EAbort("")` for ANY non-`csContinue` state (including `csCancelFile`). `csCancelFile` is a "skip current file" instruction; aborting the entire loop may be overly aggressive. Consider using `GetCancel() >= csCancel` for the `throw` branch, and let `csCancelFile` fall through to a non-fatal skip path or log-only path.
+
+3. **`src/core/SecureShell.cpp` — Magic number threshold**
+   - The `256` byte threshold in `ReceiveLine` for `LargePendingLine` should be extracted as a named constant (e.g., `MaxPendingLineBeforeHexLog = 256`) to improve readability and allow future tuning.
+
+4. **`src/core/SecureShell.cpp` — Comment accuracy**
+   - The comment says ">256 bytes before newline", but the condition `Index > 256` effectively triggers when there are >= 256 bytes before the newline (off-by-one in description). Update the comment to ">= 256 bytes before newline".
+
+5. **`src/NetBox/FarPlugin.cpp` — Heap allocation in hot path**
+   - `CheckForEsc` and `FlushEscBuffer` allocate `std::vector<INPUT_RECORD>` on every call. While the 500ms throttle limits impact, using a small stack buffer (e.g., `std::array<INPUT_RECORD, 16>`) with a heap fallback for overflow would avoid allocations entirely for typical input event counts.
+
+6. **`src/NetBox/WinSCPFileSystem.cpp` — Missing diagnostic log for ignored aborts**
+   - The broadened `EAbort` catch now silently discards ALL non-replaced aborts. Adding a debug-level log (e.g., `FTerminal->LogEvent(L"EAbort silently ignored: " + E->Message)`) would preserve diagnostics without triggering UI dialogs.
+
+7. **`src/core/ScpFileSystem.cpp` — Implicit bool conversion**
+   - `if (!OperationProgress->GetCancel())` in `CopyToLocal` relies on implicit enum-to-bool conversion. Prefer explicit `== csContinue` for clarity.
+
+### Positive Notes
+
+- **`FarPlugin.cpp` console input rewrite** is a significant correctness improvement over the old peek-and-discard loop. Non-Esc events are now preserved, eliminating input-loss race conditions.
+- **`SecureShell.cpp` hex-logging** is a good defensive measure against binary data corruption in logs during protocol desync.
+- **`ScpFileSystem.cpp` cancel parity** correctly treats `csCancel` the same as `csCancelTransfer`, preventing SCP from continuing after a user-initiated cancel.
+- **Diagnostic logging in `Terminal.cpp`** (`LogEvent` in catch blocks) will make future debugging of cancel-vs-exception interactions much easier.

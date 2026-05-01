@@ -310,4 +310,5 @@ catch (const std::exception &E)
 | [message-loading-system](references/message-loading-system.md) | GetMsg/FmtLoadStr resolution, ID mapping tables, debugging unmapped IDs |
 | [multithreading-audit-exploration](references/multithreading-audit-exploration.md) | Far API thread affinity violations, race conditions, busy-waiting, static state |
 | [crash-second-file-open-analysis](references/crash-second-file-open-analysis.md) | Dangling TRemoteFile pointers, directory listing invalidation |
-|| [issue-501-ssh-scp-buffer-corruption-exploration](references/issue-501-ssh-scp-buffer-corruption-exploration.md) | Dynamic TCP send buffer resizing (SIO_IDEAL_SEND_BACKLOG_QUERY) causing SCP corruption and CPU saturation |
+| [issue-501-ssh-scp-buffer-corruption-exploration](references/issue-501-ssh-scp-buffer-corruption-exploration.md) | Dynamic TCP send buffer resizing (SIO_IDEAL_SEND_BACKLOG_QUERY) causing SCP corruption and CPU saturation |
+| [esc-cancellation-comprehensive-fix](references/esc-cancellation-comprehensive-fix.md) | Four-layer root-cause fix for SCP Esc cancellation, console input buffer, cancel-state semantics, exception conversion, and cleanup hang (Issue [#511](https://github.com/michaellukashov/Far-NetBox/issues/511)) |
