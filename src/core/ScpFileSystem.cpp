@@ -575,38 +575,11 @@ void TSCPFileSystem::SendCommand(const UnicodeString & Cmd, bool NoEnsureLocatio
   if (FNeedsSessionReset)
   {
     FNeedsSessionReset = false;
-    // Layer 5: Drain kernel+pending buffers before sending next
-    // command. Loop until no data for 3×200ms (600ms silence) or
-    // 5 second total timeout. Each Receive() pulls ALL kernel data
-    // into PendLen via run_toplevel_callbacks; ClearPending()
-    // discards the rest. Multiple rounds catch data that arrives
-    // in bursts after the SCP process terminated.
-    FSecureShell->ClearPending();
-    int32_t SilentRounds = 0;
-    const DWORD DrainEnd = GetTickCount() + 5000;
-    while (GetTickCount() < DrainEnd && SilentRounds < 3)
-    {
-      WSANETWORKEVENTS Events = {};
-      if (!FSecureShell->EventSelectLoop(200, false, &Events))
-      {
-        ++SilentRounds;  // 200ms of silence
-        continue;
-      }
-      if (Events.lNetworkEvents & FD_READ)
-      {
-        SilentRounds = 0;  // Reset — data arrived
-        try
-        {
-          uint8_t Buf[4096];
-          FSecureShell->Receive(Buf, sizeof(Buf));
-        }
-        catch (...)
-        {
-          break;
-        }
-      }
-    }
-    FSecureShell->ClearPending();
+    // Layer 5: SCP mid-file cancel killed the SSH connection.
+    // Draining cannot help — the remote side closed the TCP socket.
+    // Close the dead session and reopen before sending next command.
+    try { FSecureShell->Close(); } catch (...) {}
+    FSecureShell->Open();
   }
 
   if (!NoEnsureLocation)
@@ -2568,15 +2541,8 @@ void TSCPFileSystem::CopyToLocal(TStrings * AFilesToCopy,
         }
         else
         {
-          // Layer 5: SCP mid-file cancel corrupts the shell session.
-          // ReadCommandOutput blocks indefinitely after channel close;
-          // EventSelectLoop drain is edge-triggered and leaves data.
-          // Only reliable fix: close the session, it auto-reopens on
-          // next operation (cd, ls).
-          // Layer 5: Defer session cleanup until next shell command.
-          // draining in __finally is problematic (edge-triggered events,
-          // exception-unwinding UB). Flag the session dirty; SendCommand
-          // will clean it before the next cd/ls.
+          // Layer 5: SCP mid-file cancel kills the SSH connection.
+          // Flag for SendCommand to Close()+Open() before next cd/ls.
           FSecureShell->ClearPending();
           FNeedsSessionReset = true;
         }
