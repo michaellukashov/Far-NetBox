@@ -1361,6 +1361,7 @@ void TSecureShell::ClearPending()
   PendLen = 0;
   PendSize = 0;
 }
+// NOTE: Retained for potential future use with ioctlsocket(FIONREAD).
 void TSecureShell::DrainSocket()
 {
   // Non-blocking drain: poll the socket for available data

@@ -575,16 +575,7 @@ void TSCPFileSystem::SendCommand(const UnicodeString & Cmd, bool NoEnsureLocatio
   if (FNeedsSessionReset)
   {
     FNeedsSessionReset = false;
-    // Layer 5: SCP mid-file cancel killed the SSH connection.
-    // Close+Open for fresh reconnect, then restore previous dir.
-    const UnicodeString SavedDir = FLastDirectory;
-    try { FSecureShell->Close(); } catch (...) {}
-    FSecureShell->Open();
-    if (!SavedDir.IsEmpty())
-    {
-      FTerminal->LogEvent(FORMAT("Layer 5: restoring dir to %s", SavedDir));
-      FCachedDirectoryChange = SavedDir;
-    }
+    ReconnectSession();
   }
 
   if (!NoEnsureLocation)
@@ -1034,12 +1025,14 @@ void TSCPFileSystem::ReadCurrentDirectory()
   {
     ExecCommand(fsCurrentDirectory, 0);
     FCurrentDirectory = base::UnixExcludeTrailingBackslash(FOutput->GetString(0));
-    FLastDirectory = FCurrentDirectory;
+    if (!FCurrentDirectory.IsEmpty())
+      FLastDirectory = FCurrentDirectory;
   }
   else
   {
     FCurrentDirectory = FCachedDirectoryChange;
-    FLastDirectory = FCurrentDirectory;
+    if (!FCurrentDirectory.IsEmpty())
+      FLastDirectory = FCurrentDirectory;
   }
 }
 
@@ -1053,15 +1046,23 @@ void TSCPFileSystem::AnnounceFileListOperation()
   // noop
 }
 
+void TSCPFileSystem::ReconnectSession()
+{
+  try { FSecureShell->Close(); } catch (...) {}
+  FSecureShell->Open();
+  if (!FLastDirectory.IsEmpty())
+  {
+    FTerminal->LogEvent(FORMAT("Layer 5: restoring dir to %s", FLastDirectory));
+    FCachedDirectoryChange = FLastDirectory;
+  }
+}
+
 void TSCPFileSystem::ChangeDirectory(const UnicodeString & ADirectory)
 {
   if (FNeedsSessionReset)
   {
     FNeedsSessionReset = false;
-    try { FSecureShell->Close(); } catch (...) {}
-    FSecureShell->Open();
-    if (!FLastDirectory.IsEmpty())
-      FCachedDirectoryChange = FLastDirectory;
+    ReconnectSession();
   }
 
   int32_t Params = ecDefault;
@@ -1103,7 +1104,8 @@ void TSCPFileSystem::ChangeDirectory(const UnicodeString & ADirectory)
 void TSCPFileSystem::CachedChangeDirectory(const UnicodeString & Directory)
 {
   FCachedDirectoryChange = base::UnixExcludeTrailingBackslash(Directory);
-  FLastDirectory = FCachedDirectoryChange;
+  if (!FCachedDirectoryChange.IsEmpty())
+    FLastDirectory = FCachedDirectoryChange;
 }
 
 void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
@@ -2558,7 +2560,7 @@ void TSCPFileSystem::CopyToLocal(TStrings * AFilesToCopy,
         else
         {
           // Layer 5: SCP mid-file cancel kills the SSH connection.
-          // Flag for SendCommand to Close()+Open() before next cd/ls.
+          // Flag for ChangeDirectory (primary) and SendCommand (fallback) to reconnect.
           FSecureShell->ClearPending();
           FNeedsSessionReset = true;
         }

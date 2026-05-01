@@ -136,6 +136,7 @@ private:
 #endif // defined(__BORLANDC__)
   void ExecCommand(TFSCommand Cmd, int32_t Params, fmt::ArgList args);
   FMT_VARIADIC_W(void, ExecCommand, TFSCommand, int32_t)
+  void ReconnectSession();
   NORETURN void InvalidOutputError(const UnicodeString & Command);
   void ReadCommandOutput(int32_t Params, const UnicodeString * Cmd = nullptr);
   void SCPResponse(bool * GotLastLine = nullptr);
