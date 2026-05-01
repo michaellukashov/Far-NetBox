@@ -116,6 +116,7 @@ private:
   bool FProcessingCommand{false};
   int32_t FLsFullTime{asAuto};
   TCaptureOutputEvent FOnCaptureOutput;
+  bool FNeedsSessionReset{false};
   bool FScpFatalError{false};
 
   void DetectUtf();

@@ -572,10 +572,32 @@ void TSCPFileSystem::EnsureLocation()
 
 void TSCPFileSystem::SendCommand(const UnicodeString & Cmd, bool NoEnsureLocation)
 {
-  if (!NoEnsureLocation)
+  if (FNeedsSessionReset)
   {
-    EnsureLocation();
+    FNeedsSessionReset = false;
+    // Layer 5: Drain kernel+pending buffers before sending next command.
+    // run_toplevel_callbacks inside WaitForData pulls ALL kernel data into
+    // PendLen in one shot. One Receive() call drains 4096 bytes;
+    // ClearPending() after discards the rest. This leaves kernel and
+    // PendLen empty so the shell response to this command is clean.
+    FSecureShell->ClearPending();
+    WSANETWORKEVENTS Events = {};
+    if (FSecureShell->EventSelectLoop(200, false, &Events) &&
+        (Events.lNetworkEvents & FD_READ))
+    {
+      try
+      {
+        uint8_t Buf[4096];
+        FSecureShell->Receive(Buf, sizeof(Buf));
+      }
+      catch (...)
+      {
+      }
+    }
+    FSecureShell->ClearPending();
   }
+
+  if (!NoEnsureLocation)
 
   UnicodeString Line;
   FSecureShell->ClearStdError();
@@ -2539,8 +2561,12 @@ void TSCPFileSystem::CopyToLocal(TStrings * AFilesToCopy,
           // EventSelectLoop drain is edge-triggered and leaves data.
           // Only reliable fix: close the session, it auto-reopens on
           // next operation (cd, ls).
+          // Layer 5: Defer session cleanup until next shell command.
+          // draining in __finally is problematic (edge-triggered events,
+          // exception-unwinding UB). Flag the session dirty; SendCommand
+          // will clean it before the next cd/ls.
           FSecureShell->ClearPending();
-          FSecureShell->Close();
+          FNeedsSessionReset = true;
         }
       }
       else
