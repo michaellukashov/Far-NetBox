@@ -576,10 +576,12 @@ void TSCPFileSystem::SendCommand(const UnicodeString & Cmd, bool NoEnsureLocatio
   {
     FNeedsSessionReset = false;
     // Layer 5: SCP mid-file cancel killed the SSH connection.
-    // Draining cannot help — the remote side closed the TCP socket.
-    // Close the dead session and reopen before sending next command.
+    // Close+Open for a fresh reconnect. Session starts at home
+    // directory; restore previous location via EnsureLocation.
     try { FSecureShell->Close(); } catch (...) {}
     FSecureShell->Open();
+    if (!FCurrentDirectory.IsEmpty())
+      FCachedDirectoryChange = FCurrentDirectory;
   }
 
   if (!NoEnsureLocation)
