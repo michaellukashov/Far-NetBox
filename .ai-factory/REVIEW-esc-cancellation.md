@@ -1,204 +1,146 @@
 ---
 status: issues_found
-files_reviewed: 5
+files_reviewed: 8
 depth: standard
 critical: 0
-warning: 7
-info: 3
-total: 10
+warning: 4
+info: 2
+total: 6
 review_date: 2026-05-02
-reviewed_by: gsd-code-reviewer
+reviewed_by: claude
 ---
-# Code Review: SCP Esc Cancellation Fix (Issue #511 Follow-up)
+
+# Code Review: Issue #511 — SCP Esc Cancellation Fix
 
 ## Scope
 
-5 files reviewed across 4 review areas:
+8 source files modified across 5 fix layers (current committed state on `lmv/dev`):
 
 | File | Review Focus |
 |------|-------------|
-| `src/NetBox/FarPlugin.cpp` | CheckForEsc()/FlushEscBuffer() console buffer rewrite |
-| `src/core/ScpFileSystem.cpp` | Cancel-state checks in SCP upload/download loops, ReadCommandOutput guard |
-| `src/core/Terminal.cpp` | Exception conversion (EAbort) and diagnostic logging in CopyToRemote/CopyToLocal |
-| `src/NetBox/WinSCPFileSystem.cpp` | Reentrancy guards, CancelConfiguration logic (prior fix) |
-| `src/NetBox/WinSCPFileSystem.h` | Member declarations for FInShowOperationProgress, FInCancelDialog (prior fix) |
+| `src/NetBox/FarPlugin.cpp` | `CheckForEsc()` / `FlushEscBuffer()` console buffer rewrite |
+| `src/NetBox/WinSCPFileSystem.cpp` | `CancelConfiguration` qaCancel fix, reentrancy guards, `EAbort` handling |
+| `src/NetBox/WinSCPFileSystem.h` | `FInShowOperationProgress`, `FInCancelDialog` members |
+| `src/core/ScpFileSystem.cpp` | csCancel parity, `ReadCommandOutput` guard, Layer 5 reconnect |
+| `src/core/ScpFileSystem.h` | `FNeedsSessionReset`, `FLastDirectory` members |
+| `src/core/Terminal.cpp` | `EAbort("")` + cancel-state logic in catch blocks |
+| `src/core/SecureShell.h` | `ClearPending()`, `DrainSocket()` declarations |
+| `src/core/SecureShell.cpp` | `ClearPending()`, `DrainSocket()`; `ReceiveLine` hex logging |
 
 ---
 
 ## Findings
 
-### WR-001 — CancelConfiguration guard inconsistent with ShowOperationProgress
+### WR-001 — Misleading comment in __finally describes old architecture
 
-- **File:** `src/NetBox/WinSCPFileSystem.cpp`
-- **Line:** 4128–4131
+- **File:** `src/core/ScpFileSystem.cpp`
+- **Line:** 2561
 - **Severity:** Warning
 
-CancelConfiguration's early-return guard (`GetCancel() > csContinue`) is more restrictive than
-ShowOperationProgress's entry condition (`GetCancel() < csCancel`). During the `csCancelFile` state,
-CheckForEsc() consumes Esc from the input buffer but CancelConfiguration returns early without showing
-a dialog or any feedback — the Esc press is silently discarded. Practical impact is low because
-csCancelFile is transient, but the inconsistency could become a real bug if csCancelFile usage expands.
+The comment says "Flag for SendCommand to Close()+Open() before next cd/ls." but the primary handler is now in `ChangeDirectory()` (Layer 5j). `SendCommand` still has the fallback reconnect block, but the comment implies it's the only consumer.
 
-**Recommendation:** Align CancelConfiguration guard to `if (GetCancel() >= csCancel) return;` to match
-the ShowOperationProgress condition, or move CheckForEsc() behind a `GetCancel() < csCancel` check so
-Esc is not consumed when the dialog cannot be shown.
+```cpp
+// Current (misleading):
+// Flag for SendCommand to Close()+Open() before next cd/ls.
+
+// Should be:
+// Flag for ChangeDirectory (primary) and SendCommand (fallback) to reconnect.
+```
+
+**Recommendation:** Update the comment to reflect the dual-consumer architecture.
 
 ---
 
-### WR-002 — OnceDoneOperation unreachable after throw in CopyToRemote catch
+### WR-002 — DrainSocket() is dead code but exported in header
 
-- **File:** `src/core/Terminal.cpp`
-- **Line:** 7930–7932 (CopyToRemote catch block)
+- **File:** `src/core/SecureShell.h` (line ~180), `src/core/SecureShell.cpp` (line ~1364)
 - **Severity:** Warning
 
-The `else` branch at line 7927 unconditionally throws `EAbort("")`, making the subsequent
-`OnceDoneOperation = odoIdle` at line 7930 unreachable on the cancellation path. The original code
-always set `odoIdle` before the prior fix. Depending on what catches the `EAbort`, the stale
-`OnceDoneOperation` value could cause unintended side effects (e.g., triggering `CloseOnCompletion`).
+`DrainSocket()` was added during Layer 5b experimentation but never worked due to edge-triggered `EventSelectLoop` limitations. It remains in the public API of `TSecureShell` but is never called from production code.
 
 ```cpp
-// Current (problematic):
-else
+void TSecureShell::DrainSocket()
 {
-    throw EAbort("");           // line 7927-7928
-}
-OnceDoneOperation = odoIdle;    // line 7930 — unreachable when cancelled
-```
-
-**Recommendation:** Move `OnceDoneOperation = odoIdle` before the throw, or set it to `odoIdle` in
-BOTH branches before any throw/CommandError path:
-
-```cpp
-if (OperationProgress.GetCancel() == csContinue)
-{
-    CommandError(&E, MainInstructions(LoadStr(TOREMOTE_COPY_ERROR)));
-}
-else
-{
-    OnceDoneOperation = odoIdle;
-    throw EAbort("");
+    // 32 lines of dead code
+    for (int32_t Round = 0; Round < 200; ++Round)
+    {
+        ...
+    }
 }
 ```
 
----
-
-### WR-003 — CopyToLocal catch block indentation is broken
-
-- **File:** `src/core/Terminal.cpp`
-- **Line:** 8510–8528 (CopyToLocal catch block)
-- **Severity:** Warning
-
-The CopyToLocal catch block has inconsistent indentation that makes control flow difficult to read:
-- `catch` at 2-space indent pairs with `try` at 6-space indent (line 8468)
-- `if`/`else` body braces at 8-space vs `catch`-level statements at 4-space
-- Closing brace at 6-space mismatches opening at 2-space
-
-The CopyToRemote catch block (line 7920) is correctly indented.
-
-**Recommendation:** Re-indent the entire CopyToLocal catch block to match the `try` level (6-space)
-and apply consistent 2-space incremental indentation inside, same pattern as CopyToRemote.
+**Recommendation:** Either remove `DrainSocket()` entirely or mark it with a comment explaining it's retained for potential future use with `ioctlsocket(FIONREAD)`.
 
 ---
 
-### WR-004 — Cancel condition narrowing silently discards csRemoteAbort diagnostics
+### WR-003 — Duplicate reconnect logic in ChangeDirectory and SendCommand
 
-- **File:** `src/core/Terminal.cpp`
-- **Line:** 7924–7929 (CopyToRemote) and 8516+ (CopyToLocal)
+- **Files:** `src/core/ScpFileSystem.cpp`
+- **Lines:** 1058-1065 (ChangeDirectory) and 575-588 (SendCommand)
 - **Severity:** Warning
 
-The condition was changed from `GetCancel() != csCancel` to `GetCancel() == csContinue`, expanding
-the `throw EAbort` path to include `csCancelFile`, `csCancelTransfer`, and `csRemoteAbort`. While
-`csCancelFile` is unlikely at this level and `csCancelTransfer` should be handled correctly,
-`csRemoteAbort` is a legitimate state indicating the remote side closed the connection mid-transfer.
-The original code would call `CommandError` (possibly showing a dialog) for `csRemoteAbort`; the new
-code silently aborts.
-
-If a genuine `EFatal` (connection loss) coincides with a non-Continue cancel state, the fatal error
-would be silently swallowed as `EAbort("")` — the user gets no diagnostic.
-
-**Recommendation:** Use a more nuanced condition: throw `EAbort` only for `csCancel` and
-`csCancelTransfer` (user-initiated), but call `CommandError` for `csRemoteAbort` and `csCancelFile`
-(which may need user-visible diagnostics).
-
----
-
-### WR-005 — OnceDoneOperation unreachable after throw in CopyToLocal catch
-
-- **File:** `src/core/Terminal.cpp`
-- **Line:** 8521–8523
-- **Severity:** Warning
-
-Same issue as WR-002, but in the CopyToLocal catch block. `OnceDoneOperation` is unreachable after
-`throw EAbort("")`.
-
-**Recommendation:** Same fix as WR-002 — move `OnceDoneOperation = odoIdle` before the throw.
-
----
-
-### WR-006 — WriteConsoleInput partial-write not checked
-
-- **File:** `src/NetBox/FarPlugin.cpp`
-- **Line:** 1785–1787 (CheckForEsc) and 1825–1827 (FlushEscBuffer)
-- **Severity:** Warning
-
-Both functions call `WriteConsoleInput` to restore non-Esc events but ignore the `Written` count.
-If the console input buffer is full or the call partially fails, user keystrokes consumed by
-`ReadConsoleInput` are silently discarded. The codebase has precedent for checking this
-(`ConsoleRunner.cpp` uses `DebugCheck` + `DebugAssert`). The guarantee of preserving non-Esc events
-becomes best-effort rather than robust.
-
-**Recommendation:** After `WriteConsoleInput`, check `Written < NonEscEvents.size()` and handle
-the shortfall — at minimum log a warning:
+Both `ChangeDirectory` and `SendCommand` handle `FNeedsSessionReset`. The `ChangeDirectory` handler is the primary fix (5j); the `SendCommand` handler is a fallback for code paths that call `SendCommand` without going through `ChangeDirectory`. The duplicated logic is error-prone if one path is updated but not the other.
 
 ```cpp
-if (Written < NonEscEvents.size())
-{
-    LogEvent(FORMAT(L"WriteConsoleInput: wrote %u of %u events",
-        Written, static_cast<DWORD>(NonEscEvents.size())));
-}
+// In ChangeDirectory (1060-1065):
+FNeedsSessionReset = false;
+try { FSecureShell->Close(); } catch (...) {}
+FSecureShell->Open();
+if (!FLastDirectory.IsEmpty())
+    FCachedDirectoryChange = FLastDirectory;
+
+// In SendCommand (577-588): IDENTICAL LOGIC
+FNeedsSessionReset = false;
+const UnicodeString SavedDir = FLastDirectory;
+try { FSecureShell->Close(); } catch (...) {}
+FSecureShell->Open();
+if (!SavedDir.IsEmpty())
+    FCachedDirectoryChange = SavedDir;
 ```
 
----
-
-### IN-001 — Non-atomic static LastTicks in CheckForEsc()
-
-- **File:** `src/NetBox/FarPlugin.cpp`
-- **Line:** 1745–1746
-- **Severity:** Info
-
-`static uint32_t LastTicks` is read and written without synchronization. It's currently
-single-threaded so safe, but the static storage makes this a latent data-race hazard.
-
-**Recommendation:** Replace with `static std::atomic<uint32_t> LastTicks{0};` using relaxed ordering.
+**Recommendation:** Extract the reconnect logic into a private `TSCPFileSystem::ReconnectSession()` helper method to eliminate duplication and reduce future maintenance risk.
 
 ---
 
-### IN-002 — Potential MSVC C4702 unreachable code warning
+### WR-004 — FLastDirectory not guarded against empty-string overwrite
 
-- **File:** `src/core/Terminal.cpp`
-- **Line:** 7930–7932 (CopyToRemote), 8521–8523 (CopyToLocal)
-- **Severity:** Info
+- **File:** `src/core/ScpFileSystem.cpp`
+- **Lines:** 1098, 1042
+- **Severity:** Warning
 
-The `else` branch unconditionally throws, making subsequent code unreachable. The project compiles
-with `/W4` which may generate C4702 ("unreachable code"). Not observed in current build, but could
-appear depending on compiler version or optimization flags.
+`FLastDirectory` is set unconditionally in `CachedChangeDirectory()` and `ReadCurrentDirectory()`. If `FCachedDirectoryChange` or `FCurrentDirectory` is ever empty, `FLastDirectory` is silently set to empty, losing the previous known directory.
 
-**Recommendation:** Restructure to avoid unreachable code (same fix as WR-002/WR-005).
+```cpp
+// CachedChangeDirectory:
+FCachedDirectoryChange = base::UnixExcludeTrailingBackslash(Directory);
+FLastDirectory = FCachedDirectoryChange;  // Could be empty if Directory is empty
+
+// ReadCurrentDirectory:
+FCurrentDirectory = base::UnixExcludeTrailingBackslash(FOutput->GetString(0));
+FLastDirectory = FCurrentDirectory;  // Could be empty if pwd returns nothing
+```
+
+**Recommendation:** Guard with `if (!FCachedDirectoryChange.IsEmpty())` or `if (!FCurrentDirectory.IsEmpty())` before assigning to `FLastDirectory`.
 
 ---
 
-### IN-003 — Unnamed EAbort message string literal
+### IN-001 — Unused DrainSocket() method in public API
 
-- **File:** `src/core/Terminal.cpp`
-- **Line:** 7930 (CopyToRemote), 8521 (CopyToLocal)
+- **File:** `src/core/SecureShell.h`
+- **Line:** ~180
 - **Severity:** Info
 
-`throw EAbort("")` uses an empty string literal instead of a named constant. The codebase uses
-`EXCEPTION_MSG_REPLACED` (`L"[replaced]"`) for fatal aborts. While functionally correct, a named
-constant would make intent explicit and match the codebase pattern.
+Same as WR-002 but classified as Info since dead code in a public header is more of a documentation/clarity issue than a correctness issue. The method inflates the `TSecureShell` API surface without providing value.
 
-**Recommendation:** Define a named constant (e.g., `EXCEPTION_MSG_USER_CANCEL`) and use it instead
-of the literal empty string.
+---
+
+### IN-002 — ChangeDirectory's FNeedsSessionReset guard not needed for non-SCP paths
+
+- **File:** `src/core/ScpFileSystem.cpp`
+- **Line:** 1058
+- **Severity:** Info
+
+The `FNeedsSessionReset` guard in `ChangeDirectory` only applies to SCP sessions (`TSCPFileSystem` is SCP-only). However, the guard itself has no comment explaining this, and someone reading the code might wonder if it applies to other file system implementations. This is a documentation concern only.
 
 ---
 
@@ -206,8 +148,8 @@ of the literal empty string.
 
 | File | Status |
 |------|--------|
-| `src/core/ScpFileSystem.cpp` | ✓ No issues found. Cancel checks, fatal guards, and ReadCommandOutput skip are internally consistent |
-| `src/NetBox/WinSCPFileSystem.h` | ✓ No issues found. Member declarations are correct |
+| `src/core/Terminal.cpp` | ✓ Catch blocks correctly handle csCancel/csCancelTransfer vs csRemoteAbort |
+| `src/NetBox/WinSCPFileSystem.h` | ✓ Member declarations are correct |
 
 ---
 
@@ -216,16 +158,17 @@ of the literal empty string.
 | Severity | Count |
 |----------|-------|
 | Critical | 0 |
-| Warning | 7 |
-| Info | 3 |
-| **Total** | **10** |
+| Warning | 4 |
+| Info | 2 |
+| **Total** | **6** |
 
-No critical (crash/security/data-loss) bugs found. Seven warnings identified:
+No critical (crash/security/data-loss) bugs found. Four warnings identified:
 
-1. **WR-001:** CancelConfiguration guard mismatch during csCancelFile (latent UX bug)
-2. **WR-002/WR-005:** Unreachable `OnceDoneOperation = odoIdle` after throw in both catch blocks
-3. **WR-003:** Broken indentation in CopyToLocal catch block (maintainability)
-4. **WR-004:** Cancel condition narrowing silently discards csRemoteAbort diagnostics
-5. **WR-006:** WriteConsoleInput partial-write not checked (robustness gap)
+1. **WR-001:** Misleading comment in `__finally` describes old architecture
+2. **WR-002:** `DrainSocket()` is dead code exported in header
+3. **WR-003:** Duplicate reconnect logic in `ChangeDirectory` and `SendCommand`
+4. **WR-004:** `FLastDirectory` not guarded against empty-string overwrite
 
-Three info-level findings for atomicity, unreachable code, and naming patterns.
+Two info-level findings for API surface bloat and documentation gaps.
+
+The Layer 5 fix (5j) is architecturally correct — handling reconnect in `ChangeDirectory` before `EnsureLocation()` resolves the dead-session bypass issue. The remaining warnings are maintainability concerns, not correctness issues.
