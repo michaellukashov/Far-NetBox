@@ -2534,12 +2534,13 @@ void TSCPFileSystem::CopyToLocal(TStrings * AFilesToCopy,
         }
         else
         {
-          // Layer 5: Drain ALL buffered/pipelined file data.
-          // EventSelectLoop is edge-triggered — after Receive()
-          // consumes FD_READ once, Windows won't re-signal for
-          // data already in the kernel buffer. Only ReadCommandOutput
-          // (which loops ReceiveLine internally) can fully drain.
-          ReadCommandOutput(coWaitForLastLine | coOnlyReturnCode);
+          // Layer 5: SCP mid-file cancel corrupts the shell session.
+          // ReadCommandOutput blocks indefinitely after channel close;
+          // EventSelectLoop drain is edge-triggered and leaves data.
+          // Only reliable fix: close the session, it auto-reopens on
+          // next operation (cd, ls).
+          FSecureShell->ClearPending();
+          FSecureShell->Close();
         }
       }
       else
