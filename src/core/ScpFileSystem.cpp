@@ -1840,7 +1840,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * AFilesToCopy,
     CopyBatchStarted = true;
 
     for (int32_t IFile = 0; (IFile < AFilesToCopy->GetCount()) &&
-      !OperationProgress->GetCancel(); ++IFile)
+      OperationProgress->GetCancel() == csContinue; ++IFile)
     {
       UnicodeString FileName = AFilesToCopy->GetString(IFile);
       const TRemoteFile * File1 = AFilesToCopy->GetAs<TRemoteFile>(IFile);
@@ -2384,7 +2384,7 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
 
     /* TODO : Delete also read-only directories. */
     /* TODO : Show error message on failure. */
-    if (!OperationProgress->GetCancel())
+    if (OperationProgress->GetCancel() == csContinue)
     {
       if (FLAGSET(Params, cpDelete))
       {
@@ -2432,7 +2432,7 @@ void TSCPFileSystem::CopyToLocal(TStrings * AFilesToCopy,
   try__finally
   {
     for (int32_t IFile = 0; (IFile < AFilesToCopy->GetCount()) &&
-      !OperationProgress->GetCancel(); ++IFile)
+      OperationProgress->GetCancel() == csContinue; ++IFile)
     {
       UnicodeString FileName = AFilesToCopy->GetString(IFile);
       TRemoteFile * File = AFilesToCopy->GetAs<TRemoteFile>(IFile);
@@ -2459,7 +2459,7 @@ void TSCPFileSystem::CopyToLocal(TStrings * AFilesToCopy,
 
         // Move operation -> delete file/directory afterwards
         // but only if copying succeeded
-        if ((Params & cpDelete) && Success && !OperationProgress->GetCancel())
+        if ((Params & cpDelete) && Success && OperationProgress->GetCancel() == csContinue)
         {
           try
           {
@@ -2526,7 +2526,7 @@ void TSCPFileSystem::CopyToLocal(TStrings * AFilesToCopy,
       if (!IsLastLine(FSecureShell->ReceiveLine()))
       {
         SCPSendError((OperationProgress->GetCancel() ? L"Terminated by user." : L"Exception"), true);
-        if (!OperationProgress->GetCancel())
+        if (OperationProgress->GetCancel() == csContinue)
         {
           // Just in case, remote side already sent some more data (it's probable)
           // but we don't want to raise exception (user asked to terminate, it's not error)
@@ -2597,7 +2597,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & TargetDir,
 
   FSecureShell->SendNull();
 
-  while (!OperationProgress->GetCancel())
+  while (OperationProgress->GetCancel() == csContinue)
   {
     // See (switch ... case 'T':)
     if (FileData.SetTime)
