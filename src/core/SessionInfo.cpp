@@ -824,18 +824,38 @@ static FILE * OpenLogFile(const UnicodeString & LogFileName, const TDateTime & S
       throw ECRTExtException(FMTLOAD(LOG_OPENERROR, NewFileName) + L"\n" + LastSysErrorMessage());
     }
   }
-  FILE * Result = _wfsopen(ApiPath(NewFileName).c_str(), Append ? L"ab" : L"wb", SH_DENYWR);
+  UnicodeString ActualFileName = NewFileName;
+  FILE * Result = _wfsopen(ApiPath(ActualFileName).c_str(), Append ? L"ab" : L"wb", SH_DENYWR);
   if (Result == nullptr)
   {
     // Retry with no sharing restrictions - allows multiple concurrent sessions
     // to append to the same log file (e.g., multiple NetBox panels)
-    Result = _wfsopen(ApiPath(NewFileName).c_str(), Append ? L"ab" : L"wb", SH_DENYNO);
+    Result = _wfsopen(ApiPath(ActualFileName).c_str(), Append ? L"ab" : L"wb", SH_DENYNO);
+  }
+  if (Result == nullptr)
+  {
+    // If still locked (same process, same file), generate a unique suffix
+    const UnicodeString Ext = ::ExtractFileExt(NewFileName);
+    const UnicodeString NameOnly = ::ChangeFileExt(NewFileName, "");
+    for (int32_t N = 1; (N < 100) && (Result == nullptr); ++N)
+    {
+      UnicodeString Suffix = FORMAT("-%d", N);
+      if (!Ext.IsEmpty())
+      {
+        ActualFileName = NameOnly + Suffix + L"." + Ext;
+      }
+      else
+      {
+        ActualFileName = NameOnly + Suffix;
+      }
+      Result = _wfsopen(ApiPath(ActualFileName).c_str(), Append ? L"ab" : L"wb", SH_DENYNO);
+    }
   }
   if (Result != nullptr)
   {
     constexpr size_t BUFSIZE = 4 * 1024;
     setvbuf(Result, nullptr, _IONBF, BUFSIZE);
-    ANewFileName = NewFileName;
+    ANewFileName = ActualFileName;
   }
   else
   {
