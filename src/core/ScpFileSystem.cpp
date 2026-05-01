@@ -576,14 +576,16 @@ void TSCPFileSystem::SendCommand(const UnicodeString & Cmd, bool NoEnsureLocatio
   {
     FNeedsSessionReset = false;
     // Layer 5: SCP mid-file cancel killed the SSH connection.
-    // Close+Open for a fresh reconnect. Session starts at home
-    // directory; restore previous location via EnsureLocation.
+    // Close+Open for fresh reconnect, then restore previous dir.
+    FTerminal->LogEvent(FORMAT("Layer 5: FCurrentDirectory='%s'",
+      FCurrentDirectory));
+    const UnicodeString SavedDir = FCurrentDirectory;
     try { FSecureShell->Close(); } catch (...) {}
     FSecureShell->Open();
-    if (!FCurrentDirectory.IsEmpty())
+    if (!SavedDir.IsEmpty())
     {
-      FTerminal->LogEvent(FORMAT("Layer 5: restoring dir to %s", FCurrentDirectory));
-      FCachedDirectoryChange = FCurrentDirectory;
+      FTerminal->LogEvent(FORMAT("Layer 5: restoring dir to %s", SavedDir));
+      FCachedDirectoryChange = SavedDir;
     }
   }
 
