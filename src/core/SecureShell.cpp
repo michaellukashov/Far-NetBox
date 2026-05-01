@@ -1301,7 +1301,35 @@ UnicodeString TSecureShell::ReceiveLine()
   Line.SetLength(Line.Length() - 1);
 
   const UnicodeString Result = ConvertInput(Line, FSessionData->GetCodePageAsNumber());
-  CaptureOutput(llOutput, Result);
+
+
+  // Log as hex if the line contains control characters (other than common whitespace),
+  // to avoid raw binary data in logs when protocol gets out of sync
+  bool NeedsHexLogging = false;
+  for (int32_t Index = 1; Index <= Line.Length(); ++Index)
+  {
+    const unsigned char Ch = static_cast<unsigned char>(Line[Index]);
+    if (Ch < 0x20 && Ch != '\r' && Ch != '\n' && Ch != '\t')
+    {
+      NeedsHexLogging = true;
+      break;
+    }
+  }
+
+  // Also hex-log if UTF-8 conversion produced replacement characters (invalid sequences)
+  if (!NeedsHexLogging && GetUtfStrings() && (Result.Pos(L'\xFFFD') > 0))
+  {
+    NeedsHexLogging = true;
+  }
+
+  if (NeedsHexLogging)
+  {
+    CaptureOutput(llOutput, L"[hex] " + BytesToHex(nb::ToUInt8Ptr(Line.c_str()), Line.Length()));
+  }
+  else
+  {
+    CaptureOutput(llOutput, Result);
+  }
 
   return Result;
 }
