@@ -2534,11 +2534,12 @@ void TSCPFileSystem::CopyToLocal(TStrings * AFilesToCopy,
         }
         else
         {
-          // Layer 5: Clear pending + drain kernel socket buffer to
-          // discard remaining file data that would otherwise corrupt
-          // subsequent shell commands (cd, ls).
-          FSecureShell->ClearPending();
-          FSecureShell->DrainSocket();
+          // Layer 5: Drain ALL buffered/pipelined file data.
+          // EventSelectLoop is edge-triggered — after Receive()
+          // consumes FD_READ once, Windows won't re-signal for
+          // data already in the kernel buffer. Only ReadCommandOutput
+          // (which loops ReceiveLine internally) can fully drain.
+          ReadCommandOutput(coWaitForLastLine | coOnlyReturnCode);
         }
       }
       else
