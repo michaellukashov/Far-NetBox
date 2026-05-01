@@ -190,7 +190,8 @@ The `Param` field must be set **exactly once** per session — during initial `C
 |-----|------------|----------|-------|
 | Reconnect after every directory change | `UpdatePanelDirectoryParam()` called from `SetDirectoryEx()` and Param set in `SynchronizeBrowsing()` | Remove both calls; only set Param once after initial `Connect()` | `WinSCPFileSystem.cpp` |
 | Session name mismatch on history restore | `GetOpenPanelInfoEx` encodes `Folder/Session`, `UpdatePanelDirectoryParam` encoded only `Session` (format inconsistency) | Use identical `FolderAndSessionName` format in both encoding paths | `WinSCPFileSystem.cpp` |
-| Alt-F12 reconnect loop | No matching panel found → falls through to `ParseUrl` → `Connect()` | Add early `Abort()` + `return nullptr` when `Entry.Valid` but no panel matches | `WinSCPPlugin.cpp` |
+| Alt-F12 reconnect loop | Session matching guard only handled `OPEN_SHORTCUT`, not `OPEN_COMMANDLINE` from folder history | Extended guard condition to `OPEN_COMMANDLINE && Entry.Valid` | `WinSCPPlugin.cpp` |
+| New session created instead of reusing existing panel | Alt-F12 folder history fires `OPEN_COMMANDLINE` which bypassed session matching logic | Add session matching for `OPEN_COMMANDLINE` entries with valid history data | `WinSCPPlugin.cpp` |
 | Session name comparison fails | `GetSessionName()` returns full `Folder/Session` path, history entry uses local name | Use `GetLocalName()` on both sides of comparison; extract local name via `TSessionData::ExtractLocalName()` | `WinSCPPlugin.cpp` |
 
 ### Correct Integration Pattern
@@ -209,7 +210,8 @@ ShortcutData = nb::EncodeSessionParam(FolderAndSessionName, CurDir);
 const UnicodeString Param = nb::EncodeSessionParam(FolderAndSessionName, CurrentDir);
 FarControl(FCTL_SETPANELDIRECTORY, 0, &fpd, PANEL_ACTIVE);
 
-// 3. OpenPluginEx() OPEN_SHORTCUT handler — session matching
+// 3. OpenPluginEx() session matching — handles BOTH OPEN_SHORTCUT and OPEN_COMMANDLINE
+// Guard condition: (OpenFrom == OPEN_SHORTCUT || (OpenFrom == OPEN_COMMANDLINE && Entry.Valid && !Directory.IsEmpty()))
 UnicodeString SessionName = TSessionData::ExtractLocalName(DecodedSessionName);
 if (PanelSystem && PanelSystem->Connected() &&
     PanelSystem->GetTerminal()->GetSessionData()->GetLocalName() == SessionName)
@@ -231,6 +233,7 @@ FileSystem->UpdatePanelDirectoryParam();
 - ❌ Set `Param` in `SynchronizeBrowsing()` — triggers reconnect on passive panel sync
 - ❌ Compare `GetSessionName()` against extracted local name — format mismatch
 - ❌ Fall through to `ParseUrl` → `Connect()` when history entry is valid — causes reconnect loop
+- ❌ Only handle `OPEN_SHORTCUT` for session matching — Alt-F12 uses `OPEN_COMMANDLINE`
 
 ### Verification Results
 
@@ -249,10 +252,8 @@ FileSystem->UpdatePanelDirectoryParam();
 **Fix:** Added `TSessionData::ExtractLocalName(SessionName)` at line 355 to normalize session names before comparison. Now correctly matches existing session and avoids reconnect.
 **Files changed:** `src/NetBox/WinSCPPlugin.cpp` (2 lines added).
 
-#### 2026-05-01: Fixed Alt-F12 reconnect loop
-**Bug:** Alt-F12 history navigation caused constant reconnect loop when no matching connected panel found.
-**Root cause:** After failing to match existing panel in OPEN_SHORTCUT handler, code fell through to
-`ParseUrl` → `Connect()` creating new sessions repeatedly.
-**Fix:** Added early `Abort()` + `return nullptr` for valid history entries when no matching panel exists.
-Prevents fallback to new session creation.
-**Files changed:** `src/NetBox/WinSCPPlugin.cpp` (8 lines added).
+#### 2026-05-01: Fixed Alt-F12 folder history reconnect — session reuse (FINAL FIX)
+**Bug:** Alt-F12 folder history created new session instead of reusing existing connected panel.
+**Root cause:** Session matching guard only handled `OPEN_SHORTCUT`. Far Manager folder history (Alt-F12) fires `OPEN_COMMANDLINE` with a valid history entry, bypassing the guard and falling through to `ParseUrl` → `Connect()` → new session created.
+**Fix:** Extended guard condition to `(OpenFrom == OPEN_SHORTCUT || (OpenFrom == OPEN_COMMANDLINE && Entry.Valid && !Directory.IsEmpty()))`. This catches both entry points when history data is valid, matches against existing panel via `GetLocalName()`, and aborts early to prevent reconnect.
+**Files changed:** `src/NetBox/WinSCPPlugin.cpp` (guard condition extended, `Another` flag ternary added).

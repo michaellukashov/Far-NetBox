@@ -297,8 +297,12 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t I
   }
   else
   {
-    FileSystem = std::make_unique<TWinSCPFileSystem>(this);
-    FileSystem->InitWinSCPFileSystem(nullptr);
+    // Early decode for SHORTCUT/COMMANDLINE to check reuse BEFORE creating FileSystem
+    UnicodeString Directory;
+    UnicodeString CommandLine;
+    FAROPENSHORTCUTFLAGS Flags = FOSF_NONE;
+    nb::TSessionHistoryEntry Entry;
+    Entry.Valid = false;
 
     if (OpenFrom == OPEN_LEFTDISKMENU || OpenFrom == OPEN_RIGHTDISKMENU ||
       OpenFrom == OPEN_PLUGINSMENU ||
@@ -308,9 +312,6 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t I
     }
     else if (OpenFrom == OPEN_SHORTCUT || OpenFrom == OPEN_COMMANDLINE)
     {
-      UnicodeString Directory;
-      UnicodeString CommandLine;
-      FAROPENSHORTCUTFLAGS Flags = FOSF_NONE;
       if (OpenFrom == OPEN_SHORTCUT)
       {
         const OpenShortcutInfo * Info = reinterpret_cast<OpenShortcutInfo *>(Item);
@@ -322,10 +323,7 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t I
         const OpenCommandLineInfo * Info = reinterpret_cast<OpenCommandLineInfo *>(Item);
         CommandLine = Info->CommandLine;
       }
-      // DEBUG_PRINTF("CommandLine: %s", CommandLine);
-      const nb::TSessionHistoryEntry Entry = nb::DecodeSessionParam(CommandLine);
-      AppLogFmt(L"OpenPluginEx: DecodeSessionParam from %s -> Valid=%d, SessionName=%s, Directory=%s",
-        CommandLine, Entry.Valid ? 1 : 0, Entry.SessionName, Entry.RemoteDirectory);
+      Entry = nb::DecodeSessionParam(CommandLine);
       if (Entry.Valid)
       {
         UnicodeString SessionName = Entry.SessionName;
@@ -343,43 +341,94 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t I
           CommandLine.SetLength(P - 1);
         }
       }
-      if (OpenFrom == OPEN_SHORTCUT)
+    }
+    const auto NormalizeSessionName = [](const UnicodeString & Cmd) -> UnicodeString {
+      UnicodeString Result(Cmd);
+      if (Result.SubString(1, 7).LowerCase() == L"netbox:")
+        Result.Delete(1, 7);
+      return TSessionData::ExtractLocalName(Result);
+    };
+    // Check for existing panel reuse BEFORE creating FileSystem
+    // This prevents Far Manager panel lifecycle from destroying the old FileSystem
+    if ((OpenFrom == OPEN_SHORTCUT || OpenFrom == OPEN_COMMANDLINE) &&
+      (Entry.Valid || !Directory.IsEmpty()))
+    {
+      TWinSCPFileSystem * ExistingPanel = nb::dyn_cast_or_null<TWinSCPFileSystem>(GetPanelFileSystem());
+      if (ExistingPanel && ExistingPanel->Connected() && ExistingPanel->GetTerminal())
       {
-        // DEBUG_PRINTF("Directory: %s", Directory);
-        // DEBUG_PRINTF("CommandLine: %s", CommandLine);
 
-        UnicodeString SessionName(CommandLine);
-        if (SessionName.SubString(1, 7).LowerCase() == L"netbox:")
-        {
-          SessionName.Delete(1, 7);
-        }
-        // Extract local session name from potential "Folder/Session" format
-        SessionName = TSessionData::ExtractLocalName(SessionName);
-        const bool Another = !(Flags & FOSF_ACTIVE);
-        TWinSCPFileSystem * PanelSystem = nb::dyn_cast_or_null<TWinSCPFileSystem>(GetPanelFileSystem());
+        UnicodeString SessionName = NormalizeSessionName(CommandLine);
+        const UnicodeString PanelLocalName = ExistingPanel->GetTerminal()->GetSessionData()->GetLocalName();
+        AppLogFmt(L"OpenPluginEx: Reuse check — existing=%s, target=%s, Entry.Valid=%d, Dir=%s, OpenFrom=%d",
+          PanelLocalName, SessionName, Entry.Valid ? 1 : 0, Directory, (int)OpenFrom);
 
-        if (PanelSystem && PanelSystem->Connected() &&
-          PanelSystem->GetTerminal()->GetSessionData()->GetLocalName() == SessionName)
+        // For folder history (OPEN_COMMANDLINE with directory), reuse existing panel
+        if (OpenFrom == OPEN_COMMANDLINE && !Directory.IsEmpty() && PanelLocalName == SessionName)
         {
-          PanelSystem->SetDirectoryEx(Directory, OPM_SILENT);
-          if (PanelSystem->UpdatePanel(false, Another))
+          AppLogFmt(L"OpenPluginEx: Reusing existing panel for directory: %s", Directory);
+          ExistingPanel->SetDirectoryEx(Directory, OPM_SILENT);
+          if (ExistingPanel->UpdatePanel(false, false))
           {
-            PanelSystem->RedrawPanel(Another);
+            ExistingPanel->RedrawPanel(false);
           }
           Abort();
           return nullptr;
         }
-        // If we have a valid history entry but no matching connected panel,
-        // don't attempt to create a new session — that causes reconnect loops.
-        // Far Manager will handle the history navigation natively.
-        if (Entry.Valid)
+
+        // For OPEN_SHORTCUT with valid history, match session names
+        if (OpenFrom == OPEN_SHORTCUT && Entry.Valid && PanelLocalName == SessionName)
         {
+          AppLogFmt(L"OpenPluginEx: Reusing existing panel for session: %s, dir: %s", SessionName, Directory);
+          ExistingPanel->SetDirectoryEx(Directory, OPM_SILENT);
+          if (ExistingPanel->UpdatePanel(false, !(Flags & FOSF_ACTIVE)))
+          {
+            ExistingPanel->RedrawPanel(!(Flags & FOSF_ACTIVE));
+          }
           Abort();
           return nullptr;
         }
+
+        // Valid history entry but no session match — don't create new session
+        if (Entry.Valid)
+        {
+          AppLogFmt(L"OpenPluginEx: Valid history entry but session mismatch, aborting");
+          Abort();
+          return nullptr;
+        }
+      }
+      else
+      {
+        AppLogFmt(L"OpenPluginEx: No existing panel found for reuse");
+      }
+    }
+
+    // Create FileSystem for all non-reuse paths (menu, new session, analyse)
+    FileSystem = std::make_unique<TWinSCPFileSystem>(this);
+    FileSystem->InitWinSCPFileSystem(nullptr);
+
+    if (OpenFrom == OPEN_LEFTDISKMENU || OpenFrom == OPEN_RIGHTDISKMENU ||
+      OpenFrom == OPEN_PLUGINSMENU ||
+      OpenFrom == OPEN_FINDLIST)
+    {
+      // nothing — menu entries return empty panel, Far Manager handles lifecycle
+    }
+    else if (OpenFrom == OPEN_SHORTCUT || OpenFrom == OPEN_COMMANDLINE)
+    {
+      // If we have a valid history entry but no matching connected panel,
+      // don't attempt to create a new session — that causes reconnect loops.
+      // Far Manager will handle the history navigation natively.
+      if ((OpenFrom == OPEN_SHORTCUT && Entry.Valid) ||
+          (OpenFrom == OPEN_COMMANDLINE && Entry.Valid && !Directory.IsEmpty()))
+      {
+        Abort();
+        return nullptr;
+      }
+      if (OpenFrom == OPEN_SHORTCUT)
+      {
         // directory will be set by FAR itself
         Directory.Clear();
       }
+      // Normal session creation path (ParseUrl → Connect)
       DebugAssert(GetStoredSessions());
       bool DefaultsOnly = false;
       std::unique_ptr<TOptions> Options(std::make_unique<TProgramParams>());
@@ -438,7 +487,11 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t I
     }
     else
     {
-      DebugAssert(false);
+      // Unknown OpenFrom type (e.g., folder history, dialog, etc.)
+      // Don't assert — just log and return the empty panel
+      // so Far Manager can handle the navigation natively
+      AppLogFmt(L"OpenPluginEx: Unknown OpenFrom=%d, returning empty panel", (int)OpenFrom);
+      // DebugAssert(false); TODO: Inform Far about Unknown OpenFrom
     }
   }
   if (!Success)
