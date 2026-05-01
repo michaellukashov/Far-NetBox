@@ -1,7 +1,6 @@
 #include <vcl.h>
 #pragma hdrstop
 
-#include <vector>
 #include <plugin.hpp>
 #include <Common.h>
 #include <Queue.h> // TODO: move TSimpleThread to Sysutils
@@ -1754,7 +1753,7 @@ bool TCustomFarPlugin::CheckForEsc() const
       return false;
     }
 
-    std::vector<INPUT_RECORD> Events;
+    nb::vector_t<INPUT_RECORD> Events;
     Events.resize(EventCount);
     DWORD ReadCount = 0;
     if (!::ReadConsoleInput(FConsoleInput, Events.data(), EventCount, &ReadCount))
@@ -1764,7 +1763,7 @@ bool TCustomFarPlugin::CheckForEsc() const
     Events.resize(ReadCount);
 
     bool FoundEsc = false;
-    std::vector<INPUT_RECORD> NonEscEvents;
+    nb::vector_t<INPUT_RECORD> NonEscEvents;
     NonEscEvents.reserve(ReadCount);
     for (const auto & Rec : Events)
     {
@@ -1798,7 +1797,7 @@ void TCustomFarPlugin::FlushEscBuffer() const
     return;
   }
 
-  std::vector<INPUT_RECORD> Events;
+  nb::vector_t<INPUT_RECORD> Events;
   Events.resize(EventCount);
   DWORD ReadCount = 0;
   if (!::ReadConsoleInput(FConsoleInput, Events.data(), EventCount, &ReadCount))
@@ -1807,7 +1806,7 @@ void TCustomFarPlugin::FlushEscBuffer() const
   }
   Events.resize(ReadCount);
 
-  std::vector<INPUT_RECORD> NonEscEvents;
+  nb::vector_t<INPUT_RECORD> NonEscEvents;
   NonEscEvents.reserve(ReadCount);
   for (const auto & Rec : Events)
   {
