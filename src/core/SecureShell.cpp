@@ -1350,6 +1350,17 @@ UnicodeString TSecureShell::ReceiveLine()
   return Result;
 }
 
+
+void TSecureShell::ClearPending()
+{
+  if (Pending != nullptr)
+  {
+    sfree(Pending);
+    Pending = nullptr;
+  }
+  PendLen = 0;
+  PendSize = 0;
+}
 UnicodeString TSecureShell::ConvertInput(const RawByteString & Input, uint32_t CodePage) const
 {
   UnicodeString Result;

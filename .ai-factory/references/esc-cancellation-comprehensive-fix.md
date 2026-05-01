@@ -208,6 +208,73 @@ less likely to block for extended periods.
 **Verification:** User cancels download → error sent to remote → exception propagates immediately → transfer
 stops without waiting for remote acknowledgment.
 
+**Post-verification discovery:** After cancellation, navigating the panel (`cd ".."`) would freeze because the pending buffer (`PendLen`/`Pending` in `TSecureShell`) still contained 13KB+ of buffered file data. The next `ReceiveLine()` returned garbled binary instead of a shell prompt, corrupting the SCP session state. See Layer 5 below.
+
+---
+
+## Layer 5 — Pending Buffer Corruption After Cancel (Post-Panel Navigation)
+
+### Known Bug
+
+After the four-layer fix, cancelling an SCP download mid-file **still** caused a hang when navigating the panel. The transfer dialog closed correctly, but pressing Backspace or clicking `..` to change directory read garbled binary data instead of a shell response, freezing the panel.
+
+**Root cause:** The SCP download loop calls `FSecureShell->Receive(BlockBuf, BlockSize)` (inline low-level reads). The remote SCP process pumps file data through TCP into the local socket buffer. `Receive()` stores excess data beyond what the loop consumes into a **pending buffer** (`PendLen` / `Pending` in `TSecureShell`). When `USER_TERMINATED` is thrown mid-transfer, the pending buffer still holds 13KB+ of buffered file data. The `__finally` cleanup sends the error byte, but **`PendLen` is never cleared**. The next `ReceiveLine()` (for `cd ".."`) reads from this stale pending buffer, getting binary garbage.
+
+**Log evidence:**
+
+```
+01:51:59.232  SCP download cancelling: cancel=3         ← Layer 2: cancel detected
+01:51:59.232  Read 148 bytes (12903 pending)            ← 13KB of file data still buffered
+01:51:59.233  Sending SCP error (2) to remote side     ← cleanup sends abort byte
+01:51:59.233  CopyToLocal catch: cancel=3, exception=... ← Layer 3: outer catch reached
+...
+01:52:01.183  Changing directory to "..".             ← user navigates panel
+01:52:01.183  cd ".." ; echo "NetBox: this is end-of-file:$?"
+01:52:01.183  Read 82 bytes (12821 pending)            ← READS BUFFERED FILE DATA!
+01:52:01.183  [hex] 57AB88D4D9C1895F...                ← GARBAGE — corrupts shell state
+```
+
+### Correct Integration Pattern
+
+After SCP mid-file cancellation, clear the pending buffer to discard leftover file data before the next shell command is issued:
+
+```cpp
+// In TSecureShell (SecureShell.h + SecureShell.cpp):
+void TSecureShell::ClearPending()
+{
+  if (Pending != nullptr)
+  {
+    sfree(Pending);
+    Pending = nullptr;
+  }
+  PendLen = 0;
+  PendSize = 0;
+}
+```
+
+Call from `TSCPFileSystem::CopyToLocal` `__finally` block when user cancelled:
+
+```cpp
+SCPSendError(...);
+if (OperationProgress->GetCancel() == csContinue)
+{
+    ReadCommandOutput(coOnlyReturnCode | coWaitForLastLine);
+}
+else
+{
+    FSecureShell->ClearPending();  // Layer 5
+}
+```
+
+### Implementation
+
+| File | Line | Change |
+|------|------|--------|
+| `src/core/SecureShell.h` | ~178 | Add `void ClearPending();` declaration |
+| `src/core/SecureShell.cpp` | ~1353 | Implement `ClearPending()` — free pending buffer, reset lengths |
+| `src/core/ScpFileSystem.cpp` | ~2535 | Call `FSecureShell->ClearPending()` in `else` branch when cancelled |
+
+**Verification:** User cancels download → navigates panel → shell commands execute normally without corruption.
 ---
 
 ## Diagnostic Logging

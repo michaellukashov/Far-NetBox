@@ -2532,7 +2532,12 @@ void TSCPFileSystem::CopyToLocal(TStrings * AFilesToCopy,
           // but we don't want to raise exception (user asked to terminate, it's not error)
           ReadCommandOutput(coOnlyReturnCode | coWaitForLastLine);
         }
-        // Note: When user cancelled, skip ReadCommandOutput to avoid blocking on remote data.
+        else
+        {
+          // Layer 5: Clear pending buffer to discard remaining file data
+          // that would otherwise corrupt subsequent shell commands.
+          FSecureShell->ClearPending();
+        }
       }
       else
       {

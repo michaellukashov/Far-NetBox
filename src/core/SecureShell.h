@@ -176,6 +176,7 @@ public:
   uint32_t MaxPacketSize() const;
   void ClearStdError();
   bool GetStoredCredentialsTried() const;
+  void ClearPending();
   void CollectUsage();
   bool CanChangePassword() const;
 
