@@ -51,7 +51,8 @@ public:
         if ((Result == WAIT_TIMEOUT) && IsActive() && !IsFinished() && FPlugin && FPlugin->GetPluginHandle())
         {
           // Marshal idle processing to the main thread via the sanctioned synchro path.
-          FPlugin->PostMainThreadSynchro(nullptr);
+          // FPlugin->PostMainThreadSynchro(nullptr);
+          FPlugin->FarAdvControl(ACTL_SYNCHRO, 0, nullptr);
         }
       }
       FCheckCondition = false;
@@ -1762,6 +1763,23 @@ bool TCustomFarPlugin::CheckForEsc() const
   return false;
 }
 
+void TCustomFarPlugin::FlushEscBuffer() const
+{
+  INPUT_RECORD Rec;
+  DWORD ReadCount;
+  while (::PeekConsoleInput(FConsoleInput, &Rec, 1, &ReadCount) && ReadCount)
+  {
+    ::ReadConsoleInput(FConsoleInput, &Rec, 1, &ReadCount);
+    if (Rec.EventType == KEY_EVENT &&
+      Rec.Event.KeyEvent.wVirtualKeyCode == VK_ESCAPE &&
+      Rec.Event.KeyEvent.bKeyDown)
+    {
+      // Discard pending Esc events to prevent dialog/cancel races
+    }
+  }
+}
+
+
 bool TCustomFarPlugin::Viewer(const UnicodeString & AFileName,
   const UnicodeString & Title, VIEWER_FLAGS Flags)
 {
@@ -2282,8 +2300,8 @@ void TCustomFarFileSystem::ClosePanel()
 
 UnicodeString TCustomFarFileSystem::GetMsg(intptr_t MsgId) const
 {
-  // return FPlugin->GetMsg(MsgId);
-  return GetGlobals()->GetMsg(MsgId);
+  return FPlugin->GetMsg(MsgId);
+  // return GetGlobals()->GetMsg(MsgId);
 }
 
 TCustomFarFileSystem * TCustomFarFileSystem::GetOppositeFileSystem()

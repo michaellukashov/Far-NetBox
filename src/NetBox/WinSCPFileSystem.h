@@ -319,6 +319,7 @@ private:
   TCriticalSection FQueueStatusSection;
   TQueueEventType FQueueEvent{qeEmpty};
   bool FInShowOperationProgress{false};
+  bool FInCancelDialog{false};
   HANDLE FProgressSaveScreenHandle{nullptr};
   HANDLE FSynchronizationSaveScreenHandle{nullptr};
   HANDLE FAuthenticationSaveScreenHandle{nullptr};

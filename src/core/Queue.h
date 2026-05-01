@@ -19,8 +19,9 @@ public:
 
   virtual void Start();
   void WaitFor(DWORD Milliseconds = INFINITE) const;
-  virtual void Terminate() = 0;
+  virtual void Terminate() {}
   virtual void Close();
+  void SignalStop();
   bool IsFinished() const;
 
 protected:
@@ -266,6 +267,8 @@ public:
   virtual bool UpdateFileList(TQueueFileList * FileList);
   void SetCPSLimit(int32_t CPSLimit);
   int32_t GetCPSLimit() const;
+  TInfo * GetInfo() const { return FInfo.get(); }
+
 
 protected:
   virtual int32_t DefaultCPSLimit() const;

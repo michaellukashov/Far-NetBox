@@ -397,8 +397,11 @@ void TWinSCPFileSystem::Close()
   {
     TCustomFarFileSystem::Close();
   };
+  if (FKeepaliveThread != nullptr)
+  {
+    FKeepaliveThread->SignalStop();
+  }
   SAFE_DESTROY(FKeepaliveThread);
-
   if (Connected())
   {
     if (FQueue != nullptr)
@@ -3839,7 +3842,7 @@ void TWinSCPFileSystem::ShowOperationProgress(
   const uint32_t Ticks = ::GetTickCount();
   const uint16_t percents = static_cast<uint16_t>(ProgressData.OverallProgress());
   if ((Ticks - LastTicks > 500 || Force) && !ProgressData.GetSuspended() &&
-      (ProgressData.GetCancel() < csCancel))
+      (ProgressData.GetCancel() < csCancel) && !FInCancelDialog)
   {
     LastTicks = Ticks;
 
@@ -4114,8 +4117,12 @@ void TWinSCPFileSystem::CancelConfiguration(TFileOperationProgressType & Progres
   if (!ProgressData.GetSuspended())
   {
     ProgressData.Suspend();
+    // Flush console buffer before showing dialog to prevent Esc key races
+    GetWinSCPPlugin()->FlushEscBuffer();
+    FInCancelDialog = true;
     SCOPE_EXIT
     {
+      FInCancelDialog = false;
       ProgressData.Resume();
     };
     TCancelStatus ACancel;

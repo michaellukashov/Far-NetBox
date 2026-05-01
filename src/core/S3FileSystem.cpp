@@ -1916,8 +1916,8 @@ void TS3FileSystem::CopyFile(
 
   if (DestKey.IsEmpty())
   {
-      FTerminal->LogEvent(FORMAT("Upload rejected: Key is empty. Bucket='%s', path='%s'", DestBucketName, NewName));
-      throw Exception(FMTLOAD(S3_UPLOAD_NEED_FILENAME, DestBucketName));
+    FTerminal->LogEvent(FORMAT("Upload rejected: Key is empty. Bucket='%s', path='%s'", DestBucketName, NewName));
+    throw Exception(FMTLOAD(S3_UPLOAD_NEED_FILENAME, DestBucketName));
   }
 
   TLibS3BucketContext BucketContext = GetBucketContext(DestBucketName, DestKey);
@@ -2696,8 +2696,8 @@ void TS3FileSystem::Source(
 
   if (Key.IsEmpty())
   {
-      FTerminal->LogEvent(FORMAT("Upload rejected: Key is empty. Bucket='%s', path='%s'", BucketName, DestFullName));
-      throw Exception(FMTLOAD(S3_UPLOAD_NEED_FILENAME, BucketName));
+    FTerminal->LogEvent(FORMAT("Upload rejected: Key is empty. Bucket='%s', path='%s'", BucketName, DestFullName));
+    throw Exception(FMTLOAD(S3_UPLOAD_NEED_FILENAME, BucketName));
   }
 
   TLibS3BucketContext BucketContext = GetBucketContext(BucketName, Key);

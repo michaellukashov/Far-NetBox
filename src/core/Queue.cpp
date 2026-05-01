@@ -313,8 +313,8 @@ int32_t TSimpleThread::ThreadProc(void * Thread)
 
   std::string threadIdStr = std::to_string(::GetCurrentThreadId());
   TLogContext ctx_thread("thread_id", threadIdStr);
-  TLogContext ctx_class("class", SimpleThread->ClassName());
-  LOG_THREAD_START(SimpleThread->ClassName());
+  TLogContext ctx_class("class", "TSimpleThread");
+  LOG_THREAD_START("TSimpleThread");
 
 
   try
@@ -353,8 +353,11 @@ void TSimpleThread::InitSimpleThread(const UnicodeString & Name)
 
 TSimpleThread::~TSimpleThread() noexcept
 {
-  // This is turn calls pure virtual Terminate, what does not work as intended, do not rely on it and remove the call eventually
-  TSimpleThread::Close();
+  if (!FFinished)
+  {
+    SignalStop();
+    WaitFor();
+  }
 
   if (CheckHandle(FThread))
   {
@@ -384,9 +387,17 @@ void TSimpleThread::Close()
 {
   if (!FFinished)
   {
+    SignalStop();
+    WaitFor();
+  }
+}
+
+void TSimpleThread::SignalStop()
+{
+  if (!FFinished)
+  {
     FFinished = true;
     Terminate();
-    WaitFor();
   }
 }
 
@@ -1155,7 +1166,7 @@ void TTerminalQueue::ProcessEvent()
               FForcedItems->Delete(ForcedIndex);
             }
             FItemsInProcess++;
-            TLogContext ctx_item("item", Item1->GetInfo()->Source.c_str());
+            TLogContext ctx_item("item", AnsiString(Item1->GetInfo()->Source).c_str());
             LOG_QUEUE_EVENT("processing");
           }
         }

@@ -815,7 +815,22 @@ static FILE * OpenLogFile(const UnicodeString & LogFileName, const TDateTime & S
 {
   // FILE * Result;
   const UnicodeString NewFileName = StripPathQuotes(GetExpandedLogFileName(LogFileName, Started, SessionData));
+  const UnicodeString NewFilePath = ::ExtractFilePath(NewFileName);
+  if (!NewFilePath.IsEmpty())
+  {
+    const bool DirCreated = ::ForceDirectories(ApiPath(NewFilePath));
+    if (!DirCreated && !base::DirectoryExists(NewFilePath))
+    {
+      throw ECRTExtException(FMTLOAD(LOG_OPENERROR, NewFileName) + L"\n" + LastSysErrorMessage());
+    }
+  }
   FILE * Result = _wfsopen(ApiPath(NewFileName).c_str(), Append ? L"ab" : L"wb", SH_DENYWR);
+  if (Result == nullptr)
+  {
+    // Retry with no sharing restrictions - allows multiple concurrent sessions
+    // to append to the same log file (e.g., multiple NetBox panels)
+    Result = _wfsopen(ApiPath(NewFileName).c_str(), Append ? L"ab" : L"wb", SH_DENYNO);
+  }
   if (Result != nullptr)
   {
     constexpr size_t BUFSIZE = 4 * 1024;

@@ -475,10 +475,11 @@ void TFileOperationProgressType::ThrottleToCPSLimit(
 int64_t TFileOperationProgressType::AdjustToCPSLimit(
   int64_t Size)
 {
-  SetSpeedCounters();
-
-  // CPSLimit reader is guarded, we cannot block whole method as it can last long.
-  if (FCPSLimit > 0)
+  // Use GetCPSLimit() to read the live value (including parent chain for parallel transfers).
+  // The parent traversal in GetCPSLimit() is O(1) in practice (at most 2 levels).
+  // Lock contention is negligible compared to the SleepEx() throttling wait.
+  const uint64_t CPSLimit = GetCPSLimit();
+  if (CPSLimit > 0)
   {
     // we must not return 0, hence, if we reach zero,
     // we wait until the next second
@@ -488,7 +489,7 @@ int64_t TFileOperationProgressType::AdjustToCPSLimit(
 
       if (Second != FLastSecond)
       {
-        FRemainingCPS = FCPSLimit;
+        FRemainingCPS = CPSLimit;
         FLastSecond = Second;
       }
 
@@ -499,10 +500,10 @@ int64_t TFileOperationProgressType::AdjustToCPSLimit(
         DoProgress();
       }
     }
-    while ((FCPSLimit > 0) && (FRemainingCPS == 0));
+    while ((CPSLimit > 0) && (FRemainingCPS == 0));
 
     // CPSLimit may have been dropped in DoProgress
-    if (FCPSLimit > 0)
+    if (CPSLimit > 0)
     {
       if (FRemainingCPS < Size)
       {
