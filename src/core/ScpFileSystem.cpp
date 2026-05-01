@@ -581,7 +581,10 @@ void TSCPFileSystem::SendCommand(const UnicodeString & Cmd, bool NoEnsureLocatio
     try { FSecureShell->Close(); } catch (...) {}
     FSecureShell->Open();
     if (!FCurrentDirectory.IsEmpty())
+    {
+      FTerminal->LogEvent(FORMAT("Layer 5: restoring dir to %s", FCurrentDirectory));
       FCachedDirectoryChange = FCurrentDirectory;
+    }
   }
 
   if (!NoEnsureLocation)
