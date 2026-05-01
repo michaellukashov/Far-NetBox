@@ -2,8 +2,13 @@
 echo === Configuring and building NetBox (ARM64 RelWithDebugInfo) ===
 echo.
 
-rem === Calling vcvarsall.bat to set up MSVC environment ===
-call "C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvarsall.bat" x86_arm64
+rem === Locate and call vcvarsall.bat to set up MSVC environment ===
+call "%~dp0find-vs.bat"
+if %errorlevel% neq 0 (
+    echo ERROR: Failed to locate Visual Studio
+    exit /b 1
+)
+call "%VCVARSALL%" x86_arm64
 if %errorlevel% neq 0 (
     echo ERROR: Failed to initialize VS environment
     exit /b 1
