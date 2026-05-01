@@ -117,6 +117,7 @@ private:
   int32_t FLsFullTime{asAuto};
   TCaptureOutputEvent FOnCaptureOutput;
   bool FNeedsSessionReset{false};
+  UnicodeString FLastDirectory;
   bool FScpFatalError{false};
 
   void DetectUtf();

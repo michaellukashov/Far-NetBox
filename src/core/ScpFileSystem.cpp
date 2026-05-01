@@ -577,9 +577,7 @@ void TSCPFileSystem::SendCommand(const UnicodeString & Cmd, bool NoEnsureLocatio
     FNeedsSessionReset = false;
     // Layer 5: SCP mid-file cancel killed the SSH connection.
     // Close+Open for fresh reconnect, then restore previous dir.
-    FTerminal->LogEvent(FORMAT("Layer 5: FCurrentDirectory='%s'",
-      FCurrentDirectory));
-    const UnicodeString SavedDir = FCurrentDirectory;
+    const UnicodeString SavedDir = FLastDirectory;
     try { FSecureShell->Close(); } catch (...) {}
     FSecureShell->Open();
     if (!SavedDir.IsEmpty())
@@ -590,7 +588,6 @@ void TSCPFileSystem::SendCommand(const UnicodeString & Cmd, bool NoEnsureLocatio
   }
 
   if (!NoEnsureLocation)
-
   UnicodeString Line;
   FSecureShell->ClearStdError();
   FReturnCode = 0;
@@ -1037,10 +1034,12 @@ void TSCPFileSystem::ReadCurrentDirectory()
   {
     ExecCommand(fsCurrentDirectory, 0);
     FCurrentDirectory = base::UnixExcludeTrailingBackslash(FOutput->GetString(0));
+    FLastDirectory = FCurrentDirectory;
   }
   else
   {
     FCurrentDirectory = FCachedDirectoryChange;
+    FLastDirectory = FCurrentDirectory;
   }
 }
 
@@ -1095,6 +1094,7 @@ void TSCPFileSystem::ChangeDirectory(const UnicodeString & ADirectory)
 void TSCPFileSystem::CachedChangeDirectory(const UnicodeString & Directory)
 {
   FCachedDirectoryChange = base::UnixExcludeTrailingBackslash(Directory);
+  FLastDirectory = FCachedDirectoryChange;
 }
 
 void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
