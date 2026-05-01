@@ -1361,6 +1361,37 @@ void TSecureShell::ClearPending()
   PendLen = 0;
   PendSize = 0;
 }
+void TSecureShell::DrainSocket()
+{
+  // Non-blocking drain: poll the socket for available data
+  // and discard it. Stops when no data arrives within 100ms.
+  for (int32_t Round = 0; Round < 200; ++Round)
+  {
+    WSANETWORKEVENTS Events = {};
+    if (!EventSelectLoop(50, false, &Events))
+    {
+      break;  // No network events — socket drained
+    }
+    if (!(Events.lNetworkEvents & FD_READ))
+    {
+      continue;  // Not a read event
+    }
+    // Data available — drain it
+    try
+    {
+      uint8_t Buf[4096];
+      const int32_t Read = Receive(Buf, sizeof(Buf));
+      if (Read <= 0)
+      {
+        break;
+      }
+    }
+    catch (...)
+    {
+      break;  // Connection error
+    }
+  }
+}
 UnicodeString TSecureShell::ConvertInput(const RawByteString & Input, uint32_t CodePage) const
 {
   UnicodeString Result;

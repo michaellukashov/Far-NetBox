@@ -2534,9 +2534,11 @@ void TSCPFileSystem::CopyToLocal(TStrings * AFilesToCopy,
         }
         else
         {
-          // Layer 5: Clear pending buffer to discard remaining file data
-          // that would otherwise corrupt subsequent shell commands.
+          // Layer 5: Clear pending + drain kernel socket buffer to
+          // discard remaining file data that would otherwise corrupt
+          // subsequent shell commands (cd, ls).
           FSecureShell->ClearPending();
+          FSecureShell->DrainSocket();
         }
       }
       else

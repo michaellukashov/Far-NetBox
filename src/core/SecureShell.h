@@ -177,6 +177,7 @@ public:
   void ClearStdError();
   bool GetStoredCredentialsTried() const;
   void ClearPending();
+  void DrainSocket();
   void CollectUsage();
   bool CanChangePassword() const;
 
