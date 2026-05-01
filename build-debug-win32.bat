@@ -1,4 +1,7 @@
 @echo off
+
+rem === Change to script directory so relative paths work from any cwd ===
+cd /d "%~dp0"
 echo === Configuring and building NetBox (Win32 Debug) ===
 echo.
 
