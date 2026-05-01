@@ -58,8 +58,7 @@ Base Layer (src/base/)
 
 **Note:** All tasks in Phase I are investigation steps; execution order is flexible but Tasks 2.6‑2.7 should follow Task 2's findings.
 
-#### Task 1: Analyze crash path in SFTP `ChangeFileProperties`, rights handling, and dialog initialization
-
+- [x] **Task 1: Analyze crash path in SFTP ChangeFileProperties**
 **Target files:**
 - `src/core/SftpFileSystem.cpp`
 - `src/core/RemoteFiles.cpp`
@@ -79,8 +78,7 @@ Base Layer (src/base/)
 
 **Deliverable:** Written findings on whether the crash originates in the pre-chmod `ReadFile`, the `AddProperties` packet build, the `NumberUnset` propagation, or the post-chmod response handling.
 
-#### Task 1.5: Add concrete logging instrumentation to track crash path
-
+- [x] **Task 1.5: Add concrete logging instrumentation**
 **Target files:** `src/core/SftpFileSystem.cpp`, `src/core/Terminal.cpp`, `src/NetBox/WinSCPFileSystem.cpp`
 
 **Steps:**
@@ -97,8 +95,7 @@ Base Layer (src/base/)
 
 ---
 
-#### Task 2: Analyze panel refresh, `DoReadDirectoryFinish`, and error-handling path after non-traversable directory chmod
-
+- [x] **Task 2: Analyze panel refresh and error-handling path**
 **Target files:**
 - `src/core/Terminal.cpp`
 - `src/NetBox/WinSCPFileSystem.cpp`
@@ -119,8 +116,7 @@ Base Layer (src/base/)
 ---
 
 
-#### Task 2.6: Harden `DoReadDirectoryFinish` against exceptions in `FOnReadDirectory` callback
-
+- [x] **Task 2.6: Harden DoReadDirectoryFinish**
 **Target files:**
 - `src/core/Terminal.cpp`
 - `src/NetBox/WinSCPFileSystem.cpp`
@@ -137,8 +133,7 @@ Base Layer (src/base/)
 
 ---
 
-#### Task 2.7: Guard `ReadDirectory` catch block against null `FFiles`
-
+- [x] **Task 2.7: Guard ReadDirectory catch block**
 **Target files:**
 - `src/core/Terminal.cpp`
 
@@ -162,8 +157,7 @@ catch (Exception & E)
 ### Phase II. Fix
 
 
-#### Task 3.1: Guard `TSFTPFileSystem::ChangeFileProperties()` against null `File` after `ReadFile()` failure
-
+- [x] **Task 3.1: Guard ChangeFileProperties against null File**
 **Target files:** `src/core/SftpFileSystem.cpp`
 
 **Depends on:** Task 1 findings.
@@ -175,8 +169,7 @@ catch (Exception & E)
 
 **Deliverable:** Null‑safe `ChangeFileProperties()` that does not crash when `ReadFile` fails.
 
-#### Task 3.2: Guard `TTerminal::ReadDirectory()` catch block against null `FFiles`
-
+- [x] **Task 3.2: Guard ReadDirectory catch block**
 **Target files:** `src/core/Terminal.cpp`
 
 **Depends on:** Task 2.7 findings.
@@ -188,8 +181,7 @@ catch (Exception & E)
 
 **Deliverable:** `ReadDirectory` catch block that does not crash when `FFiles` is null.
 
-#### Task 3.3: Guard `TWinSCPFileSystem::GetFindDataEx()` against null `GetTerminal()->Files`
-
+- [x] **Task 3.3: Guard GetFindDataEx against null Files**
 **Target files:** `src/NetBox/WinSCPFileSystem.cpp`
 
 **Depends on:** Task 2 findings.
@@ -201,8 +193,7 @@ catch (Exception & E)
 
 **Deliverable:** Hardened `GetFindDataEx()` that does not crash if `FFiles` is unexpectedly null during panel refresh.
 
-#### Task 3.4: Harden `DoReadDirectoryFinish()` against exceptions in `FOnReadDirectory` callback
-
+- [x] **Task 3.4: Harden DoReadDirectoryFinish**
 **Target files:** `src/core/Terminal.cpp`, `src/NetBox/WinSCPFileSystem.cpp`
 
 **Depends on:** Task 2.6 findings.
@@ -214,8 +205,7 @@ catch (Exception & E)
 
 **Deliverable:** `DoReadDirectoryFinish()` that isolates plugin‑layer exceptions from core state.
 
-#### Task 3.5: Fix `TRights::Combine()` `NumberUnset` propagation (if bug confirmed)
-
+- [x] **Task 3.5: NumberUnset propagation (investigated — no fix needed)**
 **Target files:** `src/core/RemoteFiles.cpp`, `src/NetBox/WinSCPDialogs.cpp`
 
 **Depends on:** Task 1 findings (NumberUnset verification).
@@ -230,8 +220,7 @@ catch (Exception & E)
 
 ### Phase III. Verification & Documentation
 
-#### Task 4: Build verification and documentation update
-
+- [x] **Task 4: Build verification and documentation**
 **Steps:**
 1. Run `cmd /c build-x64.bat` (or equivalent platform script). Build must pass with **zero warnings**.
 2. Confirm the plugin DLL exists at `Far3_x64/Plugins/NetBox/NetBox.dll`.
@@ -242,8 +231,7 @@ catch (Exception & E)
 
 ---
 
-#### Task 5: Manual verification steps
-
+- [ ] **Task 5: Manual verification in Far Manager**
 **Target:** Far Manager with NetBox plugin, connected to an SSH/SFTP server.
 
 **Steps:**
