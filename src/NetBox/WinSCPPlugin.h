@@ -71,5 +71,6 @@ private:
 
 private:
   bool FInitialized{false};
+  bool FCreatingPanel{false};
 };
 

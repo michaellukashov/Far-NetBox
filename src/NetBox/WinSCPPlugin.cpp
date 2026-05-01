@@ -290,10 +290,19 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t I
   CoreInitializeOnce();
   // DEBUG_PRINTF("OpenFrom: %d", (int)OpenFrom);
 
+  // Prevent reconnect loops: abort reentrant calls during panel creation
+  if (FCreatingPanel)
+  {
+    AppLogFmt(L"OpenPluginEx: Reentrant call aborted (panel creation in progress)");
+    Abort();
+    return nullptr;
+  }
+
   if ((OpenFrom == OPEN_PLUGINSMENU) &&
     (!GetFarConfiguration()->GetPluginsMenu() || (Item == 1)))
   {
     CommandsMenu(true);
+    return nullptr;
   }
   else
   {
@@ -403,40 +412,74 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t I
     }
 
     // Create FileSystem for all non-reuse paths (menu, new session, analyse)
-    FileSystem = std::make_unique<TWinSCPFileSystem>(this);
-    FileSystem->InitWinSCPFileSystem(nullptr);
+    FCreatingPanel = true;
+    try__finally
+    {
+      FileSystem = std::make_unique<TWinSCPFileSystem>(this);
+      FileSystem->InitWinSCPFileSystem(nullptr);
 
-    if (OpenFrom == OPEN_LEFTDISKMENU || OpenFrom == OPEN_RIGHTDISKMENU ||
-      OpenFrom == OPEN_PLUGINSMENU ||
-      OpenFrom == OPEN_FINDLIST)
-    {
-      // nothing — menu entries return empty panel, Far Manager handles lifecycle
-    }
-    else if (OpenFrom == OPEN_SHORTCUT || OpenFrom == OPEN_COMMANDLINE)
-    {
-      // If we have a valid history entry but no matching connected panel,
-      // don't attempt to create a new session — that causes reconnect loops.
-      // Far Manager will handle the history navigation natively.
-      if ((OpenFrom == OPEN_SHORTCUT && Entry.Valid) ||
-          (OpenFrom == OPEN_COMMANDLINE && Entry.Valid && !Directory.IsEmpty()))
+      if (OpenFrom == OPEN_LEFTDISKMENU || OpenFrom == OPEN_RIGHTDISKMENU ||
+        OpenFrom == OPEN_PLUGINSMENU ||
+        OpenFrom == OPEN_FINDLIST)
       {
-        Abort();
-        return nullptr;
+        // nothing — menu entries return empty panel, Far Manager handles lifecycle
       }
-      if (OpenFrom == OPEN_SHORTCUT)
+      else if (OpenFrom == OPEN_SHORTCUT || OpenFrom == OPEN_COMMANDLINE)
       {
-        // directory will be set by FAR itself
-        Directory.Clear();
+        if (OpenFrom == OPEN_SHORTCUT)
+        {
+          // directory will be set by FAR itself
+          Directory.Clear();
+        }
+        // Normal session creation path (ParseUrl → Connect)
+        DebugAssert(GetStoredSessions());
+        bool DefaultsOnly = false;
+        std::unique_ptr<TOptions> Options(std::make_unique<TProgramParams>());
+        ParseCommandLine(CommandLine, Options.get());
+        constexpr int32_t ParseUrlFlags = pufAllowStoredSiteWithProtocol;
+        std::unique_ptr<TSessionData> Session(GetStoredSessions()->ParseUrl(CommandLine, Options.get(), DefaultsOnly, nullptr, nullptr, nullptr, ParseUrlFlags));
+        if (!DefaultsOnly)
+        {
+          if (!Session->GetCanLogin())
+          {
+            DebugAssert(false);
+            Abort();
+          }
+          FileSystem->SetConnectedDirectly();
+          Success = FileSystem->Connect(Session.get());
+          if (Success)
+          {
+            FileSystem->SetPrevSessionName(Session->GetName());
+            // Set panel directory Param once after connection — NOT on every
+            // directory change, to avoid Far Manager history triggering
+            // OPEN_SHORTCUT → OpenPluginEx → unnecessary reconnect.
+            FileSystem->UpdatePanelDirectoryParam();
+            AppLogFmt(L"OpenPluginEx: Connected to session %s, PrevSessionName set", Session->GetName());
+          }
+          if (Success && !Directory.IsEmpty())
+          {
+            FileSystem->SetDirectoryEx(Directory, OPM_SILENT);
+          }
+        }
       }
-      // Normal session creation path (ParseUrl → Connect)
-      DebugAssert(GetStoredSessions());
-      bool DefaultsOnly = false;
-      std::unique_ptr<TOptions> Options(std::make_unique<TProgramParams>());
-      ParseCommandLine(CommandLine, Options.get());
-      constexpr int32_t ParseUrlFlags = pufAllowStoredSiteWithProtocol;
-      std::unique_ptr<TSessionData> Session(GetStoredSessions()->ParseUrl(CommandLine, Options.get(), DefaultsOnly, nullptr, nullptr, nullptr, ParseUrlFlags));
-      if (!DefaultsOnly)
+      else if (OpenFrom == OPEN_ANALYSE)
       {
+        const OpenAnalyseInfo * Info = reinterpret_cast<OpenAnalyseInfo *>(Item);
+        const wchar_t * XmlFileName = Info->Info->FileName;
+        std::unique_ptr<THierarchicalStorage> ImportStorage(std::make_unique<TXmlStorage>(XmlFileName, GetConfiguration()->GetStoredSessionsSubKey()));
+
+        ImportStorage->Init();
+        ImportStorage->SetAccessMode(smRead);
+        if (!(ImportStorage->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), false) &&
+            ImportStorage->HasSubKeys()))
+        {
+          DebugAssert(false);
+          Abort();
+        }
+        const UnicodeString SessionName = ::PuttyUnMungeStr(ImportStorage->ReadStringRaw("Session", ""));
+        std::unique_ptr<TSessionData> Session(std::make_unique<TSessionData>(SessionName));
+        Session->Load(ImportStorage.get(), false);
+        Session->SetModified(true);
         if (!Session->GetCanLogin())
         {
           DebugAssert(false);
@@ -444,61 +487,27 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t I
         }
         FileSystem->SetConnectedDirectly();
         Success = FileSystem->Connect(Session.get());
-        if (Success)
-        {
-          FileSystem->SetPrevSessionName(Session->GetName());
-          // Set panel directory Param once after connection — NOT on every
-          // directory change, to avoid Far Manager history triggering
-          // OPEN_SHORTCUT → OpenPluginEx → unnecessary reconnect.
-          FileSystem->UpdatePanelDirectoryParam();
-          AppLogFmt(L"OpenPluginEx: Connected to session %s, PrevSessionName set", Session->GetName());
-        }
-        if (Success && !Directory.IsEmpty())
-        {
-          FileSystem->SetDirectoryEx(Directory, OPM_SILENT);
-        }
       }
-    }
-    else if (OpenFrom == OPEN_ANALYSE)
-    {
-      const OpenAnalyseInfo * Info = reinterpret_cast<OpenAnalyseInfo *>(Item);
-      const wchar_t * XmlFileName = Info->Info->FileName;
-      std::unique_ptr<THierarchicalStorage> ImportStorage(std::make_unique<TXmlStorage>(XmlFileName, GetConfiguration()->GetStoredSessionsSubKey()));
+      else
+      {
+        // Unknown OpenFrom type (e.g., folder history, dialog, etc.)
+        // Don't assert — just log and return the empty panel
+        // so Far Manager can handle the navigation natively
+        AppLogFmt(L"OpenPluginEx: Unknown OpenFrom=%d, returning empty panel", (int)OpenFrom);
+        // DebugAssert(false); TODO: Inform Far about Unknown OpenFrom
+      }
 
-      ImportStorage->Init();
-      ImportStorage->SetAccessMode(smRead);
-      if (!(ImportStorage->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), false) &&
-          ImportStorage->HasSubKeys()))
+      if (!Success)
       {
-        DebugAssert(false);
-        Abort();
+        FileSystem.reset(nullptr);
       }
-      const UnicodeString SessionName = ::PuttyUnMungeStr(ImportStorage->ReadStringRaw("Session", ""));
-      std::unique_ptr<TSessionData> Session(std::make_unique<TSessionData>(SessionName));
-      Session->Load(ImportStorage.get(), false);
-      Session->SetModified(true);
-      if (!Session->GetCanLogin())
-      {
-        DebugAssert(false);
-        Abort();
-      }
-      FileSystem->SetConnectedDirectly();
-      Success = FileSystem->Connect(Session.get());
     }
-    else
+    __finally
     {
-      // Unknown OpenFrom type (e.g., folder history, dialog, etc.)
-      // Don't assert — just log and return the empty panel
-      // so Far Manager can handle the navigation natively
-      AppLogFmt(L"OpenPluginEx: Unknown OpenFrom=%d, returning empty panel", (int)OpenFrom);
-      // DebugAssert(false); TODO: Inform Far about Unknown OpenFrom
-    }
-  }
-  if (!Success)
-  {
-    FileSystem.reset(nullptr);
-  }
-  return FileSystem.release();
+      FCreatingPanel = false;
+    } end_try__finally
+    return FileSystem.release();
+}
 }
 
 void TWinSCPPlugin::ParseCommandLine(UnicodeString & CommandLine,
