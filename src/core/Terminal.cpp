@@ -7921,14 +7921,13 @@ bool TTerminal::CopyToRemote(
   {
     LogEvent(FORMAT("CopyToRemote catch: cancel=%d, exception=%s",
       static_cast<int>(OperationProgress.GetCancel()), E.Message.c_str()));
-    if (OperationProgress.GetCancel() == csContinue)
+    if (OperationProgress.GetCancel() == csCancel ||
+        OperationProgress.GetCancel() == csCancelTransfer)
     {
-      CommandError(&E, MainInstructions(LoadStr(TOREMOTE_COPY_ERROR)));
-    }
-    else
-    {
+      OnceDoneOperation = odoIdle;
       throw EAbort("");
     }
+    CommandError(&E, MainInstructions(LoadStr(TOREMOTE_COPY_ERROR)));
     OnceDoneOperation = odoIdle;
   }
 
@@ -8513,14 +8512,13 @@ bool TTerminal::CopyToLocal(
       {
         LogEvent(FORMAT("CopyToLocal catch: cancel=%d, exception=%s",
           static_cast<int>(OperationProgress.GetCancel()), E.Message.c_str()));
-        if (OperationProgress.GetCancel() == csContinue)
+        if (OperationProgress.GetCancel() == csCancel ||
+            OperationProgress.GetCancel() == csCancelTransfer)
         {
-          CommandError(&E, MainInstructions(LoadStr(TOLOCAL_COPY_ERROR)));
-        }
-        else
-        {
+          OnceDoneOperation = odoIdle;
           throw EAbort("");
         }
+        CommandError(&E, MainInstructions(LoadStr(TOLOCAL_COPY_ERROR)));
         OnceDoneOperation = odoIdle;
       }
 
