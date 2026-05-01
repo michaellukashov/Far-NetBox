@@ -331,9 +331,17 @@ void TWinSCPFileSystem::HandleException(Exception * E, OPERATION_MODES OpMode)
       DoClose = true;
     }
   }
-  else if ((GetTerminal() != nullptr) && nb::isa<EAbort>(E) && E->Message == EXCEPTION_MSG_REPLACED)
+  else if ((GetTerminal() != nullptr) && nb::isa<EAbort>(E))
   {
-    DoClose = true;
+    if (E->Message == EXCEPTION_MSG_REPLACED)
+    {
+      DoClose = true;
+    }
+    else
+    {
+      // Silently ignore user-initiated abort/cancel
+      return;
+    }
   }
   else
   {

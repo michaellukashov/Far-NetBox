@@ -1267,10 +1267,10 @@ UnicodeString TSecureShell::ReceiveLine()
 #endif // defined(__BORLANDC__)
   RawByteString Line;
   bool EOL = false;
+  bool LargePendingLine = false;
 
   do
   {
-    // If there is any buffer of received chars
     if (PendLen > 0)
     {
       size_t Index = 0;
@@ -1279,6 +1279,10 @@ UnicodeString TSecureShell::ReceiveLine()
       {
         const auto Ch = Pending[Index++];
         EOL = (Ch == '\n' || Ch == '\0');
+      }
+      if (Index > 256)
+      {
+        LargePendingLine = true;
       }
       const int32_t PrevLen = Line.Length();
       char * Buf = Line.SetLength(nb::ToInt32(PrevLen + Index));
@@ -1304,12 +1308,18 @@ UnicodeString TSecureShell::ReceiveLine()
 
 
   // Log as hex if the line contains control characters (other than common whitespace),
-  // to avoid raw binary data in logs when protocol gets out of sync
+  // or if it was read from a suspiciously large pending buffer (binary data during
+  // out-of-sync protocol state), to avoid raw binary data in logs.
   bool NeedsHexLogging = false;
   for (int32_t Index = 1; Index <= Line.Length(); ++Index)
   {
     const unsigned char Ch = static_cast<unsigned char>(Line[Index]);
     if (Ch < 0x20 && Ch != '\r' && Ch != '\n' && Ch != '\t')
+    {
+      NeedsHexLogging = true;
+      break;
+    }
+    if (!GetUtfStrings() && Ch >= 0x80)
     {
       NeedsHexLogging = true;
       break;
@@ -1322,6 +1332,12 @@ UnicodeString TSecureShell::ReceiveLine()
     NeedsHexLogging = true;
   }
 
+  // If line was read from a large pending buffer (>256 bytes before newline),
+  // treat as binary regardless of character content
+  if (!NeedsHexLogging && LargePendingLine)
+  {
+    NeedsHexLogging = true;
+  }
   if (NeedsHexLogging)
   {
     CaptureOutput(llOutput, L"[hex] " + BytesToHex(nb::ToUInt8Ptr(Line.c_str()), Line.Length()));

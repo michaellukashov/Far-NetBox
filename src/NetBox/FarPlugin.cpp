@@ -1,6 +1,7 @@
 #include <vcl.h>
 #pragma hdrstop
 
+#include <vector>
 #include <plugin.hpp>
 #include <Common.h>
 #include <Queue.h> // TODO: move TSimpleThread to Sysutils
@@ -1747,35 +1748,81 @@ bool TCustomFarPlugin::CheckForEsc() const
   {
     LastTicks = Ticks;
 
-    INPUT_RECORD Rec;
-    DWORD ReadCount;
-    while (::PeekConsoleInput(FConsoleInput, &Rec, 1, &ReadCount) && ReadCount)
+    DWORD EventCount = 0;
+    if (!::GetNumberOfConsoleInputEvents(FConsoleInput, &EventCount) || (EventCount == 0))
     {
-      ::ReadConsoleInput(FConsoleInput, &Rec, 1, &ReadCount);
+      return false;
+    }
+
+    std::vector<INPUT_RECORD> Events;
+    Events.resize(EventCount);
+    DWORD ReadCount = 0;
+    if (!::ReadConsoleInput(FConsoleInput, Events.data(), EventCount, &ReadCount))
+    {
+      return false;
+    }
+    Events.resize(ReadCount);
+
+    bool FoundEsc = false;
+    std::vector<INPUT_RECORD> NonEscEvents;
+    NonEscEvents.reserve(ReadCount);
+    for (const auto & Rec : Events)
+    {
       if (Rec.EventType == KEY_EVENT &&
-        Rec.Event.KeyEvent.wVirtualKeyCode == VK_ESCAPE &&
-        Rec.Event.KeyEvent.bKeyDown)
+          Rec.Event.KeyEvent.wVirtualKeyCode == VK_ESCAPE &&
+          Rec.Event.KeyEvent.bKeyDown)
       {
-        return true;
+        FoundEsc = true;
+      }
+      else
+      {
+        NonEscEvents.push_back(Rec);
       }
     }
+
+    if (!NonEscEvents.empty())
+    {
+      DWORD Written = 0;
+      ::WriteConsoleInput(FConsoleInput, NonEscEvents.data(), static_cast<DWORD>(NonEscEvents.size()), &Written);
+    }
+
+    return FoundEsc;
   }
   return false;
 }
-
 void TCustomFarPlugin::FlushEscBuffer() const
 {
-  INPUT_RECORD Rec;
-  DWORD ReadCount;
-  while (::PeekConsoleInput(FConsoleInput, &Rec, 1, &ReadCount) && ReadCount)
+  DWORD EventCount = 0;
+  if (!::GetNumberOfConsoleInputEvents(FConsoleInput, &EventCount) || (EventCount == 0))
   {
-    ::ReadConsoleInput(FConsoleInput, &Rec, 1, &ReadCount);
-    if (Rec.EventType == KEY_EVENT &&
-      Rec.Event.KeyEvent.wVirtualKeyCode == VK_ESCAPE &&
-      Rec.Event.KeyEvent.bKeyDown)
+    return;
+  }
+
+  std::vector<INPUT_RECORD> Events;
+  Events.resize(EventCount);
+  DWORD ReadCount = 0;
+  if (!::ReadConsoleInput(FConsoleInput, Events.data(), EventCount, &ReadCount))
+  {
+    return;
+  }
+  Events.resize(ReadCount);
+
+  std::vector<INPUT_RECORD> NonEscEvents;
+  NonEscEvents.reserve(ReadCount);
+  for (const auto & Rec : Events)
+  {
+    if (!(Rec.EventType == KEY_EVENT &&
+          Rec.Event.KeyEvent.wVirtualKeyCode == VK_ESCAPE &&
+          Rec.Event.KeyEvent.bKeyDown))
     {
-      // Discard pending Esc events to prevent dialog/cancel races
+      NonEscEvents.push_back(Rec);
     }
+  }
+
+  if (!NonEscEvents.empty())
+  {
+    DWORD Written = 0;
+    ::WriteConsoleInput(FConsoleInput, NonEscEvents.data(), static_cast<DWORD>(NonEscEvents.size()), &Written);
   }
 }
 

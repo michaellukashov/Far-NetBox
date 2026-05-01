@@ -2186,8 +2186,10 @@ void TSCPFileSystem::SCPSource(const UnicodeString & AFileName,
                 nb::ToUInt8Ptr(AsciiBuf.GetData() + OperationProgress->GetTransferredSize()),
                 BlockSize);
               OperationProgress->AddTransferred(nb::ToInt64(BlockSize));
-              if (OperationProgress->GetCancel() == csCancelTransfer)
+              if (OperationProgress->GetCancel() == csCancelTransfer ||
+                OperationProgress->GetCancel() == csCancel)
               {
+                FTerminal->LogEvent(FORMAT("SCP upload cancelling: cancel=%d", static_cast<int>(OperationProgress->GetCancel())));
                 throw Exception(MainInstructions(LoadStr(USER_TERMINATED)));
               }
             }
@@ -2212,8 +2214,9 @@ void TSCPFileSystem::SCPSource(const UnicodeString & AFileName,
         }
 
         if ((OperationProgress->GetCancel() == csCancelTransfer) ||
-            (OperationProgress->GetCancel() == csCancel && !OperationProgress->GetTransferringFile()))
+            (OperationProgress->GetCancel() == csCancel))
         {
+          FTerminal->LogEvent(FORMAT("SCP upload cancelling (post-block): cancel=%d", static_cast<int>(OperationProgress->GetCancel())));
           throw Exception(MainInstructions(LoadStr(USER_TERMINATED)));
         }
       }
@@ -2259,7 +2262,8 @@ void TSCPFileSystem::SCPSource(const UnicodeString & AFileName,
 
       // Every exception during file transfer is fatal, except user-initiated cancellation
       if (OperationProgress->GetTransferringFile() &&
-          (OperationProgress->GetCancel() != csCancelTransfer))
+          (OperationProgress->GetCancel() != csCancelTransfer &&
+           OperationProgress->GetCancel() != csCancel))
       {
         FTerminal->FatalError(&E, FMTLOAD(COPY_FATAL, AFileName));
       }
@@ -2522,9 +2526,13 @@ void TSCPFileSystem::CopyToLocal(TStrings * AFilesToCopy,
       if (!IsLastLine(FSecureShell->ReceiveLine()))
       {
         SCPSendError((OperationProgress->GetCancel() ? L"Terminated by user." : L"Exception"), true);
-        // Just in case, remote side already sent some more data (it's probable)
-        // but we don't want to raise exception (user asked to terminate, it's not error)
-        ReadCommandOutput(coOnlyReturnCode | coWaitForLastLine);
+        if (!OperationProgress->GetCancel())
+        {
+          // Just in case, remote side already sent some more data (it's probable)
+          // but we don't want to raise exception (user asked to terminate, it's not error)
+          ReadCommandOutput(coOnlyReturnCode | coWaitForLastLine);
+        }
+        // Note: When user cancelled, skip ReadCommandOutput to avoid blocking on remote data.
       }
       else
       {
@@ -2893,8 +2901,10 @@ void TSCPFileSystem::SCPSink(const UnicodeString & TargetDir,
 
                   OperationProgress->AddLocallyUsed(BlockBuf.GetSize());
 
-                  if (OperationProgress->GetCancel() == csCancelTransfer)
+                  if (OperationProgress->GetCancel() == csCancelTransfer ||
+                    OperationProgress->GetCancel() == csCancel)
                   {
+                    FTerminal->LogEvent(FORMAT("SCP download cancelling: cancel=%d", static_cast<int>(OperationProgress->GetCancel())));
                     throw Exception(MainInstructions(LoadStr(USER_TERMINATED)));
                   }
                 }
@@ -2903,7 +2913,8 @@ void TSCPFileSystem::SCPSink(const UnicodeString & TargetDir,
               catch (Exception & E)
               {
                 // Every exception during file transfer is fatal, except user-initiated cancellation
-                if (OperationProgress->GetCancel() != csCancelTransfer)
+                if (OperationProgress->GetCancel() != csCancelTransfer &&
+                    OperationProgress->GetCancel() != csCancel)
                 {
                   FTerminal->FatalError(&E,
                     FMTLOAD(COPY_FATAL, OperationProgress->GetFileName()));
