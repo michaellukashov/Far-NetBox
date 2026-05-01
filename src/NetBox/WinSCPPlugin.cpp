@@ -330,6 +330,8 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t I
       {
         UnicodeString SessionName = Entry.SessionName;
         Directory = Entry.RemoteDirectory;
+        // Use local session name (without folder prefix) for ParseUrl compatibility
+        SessionName = TSessionData::ExtractLocalName(SessionName);
         CommandLine = FORMAT(L"netbox:%s", SessionName);
       }
       else
@@ -351,11 +353,13 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t I
         {
           SessionName.Delete(1, 7);
         }
+        // Extract local session name from potential "Folder/Session" format
+        SessionName = TSessionData::ExtractLocalName(SessionName);
         const bool Another = !(Flags & FOSF_ACTIVE);
         TWinSCPFileSystem * PanelSystem = nb::dyn_cast_or_null<TWinSCPFileSystem>(GetPanelFileSystem());
 
         if (PanelSystem && PanelSystem->Connected() &&
-          PanelSystem->GetTerminal()->GetSessionData()->GetSessionName() == SessionName)
+          PanelSystem->GetTerminal()->GetSessionData()->GetLocalName() == SessionName)
         {
           PanelSystem->SetDirectoryEx(Directory, OPM_SILENT);
           if (PanelSystem->UpdatePanel(false, Another))
@@ -363,6 +367,15 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t I
             PanelSystem->RedrawPanel(Another);
           }
           Abort();
+          return nullptr;
+        }
+        // If we have a valid history entry but no matching connected panel,
+        // don't attempt to create a new session — that causes reconnect loops.
+        // Far Manager will handle the history navigation natively.
+        if (Entry.Valid)
+        {
+          Abort();
+          return nullptr;
         }
         // directory will be set by FAR itself
         Directory.Clear();
@@ -385,6 +398,10 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t I
         if (Success)
         {
           FileSystem->SetPrevSessionName(Session->GetName());
+          // Set panel directory Param once after connection — NOT on every
+          // directory change, to avoid Far Manager history triggering
+          // OPEN_SHORTCUT → OpenPluginEx → unnecessary reconnect.
+          FileSystem->UpdatePanelDirectoryParam();
           AppLogFmt(L"OpenPluginEx: Connected to session %s, PrevSessionName set", Session->GetName());
         }
         if (Success && !Directory.IsEmpty())

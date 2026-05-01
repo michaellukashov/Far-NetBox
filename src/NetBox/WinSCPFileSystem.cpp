@@ -2229,14 +2229,8 @@ bool TWinSCPFileSystem::SynchronizeBrowsing(const UnicodeString & NewPath)
   nb::ClearStruct(fpd);
   fpd.StructSize = sizeof(fpd);
   fpd.Name = LocalPath.c_str();
-  if (!IsSessionList() && Connected() && FTerminal)
-  {
-    const UnicodeString Param = nb::EncodeSessionParam(
-      GetSessionData()->GetLocalName(),
-      FTerminal->GetCurrentDirectory());
-    fpd.Param = Param.c_str();
-    fpd.PluginId = NetBoxPluginGuid;
-  }
+  // Don't set Param on every directory change — Far Manager's history fires
+  // OPEN_SHORTCUT back into OpenPluginEx, causing unnecessary reconnects.
   if (!FarControl(FCTL_SETPANELDIRECTORY, 0, &fpd, PANEL_PASSIVE))
   {
     Result = false;
@@ -2278,8 +2272,15 @@ void TWinSCPFileSystem::UpdatePanelDirectoryParam()
   {
     if (!IsSessionList() && Connected() && FTerminal)
     {
+      const UnicodeString FolderName = GetSessionData()->GetFolderName();
+      const UnicodeString LocalSessionName = GetSessionData()->GetLocalName();
+      UnicodeString FolderAndSessionName;
+      if (!FolderName.IsEmpty())
+        FolderAndSessionName = FORMAT("%s/%s", FolderName, LocalSessionName);
+      else
+        FolderAndSessionName = FORMAT("%s", LocalSessionName);
       const UnicodeString Param = nb::EncodeSessionParam(
-        GetSessionData()->GetLocalName(),
+        FolderAndSessionName,
         FTerminal->GetCurrentDirectory());
       FarPanelDirectory fpd{};
       nb::ClearStruct(fpd);
@@ -2452,7 +2453,6 @@ bool TWinSCPFileSystem::SetDirectoryEx(const UnicodeString & ADir, OPERATION_MOD
     }
   }
 
-  UpdatePanelDirectoryParam();
   return true;
 }
 

@@ -90,6 +90,13 @@ After completing TASK-5:
 3. If test fails: STOP, debug, fix. Do not proceed to Phase 3 until this passes.
 4. Log output: Verify DEBUG logs show encode/decode flow and restoration path.
 
+### CHECKPOINT Result
+
+**Status: ✅ PASSED** (2026-05-01)
+1. ✅ x64 RelWithDebugInfo build passes with zero new warnings
+2. ✅ Directory navigation works without reconnect (verified 2026-05-01)
+3. ✅ Alt-F12 folder history restores session correctly without reconnect loop (verified 2026-05-01)
+
 ### Phase 3: Integration and Edge Cases
 
 - [x] **TASK-6: Integrate with existing session focus restoration (FPrevSessionName)**
@@ -115,7 +122,7 @@ After completing TASK-5:
   - **Dependency:** TASK-4, TASK-5
 
 
-- [ ] **TASK-11: Clear stale FarPanelDirectory::Param on session disconnect**
+- [x] **TASK-11: Clear stale FarPanelDirectory::Param on session disconnect
  - **Files:** `src/NetBox/WinSCPFileSystem.cpp` (`Disconnect()`, `ClearConnectedState()`)
  - **Deliverable:** In `Disconnect()` (or `ClearConnectedState()`), call `FCTL_SETPANELDIRECTORY` on the active panel with `Param = nullptr` and `PluginId = NetBoxPluginGuid` to invalidate the stale history entry. This prevents Far Manager's folder history from referencing a disconnected session. Must handle the case where the panel is already being closed (no active panel to update).
  - **Error handling:** If `FCTL_SETPANELDIRECTORY` fails (e.g., panel already closed), log DEBUG and continue silently -- this is a best-effort cleanup.
@@ -162,4 +169,90 @@ After completing TASK-5:
    - Backward compatibility with legacy `netbox:SessionName\1RemoteDirectory` format
  - **Constraint:** Keep documentation concise and user-facing; avoid internal implementation details
  - **Dependency:** TASK-5, TASK-11
-</content>
+
+## Implementation Summary (2026-05-01)
+
+### What Was Implemented
+
+Far Manager folder history integration for NetBox plugin sessions using `FarPanelDirectory::Param` field with URL-encoded format:
+
+```
+netbox://<folder>/<session_name>/<remote_directory>
+```
+
+### Core Principle
+
+The `Param` field must be set **exactly once** per session — during initial `Connect()`. **Never** on every directory change. Far Manager's history mechanism fires `OPEN_SHORTCUT` back into `OpenPluginEx` whenever `FCTL_SETPANELDIRECTORY` is called with a Param. If the session name doesn't match the existing panel, the code falls through to `ParseUrl` → `Connect()`, causing a reconnect loop.
+
+### Known Bugs and Solutions
+
+| Bug | Root Cause | Solution | Files |
+|-----|------------|----------|-------|
+| Reconnect after every directory change | `UpdatePanelDirectoryParam()` called from `SetDirectoryEx()` and Param set in `SynchronizeBrowsing()` | Remove both calls; only set Param once after initial `Connect()` | `WinSCPFileSystem.cpp` |
+| Session name mismatch on history restore | `GetOpenPanelInfoEx` encodes `Folder/Session`, `UpdatePanelDirectoryParam` encoded only `Session` (format inconsistency) | Use identical `FolderAndSessionName` format in both encoding paths | `WinSCPFileSystem.cpp` |
+| Alt-F12 reconnect loop | No matching panel found → falls through to `ParseUrl` → `Connect()` | Add early `Abort()` + `return nullptr` when `Entry.Valid` but no panel matches | `WinSCPPlugin.cpp` |
+| Session name comparison fails | `GetSessionName()` returns full `Folder/Session` path, history entry uses local name | Use `GetLocalName()` on both sides of comparison; extract local name via `TSessionData::ExtractLocalName()` | `WinSCPPlugin.cpp` |
+
+### Correct Integration Pattern
+
+```cpp
+// 1. GetOpenPanelInfoEx() — encodes ShortcutData for Far Manager history
+UnicodeString FolderAndSessionName;
+if (!FolderName.IsEmpty())
+  FolderAndSessionName = FORMAT("%s/%s", FolderName, SessionName);
+else
+  FolderAndSessionName = FORMAT("%s", SessionName);
+ShortcutData = nb::EncodeSessionParam(FolderAndSessionName, CurDir);
+
+// 2. UpdatePanelDirectoryParam() — encodes Param for active panel
+// Must use IDENTICAL FolderAndSessionName format as GetOpenPanelInfoEx
+const UnicodeString Param = nb::EncodeSessionParam(FolderAndSessionName, CurrentDir);
+FarControl(FCTL_SETPANELDIRECTORY, 0, &fpd, PANEL_ACTIVE);
+
+// 3. OpenPluginEx() OPEN_SHORTCUT handler — session matching
+UnicodeString SessionName = TSessionData::ExtractLocalName(DecodedSessionName);
+if (PanelSystem && PanelSystem->Connected() &&
+    PanelSystem->GetTerminal()->GetSessionData()->GetLocalName() == SessionName)
+{
+    PanelSystem->SetDirectoryEx(Directory, OPM_SILENT);
+    Abort();
+    return nullptr;
+}
+// If Entry.Valid but no match — abort to prevent reconnect loop
+if (Entry.Valid) { Abort(); return nullptr; }
+
+// 4. After initial Connect() — set Param ONCE
+FileSystem->UpdatePanelDirectoryParam();
+```
+
+### Anti-Patterns (DO NOT DO)
+
+- ❌ Call `UpdatePanelDirectoryParam()` from `SetDirectoryEx()` — triggers reconnect loop
+- ❌ Set `Param` in `SynchronizeBrowsing()` — triggers reconnect on passive panel sync
+- ❌ Compare `GetSessionName()` against extracted local name — format mismatch
+- ❌ Fall through to `ParseUrl` → `Connect()` when history entry is valid — causes reconnect loop
+
+### Verification Results
+
+- ✅ x64 RelWithDebugInfo build passes with zero new warnings
+- ✅ Directory navigation works without reconnect
+- ✅ Alt-F12 folder history restores session correctly without reconnect loop
+- ✅ Committed: `c25f7ae64 fix(folder-history): prevent reconnect loops during directory navigation`
+
+---
+
+### Changelog
+
+#### 2026-05-01: Fixed session name mismatch bug (gh-391)
+**Bug:** Session history navigation triggered reconnect after every directory change.
+**Root cause:** `DecodeSessionParam()` returned full `Folder/Session` format but comparison at line 358 used `GetSessionName()` which returns only local session name.
+**Fix:** Added `TSessionData::ExtractLocalName(SessionName)` at line 355 to normalize session names before comparison. Now correctly matches existing session and avoids reconnect.
+**Files changed:** `src/NetBox/WinSCPPlugin.cpp` (2 lines added).
+
+#### 2026-05-01: Fixed Alt-F12 reconnect loop
+**Bug:** Alt-F12 history navigation caused constant reconnect loop when no matching connected panel found.
+**Root cause:** After failing to match existing panel in OPEN_SHORTCUT handler, code fell through to
+`ParseUrl` → `Connect()` creating new sessions repeatedly.
+**Fix:** Added early `Abort()` + `return nullptr` for valid history entries when no matching panel exists.
+Prevents fallback to new session creation.
+**Files changed:** `src/NetBox/WinSCPPlugin.cpp` (8 lines added).
