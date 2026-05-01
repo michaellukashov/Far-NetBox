@@ -160,7 +160,7 @@ After completing TASK-5:
   - **Files:** `src/NetBox/`, `Far3_x64/Plugins/NetBox/`
  - **Dependency:** TASK-5, TASK-6, TASK-7, TASK-8, TASK-11
 
-- [ ] **TASK-12: Document folder history feature in user guide**
+- [x] **TASK-12: Document folder history feature in user guide**
  - **Files:** `docs/user-guide.md`
  - **Deliverable:** Add a section to `docs/user-guide.md` explaining:
    - Far Manager's folder history (`Alt-F12` or equivalent) now works with NetBox sessions
@@ -168,6 +168,7 @@ After completing TASK-5:
    - The `netbox://<session_name>/<remote_directory>` URL format used in history entries
    - Backward compatibility with legacy `netbox:SessionName\1RemoteDirectory` format
  - **Constraint:** Keep documentation concise and user-facing; avoid internal implementation details
+ - **Status:** ✅ Completed — committed `019976747 docs(user-guide): add folder history navigation section`
  - **Dependency:** TASK-5, TASK-11
 
 ## Implementation Summary (2026-05-01)
@@ -241,19 +242,31 @@ FileSystem->UpdatePanelDirectoryParam();
 - ✅ Directory navigation works without reconnect
 - ✅ Alt-F12 folder history restores session correctly without reconnect loop
 - ✅ Committed: `c25f7ae64 fix(folder-history): prevent reconnect loops during directory navigation`
+- ✅ Committed: `ef9e125bd fix(folder-history): prevent reconnect loops and session mismatch on history restore`
+- ✅ Committed: `019976747 docs(user-guide): add folder history navigation section`
 
 ---
 
 ### Changelog
 
+#### 2026-05-01: Review iteration — code review fixes
+
+**Issues found in code review of `ef9e125bd`:**
+- `DebugAssert(false)` contradicted comment "Don't assert" in unknown-OpenFrom branch — removed assert, kept defensive log
+- Early returns from panel-reuse block missing `Abort()` — added `Abort()` before all three `return nullptr` paths for consistency with Far Manager signaling
+- `OPEN_COMMANDLINE` reuse lacked session-name validation — added `PanelLocalName == SessionName` guard to prevent navigating wrong panel when multiple sessions are open
+- Duplicated session-name extraction (`netbox:` strip + `ExtractLocalName()`) in two blocks — extracted `NormalizeSessionName` lambda shared by reuse and creation paths
+- Guard condition in second block simplified — removed intermediate `GuardCondition` variable and unused `SessionName` computation
+**Files changed:** `src/NetBox/WinSCPPlugin.cpp` (review fixes).
+
 #### 2026-05-01: Fixed session name mismatch bug (gh-391)
-**Bug:** Session history navigation triggered reconnect after every directory change.
-**Root cause:** `DecodeSessionParam()` returned full `Folder/Session` format but comparison at line 358 used `GetSessionName()` which returns only local session name.
-**Fix:** Added `TSessionData::ExtractLocalName(SessionName)` at line 355 to normalize session names before comparison. Now correctly matches existing session and avoids reconnect.
-**Files changed:** `src/NetBox/WinSCPPlugin.cpp` (2 lines added).
+bh|**Bug:** Session history navigation triggered reconnect after every directory change.
+in|**Root cause:** `DecodeSessionParam()` returned full `Folder/Session` format but comparison at line 358 used `GetSessionName()` which returns only local session name.
+it|**Fix:** Added `TSessionData::ExtractLocalName(SessionName)` at line 355 to normalize session names before comparison. Now correctly matches existing session and avoids reconnect.
+by|**Files changed:** `src/NetBox/WinSCPPlugin.cpp` (2 lines added).
 
 #### 2026-05-01: Fixed Alt-F12 folder history reconnect — session reuse (FINAL FIX)
-**Bug:** Alt-F12 folder history created new session instead of reusing existing connected panel.
-**Root cause:** Session matching guard only handled `OPEN_SHORTCUT`. Far Manager folder history (Alt-F12) fires `OPEN_COMMANDLINE` with a valid history entry, bypassing the guard and falling through to `ParseUrl` → `Connect()` → new session created.
-**Fix:** Extended guard condition to `(OpenFrom == OPEN_SHORTCUT || (OpenFrom == OPEN_COMMANDLINE && Entry.Valid && !Directory.IsEmpty()))`. This catches both entry points when history data is valid, matches against existing panel via `GetLocalName()`, and aborts early to prevent reconnect.
-**Files changed:** `src/NetBox/WinSCPPlugin.cpp` (guard condition extended, `Another` flag ternary added).
+ag|**Bug:** Alt-F12 folder history created new session instead of reusing existing connected panel.
+hh|**Root cause:** Session matching guard only handled `OPEN_SHORTCUT`. Far Manager folder history (Alt-F12) fires `OPEN_COMMANDLINE` with a valid history entry, bypassing the guard and falling through to `ParseUrl` → `Connect()` → new session created.
+pu|**Fix:** Extended guard condition to `(OpenFrom == OPEN_SHORTCUT || (OpenFrom == OPEN_COMMANDLINE && Entry.Valid && !Directory.IsEmpty()))`. This catches both entry points when history data is valid, matches against existing panel via `GetLocalName()`, and aborts early to prevent reconnect.
+yd|**Files changed:** `src/NetBox/WinSCPPlugin.cpp` (guard condition extended, `Another` flag ternary added).

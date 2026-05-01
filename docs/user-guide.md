@@ -24,6 +24,37 @@ Cryptography based on OpenSSL 3.3.7 Copyright (c) 1998-2025 The OpenSSL Project
 | **WebDAV** | Web-based Distributed Authoring and Versioning |
 | **S3**   | Amazon Simple Storage Service (TLS version selection and custom CA certificate support) |
 
+
+## Folder History Navigation
+
+NetBox integrates with Far Manager's built-in folder history, allowing you to quickly return to previously visited remote sessions and directories.
+
+### Using Folder History
+
+Press **`Alt-F12`** (or navigate via Far Manager's history menu) to see a list of previously visited NetBox locations. Selecting an entry restores both the session connection and the remote directory you were viewing.
+
+NetBox stores each panel location in Far Manager's history in the following format:
+
+```
+netbox://<session_name>/<remote_directory>
+```
+
+For example:
+
+```
+netbox://myserver/home/user/projects
+```
+
+This allows Far Manager to remember exactly which server and directory you were in, so history navigation works seamlessly across sessions.
+
+### Legacy Format Compatibility
+
+Older versions of NetBox and WinSCP-based plugins stored history entries in a legacy format (`netbox:SessionName\1RemoteDirectory`). NetBox automatically recognizes and handles both the new `netbox://` format and the legacy format, so your existing shortcuts and history entries continue to work without manual conversion.
+
+### Requirements
+
+- Far Manager 3.0.5955 or newer (provides `FCTL_GETPANELDIRECTORY` / `FCTL_SETPANELDIRECTORY` support)
+- NetBox must be connected to the session when you navigate away; the history entry captures the current session and directory automatically
 ## Links
 
 - Project main page: [https://github.com/michaellukashov/Far-NetBox](https://github.com/michaellukashov/Far-NetBox)
@@ -49,3 +80,4 @@ Far-NetBox is distributed in the hope that it will be useful, but without any wa
 
 - [Getting Started](getting-started.md) — Installation and first run
 - [Architecture](architecture.md) — Project structure and build system
+
