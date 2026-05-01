@@ -212,70 +212,97 @@ stops without waiting for remote acknowledgment.
 
 ---
 
-## Layer 5 — Pending Buffer Corruption After Cancel (Post-Panel Navigation)
+## Layer 5 — Post-Cancel Session Corruption (Two-Phase Bug)
 
-### Known Bug
+### Phase A — Pending Buffer Poisoning
 
-After the four-layer fix, cancelling an SCP download mid-file **still** caused a hang when navigating the panel. The transfer dialog closed correctly, but pressing Backspace or clicking `..` to change directory read garbled binary data instead of a shell response, freezing the panel.
+After the four-layer fix, cancelling an SCP download mid-file **still** produced garbled hex data when navigating (`cd ".."`). `ClearPending()` only cleared the internal `PendLen`/`Pending` buffer; the kernel socket buffer held 13-50KB of file data pipelined through TCP before the remote SCP processed the abort.
 
-**Root cause:** The SCP download loop calls `FSecureShell->Receive(BlockBuf, BlockSize)` (inline low-level reads). The remote SCP process pumps file data through TCP into the local socket buffer. `Receive()` stores excess data beyond what the loop consumes into a **pending buffer** (`PendLen` / `Pending` in `TSecureShell`). When `USER_TERMINATED` is thrown mid-transfer, the pending buffer still holds 13KB+ of buffered file data. The `__finally` cleanup sends the error byte, but **`PendLen` is never cleared**. The next `ReceiveLine()` (for `cd ".."`) reads from this stale pending buffer, getting binary garbage.
+### Phase B — Dead Connection (The Real Problem)
 
-**Log evidence:**
+Even after draining all buffered file data, the panel froze with "Host is not communicating for 15 seconds." The remote SSH server **closes the TCP connection** after the SCP process terminates abnormally. No amount of draining can revive a dead socket.
 
-```
-01:51:59.232  SCP download cancelling: cancel=3         ← Layer 2: cancel detected
-01:51:59.232  Read 148 bytes (12903 pending)            ← 13KB of file data still buffered
-01:51:59.233  Sending SCP error (2) to remote side     ← cleanup sends abort byte
-01:51:59.233  CopyToLocal catch: cancel=3, exception=... ← Layer 3: outer catch reached
-...
-01:52:01.183  Changing directory to "..".             ← user navigates panel
-01:52:01.183  cd ".." ; echo "NetBox: this is end-of-file:$?"
-01:52:01.183  Read 82 bytes (12821 pending)            ← READS BUFFERED FILE DATA!
-01:52:01.183  [hex] 57AB88D4D9C1895F...                ← GARBAGE — corrupts shell state
-```
+**Six drain approaches failed:**
 
-### Correct Integration Pattern
+| # | Approach | Why it failed |
+|---|----------|--------------|
+| 5a | `ClearPending()` | Kernel buffer still had data |
+| 5b | `DrainSocket()` via `EventSelectLoop` | Edge-triggered: only drained one 4KB block |
+| 5c | `ReadCommandOutput()` in `__finally` | Blocks indefinitely; throwing during exception unwinding = UB |
+| 5d | `Close()` in `__finally` | Ran during exception unwinding → panel disappeared |
+| 5e | Drain + `FNeedsSessionReset` in `SendCommand` | Single drain iteration missed burst data |
+| 5f | Drain with 600ms silence detection | Connection already dead, drain can't revive |
 
-After SCP mid-file cancellation, clear the pending buffer to discard leftover file data before the next shell command is issued:
+**Three reconnect approaches failed:**
 
-```cpp
-// In TSecureShell (SecureShell.h + SecureShell.cpp):
-void TSecureShell::ClearPending()
-{
-  if (Pending != nullptr)
-  {
-    sfree(Pending);
-    Pending = nullptr;
-  }
-  PendLen = 0;
-  PendSize = 0;
-}
-```
+| # | Approach | Why it failed |
+|---|----------|--------------|
+| 5g | `Close()+Open()` in `SendCommand` | `ChangeDirectory.EnsureLocation` bypassed the reconnect by catching the dead-session exception and setting `ecNoEnsureLocation` |
+| 5h | Restore via `FCurrentDirectory` | Empty — only populated by `ReadCurrentDirectory()` (runs AFTER cd) |
+| 5i | Restore via `FLastDirectory` | Same bypass issue as 5g |
 
-Call from `TSCPFileSystem::CopyToLocal` `__finally` block when user cancelled:
+### Correct Integration Pattern (5j)
+
+**Three components working together:**
+
+**1. `FLastDirectory` tracking** — A persistent member in `TSCPFileSystem`, updated in both `CachedChangeDirectory()` and `ReadCurrentDirectory()`. Unlike `FCurrentDirectory` (set only after `pwd`), `FLastDirectory` is always available before any command.
+
+**2. Flag in `__finally`** — After sending the SCP error byte when cancelled, set `FNeedsSessionReset = true` (deferred — no drain or close during exception unwinding).
+
+**3. Reconnect in `ChangeDirectory()` BEFORE `EnsureLocation()`** — This is the critical insight. `ChangeDirectory` calls `EnsureLocation()` in a try-catch that silently computes an absolute path and sets `ecNoEnsureLocation` when the session is dead, completely bypassing any reconnect in `SendCommand`. The reconnect MUST happen before `EnsureLocation`.
 
 ```cpp
-SCPSendError(...);
-if (OperationProgress->GetCancel() == csContinue)
+// In __finally (CopyToLocal):
+FSecureShell->ClearPending();
+FNeedsSessionReset = true;
+
+// In ChangeDirectory (before EnsureLocation try-catch):
+if (FNeedsSessionReset)
 {
-    ReadCommandOutput(coOnlyReturnCode | coWaitForLastLine);
+    FNeedsSessionReset = false;
+    try { FSecureShell->Close(); } catch (...) {}
+    FSecureShell->Open();
+    if (!FLastDirectory.IsEmpty())
+        FCachedDirectoryChange = FLastDirectory;
 }
-else
-{
-    FSecureShell->ClearPending();  // Layer 5
-}
+// Then: EnsureLocation() restores to FCachedDirectoryChange
+// Then: ExecCommand("cd ..") — from correct dir ✓
+```
+
+**End-to-end flow:**
+```
+Cancel → __finally: FNeedsSessionReset=true
+EAbort("") silently ignored, panel stays open
+
+User clicks "..":
+  ChangeDirectory(".."):
+    FNeedsSessionReset → Close+Open → FCachedDirectoryChange=/home/mikhail/Dropbox/sec
+    EnsureLocation() → cd /home/mikhail/Dropbox/sec ✓
+    ExecCommand("cd ..") → /home/mikhail/Dropbox ✓
 ```
 
 ### Implementation
 
-| File | Line | Change |
-|------|------|--------|
-| `src/core/SecureShell.h` | ~178 | Add `void ClearPending();` declaration |
-| `src/core/SecureShell.cpp` | ~1353 | Implement `ClearPending()` — free pending buffer, reset lengths |
-| `src/core/ScpFileSystem.cpp` | ~2535 | Call `FSecureShell->ClearPending()` in `else` branch when cancelled |
+| File | Change |
+|------|--------|
+| `src/core/ScpFileSystem.h` | Add `FNeedsSessionReset`, `FLastDirectory` members |
+| `src/core/ScpFileSystem.cpp` `__finally` | Clear pending, set `FNeedsSessionReset = true` |
+| `src/core/ScpFileSystem.cpp` `ChangeDirectory` | Handle `FNeedsSessionReset` before `EnsureLocation()` |
+| `src/core/ScpFileSystem.cpp` `CachedChangeDirectory` | Update `FLastDirectory` |
+| `src/core/ScpFileSystem.cpp` `ReadCurrentDirectory` | Update `FLastDirectory` |
+| `src/core/ScpFileSystem.cpp` `SendCommand` | Fallback reconnect (for non-ChangeDirectory callers) |
+| `src/core/SecureShell.h` | Add `ClearPending()`, `DrainSocket()` declarations |
+| `src/core/SecureShell.cpp` | Implement `ClearPending()`, `DrainSocket()` |
 
-**Verification:** User cancels download → navigates panel → shell commands execute normally without corruption.
----
+### Verification
+
+| # | Test | Expected | Result |
+|---|------|----------|--------|
+| 9 | `cd ".."` after cancel | Navigate to parent of original dir | ✓ `/home/mikhail/Dropbox` |
+| 10 | Panel after `cd ".."` | Lists correct directory contents | ✓ Shows Dropbox files |
+| 11 | `FLastDirectory` after `cd ".."` | Updated to new directory | ✓ `/home/mikhail/Dropbox` |
+| 12 | No hex garbage in logs | Clean text responses | ✓ No `[hex]` entries |
+| 13 | No 15-second timeout | Immediate response | ✓ Response in < 1s |
 
 ## Diagnostic Logging
 
