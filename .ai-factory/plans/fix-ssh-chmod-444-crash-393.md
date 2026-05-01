@@ -260,7 +260,21 @@ catch (Exception & E)
 
 ## Fix Summary
 
-> *To be filled in after Tasks 3.1‑3.5 are complete. Record the actual root cause and the exact files/lines changed.*
+**Root cause:** `TSFTPFileSystem::ChangeFileProperties()` calls `ReadFile()` to retrieve the target file's metadata before sending the chmod request. If the server refuses the read (e.g., because the directory already has restrictive permissions or the file does not exist), `ReadFile()` sets the `File` pointer to `nullptr`. The code then immediately dereferences `File` at multiple sites (`GetIsDirectory()`, `GetFileOwner()`, `GetFileGroup()`, `GetRights()`) without any null check, causing an access-violation crash.
+
+**Fixes applied:**
+
+| Task | File | Change |
+|------|------|--------|
+| 3.1 | `src/core/SftpFileSystem.cpp` | Null guard after `ReadFile()` — throw `ExtException` if `File == nullptr` instead of crashing |
+| 3.2 | `src/core/Terminal.cpp` | Null guard in `ReadDirectory()` catch block — use `GetCurrentDirectory()` fallback when `FFiles` is null |
+| 3.3 | `src/NetBox/WinSCPFileSystem.cpp` | Null guard in `GetFindDataEx()` — skip file iteration when `GetTerminal()->Files` is null |
+| 2.6 | `src/core/Terminal.cpp` | Null guard in `DoReadDirectoryFinish()` — return early if `AFiles == nullptr` |
+| 1.5 | All three files | Added `LogEvent()` instrumentation at DEBUG/INFO level for crash-path tracing |
+
+**NumberUnset investigation:** `TRights::Combine()` correctly populates `NumberUnset` for execute bits when setting `444`. No fix required — this is a functional bug only in edge cases, not the crash cause.
+
+**Build:** x64 RelWithDebugInfo passes with zero new warnings.
 
 ---
 
