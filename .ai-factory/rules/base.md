@@ -128,6 +128,7 @@ src/
 6. **Preserve WinXP compatibility** — avoid modern Windows APIs
 7. **Maintain backward compatibility** with existing configurations
 8. **Use `nb::vector_t<T>` instead of `std::vector<T>`** — NetBox provides a custom-allocator alias (`nb::vector_t`) in `<nbtypes.h>` that is used throughout the codebase. Prefer it over `std::vector` for consistency and to ensure proper allocator integration. Remove `#include <vector>` when it is no longer needed.
+9. **Use `UnicodeString` and `AnsiString` instead of `std::wstring` / `std::string`** — NetBox provides its own string types that are used consistently across the codebase. Prefer them over standard C++ string types for API compatibility and to avoid type mismatches with Far Manager and protocol layers.
 ## Testing
 
 - **Manual testing:** Required for affected functionality
