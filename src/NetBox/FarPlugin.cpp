@@ -1,6 +1,7 @@
 #include <vcl.h>
 #pragma hdrstop
 
+#include <vector>
 #include <plugin.hpp>
 #include <Common.h>
 #include <Queue.h> // TODO: move TSimpleThread to Sysutils
@@ -34,7 +35,7 @@ public:
   virtual ~TPluginIdleThread() noexcept override
   {
     TPluginIdleThread::Terminate();
-    WaitFor();
+    WaitFor(FMillisecs);
     pthread_cond_destroy(&FCond);
     pthread_mutex_destroy(&FMutex);
   }
@@ -47,16 +48,13 @@ public:
     {
       while (!FCheckCondition)
       {
-
         const int Result = pthread_cond_timedwait(&FCond, &FMutex, Timeout);
-        if ((Result == WAIT_TIMEOUT) && IsActive() && !IsFinished() && FPlugin && FPlugin->GetPluginHandle() && !FPlugin->IsIdlePaused())
+        if ((Result == WAIT_TIMEOUT) && IsActive() && !IsFinished() && FPlugin && FPlugin->GetPluginHandle())
         {
-
           // Marshal idle processing to the main thread via the sanctioned synchro path.
-          // DEBUG_PRINTFA("IdleThread: posting FE_IDLE synchro");
-          FPlugin->PostMainThreadSynchro(nullptr);
+          // FPlugin->PostMainThreadSynchro(nullptr);
+          FPlugin->FarAdvControl(ACTL_SYNCHRO, 0, nullptr);
         }
-
       }
       FCheckCondition = false;
       Timeout = IsActive() ? FMillisecs : INFINITE;
@@ -146,14 +144,10 @@ TCustomFarPlugin::TCustomFarPlugin(TObjectClassId Kind, HINSTANCE HInst) noexcep
   FFarStandardFunctions.StructSize = sizeof(FFarStandardFunctions);
 
   // far\Examples\Compare\compare.cpp
-  DEBUG_PRINTFA("Opening CONIN$ handle");
   FConsoleInput = ::CreateFile(L"CONIN$", GENERIC_READ, FILE_SHARE_READ, nullptr,
     OPEN_EXISTING, 0, nullptr);
-  DEBUG_PRINTFA("CONIN$ handle opened");
-  DEBUG_PRINTFA("Opening CONOUT$ handle");
   FConsoleOutput = ::CreateFile(L"CONOUT$", GENERIC_READ | GENERIC_WRITE,
     FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING, 0, nullptr);
-  DEBUG_PRINTFA("CONOUT$ handle opened");
   if (ConsoleWindowState() == SW_SHOWNORMAL)
   {
     FNormalConsoleSize = TerminalInfo();
@@ -167,37 +161,15 @@ TCustomFarPlugin::TCustomFarPlugin(TObjectClassId Kind, HINSTANCE HInst) noexcep
 
 TCustomFarPlugin::~TCustomFarPlugin() noexcept
 {
-  DEBUG_PRINTF("begin");
+  // DEBUG_PRINTF("end");
   DebugAssert(FTopDialog == nullptr);
 
   ResetCachedInfo();
-  if (FTerminalScreenShowing)
-  {
-    SaveTerminalScreen();
-  }
-  DEBUG_PRINTFA("Closing CONIN$ handle");
   SAFE_CLOSE_HANDLE(FConsoleInput);
   FConsoleInput = INVALID_HANDLE_VALUE;
-  DEBUG_PRINTFA("CONIN$ handle closed");
-  DEBUG_PRINTFA("Closing CONOUT$ handle");
   SAFE_CLOSE_HANDLE(FConsoleOutput);
   FConsoleOutput = INVALID_HANDLE_VALUE;
-  DEBUG_PRINTFA("CONOUT$ handle closed");
 
-  while (FOpenedPlugins->GetCount() > 0)
-  {
-    TCustomFarFileSystem * FileSystem = FOpenedPlugins->GetAs<TCustomFarFileSystem>(0);
-    try__finally
-    {
-      CloseFileSystem(FileSystem);
-    }
-    __finally
-    {
-      // If CloseFileSystem threw, the finally block inside it already
-      // removes the pointer and destroys the object. If we reach here
-      // it means the close succeeded — loop continues with next item.
-    } end_try__finally
-  }
   ClearPluginInfo(FPluginInfo);
   DebugAssert(FOpenedPlugins->GetCount() == 0);
   for (int32_t Index = 0; Index < FSavedTitles->GetCount(); ++Index)
@@ -205,7 +177,7 @@ TCustomFarPlugin::~TCustomFarPlugin() noexcept
     TObject * Object = FSavedTitles->Get(Index);
     SAFE_DESTROY(Object);
   }
-  DEBUG_PRINTF("end");
+  // DEBUG_PRINTF("end");
 }
 
 bool TCustomFarPlugin::HandlesFunction(THandlesFunction /*Function*/) const
@@ -220,7 +192,6 @@ VersionInfo TCustomFarPlugin::GetMinFarVersion() const
 
 void TCustomFarPlugin::SetStartupInfo(const struct PluginStartupInfo * Info)
 {
-  DEBUG_PRINTFA("SetStartupInfo ENTER");
   try
   {
     ResetCachedInfo();
@@ -253,7 +224,6 @@ void TCustomFarPlugin::SetStartupInfo(const struct PluginStartupInfo * Info)
     FTIdleThread = std::make_unique<TPluginIdleThread>(this, 400);
     FTIdleThread->InitIdleThread("NetBox IdleThread");
   }
-  DEBUG_PRINTFA("SetStartupInfo LEAVE");
 }
 
 void TCustomFarPlugin::ExitFAR()
@@ -262,7 +232,6 @@ void TCustomFarPlugin::ExitFAR()
 
 void TCustomFarPlugin::GetPluginInfo(struct PluginInfo * Info)
 {
-  DEBUG_PRINTFA("GetPluginInfo ENTER");
   try
   {
     ResetCachedInfo();
@@ -293,11 +262,8 @@ void TCustomFarPlugin::GetPluginInfo(struct PluginInfo * Info)
     } } while(0)
 
     COMPOSESTRINGARRAY(DiskMenu);
-    DiskMenu.SetOwnsObjects(false);
     COMPOSESTRINGARRAY(PluginMenu);
-    PluginMenu.SetOwnsObjects(false);
     COMPOSESTRINGARRAY(PluginConfig);
-    PluginConfig.SetOwnsObjects(false);
 
 #undef COMPOSESTRINGARRAY
     UnicodeString CommandPrefix;
@@ -315,7 +281,6 @@ void TCustomFarPlugin::GetPluginInfo(struct PluginInfo * Info)
     DEBUG_PRINTF("before HandleException");
     HandleException(&E);
   }
-  DEBUG_PRINTFA("GetPluginInfo LEAVE");
 }
 
 void TCustomFarPlugin::PostMainThreadSynchro(void * Param) const
@@ -580,13 +545,7 @@ void TCustomFarPlugin::GetOpenPanelInfo(struct OpenPanelInfo * Info)
     return;
   TCustomFarFileSystem * FarFileSystem = static_cast<TCustomFarFileSystem *>(Info->hPanel);
   if (!FarFileSystem || !FOpenedPlugins || (FOpenedPlugins->IndexOf(FarFileSystem) == nb::NPOS))
-  {
-    TINYLOG_WARNING(g_tinylog) << TLogContext::Format()
-        << "GetOpenPanelInfo: invalid hPanel=" << to_str(nb::ToPtr(Info->hPanel))
-        << " FarFileSystem=" << to_str(FarFileSystem)
-        << " FOpenedPlugins=" << to_str(FOpenedPlugins.get());
     return;
-  }
   try
   {
     ResetCachedInfo();
@@ -740,15 +699,7 @@ intptr_t TCustomFarPlugin::SetDirectory(const struct SetDirectoryInfo * Info)
 {
   TCustomFarFileSystem * FarFileSystem = static_cast<TCustomFarFileSystem *>(Info->hPanel);
   if (!FarFileSystem || !FOpenedPlugins || (FOpenedPlugins->IndexOf(FarFileSystem) == nb::NPOS))
-  {
-    TINYLOG_WARNING(g_tinylog) << TLogContext::Format()
-        << "SetDirectory: invalid hPanel=" << to_str(Info->hPanel)
-        << " FarFileSystem=" << to_str(FarFileSystem)
-        << " FOpenedPlugins=" << to_str(FOpenedPlugins.get())
-        << " Dir=" << to_str(Info->Dir ? Info->Dir : L"<null>")
-        << " OpMode=" << to_str(Info->OpMode);
     return 0;
-  }
   DebugAssert(FarFileSystem);
   const UnicodeString PrevCurrentDirectory = FarFileSystem->GetCurrentDirectory();
   try
@@ -915,13 +866,13 @@ intptr_t TCustomFarPlugin::ProcessEditorInput(const struct ProcessEditorInputInf
 
 int32_t TCustomFarPlugin::MaxMessageLines() const
 {
-  return nb::Max<int32_t>(1, TerminalInfo().y - 5);
+  return std::max<int32_t>(1, TerminalInfo().y - 5);
 }
 
 int32_t TCustomFarPlugin::MaxMenuItemLength() const
 {
   // got from maximal length of path in FAR's folders history
-  return nb::Max<int32_t>(10, TerminalInfo().x - 13);
+  return std::max<int32_t>(10, TerminalInfo().x - 13);
 }
 
 int32_t TCustomFarPlugin::MaxLength(TStrings * Strings) const
@@ -952,7 +903,7 @@ public:
 protected:
   virtual const UUID * GetDialogGuid() const override { return &FarMessageDialogGuid; }
   virtual void Change() override;
-  virtual void Idle(TObject * Sender, void * Data) override;
+  virtual void Idle() override;
 
 private:
   void ButtonClick(TFarButton * Sender, bool & Close);
@@ -980,10 +931,6 @@ void TFarMessageDialog::InitFarMessageDialog(uint32_t AFlags,
   const UnicodeString & Title, const UnicodeString & Message, TStrings * Buttons)
 {
   TFarDialog::InitDialog();
-  if (FParams->Timeout > 0)
-  {
-    SetIdleInterval(100);
-  }
   DebugAssert(FLAGCLEAR(AFlags, FMSG_ERRORTYPE));
   DebugAssert(FLAGCLEAR(AFlags, FMSG_KEEPBACKGROUND));
   // FIXME DebugAssert(FLAGCLEAR(AFlags, FMSG_DOWN));
@@ -1133,43 +1080,22 @@ void TFarMessageDialog::InitFarMessageDialog(uint32_t AFlags,
 
 TFarMessageDialog::~TFarMessageDialog()
 {
-  // Synchro params are now owned by the dialog itself.
-
+  if (GetFarPlugin())
+  {
+    TSynchroParams & SynchroParams = GetFarPlugin()->FSynchroParams;
+    SynchroParams.Sender = nullptr;
+  }
 }
 
-void TFarMessageDialog::Idle(TObject * Sender, void * Data)
+void TFarMessageDialog::Idle()
 {
-  DEBUG_PRINTF("TFarMessageDialog::Idle: ENTER, Timeout=%d", FParams ? FParams->Timeout : -1);
-  TFarDialog::Idle(Sender, Data);
-
-
-  // Update timeout button caption directly inside DialogProc — DM_SETTEXTPTR
-  // is processed immediately here, unlike from a synchro callback where it
-  // queues until the next input event (arrow key, etc.).
-  if (FParams && (FParams->Timeout > 0))
+  TFarDialog::Idle();
+  if (GetFarPlugin())
   {
-    const uint32_t Running = nb::ToUInt32((Now() - FStartTime).GetValue() * MSecsPerDay);
-    if (Running < FParams->Timeout)
-    {
-      UnicodeString Caption =
-        FORMAT(" %s ", FORMAT(FParams->TimeoutStr,
-            FTimeoutButtonCaption, nb::ToInt32((FParams->Timeout - Running) / 1000)));
-      const int32_t Sz = FTimeoutButton->GetCaption().Length() > Caption.Length() ?
-          FTimeoutButton->GetCaption().Length() - Caption.Length() : 0;
-      Caption += ::StringOfChar(L' ', Sz);
-      DEBUG_PRINTF("Idle: direct SetCaption: %s", Caption.c_str());
-      DEBUG_PRINTF("Idle: about to SetCaption and redraw");
-      FTimeoutButton->SetCaption(Caption);
-      Redraw();
-    }
-  }
-
-  // Timer events and Close() still need ACTL_SYNCHRO to run on Far main thread
-  if (GetFarPlugin() && !FClosing)
-  {
-    FSynchroParams.SynchroEvent = nb::bind(&TFarMessageDialog::OnUpdateTimeoutButton, this);
-    FSynchroParams.Sender = this;
-    GetFarPlugin()->FarAdvControl(ACTL_SYNCHRO, 0, &FSynchroParams);
+    TSynchroParams & SynchroParams = GetFarPlugin()->FSynchroParams;
+    SynchroParams.SynchroEvent = nb::bind(&TFarMessageDialog::OnUpdateTimeoutButton, this);
+    SynchroParams.Sender = this;
+    GetFarPlugin()->FarAdvControl(ACTL_SYNCHRO, 0, &SynchroParams);
   }
 }
 
@@ -1229,7 +1155,6 @@ void TFarMessageDialog::ButtonClick(TFarButton * Sender, bool & Close)
 
 void TFarMessageDialog::OnUpdateTimeoutButton(TObject * /*Sender*/, void * /*Data*/)
 {
-  DEBUG_PRINTF("OnUpdateTimeoutButton: ENTER");
   // DEBUG_PRINTF("Sender: %p, Data: %p", (void *)Sender, (void *)Data);
   if (FParams && (FParams->Timer > 0))
   {
@@ -1246,19 +1171,23 @@ void TFarMessageDialog::OnUpdateTimeoutButton(TObject * /*Sender*/, void * /*Dat
     }
   }
 
-  // Timeout Close() still handled via synchro for thread safety.
-  // Caption update moved to Idle() — DM_SETTEXTPTR from DialogProc refreshes
-  // immediately; from synchro callback it queues until next input event.
   if (FParams && (FParams->Timeout > 0))
   {
     const uint32_t Running = nb::ToUInt32((Now() - FStartTime).GetValue() * MSecsPerDay);
-    DEBUG_PRINTF("OnUpdateTimeoutButton: Timeout branch, Running=%u, FParams->Timeout=%d", Running, FParams->Timeout);
     if (Running >= FParams->Timeout)
     {
       DebugAssert(FTimeoutButton != nullptr);
       Close(FTimeoutButton);
     }
-    // Caption update removed — done directly in Idle() above
+    else
+    {
+      UnicodeString Caption =
+        FORMAT(" %s ", FORMAT(FParams->TimeoutStr,
+            FTimeoutButtonCaption, nb::ToInt32((FParams->Timeout - Running) / 1000)));
+      const int32_t Sz = FTimeoutButton->GetCaption().Length() > Caption.Length() ? FTimeoutButton->GetCaption().Length() - Caption.Length() : 0;
+      Caption += ::StringOfChar(L' ', Sz);
+      FTimeoutButton->SetCaption(Caption);
+    }
   }
 }
 
@@ -1791,14 +1720,7 @@ void TCustomFarPlugin::RestoreScreen(HANDLE & Screen)
 void TCustomFarPlugin::HandleException(Exception * E, OPERATION_MODES /*OpMode*/)
 {
   DebugAssert(E);
-  DEBUG_PRINTFA("HandleException ENTER");
-  // Release the global plugin lock before showing a modal dialog.
-  // Far may dispatch keyboard events to plugin exports while the dialog
-  // message loop runs; holding the lock would cause a deadlock.
-  TUnguard Unguard(GetCriticalSection());
-  DEBUG_PRINTFA("HandleException lock released, showing dialog");
   Message(FMSG_WARNING | FMSG_MB_OK, L"", E ? E->Message : L"");
-  DEBUG_PRINTFA("HandleException dialog closed");
 }
 
 UnicodeString TCustomFarPlugin::GetMsg(intptr_t MsgId) const
@@ -1820,7 +1742,6 @@ UnicodeString TCustomFarPlugin::GetMsg(intptr_t MsgId) const
 
 bool TCustomFarPlugin::CheckForEsc() const
 {
-  // DEBUG_PRINTFA("CheckForEsc ENTER");
   static uint32_t LastTicks;
   const uint32_t Ticks = ::GetTickCount();
   if ((LastTicks == 0) || (Ticks - LastTicks > 500))
@@ -1830,22 +1751,20 @@ bool TCustomFarPlugin::CheckForEsc() const
     DWORD EventCount = 0;
     if (!::GetNumberOfConsoleInputEvents(FConsoleInput, &EventCount) || (EventCount == 0))
     {
-      DEBUG_PRINTFA("CheckForEsc: no events");
       return false;
     }
 
-    nb::vector_t<INPUT_RECORD> Events;
+    std::vector<INPUT_RECORD> Events;
     Events.resize(EventCount);
     DWORD ReadCount = 0;
     if (!::ReadConsoleInput(FConsoleInput, Events.data(), EventCount, &ReadCount))
     {
-      DEBUG_PRINTFA("CheckForEsc: ReadConsoleInput failed");
       return false;
     }
     Events.resize(ReadCount);
 
     bool FoundEsc = false;
-    nb::vector_t<INPUT_RECORD> NonEscEvents;
+    std::vector<INPUT_RECORD> NonEscEvents;
     NonEscEvents.reserve(ReadCount);
     for (const auto & Rec : Events)
     {
@@ -1867,11 +1786,8 @@ bool TCustomFarPlugin::CheckForEsc() const
       ::WriteConsoleInput(FConsoleInput, NonEscEvents.data(), static_cast<DWORD>(NonEscEvents.size()), &Written);
     }
 
-    DEBUG_PRINTFA("CheckForEsc: read %lu events, found ESC=%s, wrote back %lu",
-      ReadCount, FoundEsc ? "yes" : "no", static_cast<unsigned long>(NonEscEvents.size()));
     return FoundEsc;
   }
-  // DEBUG_PRINTFA("CheckForEsc: throttled");
   return false;
 }
 void TCustomFarPlugin::FlushEscBuffer() const
@@ -1882,7 +1798,7 @@ void TCustomFarPlugin::FlushEscBuffer() const
     return;
   }
 
-  nb::vector_t<INPUT_RECORD> Events;
+  std::vector<INPUT_RECORD> Events;
   Events.resize(EventCount);
   DWORD ReadCount = 0;
   if (!::ReadConsoleInput(FConsoleInput, Events.data(), EventCount, &ReadCount))
@@ -1891,7 +1807,7 @@ void TCustomFarPlugin::FlushEscBuffer() const
   }
   Events.resize(ReadCount);
 
-  nb::vector_t<INPUT_RECORD> NonEscEvents;
+  std::vector<INPUT_RECORD> NonEscEvents;
   NonEscEvents.reserve(ReadCount);
   for (const auto & Rec : Events)
   {
@@ -2083,7 +1999,7 @@ intptr_t TCustomFarPlugin::InputRecordToKey(const INPUT_RECORD * /*Rec*/)
 
 void TCustomFarPlugin::Initialize()
 {
-  // ::SetGlobals(new TGlobalFunctions());
+//  ::SetGlobals(new TGlobalFunctions());
   // Idle thread initialization moved to SetStartupInfo to avoid early start
 }
 
@@ -2740,10 +2656,10 @@ void TCustomFarPanelItem::FillPanelItem(struct PluginPanelItem * PanelItem)
   PanelItem->LastWriteTime = FileTime;
   PanelItem->FileSize = Size;
 
-  // Normalize path separators for Windows Far Manager compatibility
-  const UnicodeString NormalizedFileName = ReplaceChar(FileName, Slash, Backslash);
-  PanelItem->FileName = TCustomFarPlugin::DuplicateStr(NormalizedFileName);
-  PanelItem->AlternateFileName = TCustomFarPlugin::DuplicateStr(NormalizedFileName);
+  // PanelItem->FileName = wcscpy(new wchar_t[FileName.Length() + 1], FileName.c_str());
+  // PanelItem->AlternateFileName = wcscpy(new wchar_t[FileName.Length() + 1], FileName.c_str());
+  PanelItem->FileName = TCustomFarPlugin::DuplicateStr(FileName);
+  PanelItem->AlternateFileName = TCustomFarPlugin::DuplicateStr(FileName);
   PanelItem->Description = TCustomFarPlugin::DuplicateStr(Description);
   PanelItem->Owner = TCustomFarPlugin::DuplicateStr(Owner);
   wchar_t ** CustomColumnData = nb::calloc<wchar_t **>(1 + PanelItem->CustomColumnNumber, sizeof(wchar_t *));
