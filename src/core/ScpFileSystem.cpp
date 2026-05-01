@@ -575,23 +575,35 @@ void TSCPFileSystem::SendCommand(const UnicodeString & Cmd, bool NoEnsureLocatio
   if (FNeedsSessionReset)
   {
     FNeedsSessionReset = false;
-    // Layer 5: Drain kernel+pending buffers before sending next command.
-    // run_toplevel_callbacks inside WaitForData pulls ALL kernel data into
-    // PendLen in one shot. One Receive() call drains 4096 bytes;
-    // ClearPending() after discards the rest. This leaves kernel and
-    // PendLen empty so the shell response to this command is clean.
+    // Layer 5: Drain kernel+pending buffers before sending next
+    // command. Loop until no data for 3×200ms (600ms silence) or
+    // 5 second total timeout. Each Receive() pulls ALL kernel data
+    // into PendLen via run_toplevel_callbacks; ClearPending()
+    // discards the rest. Multiple rounds catch data that arrives
+    // in bursts after the SCP process terminated.
     FSecureShell->ClearPending();
-    WSANETWORKEVENTS Events = {};
-    if (FSecureShell->EventSelectLoop(200, false, &Events) &&
-        (Events.lNetworkEvents & FD_READ))
+    int32_t SilentRounds = 0;
+    const DWORD DrainEnd = GetTickCount() + 5000;
+    while (GetTickCount() < DrainEnd && SilentRounds < 3)
     {
-      try
+      WSANETWORKEVENTS Events = {};
+      if (!FSecureShell->EventSelectLoop(200, false, &Events))
       {
-        uint8_t Buf[4096];
-        FSecureShell->Receive(Buf, sizeof(Buf));
+        ++SilentRounds;  // 200ms of silence
+        continue;
       }
-      catch (...)
+      if (Events.lNetworkEvents & FD_READ)
       {
+        SilentRounds = 0;  // Reset — data arrived
+        try
+        {
+          uint8_t Buf[4096];
+          FSecureShell->Receive(Buf, sizeof(Buf));
+        }
+        catch (...)
+        {
+          break;
+        }
       }
     }
     FSecureShell->ClearPending();
