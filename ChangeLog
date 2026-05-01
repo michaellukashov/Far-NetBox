@@ -3,6 +3,11 @@
 
 ## [Unreleased]
 
+### Fixes
+
+ * Fix Alt-F12 folder history not restoring session when no panel was open
+ * Fix log file error when opening same session on two panels concurrently
+
 ### Dependencies
 
  * Upgrade WinSCP sources: WinSCP 6.5.6
