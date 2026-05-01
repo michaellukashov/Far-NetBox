@@ -2257,8 +2257,9 @@ void TSCPFileSystem::SCPSource(const UnicodeString & AFileName,
         FTerminal->RollbackAction(Action, OperationProgress, &E);
       }
 
-      // Every exception during file transfer is fatal
-      if (OperationProgress->GetTransferringFile())
+      // Every exception during file transfer is fatal, except user-initiated cancellation
+      if (OperationProgress->GetTransferringFile() &&
+          (OperationProgress->GetCancel() != csCancelTransfer))
       {
         FTerminal->FatalError(&E, FMTLOAD(COPY_FATAL, AFileName));
       }
@@ -2901,9 +2902,16 @@ void TSCPFileSystem::SCPSink(const UnicodeString & TargetDir,
               }
               catch (Exception & E)
               {
-                // Every exception during file transfer is fatal
-                FTerminal->FatalError(&E,
-                  FMTLOAD(COPY_FATAL, OperationProgress->GetFileName()));
+                // Every exception during file transfer is fatal, except user-initiated cancellation
+                if (OperationProgress->GetCancel() != csCancelTransfer)
+                {
+                  FTerminal->FatalError(&E,
+                    FMTLOAD(COPY_FATAL, OperationProgress->GetFileName()));
+                }
+                else
+                {
+                  throw;
+                }
               }
 
               OperationProgress->SetTransferringFile(false);
