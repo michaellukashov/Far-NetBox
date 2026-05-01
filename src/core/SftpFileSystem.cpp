@@ -2144,8 +2144,11 @@ TSFTPFileSystem::~TSFTPFileSystem() noexcept
   delete FSupport;
 #endif // defined(__BORLANDC__)
   // After closing, we can only possibly have "discard" reservations of the not-read responses to the last requests
-  // (typically to SSH_FXP_CLOSE). During fatal error shutdown, pending reservations may still exist.
-  FPacketReservations->Clear();
+  // (typically to SSH_FXP_CLOSE)
+  for (int32_t i = 0; i < FPacketReservations->Count; i++)
+  {
+    DebugAssert(FPacketReservations->Items[i] == nullptr);
+  }
 #if defined(__BORLANDC__)
   delete FPacketReservations;
   delete FFixedPaths;
@@ -2165,8 +2168,11 @@ void TSFTPFileSystem::Close()
 {
   FSecureShell->Close();
   // After closing, we can only possibly have "discard" reservations of the not-read responses to the last requests
-  // (typically to SSH_FXP_CLOSE). During fatal error shutdown, pending reservations may still exist.
-  FPacketReservations->Clear();
+  // (typically to SSH_FXP_CLOSE)
+  for (int32_t I = 0; I < FPacketReservations->Count; I++)
+  {
+    DebugAssert(FPacketReservations->GetItem(I) == nullptr);
+  }
 }
 
 bool TSFTPFileSystem::GetActive() const
@@ -2722,8 +2728,8 @@ SSH_FX_TYPE TSFTPFileSystem::GotStatusPacket(
         HelpKeyword = HELP_SFTP_STATUS_PERMISSION_DENIED;
         break;
     }
-    UnicodeString Error = FMTLOAD(SFTP_ERROR_FORMAT3, nb::EscapeFmtChars(MessageStr),
-      Code, LanguageTag, nb::EscapeFmtChars(ServerMessage));
+    UnicodeString Error = FMTLOAD(SFTP_ERROR_FORMAT3, MessageStr,
+      Code, LanguageTag, ServerMessage);
     if (Code == SSH_FX_FAILURE)
     {
       // FTerminal->Configuration->Usage->Inc("SftpFailureErrors");
@@ -3587,7 +3593,7 @@ void TSFTPFileSystem::DoStartup()
       TSFTPPacket Packet(SSH_FXP_EXTENDED, FCodePage);
       Packet.AddString(RawByteString(SFTP_EXT_LIMITS));
       SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_EXTENDED_REPLY);
-      uint32_t MaxPacketSize = nb::ToUInt32(nb::Min(static_cast<int64_t>(std::numeric_limits<uint32_t>::max()), Packet.GetInt64()));
+      uint32_t MaxPacketSize = nb::ToUInt32(std::min(static_cast<int64_t>(std::numeric_limits<uint32_t>::max()), Packet.GetInt64()));
       FTerminal->LogEvent(FORMAT(L"Limiting packet size to server's limit of %d + %d bytes",
         nb::ToInt32(MaxPacketSize), nb::ToInt32(PacketPayload)));
       FMaxPacketSize = MaxPacketSize + PacketPayload;
@@ -4368,9 +4374,8 @@ void TSFTPFileSystem::ChangeFileProperties(const UnicodeString & AFileName,
 
   if (File == nullptr)
   {
-    FTerminal->LogEvent(FORMAT(L"ChangeFileProperties: ReadFile returned null for %s (unexpected)", RealFileName));
-    // Defensive: ReadFile should throw on failure, not return null
-    throw EFatal(nullptr, L"Internal error: ReadFile returned null without throwing");
+    FTerminal->LogEvent(FORMAT(L"ChangeFileProperties: ReadFile failed for %s", RealFileName));
+    throw ExtException(nullptr, L"Cannot read file properties before changing them");
   }
 
   try__finally
@@ -4922,7 +4927,7 @@ void TSFTPFileSystem::Source(
     CopyParam->AllowResume(OperationProgress->LocalSize, ADestFileName) &&
     IsCapable(fcRename) &&
     !FTerminal->IsEncryptingFiles() &&
-    (CopyParam->OnTransferIn.empty());
+    (CopyParam->FOnTransferIn.empty());
 
   TOpenRemoteFileParams OpenParams;
   OpenParams.OverwriteMode = omOverwrite;
@@ -5058,7 +5063,7 @@ void TSFTPFileSystem::Source(
   OpenParams.CopyParam = CopyParam;
   OpenParams.Params = Params;
   OpenParams.FileParams = &FileParams;
-  OpenParams.Confirmed = (!CopyParam->OnTransferIn.empty()) && FLAGCLEAR(Params, cpAppend);
+  OpenParams.Confirmed = (!CopyParam->FOnTransferIn.empty()) && FLAGCLEAR(Params, cpAppend);
   OpenParams.DontRecycle = false;
   OpenParams.Recycled = false;
 
@@ -5087,10 +5092,10 @@ void TSFTPFileSystem::Source(
   bool TransferFinished = false;
   // int64_t DestWriteOffset = 0;
   TSFTPPacket CloseRequest(SSH_FXP_NONE, FCodePage);
-  bool PreserveRights = CopyParam->PreserveRights && (CopyParam->OnTransferIn.empty());
+  bool PreserveRights = CopyParam->PreserveRights && (CopyParam->FOnTransferIn.empty());
   bool PreserveExistingRights = (DoResume && DestFileExists) || OpenParams.Recycled;
   bool SetRights = (PreserveExistingRights || PreserveRights);
-  bool PreserveTime = CopyParam->PreserveTime && (CopyParam->OnTransferIn.empty());
+  bool PreserveTime = CopyParam->PreserveTime && (CopyParam->FOnTransferIn.empty());
   bool SetProperties = (PreserveTime || SetRights);
   TSFTPPacket PropertiesRequest(SSH_FXP_SETSTAT, FCodePage);
   TSFTPPacket PropertiesResponse(SSH_FXP_NONE, FCodePage);
@@ -5154,7 +5159,7 @@ void TSFTPFileSystem::Source(
       const int32_t ConvertParams =
         FLAGMASK(CopyParam->GetRemoveCtrlZ(), cpRemoveCtrlZ) |
         FLAGMASK(CopyParam->GetRemoveBOM(), cpRemoveBOM);
-      Queue.Init(AHandle.FileName, AHandle.Handle, std::move(const_cast<TCopyParamType * >(CopyParam)->OnTransferIn), OperationProgress,
+      Queue.Init(AHandle.FileName, AHandle.Handle, std::move(const_cast<TCopyParamType * >(CopyParam)->FOnTransferIn), OperationProgress,
         OpenParams.RemoteFileHandle,
         DestWriteOffset + OperationProgress->GetTransferredSize(),
         ConvertParams);
@@ -5691,9 +5696,9 @@ void TSFTPFileSystem::WriteLocalFile(
   const TCopyParamType * CopyParam, TStream * FileStream, TFileBuffer & BlockBuf, const UnicodeString & ALocalFileName,
   TFileOperationProgressType * OperationProgress)
 {
-  if (!CopyParam->OnTransferOut.empty())
+  if (!CopyParam->FOnTransferOut.empty())
   {
-    BlockBuf.WriteToOut(std::move(const_cast<TCopyParamType * >(CopyParam)->OnTransferOut), FTerminal, BlockBuf.Size);
+    BlockBuf.WriteToOut(std::move(const_cast<TCopyParamType * >(CopyParam)->FOnTransferOut), FTerminal, BlockBuf.Size);
   }
   else
   {
@@ -5719,17 +5724,17 @@ void TSFTPFileSystem::Sink(
     !OperationProgress->GetAsciiTransfer() &&
     CopyParam->AllowResume(OperationProgress->TransferSize, ADestFileName) &&
     !FTerminal->IsEncryptingFiles() &&
-    CopyParam->OnTransferOut.empty() &&
+    CopyParam->FOnTransferOut.empty() &&
     (CopyParam->PartOffset < 0);
 
   HANDLE LocalFileHandle = INVALID_HANDLE_VALUE;
-  std::unique_ptr<TStream> FileStream;
+  TStream * FileStream = nullptr; // TODO: use std::unique_ptr<>
   bool DeleteLocalFile = false;
   RawByteString RemoteHandle;
   UnicodeString DestFullName = ATargetDir + ADestFileName;
   UnicodeString LocalFileName = DestFullName;
   TOverwriteMode OverwriteMode = omOverwrite;
-  // UnicodeString ExpandedDestFullName;
+  UnicodeString ExpandedDestFullName;
 
   try__finally
   {
@@ -5888,7 +5893,7 @@ void TSFTPFileSystem::Sink(
 
     Action.Destination(ExpandUNCFileName(DestFullName));
 
-    if (CopyParam->OnTransferOut.empty())
+    if (CopyParam->FOnTransferOut.empty())
     {
       // if not already opened (resume, append...), create new empty file
       if (!CheckHandle(LocalFileHandle))
@@ -5903,13 +5908,12 @@ void TSFTPFileSystem::Sink(
 
       DeleteLocalFile = true;
 
-      FileStream = std::make_unique<TSafeHandleStream>(static_cast<THandle>(LocalFileHandle));
+      FileStream = new TSafeHandleStream(static_cast<THandle>(LocalFileHandle));
     }
 
     // at end of this block queue is discarded
     {
       TValueRestorer<TSecureShellMode> SecureShellModeRestorer(FSecureShell->Mode);
-      nb::used(SecureShellModeRestorer);
       FSecureShell->Mode = ssmDownloading;
       TSFTPDownloadQueue Queue(this, FCodePage);
       try__finally
@@ -5926,7 +5930,7 @@ void TSFTPFileSystem::Sink(
         {
           QueueLen = 1;
         }
-        const int64_t Offset = OperationProgress->TransferredSize + nb::Max(CopyParam->PartOffset, 0LL);
+        const int64_t Offset = OperationProgress->TransferredSize + std::max(CopyParam->PartOffset, 0LL);
         Queue.Init(QueueLen, RemoteHandle, Offset, CopyParam->PartSize, OperationProgress);
 
         bool Eof = false;
@@ -6038,7 +6042,7 @@ void TSFTPFileSystem::Sink(
               Encryption.Decrypt(BlockBuf);
             }
 
-            WriteLocalFile(CopyParam, FileStream.get(), BlockBuf, LocalFileName, OperationProgress);
+            WriteLocalFile(CopyParam, FileStream, BlockBuf, LocalFileName, OperationProgress);
           }
 
           if (OperationProgress->GetCancel() != csContinue)
@@ -6064,7 +6068,7 @@ void TSFTPFileSystem::Sink(
           TFileBuffer BlockBuf;
           if (Encryption.DecryptEnd(BlockBuf))
           {
-            WriteLocalFile(CopyParam, FileStream.get(), BlockBuf, LocalFileName, OperationProgress);
+            WriteLocalFile(CopyParam, FileStream, BlockBuf, LocalFileName, OperationProgress);
           }
         }
         Encryption.Finalize();
@@ -6076,7 +6080,7 @@ void TSFTPFileSystem::Sink(
       // queue is discarded here
     }
 
-    if (CopyParam->OnTransferOut.empty())
+    if (CopyParam->FOnTransferOut.empty())
     {
       DebugAssert(CheckHandle(LocalFileHandle));
       if (CopyParam->GetPreserveTime())
@@ -6114,6 +6118,10 @@ void TSFTPFileSystem::Sink(
       SAFE_CLOSE_HANDLE(LocalFileHandle);
     }
 
+    if (FileStream != nullptr)
+    {
+      SAFE_DESTROY(FileStream);
+    }
 
     if (FTerminal && DeleteLocalFile && (!ResumeAllowed || OperationProgress->GetLocallyUsed() == 0) &&
         (OverwriteMode == omOverwrite))
