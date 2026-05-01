@@ -3729,6 +3729,11 @@ void TTerminal::ReadCurrentDirectory()
 
 void TTerminal::DoReadDirectoryFinish(TRemoteDirectory * AFiles, bool ReloadOnly)
 {
+  if (AFiles == nullptr)
+  {
+    LogEvent("DoReadDirectoryFinish: AFiles is null, skipping directory update");
+    return;
+  }
   // Factored out to solve Clang ICE
   std::unique_ptr<TRemoteDirectory> OldFiles(FFiles.release());
   FFiles.reset(AFiles);
@@ -3813,7 +3818,9 @@ void TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
     }
     catch (Exception & E)
     {
-      CommandError(&E, FMTLOAD(LIST_DIR_ERROR, FFiles->GetDirectory()));
+      const UnicodeString Directory = (FFiles != nullptr) ? FFiles->GetDirectory() : GetCurrentDirectory();
+      LogEvent(FORMAT(L"ReadDirectory catch: FFiles=%p, using directory=%s", FFiles, Directory));
+      CommandError(&E, FMTLOAD(LIST_DIR_ERROR, Directory));
     }
   }
 }

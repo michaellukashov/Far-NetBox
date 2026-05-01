@@ -4372,6 +4372,12 @@ void TSFTPFileSystem::ChangeFileProperties(const UnicodeString & AFileName,
   const UnicodeString RealFileName = LocalCanonify(AFileName);
   ReadFile(RealFileName, File);
 
+  if (File == nullptr)
+  {
+    FTerminal->LogEvent(FORMAT(L"ChangeFileProperties: ReadFile failed for %s", RealFileName));
+    throw ExtException(nullptr, L"Cannot read file properties before changing them");
+  }
+
   try__finally
   {
     std::unique_ptr<TRemoteFile> FilePtr(File);
@@ -4408,6 +4414,8 @@ void TSFTPFileSystem::ChangeFileProperties(const UnicodeString & AFileName,
     }
 
     TSFTPPacket Packet(SSH_FXP_SETSTAT, FCodePage);
+    FTerminal->LogEvent(FORMAT(L"ChangeFileProperties: rights set=%04x unset=%04x path=%s",
+      Properties.Rights.GetNumberSet(), Properties.Rights.GetNumberUnset(), RealFileName));
     AddPathString(Packet, RealFileName);
     Packet.AddProperties(&Properties, *File->GetRights(), File->GetIsDirectory(), FVersion, FUtfStrings, &Action);
     SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_STATUS);
