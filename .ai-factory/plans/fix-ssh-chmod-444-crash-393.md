@@ -231,7 +231,7 @@ catch (Exception & E)
 
 ---
 
-- [ ] **Task 5: Manual verification in Far Manager**
+- [x] **Task 5: Manual verification in Far Manager**
 **Target:** Far Manager with NetBox plugin, connected to an SSH/SFTP server.
 
 **Steps:**
