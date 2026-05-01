@@ -4374,8 +4374,9 @@ void TSFTPFileSystem::ChangeFileProperties(const UnicodeString & AFileName,
 
   if (File == nullptr)
   {
-    FTerminal->LogEvent(FORMAT(L"ChangeFileProperties: ReadFile failed for %s", RealFileName));
-    throw ExtException(nullptr, L"Cannot read file properties before changing them");
+    FTerminal->LogEvent(FORMAT(L"ChangeFileProperties: ReadFile returned null for %s (unexpected)", RealFileName));
+    // Defensive: ReadFile should throw on failure, not return null
+    throw EFatal(nullptr, L"Internal error: ReadFile returned null without throwing");
   }
 
   try__finally

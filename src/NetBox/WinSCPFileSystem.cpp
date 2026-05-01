@@ -508,7 +508,7 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, OPERATION_MODES 
       }
       else
       {
-        FTerminal->LogEvent(L"GetFindDataEx: GetTerminal()->Files is null, returning empty panel");
+        FTerminal->LogEvent(L"GetFindDataEx: GetTerminal()->Files is null, panel will be empty");
       }
     }
     __finally
