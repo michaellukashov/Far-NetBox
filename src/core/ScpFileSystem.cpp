@@ -572,6 +572,8 @@ void TSCPFileSystem::EnsureLocation()
 
 void TSCPFileSystem::SendCommand(const UnicodeString & Cmd, bool NoEnsureLocation)
 {
+  FTerminal->LogEvent(FORMAT("SendCommand: FNeedsSessionReset=%d, FLastDirectory='%s'",
+    static_cast<int>(FNeedsSessionReset), FLastDirectory));
   if (FNeedsSessionReset)
   {
     FNeedsSessionReset = false;
