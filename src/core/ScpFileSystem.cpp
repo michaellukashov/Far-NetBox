@@ -1057,6 +1057,15 @@ void TSCPFileSystem::AnnounceFileListOperation()
 
 void TSCPFileSystem::ChangeDirectory(const UnicodeString & ADirectory)
 {
+  if (FNeedsSessionReset)
+  {
+    FNeedsSessionReset = false;
+    try { FSecureShell->Close(); } catch (...) {}
+    FSecureShell->Open();
+    if (!FLastDirectory.IsEmpty())
+      FCachedDirectoryChange = FLastDirectory;
+  }
+
   int32_t Params = ecDefault;
   UnicodeString Directory = ADirectory;
   try
