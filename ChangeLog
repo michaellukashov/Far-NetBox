@@ -13,6 +13,9 @@
  * Fix FTP silent crash on directory listing parse failure (#506) https://github.com/michaellukashov/Far-NetBox/issues/506
    — catch exceptions from CFtpListResult::getList() at all 3 call sites,
    show user-facing error instead of terminating Far Manager
+ * Fix FTP infinite loop / hang on BusyBox servers with unparsable listings (#513) https://github.com/michaellukashov/Far-NetBox/issues/513
+   — add safety limits (buffer size, max lines, consecutive parse failures)
+   to prevent runaway parser from consuming memory and CPU
 ### Dependencies
 
  * Upgrade WinSCP sources: WinSCP 6.5.6
