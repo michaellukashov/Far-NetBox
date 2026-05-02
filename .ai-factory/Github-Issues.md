@@ -33,7 +33,7 @@
 |---|-------|------|---------|--------|-------|
 | 1 | [#513](https://github.com/michaellukashov/Far-NetBox/issues/513) | Bug | FTP hangs then crashes with `STATUS_STACK_OVERFLOW` on BusyBox FTP (cameras). | Crash + data loss risk | 14 comments; highest activity |
 | 2 | [#506](https://github.com/michaellukashov/Far-NetBox/issues/506) | Bug | Far crashes on FTP connect to specific servers; scans all directories before crash. | Complete app crash | 4 comments |
-| 3 | [#508](https://github.com/michaellukashov/Far-NetBox/issues/508) | Bug | Far crashes after 2nd file open via SFTP unless Ctrl+R refresh between opens. | Workflow-breaking crash | 2 comments |
+ | 3 | ~~[#508](https://github.com/michaellukashov/Far-NetBox/issues/508)~~ **FIXED** | Bug | Far crashes after 2nd file open via SFTP unless Ctrl+R refresh between opens. | Workflow-breaking crash | 2 comments |
  | 4 | ~~[#497](https://github.com/michaellukashov/Far-NetBox/issues/497)~~ **FIXED** | Bug | `STATUS_STACK_OVERFLOW` on F3 (file info) via SFTP to certain servers. | Crash on info view | 2 comments |
 | 5 | [#393](https://github.com/michaellukashov/Far-NetBox/issues/393) | Bug | FAR Manager crash after SSH chmod. | Crash after remote operation | By @alabuzhev |
  6 | ~~[#501](https://github.com/michaellukashov/Far-NetBox/issues/501)~~ **FIXED** | Bug | Slow SSH/SCP copy + corrupted files on certain SSH servers. | Data corruption risk | |
@@ -93,7 +93,7 @@
 
 | Urgency | Count | Key Issues |
 |---------|-------|------------|
- **Immediate** | 6 | [#513], [#506], [#508], ~~[#497]~~, [#393], ~~[#501]~~ — crashes + data corruption |
+ **Immediate** | 6 | [#513], [#506], ~~[#508]~~, ~~[#497]~~, [#393], ~~[#501]~~ — crashes + data corruption |
  **Short-term** | 7 | ~~[#515]~~, ~~[#514]~~, ~~[#510]~~, [#512], ~~[#511]~~, ~~[#507]~~, ~~[#486]~~, ~~[#485]~~ — protocol/UX broken |
  **Medium-term** | 8 | ~~[#509]~~, ~~[#505]~~, [#481], [#472], [#396], [#392], ~~[#391]~~, ~~[#390]~~, [#388] — features + integration (~~#389~~ fixed) |
  **Backlog** | 6 | [#502], [#500], ~~[#504]~~, [#395], [#394], [#387] — PRs + minor UI |
@@ -192,3 +192,4 @@ Based on the current open issue landscape, here are the concrete recommendations
  2026-05-02 | Merged PR #504 — DateTimeToTimeStamp milliseconds clamp fix for issue #390 (certificate timestamp validation). Build verified. |
  2026-05-02 | Fixed [#513] and 5 additional CWE-134 format-string vulnerabilities — added `nb::EscapeFmtChars()` to sanitize untrusted server/shell output before passing to `FMTLOAD`. Covers FTP (BusyBox), SCP, and SFTP error paths. Build verified. |
  2026-05-02 | Fixed [#497] — added cycle detection to `TCalculateSizeParams` preventing infinite recursion on SFTP directory size calculation when cyclic symlinks are present. Eliminates `STATUS_STACK_OVERFLOW` on F3 for directories with ~98K+ files. Build verified. |
+ 2026-05-02 | Fixed [#508] — duplicate remote files with `Standalone=true` in panel `UserData` and clear `FFileList` after Edit/View operations. Prevents dangling `TRemoteFile*` pointers causing crash on second file open without Ctrl+R refresh. Build verified. |
