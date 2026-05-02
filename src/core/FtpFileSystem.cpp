@@ -514,6 +514,8 @@ void TFTPFileSystem::Open()
   }
   else
   {
+    fflush(nullptr); // TEMP: flush immediately after first log (issue #389)
+    OutputDebugStringW(L"NETBOX: FTP Connect entered\n");
     FTerminal->LogEvent(FORMAT("FTP encryption mode: Ftps=%d", nb::ToInt32(Data->GetFtps())));
     switch (Data->GetFtps())
     {
