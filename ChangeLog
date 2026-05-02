@@ -50,6 +50,9 @@
  * Fix key exchange dialog size overflow with proxy+tunnel settings (#486) https://github.com/michaellukashov/Far-NetBox/issues/486
    — reduce KexListBox height (15→8) and CipherListBox height (10→6) to fit
    standard 80x25 terminals; TFarListBox scrollbar preserves full accessibility
+ * Fix dialog text labels truncated by off-by-one in bounds calculation (#387) https://github.com/michaellukashov/Far-NetBox/issues/387
+   — TFarDialogItem::SetWidth() and SetHeight() subtracted one character from
+     every text field; remove -1/+1 adjustments and compensating +1 in GetWidth()/GetHeight()
  * Fix slow SSH/SCP copy and corrupted files on certain servers (#501) https://github.com/michaellukashov/Far-NetBox/issues/501
    — disable dynamic TCP send buffer resizing (SIO_IDEAL_SEND_BACKLOG_QUERY) by default;
    set SendBuf=0 and SshSimple=false in factory defaults to avoid data reordering and CPU saturation
