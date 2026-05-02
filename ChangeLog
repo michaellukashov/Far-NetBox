@@ -31,6 +31,10 @@
    — move TPluginIdleThread creation from Initialize() (called from
    GetGlobalInfoW) to SetStartupInfoW() to prevent thread executing
    after plugin unload when Far rejects or skips the plugin early
+ * Fix S3 bucket access failures: cannot enter bucket, empty directory listings,
+   and upload errors (#514, #510) https://github.com/michaellukashov/Far-NetBox/issues/514
+   — add retry limit (3) to GetBucketContext region detection, normalize
+   ISO 8601 timestamps with 24:00:00, improve upload error messages
 
 ### Dependencies
 
