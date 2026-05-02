@@ -2503,7 +2503,8 @@ void CFtpControlSocket::ListFile(CString filename, const CServerPath &path)
         ShowStatus(MSG_FTP_LISTING_PARSE_FAILED, FZ_LOG_ERROR);
         delete pListResult;
         pData->direntry = nullptr;
-        return;
+        error = TRUE;
+        break;
       }
       if (pListResult->m_server.nServerType & FZ_SERVERTYPE_SUB_FTP_VMS && m_CurrentServer.nServerType & FZ_SERVERTYPE_FTP)
         m_CurrentServer.nServerType |= FZ_SERVERTYPE_SUB_FTP_VMS;
