@@ -55,7 +55,7 @@
 
 | # | Issue | Type | Summary | Impact | Est. Time |
 |---|-------|------|---------|--------|-----------|
-| 15 | [#509](https://github.com/michaellukashov/Far-NetBox/issues/509) | Feature | Support user-provided auth certificates (PuTTY cert auth). | Missing auth method | 4-8h |
+ 15 | ~~[#509](https://github.com/michaellukashov/Far-NetBox/issues/509)~~ **ADDRESSED** | Feature | Support user-provided auth certificates (PuTTY cert auth). | Missing auth method | OpenSSH cert auth (2e93b39a4) covers requirement |
 | 16 | [#505](https://github.com/michaellukashov/Far-NetBox/issues/505) | Feature | Fall back to opening FTP URL as file if directory access fails. | UX improvement | 3-5h |
 | 17 | [#481](https://github.com/michaellukashov/Far-NetBox/issues/481) | Bug | FTP codepage ISO-8859-5 copy fails (filename encoding). | Broken non-UTF8 FTP | 3-5h |
 | 18 | [#472](https://github.com/michaellukashov/Far-NetBox/issues/472) | Bug | False positive session import prompts on every start. | Annoyance | 2-3h |
@@ -95,7 +95,7 @@
 |---------|-------|------------|
 | **Immediate** | 6 | [#513], [#506], [#508], [#497], [#393], [#501] — crashes + data corruption |
  **Short-term** | 7 | ~~[#515]~~, [#514], [#510], [#512], ~~[#511]~~, ~~[#507]~~, ~~[#486]~~, ~~[#485]~~ — protocol/UX broken |
-| **Medium-term** | 8 | [#509], [#505], [#481], [#472], [#396], [#392], [#391], [#390], [#388] — features + integration (~~#389~~ fixed) |
+ **Medium-term** | 8 | ~~[#509]~~, [#505], [#481], [#472], [#396], [#392], [#391], [#390], [#388] — features + integration (~~#389~~ fixed) |
 | **Backlog** | 6 | [#502], [#500], [#504], [#395], [#394], [#387] — PRs + minor UI |
 
 ---
@@ -131,7 +131,7 @@
 
 ### Phase 4: Features & Integration
 
-1. [#509](https://github.com/michaellukashov/Far-NetBox/issues/509) — Auth certificate support
+ 1. ~~[#509](https://github.com/michaellukashov/Far-NetBox/issues/509)~~ **ADDRESSED** — Auth certificate support (OpenSSH cert auth in 2e93b39a4)
 2. [#481](https://github.com/michaellukashov/Far-NetBox/issues/481) — FTP codepage fix
 3. [#501](https://github.com/michaellukashov/Far-NetBox/issues/501) — Corrupted file copy (SSH/SCP)
 4. [#396](https://github.com/michaellukashov/Far-NetBox/issues/396) — FTP non-default port not preserved
@@ -187,3 +187,4 @@ Based on the current open issue landscape, here are the concrete recommendations
  2026-05-02 | Marked [#485] as FIXED — LocalCanonify fix, Canonify fallback guards removal, recursive parent directory creation for SFTP CreateDirectory. Build verified. |
  2026-05-02 | Marked [#511] speed-limit fix as FIXED — FCPSLimit was not set from ACPSLimit in TFileOperationProgressType::Start(), leaving throttling uninitialized. Single-line fix `FCPSLimit = ACPSLimit;` at FileOperationProgress.cpp:212. Build verified. |
  2026-05-02 | Marked [#486] as FIXED — reduced KexListBox height (15→8) and CipherListBox height (10→6) in Session dialog to prevent visual overflow on 80x25 terminals with Proxy+Tunnel enabled. TFarListBox scrollbar preserves full accessibility. Build verified. |
+ 2026-05-02 | Marked [#509] as ADDRESSED — OpenSSH certificate authentication feature (commit 2e93b39a4) covers the certificate auth requirement; Windows Certificate Store plan superseded. |
