@@ -8,6 +8,8 @@
  * Fix Alt-F12 folder history not restoring session when no panel was open
  * Fix log file error when opening same session on two panels concurrently
  * Fix crash after SSH chmod 444 on remote directory (#393) https://github.com/michaellukashov/Far-NetBox/issues/393
+ * Fix SCP/SFTP/S3 parallel transfer speed limit not applied (Issue #511) https://github.com/michaellukashov/Far-NetBox/issues/511
+ * Fix Esc key hang and panel close during SCP transfer cancellation (Issue #511) — add reentrancy guards, fix cancel-dialog state, preserve console input
 
 ### Dependencies
 
