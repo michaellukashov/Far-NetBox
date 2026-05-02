@@ -156,15 +156,15 @@ Modify `FtpControlSocket.cpp` to treat `FZ_SERVERTYPE_LAYER_SSL_EXPLICIT` the sa
 - Mark issue #389 as resolved and link to the fix commit.
 - Update priority tables (lines 66, 98, 140, 153, 170) to reflect closure.
 
-#### Task 12: OpenSSL assembly bug follow-up documentation [ ]
+#### Task 12: OpenSSL assembly bug follow-up documentation [x]
 - **Discovery:** `bn_div_words` division-by-zero in `libs/openssl-3/crypto/bn/bn_asm.c:233` triggered on all Pure‑FTPd test servers during RSA/EC operations.
 - **Not a NetBox bug**, but blocks QA from verifying TLS fixes on affected machines.
-- **Action:** Add a note to `.ai-factory/references/INDEX.md` or a dedicated troubleshooting doc documenting the `no-asm` rebuild workaround and NASM version requirements.
+- **Action:** Updated `.ai-factory/references/INDEX.md` to document the `no-asm` rebuild workaround and NASM version requirements.
 
-#### Task 13: `FTlsCertificateFile` UI gap follow-up [ ]
+#### Task 13: `FTlsCertificateFile` UI gap follow-up [x]
 - **Discovery:** `WinSCPDialogs.cpp:4040` has a TODO for `TlsCertificateFileEdit`; WinSCP-imported sessions may carry stale `.ppk` paths in `FTlsCertificateFile` with no dialog control to clear them.
 - **Impact:** This caused the initial OpenSSL init failure during debugging.
-- **Action:** Open a separate issue or add to backlog. Workaround documented: edit session XML directly to empty `<TlsCertificateFile></TlsCertificateFile>`.
+- **Action:** Added discovered-item entry to `Github-Issues.md` backlog. Workaround documented: edit session XML directly to empty `<TlsCertificateFile></TlsCertificateFile>`.
 ## Architecture Notes
 
 - **Layer:** FileZilla‑derived FTP core (`src/filezilla/`), not WinSCP facade.

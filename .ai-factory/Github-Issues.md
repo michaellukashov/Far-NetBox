@@ -76,7 +76,7 @@
 | 28 | [#395](https://github.com/michaellukashov/Far-NetBox/issues/395) | Bug | Some misaligned text in localization (for example Russian). | UI layout |
 | 29 | [#394](https://github.com/michaellukashov/Far-NetBox/issues/394) | Bug | Getting `"; echo "NetBox: this is end-of-file:$?"` in interactive bash shell. | SSH command artifact |
 | 30 | [#387](https://github.com/michaellukashov/Far-NetBox/issues/387) | Bug | Bug in display dialogs. | UI rendering |
-
+| — | **Discovered** | `FTlsCertificateFile` has no UI control to clear stale `.ppk` paths (WinSCP import). Causes OpenSSL init failure. Workaround: edit session XML. | Found during #389 fix; `WinSCPDialogs.cpp:4040` TODO |
 ---
 
 ## Summary by Category
