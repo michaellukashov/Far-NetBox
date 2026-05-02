@@ -288,7 +288,6 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
   conf_set_filename(conf, CONF_keyfile, AFileName);
   filename_free(AFileName);
 
-
   AFileName = filename_from_utf8(UTF8String(ExpandEnvironmentVariables(Data->DetachedCertificate)).c_str());
   conf_set_filename(conf, CONF_detached_cert, AFileName);
   filename_free(AFileName);
@@ -833,6 +832,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
   TStrings * Prompts, TStrings * Results)
 {
   // there can be zero prompts!
+  DebugAssert(Results->GetCount() == Prompts->GetCount());
 
   UnicodeString Name = AName;
   LogEvent(FORMAT("PromptUser raw name: [%s]", AName.c_str()));
