@@ -412,7 +412,7 @@
 "TLS/SSL Implicit encryption"
 "TLS/SSL Explicit encryption"
 "Post login &commands:"
-"TLS client &certificate:"
+"&Certificado cliente TLS:"
 
 " WebDAV protocol options "
 
