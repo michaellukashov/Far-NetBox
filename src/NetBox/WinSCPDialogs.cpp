@@ -4895,7 +4895,7 @@ void TSessionDialog::S3CACertificateLoadClick(TFarButton * /*Sender*/, bool & Cl
   wchar_t FileName[MAX_PATH] = { 0 };
   OPENFILENAMEW ofn = { 0 };
   ofn.lStructSize = sizeof(ofn);
-  ofn.hwndOwner = GetActiveWindow();
+  ofn.hwndOwner = GetConsoleWindow();
   ofn.lpstrFile = FileName;
   ofn.nMaxFile = MAX_PATH;
   ofn.lpstrFilter = L"PEM Files (*.pem)\0*.pem\0All Files (*.*)\0*.*\0";
@@ -4931,7 +4931,7 @@ void TSessionDialog::S3CACertificateSaveClick(TFarButton * /*Sender*/, bool & Cl
   wchar_t FileName[MAX_PATH] = { 0 };
   OPENFILENAMEW ofn = { 0 };
   ofn.lStructSize = sizeof(ofn);
-  ofn.hwndOwner = GetActiveWindow();
+  ofn.hwndOwner = GetConsoleWindow();
   ofn.lpstrFile = FileName;
   ofn.nMaxFile = MAX_PATH;
   ofn.lpstrFilter = L"PEM Files (*.pem)\0*.pem\0All Files (*.*)\0*.*\0";
@@ -4960,7 +4960,7 @@ void TSessionDialog::TlsCertificateFileBrowseClick(TFarButton * /*Sender*/, bool
   wchar_t FileName[MAX_PATH] = { 0 };
   OPENFILENAMEW ofn = { 0 };
   ofn.lStructSize = sizeof(ofn);
-  ofn.hwndOwner = GetActiveWindow();
+  ofn.hwndOwner = GetConsoleWindow();
   ofn.lpstrFile = FileName;
   ofn.nMaxFile = MAX_PATH;
   ofn.lpstrFilter = L"Certificate Files (*.pem;*.crt;*.cer;*.pfx;*.p12)\0*.pem;*.crt;*.cer;*.pfx;*.p12\0All Files (*.*)\0*.*\0";
@@ -4978,7 +4978,7 @@ void TSessionDialog::WebDAVTlsCertificateFileBrowseClick(TFarButton * /*Sender*/
   wchar_t FileName[MAX_PATH] = { 0 };
   OPENFILENAMEW ofn = { 0 };
   ofn.lStructSize = sizeof(ofn);
-  ofn.hwndOwner = GetActiveWindow();
+  ofn.hwndOwner = GetConsoleWindow();
   ofn.lpstrFile = FileName;
   ofn.nMaxFile = MAX_PATH;
   ofn.lpstrFilter = L"Certificate Files (*.pem;*.crt;*.cer;*.pfx;*.p12)\0*.pem;*.crt;*.cer;*.pfx;*.p12\0All Files (*.*)\0*.*\0";
@@ -4996,7 +4996,7 @@ void TSessionDialog::S3TlsCertificateFileBrowseClick(TFarButton * /*Sender*/, bo
   wchar_t FileName[MAX_PATH] = { 0 };
   OPENFILENAMEW ofn = { 0 };
   ofn.lStructSize = sizeof(ofn);
-  ofn.hwndOwner = GetActiveWindow();
+  ofn.hwndOwner = GetConsoleWindow();
   ofn.lpstrFile = FileName;
   ofn.nMaxFile = MAX_PATH;
   ofn.lpstrFilter = L"Certificate Files (*.pem;*.crt;*.cer;*.pfx;*.p12)\0*.pem;*.crt;*.cer;*.pfx;*.p12\0All Files (*.*)\0*.*\0";

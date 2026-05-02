@@ -71,6 +71,7 @@ public:
   UnicodeString GetCaption() const;
   void SetCaption(const UnicodeString & Value);
   HANDLE GetHandle() const { return FHandle; }
+  HWND GetConsoleWindow() const { return FFarPlugin->GetConsoleWindow(); }
   TFarButton * GetDefaultButton() const { return FDefaultButton; }
   TFarBox * GetBorderBox() const { return FBorderBox; }
   // int32_t GetType(TFarDialogItem * Item) const;
