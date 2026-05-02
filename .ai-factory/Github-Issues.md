@@ -43,8 +43,8 @@
 | # | Issue | Type | Summary | Impact | Notes |
 |---|-------|------|---------|--------|-------|
  7 | ~~[#515](https://github.com/michaellukashov/Far-NetBox/issues/515)~~ **FIXED** | Bug | F7 directory creation ignores autocomplete text; creates partial name. | Broken directory creation UX | ~~Still open~~ |
-| 8 | [#514](https://github.com/michaellukashov/Far-NetBox/issues/514) | Bug | S3: lists buckets but cannot enter any bucket. | S3 protocol unusable | |
-| 9 | [#510](https://github.com/michaellukashov/Far-NetBox/issues/510) | Bug | Amazon S3 connects but shows empty directory; can't upload; time encode error. | S3 unusable on AWS | 1 comment |
+ 8 | ~~[#514](https://github.com/michaellukashov/Far-NetBox/issues/514)~~ **FIXED** | Bug | S3: lists buckets but cannot enter any bucket. | S3 protocol unusable | |
+ 9 | ~~[#510](https://github.com/michaellukashov/Far-NetBox/issues/510)~~ **FIXED** | Bug | Amazon S3 connects but shows empty directory; can't upload; time encode error. | S3 unusable on AWS | 1 comment |
 | 10 | ~~[#512](https://github.com/michaellukashov/Far-NetBox/issues/512)~~ **FIXED** | Bug | IdleThread starts too early; crashes on plugin unload (`EXCEPTION_ACCESS_VIOLATION`). | Crash on plugin load/unload | By @alabuzhev; still open |
  11 | ~~[#511](https://github.com/michaellukashov/Far-NetBox/issues/511)~~ **FIXED** | Perf | Download speed limit in transfer dialog has no effect (SSH). | Cannot throttle transfers | ~~Still open~~ |
  12 | ~~[#507](https://github.com/michaellukashov/Far-NetBox/issues/507)~~ **FIXED** | Bug | FTP directory listing hangs; treats every file as directory (vsftpd). | Impossibly slow listing | ~~Still open~~ |
@@ -148,7 +148,7 @@
 | Risk | Likelihood | Mitigation |
 |------|------------|------------|
 | Multiple stack overflow crashes suggest concurrency / recursion bugs | High | Audit threading model; check for infinite recursion in directory traversal |
-| S3 protocol broken for multiple users ([#514], [#510]) | High | Isolate S3-specific issues from TLS/HTTP layer; test against AWS and MinIO |
+ ~~S3 protocol broken for multiple users ([#514], [#510])~~ | ~~High~~ | ~~Isolate S3-specific issues from TLS/HTTP layer; test against AWS and MinIO~~ |
 | FTP crash reports overlap ([#513], [#506]) | Medium | Check if all share same root cause in FTP directory listing code |
 | Open PRs accumulating without review ([#502], [#500], [#504]) | Medium | Review and merge or close stale PRs |
  Certificate/TLS issues spread across protocols (~~[#390]~~ via #504, [#392], ~~[#388]~~; ~~#389~~ fixed) | Medium | Review OpenSSL and certificate validation pipeline |
@@ -170,7 +170,7 @@ Based on the current open issue landscape, here are the concrete recommendations
    - [#395] (misaligned text) and ~~[#387]~~ (display dialogs) **FIXED** are UI-only.
    - ~~[#389] (Pure-FTPd TLS)~~ **FIXED** (`d3c3aa8`); and [#390] (WebDAV SSL) may be related to certificate validation logic.
 
-5. **S3 needs dedicated attention** ([#514], [#510]). Two separate S3 issues suggest the S3 backend may have regressed after dependency updates. Consider adding debug logging to the S3 path-normalization and bucket-listing code.
+5. ~~**S3 needs dedicated attention** ([#514], [#510]). Two separate S3 issues suggest the S3 backend may have regressed after dependency updates. Consider adding debug logging to the S3 path-normalization and bucket-listing code.~~ **FIXED** — retry limits, 24:00 timestamp normalization, and improved upload error messages deployed. Re-test against AWS and MinIO recommended.
 
 6. **Create a tracking issue or milestone** for the crash bugs. With 6 crash-related issues open, users perceive instability. A milestone focused on "Crash & Stability" would communicate progress.
 
@@ -195,3 +195,4 @@ Based on the current open issue landscape, here are the concrete recommendations
  2026-05-02 | Fixed [#508] — duplicate remote files with `Standalone=true` in panel `UserData` and clear `FFileList` after Edit/View operations. Prevents dangling `TRemoteFile*` pointers causing crash on second file open without Ctrl+R refresh. Build verified. |
  2026-05-02 | Fixed [#396] / FarGroup#42 — added index-comparison guards (`NewProtocolIndex != FTransferProtocolIndex`) in `TSessionDialog::Change()` to suppress spurious `TransferProtocolComboChange()` during Far dialog initialization. Also fixed SSH protocol detection (`GetIsSshProtocol`) and S3 port adjustment conditions. Build verified. |
  2026-05-02 | Fixed [#387] / FarGroup#25 — corrected off-by-one in `TFarDialogItem::SetWidth()` and `SetHeight()` bounds calculation (commit 6ff53f094, plan `.ai-factory/plans/fix-issue-387-dialog-bounds.md`). Removed `-1`/`+1` coordinate adjustments and compensating `+1` in `GetWidth()`/`GetHeight()`. Fixes text truncation in dialog labels (e.g., "Putty path" missing last character). Build verified. |
+ 2026-05-02 | Fixed [#514] / [#510] — added retry limit (MaxRetries=3) to `GetBucketContext` region detection to prevent infinite loops causing empty directory listings; normalized ISO 8601 `24:00:00` timestamps to next-day `00:00:00` with month/year rollover handling; replaced misleading "Specify target bucket" upload error with actionable `S3_UPLOAD_NEED_FILENAME` message. Commits: 90b6afb09, a9f4858f0, 516601698, a98af74be. Build verified. |
