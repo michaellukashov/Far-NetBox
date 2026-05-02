@@ -27,6 +27,10 @@
  * Fix RSA-SHA2 host key cache lookup failures against legacy ssh-rsa cached keys (#388) https://github.com/michaellukashov/Far-NetBox/issues/388
    — add ssh-rsa fallback in RetrieveHostKey when rsa-sha2-256/512 exact
    lookup fails; treat RSA-SHA2 variants as equivalent in HaveHostKey
+ * Fix idle thread startup crash during Far Manager plugin load (#512) https://github.com/michaellukashov/Far-NetBox/issues/512
+   — move TPluginIdleThread creation from Initialize() (called from
+   GetGlobalInfoW) to SetStartupInfoW() to prevent thread executing
+   after plugin unload when Far rejects or skips the plugin early
 
 ### Dependencies
 
