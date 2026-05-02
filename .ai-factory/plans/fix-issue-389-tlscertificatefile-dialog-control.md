@@ -146,7 +146,7 @@ Add a **TLS client certificate file** edit control with a **browse button** to t
 - Build `RelWithDebugInfo` for x64 using `build-x64.bat`.
 - Ensure zero MSVC W4 warnings.
 
-[~] Task 9: Manual test scenario
+[x] Task 9: Manual test scenario
 1. Open NetBox session dialog (F11 → NetBox)
 2. Create or edit an FTP session
 3. Select "TLS/SSL Explicit encryption"
