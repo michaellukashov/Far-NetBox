@@ -196,6 +196,7 @@ XmlStorage / Far3Storage → TConfiguration → TSessionData → TCustomFileSyst
 9. **Exception-based error handling** — Throw from the `Exception` hierarchy; catch and display at UI boundary
 10. **Incremental evolution** — No major architectural rewrites; extend existing patterns
 11. **Authentication integrity** — SSH key paths and passphrases flow through `TSessionData` → `TSecureShell` → PuTTY; prompt misclassification or path encoding issues break auth silently. See [exploration: issue-392-private-key-auth](../../references/issue-392-private-key-auth-exploration.md) for analysis of failure modes.
+12. **Timestamp conversion integrity** — Windows `FILETIME` is always UTC on Win7+; legacy DST compensations in `ConvertTimestampToUnix` must not corrupt pure UTC→Unix conversions. See [exploration: issue-391-dst-timestamp](../../references/issue-391-dst-timestamp-exploration.md) for analysis of the SCP upload timestamp bug caused by incorrect DST subtraction on modern Windows.
 ## Code Examples
 
 ### Protocol Implementation
