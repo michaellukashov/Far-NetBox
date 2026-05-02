@@ -870,6 +870,8 @@ int CAsyncSslSocketLayer::InitSSLConnection(bool clientMode,
   {
     SSL_set_session(m_ssl, nullptr);
   }
+  // TEMP: force TLS 1.2 on SSL object directly (issue #389)
+  SSL_set_max_proto_version(m_ssl, TLS1_2_VERSION);
   if (clientMode)
   {
     SSL_set_connect_state(m_ssl);
