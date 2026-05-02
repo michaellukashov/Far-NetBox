@@ -3104,6 +3104,53 @@ int32_t TWinSCPFileSystem::PutFilesEx(TObjectList * PanelItems, bool Move, OPERA
 bool TWinSCPFileSystem::ImportSessions(TObjectList * PanelItems, bool /*Move*/,
   OPERATION_MODES OpMode)
 {
+  // Pre-validate: scan all PanelItems to see if any file contains valid session data
+  bool HasValidSessionFiles = false;
+  for (int32_t Index = 0; Index < PanelItems->GetCount(); ++Index)
+  {
+    const TFarPanelItem * PanelItem = PanelItems->GetAs<TFarPanelItem>(Index);
+    DebugAssert(PanelItem);
+    const UnicodeString FileName = PanelItem->GetFileName();
+
+    if (!PanelItem->GetIsFile())
+    {
+      AppLogFmt(L"ImportSessions: skipping non-file item %s", FileName);
+      continue;
+    }
+
+    AppLogFmt(L"ImportSessions: checking file %s for session data ...", FileName);
+
+    try
+    {
+      const bool Relative = ::ExtractFilePath(FileName).IsEmpty();
+      const UnicodeString XmlFileName = Relative ? ::IncludeTrailingBackslash(::GetCurrentDir()) + FileName : FileName;
+      std::unique_ptr<THierarchicalStorage> ImportStorage(std::make_unique<TXmlStorage>(XmlFileName, GetConfiguration()->GetStoredSessionsSubKey()));
+      ImportStorage->Init();
+      ImportStorage->SetAccessMode(smRead);
+
+      if (ImportStorage->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), false) &&
+          ImportStorage->HasSubKeys())
+      {
+        HasValidSessionFiles = true;
+        AppLogFmt(L"ImportSessions: file %s contains valid session data", FileName);
+        break; // Found at least one valid file, no need to check further
+      }
+    }
+    catch(...)
+    {
+      AppLogFmt(L"ImportSessions: file %s caused an exception during validation", FileName);
+      // Treat as invalid file, continue checking other files
+    }
+  }
+
+  if (!HasValidSessionFiles)
+  {
+    AppLogFmt(L"ImportSessions: no valid session files found among %d items, skipping", PanelItems->GetCount());
+    return false;
+  }
+
+  AppLog(L"ImportSessions: found valid session file(s), proceeding to import prompt");
+
   const bool Result = (OpMode & OPM_SILENT) ||
     (MoreMessageDialog(GetMsg(NB_IMPORT_SESSIONS_PROMPT), nullptr,
      qtConfirmation, qaYes | qaNo) == qaYes);
@@ -3117,43 +3164,48 @@ bool TWinSCPFileSystem::ImportSessions(TObjectList * PanelItems, bool /*Move*/,
       DebugAssert(PanelItem);
       bool AnyData = false;
       FileName = PanelItem->GetFileName();
-      if (PanelItem->GetIsFile())
+
+      if (!PanelItem->GetIsFile())
       {
-        const bool Relative = ::ExtractFilePath(FileName).IsEmpty();
-        const UnicodeString XmlFileName = Relative ? ::IncludeTrailingBackslash(::GetCurrentDir()) + FileName : FileName;
-        std::unique_ptr<THierarchicalStorage> ImportStorage(std::make_unique<TXmlStorage>(XmlFileName, GetConfiguration()->GetStoredSessionsSubKey()));
-        ImportStorage->Init();
-        ImportStorage->SetAccessMode(smRead);
-        if (ImportStorage->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), false) &&
-          ImportStorage->HasSubKeys())
-        {
-          AnyData = true;
-          // Check if there are existing sessions with the same names
-          std::unique_ptr<TStringList> StoredKeys(std::make_unique<TStringList>());
-          ImportStorage->GetSubKeyNames(StoredKeys.get());
-          if (StoredKeys->GetCount() > 0)
-          {
-            UnicodeString SessionNames;
-            for (int32_t i = 0; i < StoredKeys->GetCount() && i < 5; i++)
-            {
-              if (i > 0) SessionNames += L", ";
-              SessionNames += StoredKeys->GetString(i);
-            }
-            if (StoredKeys->GetCount() > 5) SessionNames += L"...";
-            UnicodeString ConfirmMsg = FORMAT("%s will import sessions: %s. Continue?", FileName, SessionNames);
-            if (MoreMessageDialog(ConfirmMsg, nullptr, qtConfirmation, qaYes | qaNo) != qaYes)
-            {
-              return false;
-            }
-          }
-          GetStoredSessions()->Load(ImportStorage.get(), /*AsModified*/ true, /*UseDefaults*/ true);
-          // modified only, explicit
-          GetStoredSessions()->Save(false, true);
-        }
+        AppLogFmt(L"ImportSessions: skipping non-file item %s", FileName);
+        continue;
       }
+
+      const bool Relative = ::ExtractFilePath(FileName).IsEmpty();
+      const UnicodeString XmlFileName = Relative ? ::IncludeTrailingBackslash(::GetCurrentDir()) + FileName : FileName;
+      std::unique_ptr<THierarchicalStorage> ImportStorage(std::make_unique<TXmlStorage>(XmlFileName, GetConfiguration()->GetStoredSessionsSubKey()));
+      ImportStorage->Init();
+      ImportStorage->SetAccessMode(smRead);
+      if (ImportStorage->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), false) &&
+        ImportStorage->HasSubKeys())
+      {
+        AnyData = true;
+        // Check if there are existing sessions with the same names
+        std::unique_ptr<TStringList> StoredKeys(std::make_unique<TStringList>());
+        ImportStorage->GetSubKeyNames(StoredKeys.get());
+        if (StoredKeys->GetCount() > 0)
+        {
+          UnicodeString SessionNames;
+          for (int32_t i = 0; i < StoredKeys->GetCount() && i < 5; i++)
+          {
+            if (i > 0) SessionNames += L", ";
+            SessionNames += StoredKeys->GetString(i);
+          }
+          if (StoredKeys->GetCount() > 5) SessionNames += L"...";
+          UnicodeString ConfirmMsg = FORMAT("%s will import sessions: %s. Continue?", FileName, SessionNames);
+          if (MoreMessageDialog(ConfirmMsg, nullptr, qtConfirmation, qaYes | qaNo) != qaYes)
+          {
+            return false;
+          }
+        }
+        GetStoredSessions()->Load(ImportStorage.get(), /*AsModified*/ true, /*UseDefaults*/ true);
+        // modified only, explicit
+        GetStoredSessions()->Save(false, true);
+      }
+
       if (!AnyData)
       {
-        throw Exception(FORMAT(GetMsg(NB_IMPORT_SESSIONS_EMPTY), FileName));
+        AppLogFmt(L"ImportSessions: skipping invalid file %s (no session data)", FileName);
       }
     }
   }
