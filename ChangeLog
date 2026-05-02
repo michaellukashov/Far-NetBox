@@ -62,11 +62,9 @@
      overwrite comparisons affected by corrupted local-to-Unix timestamp conversion
 
  * Fix SSH private key authentication failure on publickey-only servers (#392) https://github.com/michaellukashov/Far-NetBox/issues/392
-   — add `FRememberedPasswordKind` guard in `DoPromptUser()` to prevent a remembered
-     SSH password from being submitted as a key passphrase, which silently broke
-     public-key auth and caused "No supported authentication methods available" or an
-     unexpected password prompt; also fix inverted `Result` check in `PromptUser()`
-     that incorrectly logged "Prompt cancelled" on every successful credential entry
+   — add `FRememberedPasswordKind` guard in `DoPromptUser()` to prevent
+     remembered SSH password from being submitted as a key passphrase;
+     fix inverted `Result` check in `PromptUser()`; add diagnostic logging
 
 ### Dependencies
 
