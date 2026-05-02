@@ -437,7 +437,8 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t I
         std::unique_ptr<TOptions> Options(std::make_unique<TProgramParams>());
         ParseCommandLine(CommandLine, Options.get());
         constexpr int32_t ParseUrlFlags = pufAllowStoredSiteWithProtocol;
-        std::unique_ptr<TSessionData> Session(GetStoredSessions()->ParseUrl(CommandLine, Options.get(), DefaultsOnly, nullptr, nullptr, nullptr, ParseUrlFlags));
+        UnicodeString FileName;
+        std::unique_ptr<TSessionData> Session(GetStoredSessions()->ParseUrl(CommandLine, Options.get(), DefaultsOnly, &FileName, nullptr, nullptr, ParseUrlFlags));
         if (!DefaultsOnly)
         {
           if (!Session->GetCanLogin())
@@ -455,6 +456,11 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t I
             // OPEN_SHORTCUT → OpenPluginEx → unnecessary reconnect.
             FileSystem->UpdatePanelDirectoryParam();
             AppLogFmt(L"OpenPluginEx: Connected to session %s, PrevSessionName set", Session->GetName());
+          }
+          if (Success && !FileName.IsEmpty())
+          {
+            FileSystem->SetFocusFileName(FileName);
+            AppLogFmt(L"OpenPluginEx: Will focus on file %s after panel redraw", FileName);
           }
           if (Success && !Directory.IsEmpty())
           {

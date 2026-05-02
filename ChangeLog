@@ -34,6 +34,9 @@
    — move TPluginIdleThread creation from Initialize() (called from
    GetGlobalInfoW) to SetStartupInfoW() to prevent thread executing
    after plugin unload when Far rejects or skips the plugin early
+ * Fix URL with file path fails to open parent directory and focus file (#505) https://github.com/michaellukashov/Far-NetBox/issues/505
+   — pass AFileName to ParseUrl in OpenPluginEx so URLs like ftp://host/dir/file.txt
+   automatically navigate to the parent directory and focus the target file
  * Fix S3 bucket access failures: cannot enter bucket, empty directory listings,
    and upload errors (#514) https://github.com/michaellukashov/Far-NetBox/issues/514, (#510) https://github.com/michaellukashov/Far-NetBox/issues/510
    — add retry limit (3) to GetBucketContext region detection, normalize

@@ -831,6 +831,24 @@ bool TWinSCPFileSystem::ProcessPanelEventEx(intptr_t Event, void * Param)
         UpdatePanel();
         FCurrentDirectoryWasChanged = false;
       }
+      if (!FFocusFileName.IsEmpty() && Connected())
+      {
+        TFarPanelInfo ** PanelInfo = GetPanelInfo();
+        if (PanelInfo && *PanelInfo)
+        {
+          const TFarPanelItem * Item = (*PanelInfo)->FindFileName(FFocusFileName);
+          if (Item)
+          {
+            (*PanelInfo)->SetFocusedItem(Item);
+            AppLogFmt(L"FE_REDRAW: Focused on file %s", FFocusFileName);
+          }
+          else
+          {
+            AppLogFmt(L"FE_REDRAW: File %s not found in panel", FFocusFileName);
+          }
+        }
+        FFocusFileName.Clear();
+      }
     }
   }
   // otherwise, don't call ClosePanel upon receiving FE_CLOSE

@@ -159,6 +159,7 @@ protected:
   void ToggleSynchronizeBrowsing();
   bool IsSynchronizedBrowsing() const;
   void SetPrevSessionName(const UnicodeString & Value);
+  void SetFocusFileName(const UnicodeString & Value) { FFocusFileName = Value; }
   bool PropertiesDialog(TStrings * AFileList,
     const UnicodeString & Directory,
     const TRemoteTokenList * GroupList, const TRemoteTokenList * UserList,
@@ -349,6 +350,7 @@ private:
   UnicodeString FSessionsFolder;
   UnicodeString FNewSessionsFolder;
   UnicodeString FPrevSessionName;
+  UnicodeString FFocusFileName;
   bool FQueueStatusInvalidated{false};
   bool FQueueItemInvalidated{false};
   bool FRefreshLocalDirectory{false};
