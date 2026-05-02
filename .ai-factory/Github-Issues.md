@@ -45,7 +45,7 @@
  7 | ~~[#515](https://github.com/michaellukashov/Far-NetBox/issues/515)~~ **FIXED** | Bug | F7 directory creation ignores autocomplete text; creates partial name. | Broken directory creation UX | ~~Still open~~ |
 | 8 | [#514](https://github.com/michaellukashov/Far-NetBox/issues/514) | Bug | S3: lists buckets but cannot enter any bucket. | S3 protocol unusable | |
 | 9 | [#510](https://github.com/michaellukashov/Far-NetBox/issues/510) | Bug | Amazon S3 connects but shows empty directory; can't upload; time encode error. | S3 unusable on AWS | 1 comment |
-| 10 | [#512](https://github.com/michaellukashov/Far-NetBox/issues/512) | Bug | IdleThread starts too early; crashes on plugin unload (`EXCEPTION_ACCESS_VIOLATION`). | Crash on plugin load/unload | By @alabuzhev; still open |
+| 10 | ~~[#512](https://github.com/michaellukashov/Far-NetBox/issues/512)~~ **FIXED** | Bug | IdleThread starts too early; crashes on plugin unload (`EXCEPTION_ACCESS_VIOLATION`). | Crash on plugin load/unload | By @alabuzhev; still open |
  11 | ~~[#511](https://github.com/michaellukashov/Far-NetBox/issues/511)~~ **FIXED** | Perf | Download speed limit in transfer dialog has no effect (SSH). | Cannot throttle transfers | ~~Still open~~ |
  12 | ~~[#507](https://github.com/michaellukashov/Far-NetBox/issues/507)~~ **FIXED** | Bug | FTP directory listing hangs; treats every file as directory (vsftpd). | Impossibly slow listing | ~~Still open~~ |
  13 | ~~[#486](https://github.com/michaellukashov/Far-NetBox/issues/486)~~ **FIXED** | Bug | Dialog size overflow with proxy+tunnel settings in key exchange panel. | UI corruption | |
@@ -56,15 +56,15 @@
 | # | Issue | Type | Summary | Impact | Est. Time |
 |---|-------|------|---------|--------|-----------|
  15 | ~~[#509](https://github.com/michaellukashov/Far-NetBox/issues/509)~~ **ADDRESSED** | Feature | Support user-provided auth certificates (PuTTY cert auth). | Missing auth method | OpenSSH cert auth (2e93b39a4) covers requirement |
-| 16 | [#505](https://github.com/michaellukashov/Far-NetBox/issues/505) | Feature | Fall back to opening FTP URL as file if directory access fails. | UX improvement | 3-5h |
+| 16 | ~~[#505](https://github.com/michaellukashov/Far-NetBox/issues/505)~~ **FIXED** | Feature | Fall back to opening FTP URL as file if directory access fails. | UX improvement | 3-5h |
 | 17 | [#481](https://github.com/michaellukashov/Far-NetBox/issues/481) | Bug | FTP codepage ISO-8859-5 copy fails (filename encoding). | Broken non-UTF8 FTP | 3-5h |
 | 18 | [#472](https://github.com/michaellukashov/Far-NetBox/issues/472) | Bug | False positive session import prompts on every start. | Annoyance | 2-3h |
 | 19 | [#396](https://github.com/michaellukashov/Far-NetBox/issues/396) | Bug | FTP connection doesn't preserve non-default port number. | Port configuration lost | By @alabuzhev |
 | 20 | [#392](https://github.com/michaellukashov/Far-NetBox/issues/392) | Bug | Unable to connect with private key certificates. | Certificate auth broken | By @alabuzhev; 2 comments |
 | 21 | [#391](https://github.com/michaellukashov/Far-NetBox/issues/391) | Bug | Daylight Saving Time bug. | Time handling issue | By @alabuzhev |
  22 | ~~[#390](https://github.com/michaellukashov/Far-NetBox/issues/390)~~ **FIXED** | Bug | NetBox/WebDav sometimes rejects valid SSL certificates. | TLS certificate validation | By @alabuzhev; ~~PR [#504] open~~ merged via PR #504 |
-| 23 | [#389](https://github.com/michaellukashov/Far-NetBox/issues/389) | Integration | ~~Unable to connect to Pure-FTPd with TLS enabled.~~ **FIXED** — AUTH TLS first for explicit SSL. | Pure-FTPd TLS failure | By @alabuzhev; fixed in `d3c3aa8` |
-| 24 | [#388](https://github.com/michaellukashov/Far-NetBox/issues/388) | Feature | RSA-SHA256 support. | Missing crypto algorithm | By @alabuzhev; 2 comments |
+| 23 | ~~[#389](https://github.com/michaellukashov/Far-NetBox/issues/389)~~ **FIXED** | Integration | Unable to connect to Pure-FTPd with TLS enabled.  — AUTH TLS first for explicit SSL. | Pure-FTPd TLS failure | By @alabuzhev; fixed in `d3c3aa8` |
+| 24 | ~~[#388](https://github.com/michaellukashov/Far-NetBox/issues/388)~~ **FIXED** | Feature | RSA-SHA256 support. | Missing crypto algorithm | By @alabuzhev; 2 comments |
 
 ### LOW — Severity 1-4 — Backlog / Nice-to-have
 
@@ -94,8 +94,8 @@
 | Urgency | Count | Key Issues |
 |---------|-------|------------|
  **Immediate** | 6 | [#513], [#506], [#508], [#497], [#393], ~~[#501]~~ — crashes + data corruption |
- **Short-term** | 7 | ~~[#515]~~, [#514], [#510], [#512], ~~[#511]~~, ~~[#507]~~, ~~[#486]~~, ~~[#485]~~ — protocol/UX broken |
- **Medium-term** | 8 | ~~[#509]~~, [#505], [#481], [#472], [#396], [#392], [#391], ~~[#390]~~, [#388] — features + integration (~~#389~~ fixed) |
+ **Short-term** | 7 | ~~[#515]~~, ~~[#514]~~, ~~[#510]~~, [#512], ~~[#511]~~, ~~[#507]~~, ~~[#486]~~, ~~[#485]~~ — protocol/UX broken |
+ **Medium-term** | 8 | ~~[#509]~~, ~~[#505]~~, [#481], [#472], [#396], [#392], [#391], ~~[#390]~~, [#388] — features + integration (~~#389~~ fixed) |
  **Backlog** | 6 | [#502], [#500], ~~[#504]~~, [#395], [#394], [#387] — PRs + minor UI |
 
 ---
@@ -124,7 +124,7 @@
 
  1. ~~[#511](https://github.com/michaellukashov/Far-NetBox/issues/511)~~ **FIXED** — Speed limit not working
  2. ~~[#486](https://github.com/michaellukashov/Far-NetBox/issues/486)~~ **FIXED** — Dialog overflow
-3. [#505](https://github.com/michaellukashov/Far-NetBox/issues/505) — FTP URL file fallback
+3. ~~[#505](https://github.com/michaellukashov/Far-NetBox/issues/505)~~ **FIXED** — FTP URL file fallback
 4. [#472](https://github.com/michaellukashov/Far-NetBox/issues/472) — False import prompts
 5. [#395](https://github.com/michaellukashov/Far-NetBox/issues/395) — Localization text alignment
 6. [#387](https://github.com/michaellukashov/Far-NetBox/issues/387) — Display dialog bug
@@ -137,7 +137,7 @@
 4. [#396](https://github.com/michaellukashov/Far-NetBox/issues/396) — FTP non-default port not preserved
 5. [#392](https://github.com/michaellukashov/Far-NetBox/issues/392) — Private key certificate connection
 6. [#391](https://github.com/michaellukashov/Far-NetBox/issues/391) — Daylight Saving Time bug
- 7. ~~[#390](https://github.com/michaellukashov/Far-NetBox/issues/390)~~ **FIXED** (via PR #504) — WebDav SSL certificate rejection
+7. ~~[#390](https://github.com/michaellukashov/Far-NetBox/issues/390)~~ **FIXED** (via PR [#504] — WebDav SSL certificate rejection
 8. ~~[#389](https://github.com/michaellukashov/Far-NetBox/issues/389)~~ — ~~Pure-FTPd TLS connection failure~~ **FIXED** (`d3c3aa8`)
 9. ~~[#388](https://github.com/michaellukashov/Far-NetBox/issues/388)~~ **FIXED** — RSA-SHA256 support
 
