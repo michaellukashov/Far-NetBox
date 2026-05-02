@@ -1586,19 +1586,19 @@ void TFarDialogItem::SetWidth(int32_t Value)
   TRect R = GetBounds();
   if (R.Left >= 0)
   {
-    R.Right = R.Left + Value - 1;
+    R.Right = R.Left + Value;
   }
   else
   {
     DebugAssert(R.Right < 0);
-    R.Left = R.Right - nb::ToInt32(Value + 1);
+    R.Left = R.Right - nb::ToInt32(Value);
   }
   SetBounds(R);
 }
 
 int32_t TFarDialogItem::GetWidth() const
 {
-  return nb::ToInt32(GetActualBounds().Width() + 1);
+  return nb::ToInt32(GetActualBounds().Width());
 }
 
 void TFarDialogItem::SetHeight(int32_t Value)
@@ -1606,19 +1606,19 @@ void TFarDialogItem::SetHeight(int32_t Value)
   TRect R = GetBounds();
   if (R.Top >= 0)
   {
-    R.Bottom = nb::ToInt32(R.Top + Value - 1);
+    R.Bottom = nb::ToInt32(R.Top + Value);
   }
   else
   {
     DebugAssert(R.Bottom < 0);
-    R.Top = nb::ToInt32(R.Bottom - Value + 1);
+    R.Top = nb::ToInt32(R.Bottom - Value);
   }
   SetBounds(R);
 }
 
 int32_t TFarDialogItem::GetHeight() const
 {
-  return nb::ToInt32(GetActualBounds().Height() + 1);
+  return nb::ToInt32(GetActualBounds().Height());
 }
 
 bool TFarDialogItem::CanFocus() const
