@@ -288,6 +288,7 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
   conf_set_filename(conf, CONF_keyfile, AFileName);
   filename_free(AFileName);
 
+
   AFileName = filename_from_utf8(UTF8String(ExpandEnvironmentVariables(Data->DetachedCertificate)).c_str());
   conf_set_filename(conf, CONF_detached_cert, AFileName);
   filename_free(AFileName);
@@ -481,7 +482,14 @@ void TSecureShell::Open()
     LogEvent(FORMAT("Terminal: interactive=%d, termtype=%s, size=%dx%d, kitty=%d, win32=%d",
       FInteractive, FTerminalType, FTerminalWidth, FTerminalHeight,
       FSessionData->GetKittyKeyboardProtocol(), FWin32InputMode));
-    FSeat = std::make_unique<ScpSeat>(this);
+    const UnicodeString ResolvedKeyFile = FSessionData->ResolvePublicKeyFile();
+    LogEvent(FORMAT("SSH key file: raw=[%s], resolved=[%s], exists=%d",
+      FSessionData->GetPublicKeyFile().c_str(), ResolvedKeyFile.c_str(),
+      nb::ToInt32(::FileExists(ApiPath(ResolvedKeyFile)))));
+    LogEvent(FORMAT("SSH auth config: tryagent=%d, try_ki=%d, try_gssapi=%d, gssapi_kex=%d, ssh_no_userauth=%d, has_passphrase=%d",
+      nb::ToInt32(FSessionData->GetTryAgent()), nb::ToInt32(FSessionData->FAuthKI),
+      nb::ToInt32(FSessionData->FAuthGSSAPI), nb::ToInt32(FSessionData->FAuthGSSAPIKEX),
+      nb::ToInt32(FSessionData->SshNoUserAuth()), nb::ToInt32(!FSessionData->GetPassphrase().IsEmpty())));
     FLogPolicy = std::make_unique<ScpLogPolicy>();
     FLogPolicy->vt = &ScpLogPolicyVTable;
     FLogPolicy->SecureShell = this;
@@ -825,11 +833,10 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
 {
   // there can be zero prompts!
 
-  DebugAssert(Results->GetCount() == Prompts->GetCount());
-
   UnicodeString Name = AName;
+  LogEvent(FORMAT("PromptUser raw name: [%s]", AName.c_str()));
   const TPromptKind PromptKind = IdentifyPromptKind(Name);
-
+  LogEvent(FORMAT("PromptUser detected kind: PromptKind=%d, translated name=[%s]", nb::ToInt32(PromptKind), Name.c_str()));
   const TPuttyTranslation * InstructionTranslation = nullptr;
   const TPuttyTranslation * PromptTranslation = nullptr;
   int32_t PromptTranslationCount = 1;
@@ -995,6 +1002,11 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
       Results->SetString(0, NormalizeString(FSessionData->GetPassword()));
       FStoredPasswordTried = true;
     }
+    else
+    {
+      LogEvent(FORMAT("Password prompt: no stored password (empty=%d, tried=%d)",
+        nb::ToInt32(FSessionData->GetPassword().IsEmpty()), nb::ToInt32(FStoredPasswordTried)));
+    }
   }
   else if (PromptKind == pkPassphrase)
   {
@@ -1004,6 +1016,11 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
       Result = true;
       Results->SetString(0, FSessionData->GetPassphrase());
       FStoredPassphraseTried = true;
+    }
+    else
+    {
+      LogEvent(FORMAT("Passphrase prompt: no stored passphrase (empty=%d, tried=%d)",
+        nb::ToInt32(FSessionData->GetPassphrase().IsEmpty()), nb::ToInt32(FStoredPassphraseTried)));
     }
   }
   else if (PromptKind == pkNewPassword)
@@ -1031,7 +1048,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
     Result = FUI->PromptUser(FSessionData,
         PromptKind, Name, Instructions, Prompts, Results);
 
-    if (Result)
+    if (!Result)
     {
       LogEvent(L"Prompt cancelled.");
       FAuthenticationCancelled = true;

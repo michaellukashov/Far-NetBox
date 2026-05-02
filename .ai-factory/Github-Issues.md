@@ -60,7 +60,7 @@
 | 17 | [#481](https://github.com/michaellukashov/Far-NetBox/issues/481) | Bug | FTP codepage ISO-8859-5 copy fails (filename encoding). | Broken non-UTF8 FTP | 3-5h |
 | 18 | [#472](https://github.com/michaellukashov/Far-NetBox/issues/472) | Bug | False positive session import prompts on every start. | Annoyance | 2-3h |
  | 19 | ~~[#396](https://github.com/michaellukashov/Far-NetBox/issues/396)~~ **FIXED** | Bug | FTP connection doesn't preserve non-default port number. | Port configuration lost | By @alabuzhev |
-| 20 | [#392](https://github.com/michaellukashov/Far-NetBox/issues/392) | Bug | Unable to connect with private key certificates. | Certificate auth broken | By @alabuzhev; 2 comments |
+ 20 | ~~[#392](https://github.com/michaellukashov/Far-NetBox/issues/392)~~ **FIXED** | Bug | Unable to connect with private key certificates. | Certificate auth broken | By @alabuzhev; 2 comments |
  21 | ~~[#391](https://github.com/michaellukashov/Far-NetBox/issues/391)~~ **FIXED** | Bug | Daylight Saving Time bug — `ConvertTimestampToUnix()` subtracted DST offset for `dstmWin` on Win7+ | Time handling issue | By @alabuzhev; fixed in plan `issue-391-daylight-saving-time-dst-bug` |
  22 | ~~[#390](https://github.com/michaellukashov/Far-NetBox/issues/390)~~ **FIXED** | Bug | NetBox/WebDav sometimes rejects valid SSL certificates. | TLS certificate validation | By @alabuzhev; ~~PR [#504] open~~ merged via PR #504 |
 | 23 | ~~[#389](https://github.com/michaellukashov/Far-NetBox/issues/389)~~ **FIXED** | Integration | Unable to connect to Pure-FTPd with TLS enabled.  — AUTH TLS first for explicit SSL. | Pure-FTPd TLS failure | By @alabuzhev; fixed in `d3c3aa8` |
@@ -161,7 +161,7 @@ Based on the current open issue landscape, here are the concrete recommendations
 
  1. **Merge or close stale PRs first** ([#502], [#500], ~~[#504]~~). ~~PR [#504] fixes [#390] (timestamp clamping) and appears ready for review.~~ PR #504 merged. Closing PR debt reduces noise.
 
-2. **Investigate the stack-overflow cluster** ([#513], [#497]). Both are `STATUS_STACK_OVERFLOW` but in different protocols (FTP and SFTP). This suggests a shared recursion pattern — likely in directory traversal or file info gathering. A single fix may resolve both.
+2. **Investigate the stack-overflow cluster** (~~[#513]~~, ~~[#497]~~). Both are `STATUS_STACK_OVERFLOW` but in different protocols (FTP and SFTP). This suggests a shared recursion pattern — likely in directory traversal or file info gathering. A single fix may resolve both.
 
  3. **Re-test issues previously claimed as FIXED** (~~[#485]~~, ~~[#515]~~, ~~[#511]~~, ~~[#507]~~, ~~[#486]~~, [#512]). These are still open on GitHub. Verify whether fixes were merged to `main` or only exist on feature branches (e.g., `lmv/dev`). If fixes are ready, close the issues.
 

@@ -2126,7 +2126,6 @@ bool TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kind,
   const UnicodeString & AName, const UnicodeString & AInstructions, TStrings * Prompts, TStrings * Results)
 {
   bool Result = false;
-
   const bool PasswordOrPassphrasePrompt = ::IsPasswordOrPassphrasePrompt(Kind, Prompts);
   if (PasswordOrPassphrasePrompt)
   {
@@ -2146,10 +2145,17 @@ bool TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kind,
       {
         RememberedPassword = PrimaryTerminal->GetRememberedPassword();
       }
-      FRememberedPasswordUsed = true;
-      Results->SetString(0, RememberedPassword);
-      if (!Results->GetString(0).IsEmpty())
+      // Only use remembered password/credentials if the prompt kind matches what
+      // we remembered: do not submit a remembered SSH password as a key passphrase
+      // (or vice versa), which would cause key authentication to fail silently.
+      const bool RememberedPasswordMatchesPrompt =
+        (Kind == pkPassphrase) ?
+          (PrimaryTerminal->FRememberedPasswordKind == pkPassphrase) :
+          (PrimaryTerminal->FRememberedPasswordKind != pkPassphrase);
+      if (!RememberedPassword.IsEmpty() && RememberedPasswordMatchesPrompt)
       {
+        FRememberedPasswordUsed = true;
+        Results->SetString(0, RememberedPassword);
         LogEvent("Using remembered password.");
         Result = true;
       }

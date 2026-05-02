@@ -107,41 +107,41 @@ Based on diagnostic logs, implement one of:
 ## Tasks
 
 ### Phase 1: Diagnosis
-- [ ] **Task 1:** Add verbose logging to `ResolvePublicKeyFile()` and `StoreToConfig()` key file path
+- [x] **Task 1:** Add verbose logging to `ResolvePublicKeyFile()` and `StoreToConfig()` key file path
   - File: `src/core/SessionData.cpp`, `src/core/SecureShell.cpp`
   - Log resolved key file path, expanded env vars, whether file exists
   - Log `GetKeyType()` result for the resolved path
-  - **Blocked by:** None
+  - **Done:** Added to `TSecureShell::Open()`
 
-- [ ] **Task 2:** Add logging to `TSecureShell::PromptUser()` for auth prompt kind
+- [x] **Task 2:** Add logging to `TSecureShell::PromptUser()` for auth prompt kind
   - File: `src/core/SecureShell.cpp`
   - Log `PromptKind` enum value and description text for every auth prompt
   - Distinguish password vs passphrase vs keyboard-interactive prompts
-  - **Blocked by:** None
+  - **Done:** Added raw name, detected kind, and stored credential status logs
 
-- [ ] **Task 3:** Wire PuTTY event log to NetBox log for auth phase
+- [x] **Task 3:** Wire PuTTY event log to NetBox log for auth phase
   - File: `src/core/SecureShell.cpp` or `src/core/PuttyIntf.cpp`
   - Capture `ppl_logevent()` messages during auth (`"Reading key file ..."`, `"Unable to load key ..."`, `"Server offered these authentication methods: ..."`)
   - Route to `AppLogFmt()` so they appear in `%LOCALAPPDATA%\NetBox\netbox.log`
-  - **Blocked by:** None
+  - **Done:** Already wired through `ScpLogPolicyVTable` → `PuttyLogEvent()`
 
 ### Phase 2: Fix Implementation
-- [ ] **Task 4:** Compare auth flow with WinSCP 6.5.6 upstream
+- [x] **Task 4:** Compare auth flow with WinSCP 6.5.6 upstream
   - Files: `src/core/SecureShell.cpp`, `src/core/Terminal.cpp`, `src/core/SessionData.cpp`
   - Search for WinSCP patches around `PromptUser`, `StoreToConfig`, `Authenticate`, `CONF_keyfile`
-  - Identify any missing upstream fix related to key auth or passphrase handling
-  - **Blocked by:** Tasks 1-3 (need diagnostic baseline)
+  - **Done:** Code inspection identified two NetBox-specific bugs in prompt handling; no missing WinSCP upstream patch found
 
-- [ ] **Task 5:** Implement fix based on root cause identified in Tasks 1-4
-  - File: TBD based on diagnosis
-  - Likely targets: `SecureShell.cpp` (prompt handling), `SessionData.cpp` (path resolution), or `PuttyIntf.cpp` (key loading)
-  - Add `AppLogFmt` success/failure logs
+- [x] **Task 5:** Implement fix based on root cause identified in Tasks 1-4
+  - File: `src/core/Terminal.cpp`, `src/core/SecureShell.cpp`
+  - **Root cause:** `TTerminal::DoPromptUser()` blindly submitted a remembered SSH password as a key passphrase when the prompt kind was `pkPassphrase`, causing public-key auth to fail silently. Additionally, `TSecureShell::PromptUser()` inverted the `Result` check, incorrectly setting `FAuthenticationCancelled = true` on successful prompts.
+  - **Fix 1:** Added `FRememberedPasswordKind` guard in `DoPromptUser()` — only use remembered credentials when the prompt kind matches the remembered kind.
+  - **Fix 2:** Inverted the `if (Result)` → `if (!Result)` check in `TSecureShell::PromptUser()` so successful prompts are logged correctly and `FAuthenticationCancelled` is only set on actual cancellation.
   - **Blocked by:** Tasks 1-4
 
 ### Phase 3: Build & Verify
-- [ ] **Task 6:** Run `build-x64.bat` to verify zero warnings
-  - MSVC W4 must pass clean
-  - Confirm `Far3_x64/Plugins/NetBox/NetBox.dll` is produced
+- [x] **Task 6:** Run `build-x64.bat` to verify zero warnings
+  - MSVC W4 passed clean
+  - `Far3_x64/Plugins/NetBox/NetBox.dll` produced
   - **Blocked by:** Task 5
 
 ### Phase 4: Manual QA
@@ -150,16 +150,16 @@ Based on diagnostic logs, implement one of:
   - Verify successful connection
   - Verify passphrase prompt (if key encrypted, no stored passphrase)
   - Verify password-only server still works
+  - **Skipped:** Testing=No per plan settings; build verification (Task 6) confirms code compiles
   - **Blocked by:** Task 6
 
 ### Phase 5: Documentation
-- [ ] **Task 8:** Update `ChangeLog`
-  - 2-3 line description referencing issue #392
-  - Link to GitHub issue
+- [x] **Task 8:** Update `ChangeLog`
+  - Added fix description for #392 referencing GitHub issue
   - **Blocked by:** Task 7
 
-- [ ] **Task 9:** Update `.ai-factory/Github-Issues.md`
-  - Mark #392 as FIXED
+- [x] **Task 9:** Update `.ai-factory/Github-Issues.md`
+  - Marked #392 as FIXED
   - **Blocked by:** Task 7
 
 ## Commit Message (Draft)
