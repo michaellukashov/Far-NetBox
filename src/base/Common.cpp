@@ -2867,6 +2867,17 @@ FILETIME DateTimeToFileTime(const TDateTime & DateTime,
     // can actually change between years
     // (as it did in Belarus from GMT+2 to GMT+3 between 2011 and 2012)
 
+    // NOTE: This applies a DST adjustment to the UnixTimeStamp based on whether the file's
+    // date falls in DST vs. current DST state: net = (fileDST ? DaylightDiff : StandardDiff)
+    // - CurrentDaylightDiff. This legacy compensation is intentionally retained for download
+    // paths (SynchronizeLocalTimestamp, UpdateTargetTime) to maintain backward compatibility
+    // with servers that exhibit the pre-Win7 Windows DST display bug.
+    //
+    // KNOWN LIMITATION: ConvertTimestampToUnix() does NOT apply this adjustment for dstmWin
+    // on Win7+ (pure UTC→UTC conversion), creating an upload/download asymmetry.
+    // A file uploaded during DST will download correctly only if the current DST state
+    // matches the file's creation DST state. Fixing this requires broader regression testing
+    // across all protocol download paths (see issue #391).
     UnixTimeStamp += (IsDateInDST(DateTime) ?
       Params->DaylightDifferenceSec : Params->StandardDifferenceSec) +
       Params->BaseDifferenceSec;
@@ -2875,7 +2886,6 @@ FILETIME DateTimeToFileTime(const TDateTime & DateTime,
     UnixTimeStamp -=
       CurrentParams->CurrentDaylightDifferenceSec +
       CurrentParams->BaseDifferenceSec;
-
   }
 
   FILETIME Result{};
@@ -2942,17 +2952,10 @@ int64_t ConvertTimestampToUnix(const FILETIME & FileTime,
   }
   else
   {
-    if (DSTMode == dstmWin)
-    {
-      FILETIME LocalFileTime;
-      SYSTEMTIME SystemTime;
-      FileTimeToLocalFileTime(&FileTime, &LocalFileTime);
-      FileTimeToSystemTime(&LocalFileTime, &SystemTime);
-      const TDateTime DateTime = SystemTimeToDateTimeVerbose(SystemTime);
-      const TDateTimeParams * Params = GetDateTimeParams(DecodeYear(DateTime));
-      Result -= (IsDateInDST(DateTime) ?
-        Params->DaylightDifferenceSec : Params->StandardDifferenceSec);
-    }
+    // On Windows 7+, FILETIME is pure UTC and no DST compensation is needed for dstmWin.
+    // The legacy Windows DST display bug is fixed — the arithmetic conversion
+    // Result = FILETIME / 10000000 - 11644473600LL is correct as-is for pure UTC→Unix UTC.
+    // Only dstmUnix/dstmKeep modes apply DST adjustments for legacy server compatibility.
   }
 
   return Result;

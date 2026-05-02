@@ -74,7 +74,7 @@ Setting DST mode to `dstmUnix` on Win7+ makes `ConvertTimestampToUnix` skip the 
 
 ### Phase 1: Fix Core Timestamp Conversion
 
-#### Task 1.1: Fix `ConvertTimestampToUnix` for `dstmWin` on Win7+
+- [x] Task 1.1: Fix `ConvertTimestampToUnix` for `dstmWin` on Win7+
 **File:** `src/base/Common.cpp`
 **Lines:** ~2943-2956 (the `else` block for `!UsesDaylightHack()`)
 
@@ -103,7 +103,7 @@ else  // Win7+ — Windows DST bug is fixed, FILETIME is pure UTC
 **Rationale:** On Win7+, `FILETIME` is already pure UTC. There is no legacy DST bug to compensate for. The subtraction corrupts the Unix timestamp by the DST offset (typically 3600 seconds).
 
 **Logging:** Add an inline comment explaining that `dstmWin` on Win7+ performs pure UTC arithmetic conversion with no DST adjustment. A `DebugAssert` may be added to document the invariant that `DaylightDifferenceSec == 0` for this path.
-#### Task 1.2: Verify symmetry with `UnixToDateTime`
+- [x] Task 1.2: Verify symmetry with `UnixToDateTime`
 **File:** `src/base/Common.cpp`  
 **Lines:** ~2638-2668
 
@@ -120,7 +120,7 @@ else  // !DaylightHack
 
 This is already consistent with the intended fix (no DST adjustment for `dstmWin` on Win7+). **No change needed** in `UnixToDateTime`.
 
-#### Task 1.2b: Check `Sysutils.cpp` `FileAge` hardcoded `dstmUnix` usage
+- [x] Task 1.2b: Check `Sysutils.cpp` `FileAge` hardcoded `dstmUnix` usage
 **File:** `src/base/Sysutils.cpp`
 **Lines:** ~619-624
 
@@ -129,7 +129,7 @@ This is already consistent with the intended fix (no DST adjustment for `dstmWin
 **Verification:** This path is not affected by the `dstmWin` bug (it uses `dstmUnix`). Confirm that this internal utility is intentionally using `dstmUnix` for consistency with legacy behavior. **No change needed**, but document the finding for completeness.
 
 #### Task 1.3: Audit and document `DateTimeToFileTime` behavior on Win7+
-
+- [x] Task 1.3: Audit and document `DateTimeToFileTime` behavior on Win7+
 **File:** `src/base/Common.cpp`  
 **Lines:** ~2856-2885
 
@@ -146,7 +146,7 @@ This adjusts based on whether the file's date is in DST vs. current DST state. T
 
 **Logging:** Add a verbose comment in `DateTimeToFileTime` explaining the DST adjustment logic and why it is intentionally retained for backward compatibility with download paths.
 
-#### Task 1.4: Verify `SynchronizeRemoteTimestamp` after fix
+- [x] Task 1.4: Verify `SynchronizeRemoteTimestamp` after fix
 **File:** `src/core/Terminal.cpp`
 **Lines:** ~7375-7389
 
@@ -154,7 +154,7 @@ This adjusts based on whether the file's date is in DST vs. current DST state. T
 
 **Verification:** Confirm that `FLocalLastWriteTime` is a `FILETIME` and that the conversion is the same pattern as `OpenLocalFile`. After the fix, synchronize-to-remote operations will correctly preserve local timestamps. **No code change expected** in `Terminal.cpp`.
 
-#### Task 1.5: Document upload/download round-trip asymmetry as known limitation
+- [x] Task 1.5: Document upload/download round-trip asymmetry as known limitation
 **Scope:** `src/base/Common.cpp` (comments), plan documentation
 
 **Analysis:** After fixing `ConvertTimestampToUnix` (upload) but intentionally not fixing `DateTimeToFileTime` (download), the round-trip is asymmetric:
@@ -167,7 +167,7 @@ This adjusts based on whether the file's date is in DST vs. current DST state. T
 
 ### Phase 2: Verify Protocol-Specific Upload Paths
 
-#### Task 2.1: Verify SCP upload uses correct timestamp
+- [x] Task 2.1: Verify SCP upload uses correct timestamp
 **File:** `src/core/ScpFileSystem.cpp`  
 **Lines:** ~2175-2182
 
@@ -175,7 +175,7 @@ This adjusts based on whether the file's date is in DST vs. current DST state. T
 
 **No code change expected** in `ScpFileSystem.cpp`. The fix is purely in the core conversion function. The SCP `T` command at line 2179 sends `LocalFileHandle.MTime` which now contains the correct UTC Unix timestamp.
 
-#### Task 2.2: Verify SFTP upload timestamp path
+- [x] Task 2.2: Verify SFTP upload timestamp path
 **File:** `src/core/SftpFileSystem.cpp`  
 **Lines:** ~4200-4210
 
@@ -188,7 +188,7 @@ With Task 1.1 fix, `ConvertTimestampToUnix` will no longer subtract DST for `dst
 
 **No code change expected** in `SftpFileSystem.cpp`.
 
-#### Task 2.3: Check FTP / WebDAV / S3 upload paths
+- [x] Task 2.3: Check FTP / WebDAV / S3 upload paths
 **Files:** `src/core/FtpFileSystem.cpp`, `src/core/WebDAVFileSystem.cpp`, `src/core/S3FileSystem.cpp`
 
 **Check:** Search for uses of `ConvertTimestampToUnix`, `LocalFileHandle.MTime`, or `Modification` in upload paths. Determine if any of these protocols directly use `ConvertTimestampToUnix` on a raw `FILETIME` for upload timestamp setting.
@@ -198,18 +198,15 @@ With Task 1.1 fix, `ConvertTimestampToUnix` will no longer subtract DST for `dst
 **Action:** If any direct `ConvertTimestampToUnix(FILETIME, dstmWin)` usage is found on Win7+ upload paths, the same fix (Task 1.1) automatically corrects it.
 
 ### Phase 3: Edge Cases and Validation
+### Phase 3: Edge Cases and Validation
 
-#### Task 3.1: Handle files created outside current DST period
-**Rationale:** `ConvertTimestampToUnix` uses `IsDateInDST(DateTime)` where `DateTime` is derived from the file's `FILETIME` converted to local time. Even after removing the DST subtraction for `dstmWin` on Win7+, the **detection** of DST (the `FileTimeToLocalFileTime` + `IsDateInDST` call) is still used in the `DateTimeToFileTime` path. For `ConvertTimestampToUnix`, the only remaining concern is whether removing the subtraction is correct for files created in both summer and winter.
+- [x] Task 3.1: Handle files created outside current DST period
 
-**Verification:** With the subtraction removed, `ConvertTimestampToUnix` returns pure UTC based on FILETIME. Since FILETIME is UTC regardless of when the file was created, the result is always correct. **No special handling needed** for out-of-DST files.
-
-#### Task 3.2: Pre-Windows 7 backward compatibility
 **Rationale:** On pre-Win7 (`UsesDaylightHack() == true`), `ConvertTimestampToUnix` does **not** subtract DST for `dstmWin`. It only adds DST for `dstmUnix`/`dstmKeep`. Task 1.1 only affects the Win7+ path. Pre-Win7 behavior is unchanged.
 
 **Verification:** Confirm that the `if (UsesDaylightHack())` branch is untouched by the fix.
 
-#### Task 3.3: `ConvertTimestampToUnixSafe` behavior
+- [x] Task 3.3: `ConvertTimestampToUnixSafe` behavior
 **File:** `src/base/Common.cpp`  
 **Lines:** ~2995-3009
 
@@ -217,7 +214,7 @@ With Task 1.1 fix, `ConvertTimestampToUnix` will no longer subtract DST for `dst
 
 ### Phase 4: Documentation
 
-#### Task 4.1: Add inline documentation to `ConvertTimestampToUnix`
+- [x] Task 4.1: Add inline documentation to `ConvertTimestampToUnix`
 **File:** `src/base/Common.cpp`
 
 Add a comment block explaining the DST mode behavior:
@@ -225,7 +222,7 @@ Add a comment block explaining the DST mode behavior:
 - `dstmWin` on Win7+: no adjustment (FILETIME is pure UTC, bug is fixed)
 - `dstmUnix`/`dstmKeep`: adjustments for legacy servers
 
-#### Task 4.2: Update NetBox changelog / fix tracking
+- [x] Task 4.2: Update NetBox changelog / fix tracking
 **File:** `.ai-factory/Github-Issues.md` (or equivalent project tracking file)
 
 Add an entry for issue #391:

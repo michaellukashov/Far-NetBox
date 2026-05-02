@@ -61,7 +61,7 @@
 | 18 | [#472](https://github.com/michaellukashov/Far-NetBox/issues/472) | Bug | False positive session import prompts on every start. | Annoyance | 2-3h |
 | 19 | [#396](https://github.com/michaellukashov/Far-NetBox/issues/396) | Bug | FTP connection doesn't preserve non-default port number. | Port configuration lost | By @alabuzhev |
 | 20 | [#392](https://github.com/michaellukashov/Far-NetBox/issues/392) | Bug | Unable to connect with private key certificates. | Certificate auth broken | By @alabuzhev; 2 comments |
-| 21 | [#391](https://github.com/michaellukashov/Far-NetBox/issues/391) | Bug | Daylight Saving Time bug. | Time handling issue | By @alabuzhev |
+ 21 | ~~[#391](https://github.com/michaellukashov/Far-NetBox/issues/391)~~ **FIXED** | Bug | Daylight Saving Time bug — `ConvertTimestampToUnix()` subtracted DST offset for `dstmWin` on Win7+ | Time handling issue | By @alabuzhev; fixed in plan `issue-391-daylight-saving-time-dst-bug` |
  22 | ~~[#390](https://github.com/michaellukashov/Far-NetBox/issues/390)~~ **FIXED** | Bug | NetBox/WebDav sometimes rejects valid SSL certificates. | TLS certificate validation | By @alabuzhev; ~~PR [#504] open~~ merged via PR #504 |
 | 23 | ~~[#389](https://github.com/michaellukashov/Far-NetBox/issues/389)~~ **FIXED** | Integration | Unable to connect to Pure-FTPd with TLS enabled.  — AUTH TLS first for explicit SSL. | Pure-FTPd TLS failure | By @alabuzhev; fixed in `d3c3aa8` |
 | 24 | ~~[#388](https://github.com/michaellukashov/Far-NetBox/issues/388)~~ **FIXED** | Feature | RSA-SHA256 support. | Missing crypto algorithm | By @alabuzhev; 2 comments |
@@ -95,7 +95,7 @@
 |---------|-------|------------|
  **Immediate** | 6 | [#513], [#506], [#508], [#497], [#393], ~~[#501]~~ — crashes + data corruption |
  **Short-term** | 7 | ~~[#515]~~, ~~[#514]~~, ~~[#510]~~, [#512], ~~[#511]~~, ~~[#507]~~, ~~[#486]~~, ~~[#485]~~ — protocol/UX broken |
- **Medium-term** | 8 | ~~[#509]~~, ~~[#505]~~, [#481], [#472], [#396], [#392], [#391], ~~[#390]~~, [#388] — features + integration (~~#389~~ fixed) |
+ **Medium-term** | 8 | ~~[#509]~~, ~~[#505]~~, [#481], [#472], [#396], [#392], ~~[#391]~~, ~~[#390]~~, [#388] — features + integration (~~#389~~ fixed) |
  **Backlog** | 6 | [#502], [#500], ~~[#504]~~, [#395], [#394], [#387] — PRs + minor UI |
 
 ---
@@ -136,7 +136,7 @@
  3. ~~[#501](https://github.com/michaellukashov/Far-NetBox/issues/501)~~ **FIXED** — Corrupted file copy (SSH/SCP)
 4. [#396](https://github.com/michaellukashov/Far-NetBox/issues/396) — FTP non-default port not preserved
 5. [#392](https://github.com/michaellukashov/Far-NetBox/issues/392) — Private key certificate connection
-6. [#391](https://github.com/michaellukashov/Far-NetBox/issues/391) — Daylight Saving Time bug
+6. ~~[#391](https://github.com/michaellukashov/Far-NetBox/issues/391)~~ **FIXED** — Daylight Saving Time bug
 7. ~~[#390](https://github.com/michaellukashov/Far-NetBox/issues/390)~~ **FIXED** (via PR [#504] — WebDav SSL certificate rejection
 8. ~~[#389](https://github.com/michaellukashov/Far-NetBox/issues/389)~~ — ~~Pure-FTPd TLS connection failure~~ **FIXED** (`d3c3aa8`)
 9. ~~[#388](https://github.com/michaellukashov/Far-NetBox/issues/388)~~ **FIXED** — RSA-SHA256 support
@@ -166,7 +166,7 @@ Based on the current open issue landscape, here are the concrete recommendations
  3. **Re-test issues previously claimed as FIXED** (~~[#485]~~, ~~[#515]~~, ~~[#511]~~, ~~[#507]~~, ~~[#486]~~, [#512]). These are still open on GitHub. Verify whether fixes were merged to `main` or only exist on feature branches (e.g., `lmv/dev`). If fixes are ready, close the issues.
 
 4. **Prioritize the newly surfaced @alabuzhev batch** ([#387]-[#396]). These 10 issues were reported by a contributor in Feb 2024 and cover TLS, certificates, dialogs, DST, and FTP ports. Many appear to be quick wins:
-   - [#396] (port preservation) and [#391] (DST) are likely one-line fixes.
+   - [#396] (port preservation) and ~~[#391] (DST)~~ **FIXED** — one-line fix in `ConvertTimestampToUnix()`.
    - [#395] (misaligned text) and [#387] (display dialogs) are UI-only.
    - ~~[#389] (Pure-FTPd TLS)~~ **FIXED** (`d3c3aa8`); and [#390] (WebDAV SSL) may be related to certificate validation logic.
 
