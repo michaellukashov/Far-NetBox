@@ -41,6 +41,8 @@ extern "C" {
 
 #endif
 
+#if defined(_WIN64) || defined(_WIN32)
+
 # define OPENSSL_CONFIGURED_API 30100
 # ifndef OPENSSL_RAND_SEED_OS
 #  define OPENSSL_RAND_SEED_OS
@@ -48,6 +50,13 @@ extern "C" {
 # ifndef OPENSSL_THREADS
 #  define OPENSSL_THREADS
 # endif
+
+
+#define OPENSSL_SYS_WINDOWS
+#define OPENSSL_NO_TS
+
+#endif
+
 # ifndef OPENSSL_NO_ACVP_TESTS
 #  define OPENSSL_NO_ACVP_TESTS
 # endif
@@ -57,19 +66,24 @@ extern "C" {
 # ifndef OPENSSL_NO_ASAN
 #  define OPENSSL_NO_ASAN
 # endif
+# ifndef OPENSSL_NO_BROTLI
+#  define OPENSSL_NO_BROTLI
+# endif
+# ifndef OPENSSL_NO_BROTLI_DYNAMIC
+#  define OPENSSL_NO_BROTLI_DYNAMIC
+# endif
 # ifndef OPENSSL_NO_CRYPTO_MDEBUG
 #  define OPENSSL_NO_CRYPTO_MDEBUG
 # endif
 # ifndef OPENSSL_NO_CRYPTO_MDEBUG_BACKTRACE
 #  define OPENSSL_NO_CRYPTO_MDEBUG_BACKTRACE
 # endif
+# ifndef OPENSSL_NO_DEFAULT_THREAD_POOL
+#  define OPENSSL_NO_DEFAULT_THREAD_POOL
+# endif
 # ifndef OPENSSL_NO_DEVCRYPTOENG
 #  define OPENSSL_NO_DEVCRYPTOENG
 # endif
-
-#define OPENSSL_SYS_WINDOWS
-#define OPENSSL_NO_TS
-
 # ifndef OPENSSL_NO_EC_NISTP_64_GCC_128
 #  define OPENSSL_NO_EC_NISTP_64_GCC_128
 # endif
@@ -90,6 +104,9 @@ extern "C" {
 # endif
 # ifndef OPENSSL_NO_KTLS
 #  define OPENSSL_NO_KTLS
+# endif
+# ifndef OPENSSL_NO_LOADERENG
+#  define OPENSSL_NO_LOADERENG
 # endif
 # ifndef OPENSSL_NO_MD2
 #  define OPENSSL_NO_MD2
@@ -115,6 +132,12 @@ extern "C" {
 # ifndef OPENSSL_NO_SSL3_METHOD
 #  define OPENSSL_NO_SSL3_METHOD
 # endif
+# ifndef OPENSSL_NO_TFO
+#  define OPENSSL_NO_TFO
+# endif
+# ifndef OPENSSL_NO_THREAD_POOL
+#  define OPENSSL_NO_THREAD_POOL
+# endif
 # ifndef OPENSSL_NO_TRACE
 #  define OPENSSL_NO_TRACE
 # endif
@@ -124,36 +147,107 @@ extern "C" {
 # ifndef OPENSSL_NO_UNIT_TEST
 #  define OPENSSL_NO_UNIT_TEST
 # endif
+# ifndef OPENSSL_NO_UPLINK
+#  define OPENSSL_NO_UPLINK
+# endif
 # ifndef OPENSSL_NO_WEAK_SSL_CIPHERS
 #  define OPENSSL_NO_WEAK_SSL_CIPHERS
 # endif
+# ifndef OPENSSL_NO_ZLIB
+#  define OPENSSL_NO_ZLIB
+# endif
+# ifndef OPENSSL_NO_ZLIB_DYNAMIC
+#  define OPENSSL_NO_ZLIB_DYNAMIC
+# endif
+# ifndef OPENSSL_NO_ZSTD
+#  define OPENSSL_NO_ZSTD
+# endif
+# ifndef OPENSSL_NO_ZSTD_DYNAMIC
+#  define OPENSSL_NO_ZSTD_DYNAMIC
+# endif
+# ifndef OPENSSL_NO_DYNAMIC_ENGINE
+#  define OPENSSL_NO_DYNAMIC_ENGINE
+# endif
 # ifndef OPENSSL_NO_STATIC_ENGINE
 #  define OPENSSL_NO_STATIC_ENGINE
+# endif
+# ifndef OPENSSL_NO_QLOG
+#  define OPENSSL_NO_QLOG
 # endif
 
 
 /* Generate 80386 code? */
 # undef I386_ONLY
 
-#define ENGINESDIR "C:\\Program Files (x86)\\OpenSSL\\lib\\engines-3"
-#define MODULESDIR "C:\\Program Files (x86)\\OpenSSL\\lib\\ossl-modules"
-#define OPENSSLDIR "C:\\Program Files (x86)\\Common Files\\SSL"
+#define ENGINESDIR "C:\\engines-3"
+#define MODULESDIR "C:\\ossl-modules"
+#define OPENSSLDIR "C:\\SSL"
 
 /*
  * The following are cipher-specific, but are part of the public API.
  */
+#if defined(_WIN64) || defined(_M_ARM64)
+
+# if !defined(OPENSSL_SYS_UEFI)
+#  undef BN_LLONG
+/* Only one for the following should be defined */
+#  undef SIXTY_FOUR_BIT_LONG
+#  define SIXTY_FOUR_BIT
+#  undef THIRTY_TWO_BIT
+# endif
+
+#elif defined(_WIN32)
+
 # if !defined(OPENSSL_SYS_UEFI)
 #  define BN_LLONG
 /* Only one for the following should be defined */
 #  undef SIXTY_FOUR_BIT_LONG
 #  undef SIXTY_FOUR_BIT
 #  define THIRTY_TWO_BIT
+# endif
+
 #endif
+
+#if defined(_WIN64) || defined(_WIN32)
 
 # define RC4_INT unsigned int
 
 #define _setmode setmode
 #define _strdup strdup
+
+#elif defined(_M_ARM64)
+
+# define RC4_INT unsigned char
+
+# ifndef OPENSSL_NO_ASM
+#  define OPENSSL_NO_ASM
+# endif
+# ifndef OPENSSL_NO_RFC3779
+#  define OPENSSL_NO_RFC3779
+# endif
+# ifndef OPENSSL_NO_SSL_TRACE
+#  define OPENSSL_NO_SSL_TRACE
+# endif
+# ifndef OPENSSL_NO_DEFAULT_THREAD_POOL
+#  define OPENSSL_NO_DEFAULT_THREAD_POOL
+# endif
+# ifndef OPENSSL_NO_LOADERENG
+#  define OPENSSL_NO_LOADERENG
+# endif
+# ifndef OPENSSL_NO_TFO
+#  define OPENSSL_NO_TFO
+# endif
+# ifndef OPENSSL_NO_THREAD_POOL
+#  define OPENSSL_NO_THREAD_POOL
+# endif
+
+#endif
+
+# if defined(OPENSSL_NO_COMP) || (defined(OPENSSL_NO_BROTLI) && defined(OPENSSL_NO_ZSTD) && defined(OPENSSL_NO_ZLIB))
+#  define OPENSSL_NO_COMP_ALG
+# else
+#  undef  OPENSSL_NO_COMP_ALG
+# endif
 
 # ifdef  __cplusplus
 }
