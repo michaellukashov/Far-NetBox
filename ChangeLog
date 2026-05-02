@@ -18,6 +18,9 @@
  * Fix FTP infinite loop / hang on BusyBox servers with unparsable listings (#513) https://github.com/michaellukashov/Far-NetBox/issues/513
    — add safety limits (buffer size, max lines, consecutive parse failures)
    to prevent runaway parser from consuming memory and CPU
+ * Fix FTP directory misidentification and recursive read hang on vsftpd servers (#507) https://github.com/michaellukashov/Far-NetBox/issues/507
+   — reset direntry state between parser attempts, fix missing bUnsure reset
+   in parseAsUnix, add file-extension guards to prevent files being listed as directories
  * Fix crash on second file open without directory refresh (#508) https://github.com/michaellukashov/Far-NetBox/issues/508
    — duplicate TRemoteFile objects in CreateFileList() to avoid dangling
    pointers after panel refresh deletes the originals
@@ -32,7 +35,7 @@
    GetGlobalInfoW) to SetStartupInfoW() to prevent thread executing
    after plugin unload when Far rejects or skips the plugin early
  * Fix S3 bucket access failures: cannot enter bucket, empty directory listings,
-   and upload errors (#514, #510) https://github.com/michaellukashov/Far-NetBox/issues/514
+   and upload errors (#514) https://github.com/michaellukashov/Far-NetBox/issues/514, (#510) https://github.com/michaellukashov/Far-NetBox/issues/510
    — add retry limit (3) to GetBucketContext region detection, normalize
    ISO 8601 timestamps with 24:00:00, improve upload error messages
 
