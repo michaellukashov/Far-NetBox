@@ -156,7 +156,7 @@ Open questions:
 
 ### Phase 5: Follow-up Refinements
 
-- [ ] Task 8: Reset `m_SuccessfulEntryLogCount` per listing to enforce "first 20 per listing" intent
+- [x] Task 8: Reset `m_SuccessfulEntryLogCount` per listing to enforce "first 20 per listing" intent
   - In `CFtpListResult::AddData()` (`src/filezilla/FtpListResult.cpp:374`), reset `m_SuccessfulEntryLogCount = 0` when `FBuffer` is empty at the start of a new listing batch (i.e., when `Restart` becomes true and `FBuffer.Length() == 0` before processing lines).
   - The `CFtpListResult` object may be reused across multiple listings via `TransferSocket`; the counter is currently only reset on object creation, causing debug output to stop after 20 entries total.
   - Implementation: Add `if (FBuffer.IsEmpty()) m_SuccessfulEntryLogCount = 0;` at the top of the `do` loop (line 401) or inside the `Restart` block (line 403).
@@ -168,7 +168,7 @@ Open questions:
     - WARN: none
     - ERROR: none
 
-- [ ] Task 9: Include raw line content in successful parse debug logs
+- [x] Task 9: Include raw line content in successful parse debug logs
   - In `CFtpListResult::AddData()` (`src/filezilla/FtpListResult.cpp:463`), append the raw `Record` string to the existing success log format, e.g., change the format string to:
     `"FTP listing: line %d parsed as %s, raw=%s, dir=%d link=%d size=%s name=%s"`
   - The raw line is already logged on parse failure (line 483); this change ensures successful parses also show the original input for debugging.
@@ -180,7 +180,7 @@ Open questions:
     - WARN: none
     - ERROR: none
 
-- [ ] Task 10: Extract duplicated `FileExts` heuristic array into a shared constant
+- [x] Task 10: Extract duplicated `FileExts` heuristic array into a shared constant
   - Both `TFTPFileSystem::HandleListData()` (line 2487) and `TFTPFileSystem::ReadDirectory()` (line 4756) contain identical 40‑element `FileExts` arrays (introduced in Task 6).
   - Move the array to a single `constexpr` location — e.g., an unnamed namespace at the top of `src/core/FtpFileSystem.cpp` — and replace both local copies with a reference to `s_FileExts`.
   - This heuristic is a fallback guard for vsftpd misclassification; consolidating it prevents future drift when extensions are added or removed, and reduces binary bloat.
@@ -202,6 +202,7 @@ Open questions:
 
 ## Changelog
 
+- **2026-05-02 (Completion)** — Tasks 8–10 implemented: counter reset on empty buffer with DEBUG log, raw line appended to successful parse logs, `FileExts` extracted to shared `s_FileExts` constant in unnamed namespace. Build verified zero warnings.
 - **2026-04-30 (Improvement)** — Added Phase 5 with Tasks 8-10: counter reset, raw-line success logging, and shared `FileExts` constant.
 - **2026-04-30 (Improvement)** — Documented refinement gaps in Task 1 (`m_SuccessfulEntryLogCount` reset, raw line on success) and Task 7 (durable build verification artifact).
 - **2026-04-29 (Improvement)** — Added Task 4: `parseLine` full reset of `direntry` state to prevent cross-contamination between parsers.

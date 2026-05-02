@@ -391,7 +391,16 @@ void CFtpListResult::AddData(const char * Data, int Size)
   {
     FBuffer.Delete(1, 1);
   }
-
+  // Reset successful-entry log counter for new listing batch when buffer is empty.
+  // (CFtpListResult may be reused across multiple listings via TransferSocket.)
+  if (FBuffer.IsEmpty())
+  {
+    m_SuccessfulEntryLogCount = 0;
+    if (m_debugShowListing)
+    {
+      LogMessage(FZ_LOG_DEBUG, _T("FTP listing: resetting successful-entry log counter, buffer empty"));
+    }
+  }
   bool Found;
   int Pos;
   int FirstLineEnd;
@@ -463,8 +472,8 @@ void CFtpListResult::AddData(const char * Data, int Size)
         if (m_debugShowListing && ParserName && (m_SuccessfulEntryLogCount < 20))
         {
           LogMessage(FZ_LOG_DEBUG,
-            _T("FTP listing: line %d parsed as %s, dir=%d link=%d size=%s name=%s"),
-            m_TotalLinesProcessed, ParserName,
+            _T("FTP listing: line %d parsed as %s, raw=%s, dir=%d link=%d size=%s name=%s"),
+            m_TotalLinesProcessed, ParserName, UnicodeString(Record).c_str(),
             nb::ToInt32(DirEntry.dir), nb::ToInt32(DirEntry.bLink),
             ::Int64ToStr(DirEntry.size), DirEntry.name);
           m_SuccessfulEntryLogCount++;

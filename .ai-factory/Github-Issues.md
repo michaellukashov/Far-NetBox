@@ -104,19 +104,18 @@
 
 ### Phase 1: Stabilization — Critical Crash Bugs
 
-1. [#513](https://github.com/michaellukashov/Far-NetBox/issues/513) — FTP stack overflow crash (highest recent activity, 14 comments)
-2. [#506](https://github.com/michaellukashov/Far-NetBox/issues/506) — FTP connect crash
-3. [#508](https://github.com/michaellukashov/Far-NetBox/issues/508) — SFTP double-open crash
-4. [#497](https://github.com/michaellukashov/Far-NetBox/issues/497) — F3 file info stack overflow
-5. [#393](https://github.com/michaellukashov/Far-NetBox/issues/393) — SSH chmod crash (newly surfaced)
-6. [#512](https://github.com/michaellukashov/Far-NetBox/issues/512) — IdleThread startup crash
-NetBox IdleThread starts too early and can crash (#512)
+1. ~~[#513](https://github.com/michaellukashov/Far-NetBox/issues/513)~~ **FIXED** — FTP stack overflow crash (highest recent activity, 14 comments)
+2. ~~[#506](https://github.com/michaellukashov/Far-NetBox/issues/506)~~ **FIXED** — FTP connect crash
+3. ~~[#508](https://github.com/michaellukashov/Far-NetBox/issues/508)~~ **FIXED** — SFTP double-open crash
+4. ~~[#497](https://github.com/michaellukashov/Far-NetBox/issues/497)~~ **FIXED** — F3 file info stack overflow
+5. ~~[#393](https://github.com/michaellukashov/Far-NetBox/issues/393)~~ **FIXED** — SSH chmod crash (newly surfaced)
+6. ~~[#512](https://github.com/michaellukashov/Far-NetBox/issues/512)~~ **FIXED** — IdleThread startup crash
 
 
 ### Phase 2: Protocol Functionality — S3 + FTP
 
-1. [#514](https://github.com/michaellukashov/Far-NetBox/issues/514) — S3 cannot enter buckets
-2. [#510](https://github.com/michaellukashov/Far-NetBox/issues/510) — Amazon S3 empty directory / time encode
+1. ~~[#514](https://github.com/michaellukashov/Far-NetBox/issues/514)~~ **FIXED** — S3 cannot enter buckets
+2. ~~[#510](https://github.com/michaellukashov/Far-NetBox/issues/510)~~ **FIXED** — Amazon S3 empty directory / time encode
 3. [#507](https://github.com/michaellukashov/Far-NetBox/issues/507) — FTP directory listing hang
 4. [#515](https://github.com/michaellukashov/Far-NetBox/issues/515) — F7 autocomplete directory name
 5. [#485](https://github.com/michaellukashov/Far-NetBox/issues/485) — SFTP cannot create remote folder
@@ -140,7 +139,7 @@ NetBox IdleThread starts too early and can crash (#512)
 6. [#391](https://github.com/michaellukashov/Far-NetBox/issues/391) — Daylight Saving Time bug
 7. [#390](https://github.com/michaellukashov/Far-NetBox/issues/390) — WebDav SSL certificate rejection
 8. ~~[#389](https://github.com/michaellukashov/Far-NetBox/issues/389)~~ — ~~Pure-FTPd TLS connection failure~~ **FIXED** (`d3c3aa8`)
-9. [#388](https://github.com/michaellukashov/Far-NetBox/issues/388) — RSA-SHA256 support
+9. ~~[#388](https://github.com/michaellukashov/Far-NetBox/issues/388)~~ **FIXED** — RSA-SHA256 support
 
 ---
 

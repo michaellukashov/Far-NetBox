@@ -50,6 +50,19 @@ constexpr const int32_t DummyCodeClass = 8;
 constexpr const int32_t DummyTimeoutCode = 801;
 constexpr const int32_t DummyDisconnectCode = 803;
 
+// Shared file-extension heuristic array for vsftpd misclassification guard (Issue #507).
+// Used by HandleListData and ReadDirectory to detect files incorrectly marked as directories.
+namespace {
+constexpr const wchar_t * s_FileExts[] = {
+  L"exe", L"dll", L"zip", L"rar", L"tar", L"gz", L"7z",
+  L"pdf", L"doc", L"docx", L"xls", L"xlsx", L"ppt", L"pptx",
+  L"jpg", L"jpeg", L"png", L"gif", L"bmp", L"ico",
+  L"txt", L"rtf", L"csv", L"xml", L"json", L"html", L"htm",
+  L"mp3", L"mp4", L"avi", L"mkv", L"mov", L"wmv",
+  L"c", L"cpp", L"h", L"hpp", L"cs", L"java", L"py", L"js", L"php",
+  L"bat", L"cmd", L"sh", L"ps1", L"msi", L"msp", L"iso", L"img"
+};
+} // unnamed namespace
 class TFileZillaImpl final : public TFileZillaIntf
 {
 public:
@@ -2484,16 +2497,7 @@ void TFTPFileSystem::ReadDirectory(TRemoteFileList * AFileList)
   if (ExtPos > 0 && !Directory.IsEmpty() && (Directory[Directory.Length()] != L'/'))
   {
     const UnicodeString Ext = LastComponent.SubString(ExtPos + 1);
-    static const wchar_t * FileExts[] = {
-      L"exe", L"dll", L"zip", L"rar", L"tar", L"gz", L"7z",
-      L"pdf", L"doc", L"docx", L"xls", L"xlsx", L"ppt", L"pptx",
-      L"jpg", L"jpeg", L"png", L"gif", L"bmp", L"ico",
-      L"txt", L"rtf", L"csv", L"xml", L"json", L"html", L"htm",
-      L"mp3", L"mp4", L"avi", L"mkv", L"mov", L"wmv",
-      L"c", L"cpp", L"h", L"hpp", L"cs", L"java", L"py", L"js", L"php",
-      L"bat", L"cmd", L"sh", L"ps1", L"msi", L"msp", L"iso", L"img"
-    };
-    for (const auto & FileExt : FileExts)
+    for (const auto & FileExt : s_FileExts)
     {
       if (SameText(Ext, FileExt))
       {
@@ -4753,16 +4757,7 @@ bool TFTPFileSystem::HandleListData(const wchar_t * Path,
           if (DotPos > 0)
           {
             const UnicodeString Ext = Name.SubString(DotPos + 1);
-            static const wchar_t * FileExts[] = {
-              L"exe", L"dll", L"zip", L"rar", L"tar", L"gz", L"7z",
-              L"pdf", L"doc", L"docx", L"xls", L"xlsx", L"ppt", L"pptx",
-              L"jpg", L"jpeg", L"png", L"gif", L"bmp", L"ico",
-              L"txt", L"rtf", L"csv", L"xml", L"json", L"html", L"htm",
-              L"mp3", L"mp4", L"avi", L"mkv", L"mov", L"wmv",
-              L"c", L"cpp", L"h", L"hpp", L"cs", L"java", L"py", L"js", L"php",
-              L"bat", L"cmd", L"sh", L"ps1", L"msi", L"msp", L"iso", L"img"
-            };
-            for (const auto & FileExt : FileExts)
+            for (const auto & FileExt : s_FileExts)
             {
               if (SameText(Ext, FileExt))
               {
