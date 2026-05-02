@@ -551,6 +551,9 @@ void TFTPFileSystem::Open()
       Data->SetTlsCertificateFile(L"");
     }
 
+    // TEMP: flush all log streams before connection (issue #389 debugging)
+    fflush(nullptr);
+
     RequireTls();
   }
 
