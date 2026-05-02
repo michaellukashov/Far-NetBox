@@ -49,7 +49,7 @@
 | 11 | [#511](https://github.com/michaellukashov/Far-NetBox/issues/511) | Perf | Download speed limit in transfer dialog has no effect (SSH). | Cannot throttle transfers | Still open |
  12 | ~~[#507](https://github.com/michaellukashov/Far-NetBox/issues/507)~~ **FIXED** | Bug | FTP directory listing hangs; treats every file as directory (vsftpd). | Impossibly slow listing | ~~Still open~~ |
 | 13 | [#486](https://github.com/michaellukashov/Far-NetBox/issues/486) | Bug | Dialog size overflow with proxy+tunnel settings in key exchange panel. | UI corruption | |
-| 14 | [#485](https://github.com/michaellukashov/Far-NetBox/issues/485) | Bug | Can not create a remote folder (SFTP). | SFTP folder creation broken | 7 comments; still open |
+ 14 | ~~[#485](https://github.com/michaellukashov/Far-NetBox/issues/485)~~ **FIXED** | Bug | Can not create a remote folder (SFTP). | SFTP folder creation broken | 7 comments; ~~still open~~ |
 
 ### MEDIUM — Severity 5-6 — Planned Enhancement
 
@@ -94,7 +94,7 @@
 | Urgency | Count | Key Issues |
 |---------|-------|------------|
 | **Immediate** | 6 | [#513], [#506], [#508], [#497], [#393], [#501] — crashes + data corruption |
- **Short-term** | 7 | ~~[#515]~~, [#514], [#510], [#512], [#511], ~~[#507]~~, [#486], [#485] — protocol/UX broken |
+ **Short-term** | 7 | ~~[#515]~~, [#514], [#510], [#512], [#511], ~~[#507]~~, [#486], ~~[#485]~~ — protocol/UX broken |
 | **Medium-term** | 8 | [#509], [#505], [#481], [#472], [#396], [#392], [#391], [#390], [#388] — features + integration (~~#389~~ fixed) |
 | **Backlog** | 6 | [#502], [#500], [#504], [#395], [#394], [#387] — PRs + minor UI |
 
@@ -118,7 +118,7 @@
 2. ~~[#510](https://github.com/michaellukashov/Far-NetBox/issues/510)~~ **FIXED** — Amazon S3 empty directory / time encode
  3. ~~[#507](https://github.com/michaellukashov/Far-NetBox/issues/507)~~ **FIXED** — FTP directory listing hang
  4. ~~[#515](https://github.com/michaellukashov/Far-NetBox/issues/515)~~ **FIXED** — F7 autocomplete directory name
-5. [#485](https://github.com/michaellukashov/Far-NetBox/issues/485) — SFTP cannot create remote folder
+ 5. ~~[#485](https://github.com/michaellukashov/Far-NetBox/issues/485)~~ **FIXED** — SFTP cannot create remote folder
 
 ### Phase 3: UX & Polish
 
@@ -163,7 +163,7 @@ Based on the current open issue landscape, here are the concrete recommendations
 
 2. **Investigate the stack-overflow cluster** ([#513], [#497]). Both are `STATUS_STACK_OVERFLOW` but in different protocols (FTP and SFTP). This suggests a shared recursion pattern — likely in directory traversal or file info gathering. A single fix may resolve both.
 
- 3. **Re-test issues previously claimed as FIXED** ([#485], ~~[#515]~~, [#511], ~~[#507]~~, [#512]). These are still open on GitHub. Verify whether fixes were merged to `main` or only exist on feature branches (e.g., `lmv/dev`). If fixes are ready, close the issues.
+ 3. **Re-test issues previously claimed as FIXED** (~~[#485]~~, ~~[#515]~~, [#511], ~~[#507]~~, [#512]). These are still open on GitHub. Verify whether fixes were merged to `main` or only exist on feature branches (e.g., `lmv/dev`). If fixes are ready, close the issues.
 
 4. **Prioritize the newly surfaced @alabuzhev batch** ([#387]-[#396]). These 10 issues were reported by a contributor in Feb 2024 and cover TLS, certificates, dialogs, DST, and FTP ports. Many appear to be quick wins:
    - [#396] (port preservation) and [#391] (DST) are likely one-line fixes.
@@ -181,6 +181,7 @@ Based on the current open issue landscape, here are the concrete recommendations
 | Date | Change |
 |------|--------|
 | 2026-04-25 | Full re-analysis of last 100 issues; expanded from 10 to all open issues; added links; marked [#485] as fixed, [#432] as closed |
- 2026-04-30 | Re-analyzed all **28 currently open issues** (previous count was 20 within last-100 window). Added 10 newly visible issues ([#387]-[#396]). Updated status of issues previously marked FIXED that remain open on GitHub ([[#485]], ~~[[#515]]~~, [[#511]], ~~[[#507]]~~, [[#512]]). Added Suggestions for Next Steps section. |
+ 2026-04-30 | Re-analyzed all **28 currently open issues** (previous count was 20 within last-100 window). Added 10 newly visible issues ([#387]-[#396]). Updated status of issues previously marked FIXED that remain open on GitHub (~~[[#485]]~~, ~~[[#515]]~~, [[#511]], ~~[[#507]]~~, [[#512]]). Added Suggestions for Next Steps section. |
  2026-05-02 | Marked [#507] as FIXED — parser state reset, bUnsure fix, file-extension guards merged on `lmv/dev`. Build verified. |
  2026-05-02 | Marked [#515] as FIXED — TFarEdit::GetTextFromDialog() Far API workaround for stale cached Data after autocomplete. Build verified. |
+ 2026-05-02 | Marked [#485] as FIXED — LocalCanonify fix, Canonify fallback guards removal, recursive parent directory creation for SFTP CreateDirectory. Build verified. |
