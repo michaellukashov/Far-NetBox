@@ -56,8 +56,10 @@
  * Fix timestamp milliseconds overflow in DateTimeToTimeStamp causing certificate validation failures (#390) https://github.com/michaellukashov/Far-NetBox/issues/390, PR [#504](https://github.com/michaellukashov/Far-NetBox/pull/504)
    — clamp Result.Time to MSecsPerDay - 1 (86399999) to prevent float-to-int rounding
    from producing illegal millisecond values (86400000); fixes WebDAV SSL cert rejection
-- Fix Daylight Saving Time bug 
-  Fixes [#391](https://github.com/michaellukashov/Far-NetBox/issues/391)
+ * Fix Daylight Saving Time bug in `ConvertTimestampToUnix()` causing remote timestamps to be 1 hour behind during DST (#391) https://github.com/michaellukashov/Far-NetBox/issues/391
+   — remove erroneous DST offset subtraction for `dstmWin` mode on Windows 7+
+     where `FILETIME` is already pure UTC; fixes SCP uploads and all protocol
+     overwrite comparisons affected by corrupted local-to-Unix timestamp conversion
 
 
 ### Dependencies
