@@ -195,7 +195,7 @@ XmlStorage / Far3Storage → TConfiguration → TSessionData → TCustomFileSyst
 8. **RAII ownership** — Prefer `std::unique_ptr` over raw `new`/`delete`; handle cleanup in destructors
 9. **Exception-based error handling** — Throw from the `Exception` hierarchy; catch and display at UI boundary
 10. **Incremental evolution** — No major architectural rewrites; extend existing patterns
-
+11. **Authentication integrity** — SSH key paths and passphrases flow through `TSessionData` → `TSecureShell` → PuTTY; prompt misclassification or path encoding issues break auth silently. See [exploration: issue-392-private-key-auth](../../references/issue-392-private-key-auth-exploration.md) for analysis of failure modes.
 ## Code Examples
 
 ### Protocol Implementation
