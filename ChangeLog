@@ -44,6 +44,9 @@
  * Fix SFTP cannot create remote folder / "Cannot get real path" error (#485) https://github.com/michaellukashov/Far-NetBox/issues/485
    — use LocalCanonify instead of GetRealPath for TMkdirSessionAction log,
    remove GetActive() guards from Canonify fallback, add recursive parent directory creation
+ * Fix key exchange dialog size overflow with proxy+tunnel settings (#486) https://github.com/michaellukashov/Far-NetBox/issues/486
+   — reduce KexListBox height (15→8) and CipherListBox height (10→6) to fit
+   standard 80x25 terminals; TFarListBox scrollbar preserves full accessibility
 
 ### Dependencies
 
