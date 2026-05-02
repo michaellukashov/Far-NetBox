@@ -1,4 +1,4 @@
-# Fix Key Exchange Dialog Size Overflow (GitHub #486)
+# Fix Key Exchange Dialog Size Overflow (#486)
 
 **Issue:** https://github.com/michaellukashov/Far-NetBox/issues/486  
 **Created:** 2026-04-28  
