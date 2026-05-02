@@ -537,6 +537,19 @@ void TFTPFileSystem::Open()
         DebugFail();
         break;
     }
+    // TEMP: trace and bypass client certificate to avoid OpenSSL init failure (issue #389 debugging)
+    const UnicodeString & CertFile = Data->GetTlsCertificateFile();
+    if (FTerminal->GetConfiguration()->GetActualLogProtocol() >= 0)
+    {
+      FTerminal->LogEvent(FORMAT("TLS client certificate file: [%s]",
+        (CertFile.IsEmpty() ? UnicodeString(L"<none>") : CertFile)));
+    }
+    if (!CertFile.IsEmpty())
+    {
+      FTerminal->LogEvent(FORMAT(L"TEMP: clearing TLS client certificate \"%s\" to bypass OpenSSL init failure",
+        CertFile));
+      Data->SetTlsCertificateFile(L"");
+    }
 
     RequireTls();
   }
