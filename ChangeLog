@@ -38,6 +38,9 @@
    and upload errors (#514) https://github.com/michaellukashov/Far-NetBox/issues/514, (#510) https://github.com/michaellukashov/Far-NetBox/issues/510
    — add retry limit (3) to GetBucketContext region detection, normalize
    ISO 8601 timestamps with 24:00:00, improve upload error messages
+ * Fix F7 directory creation ignoring autocomplete text and creating partial name (#515) https://github.com/michaellukashov/Far-NetBox/issues/515
+   — add TFarEdit::GetTextFromDialog() to retrieve fresh text directly from Far
+   dialog control, bypassing stale cached Data after autocomplete
 
 ### Dependencies
 
