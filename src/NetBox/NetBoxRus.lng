@@ -1,4 +1,4 @@
-﻿.Language=Russian,Russian (Русский)
+.Language=Russian,Russian (Русский)
 
 "NetBox"
 "NetBox"
@@ -412,6 +412,7 @@
 "Неявное шифрование TLS/SSL"
 "Явное шифрование TLS/SSL"
 "&Команды после подключения:"
+"TLS client &certificate:"
 
 " Настройки протокола WebDAV "
 

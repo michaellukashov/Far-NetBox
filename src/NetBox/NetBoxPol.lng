@@ -1,4 +1,4 @@
-﻿.Language=Polish,Polish (Polski)
+.Language=Polish,Polish (Polski)
 
 "NetBox"
 "NetBox"
@@ -412,6 +412,7 @@
 "Niejawne szyfrowanie TLS/SSL"
 "Jawne szyfrowanie TLS/SSL"
 "Polecenia po zalo&gowaniu:"
+"TLS client &certificate:"
 
 " Opcje protokołu WebDAV "
 

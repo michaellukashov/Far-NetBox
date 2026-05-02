@@ -1763,6 +1763,7 @@ private:
   static int32_t TlsVersionToIndex(TTlsVersion Version);
   void S3CACertificateLoadClick(TFarButton * Sender, bool & Close);
   void S3CACertificateSaveClick(TFarButton * Sender, bool & Close);
+  void TlsCertificateFileBrowseClick(TFarButton * Sender, bool & Close);
   static bool IsSshProtocol(TFSProtocol FSProtocol);
   bool IsWebDAVProtocol(TFSProtocol FSProtocol) const;
   bool IsSshOrWebDAVProtocol(TFSProtocol FSProtocol) const;
@@ -1904,6 +1905,9 @@ private:
   TFarCheckBox * FtpDupFFCheck{nullptr};
   TFarCheckBox * FtpUndupFFCheck{nullptr};
   TFarCheckBox * SslSessionReuseCheck{nullptr};
+  TFarText * TlsCertificateFileLabel{nullptr};
+  TFarEdit * TlsCertificateFileEdit{nullptr};
+  TFarButton * TlsCertificateFileBrowseBtn{nullptr};
   TFarCheckBox * WebDAVCompressionCheck{nullptr};
 
   TFarComboBox * S3UrlStyleCombo{nullptr};
@@ -2532,6 +2536,20 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   SslSessionReuseCheck = MakeOwnedObject<TFarCheckBox>(this);
   SslSessionReuseCheck->SetCaption(GetMsg(NB_LOGIN_FTP_SSLSESSIONREUSE));
+
+  SetNextItemPosition(ipNewLine);
+  TlsCertificateFileLabel = MakeOwnedObject<TFarText>(this);
+  TlsCertificateFileLabel->SetCaption(GetMsg(NB_LOGIN_TLS_CERTIFICATE_FILE));
+  TlsCertificateFileLabel->SetWidth(20);
+
+  SetNextItemPosition(ipRight);
+  TlsCertificateFileEdit = MakeOwnedObject<TFarEdit>(this);
+  TlsCertificateFileEdit->SetWidth(30);
+
+  SetNextItemPosition(ipRight);
+  TlsCertificateFileBrowseBtn = MakeOwnedObject<TFarButton>(this);
+  TlsCertificateFileBrowseBtn->SetCaption(L"\u2026");
+  TlsCertificateFileBrowseBtn->SetOnClick(nb::bind(&TSessionDialog::TlsCertificateFileBrowseClick, this));
 
   SetNextItemPosition(ipNewLine);
 
@@ -3452,6 +3470,9 @@ void TSessionDialog::UpdateControls()
   FtpTab->SetEnabled(aFtpProtocol || aFtpsProtocol);
   FtpAllowEmptyPasswordCheck->SetEnabled(aFtpProtocol || aFtpsProtocol);
   SslSessionReuseCheck->SetEnabled(aFtpsProtocol);
+  TlsCertificateFileLabel->SetEnabled(aFtpsProtocol);
+  TlsCertificateFileEdit->SetEnabled(aFtpsProtocol);
+  TlsCertificateFileBrowseBtn->SetEnabled(aFtpsProtocol);
 
   // S3 tab
   S3Tab->Enabled = aS3Protocol;
@@ -3716,6 +3737,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
   FtpDupFFCheck->SetChecked(SessionData->GetFtpDupFF());
   FtpUndupFFCheck->SetChecked(SessionData->GetFtpUndupFF());
   SslSessionReuseCheck->SetChecked(SessionData->GetSslSessionReuse());
+  TlsCertificateFileEdit->SetText(SessionData->GetTlsCertificateFile());
 
   switch (const TFtps Ftps = SessionData->GetFtps())
   {
@@ -4037,8 +4059,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     SessionData->SetFtpDupFF(FtpDupFFCheck->GetChecked());
     SessionData->SetFtpUndupFF(FtpUndupFFCheck->GetChecked());
     SessionData->SetSslSessionReuse(SslSessionReuseCheck->GetChecked());
-    TODO("TlsCertificateFileEdit->GetText()");
-    // SessionData->SetTlsCertificateFile(PrivateKeyEdit->GetText());
+    SessionData->SetTlsCertificateFile(TlsCertificateFileEdit->GetText());
     std::unique_ptr<TStrings> PostLoginCommands2(std::make_unique<TStringList>());
     for (int32_t Index4 = 0; Index4 < nb::ToInt32(_countof(PostLoginCommandsEdits)); ++Index4)
     {
@@ -4871,6 +4892,24 @@ void TSessionDialog::S3CACertificateSaveClick(TFarButton * /*Sender*/, bool & Cl
       WinSCPPlugin->MoreMessageDialog(GetMsg(MSG_TITLE_ERROR),
         nullptr, qtError, qaOK);
     }
+  }
+  Close = false;
+}
+
+void TSessionDialog::TlsCertificateFileBrowseClick(TFarButton * /*Sender*/, bool & Close)
+{
+  wchar_t FileName[MAX_PATH] = { 0 };
+  OPENFILENAMEW ofn = { 0 };
+  ofn.lStructSize = sizeof(ofn);
+  ofn.hwndOwner = GetActiveWindow();
+  ofn.lpstrFile = FileName;
+  ofn.nMaxFile = MAX_PATH;
+  ofn.lpstrFilter = L"Certificate Files (*.pem;*.crt;*.cer;*.pfx;*.p12)\0*.pem;*.crt;*.cer;*.pfx;*.p12\0All Files (*.*)\0*.*\0";
+  ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
+
+  if (GetOpenFileNameW(&ofn))
+  {
+    TlsCertificateFileEdit->SetText(FileName);
   }
   Close = false;
 }
