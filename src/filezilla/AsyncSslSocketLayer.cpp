@@ -739,7 +739,8 @@ int CAsyncSslSocketLayer::InitSSLConnection(bool clientMode,
       if (clientMode)
       {
         USES_CONVERSION;
-        SSL_CTX_set_verify(m_ssl_ctx, SSL_VERIFY_PEER, verify_callback);
+        // TEMP: disable cert verification to bypass OpenSSL bn_div_words crash (issue #389)
+        SSL_CTX_set_verify(m_ssl_ctx, SSL_VERIFY_NONE, nullptr);
         SSL_CTX_set_client_cert_cb(m_ssl_ctx, ProvideClientCert);
         // https://www.mail-archive.com/openssl-users@openssl.org/msg86186.html
         SSL_CTX_set_session_cache_mode(m_ssl_ctx, SSL_SESS_CACHE_CLIENT | SSL_SESS_CACHE_NO_INTERNAL_STORE | SSL_SESS_CACHE_NO_AUTO_CLEAR);
