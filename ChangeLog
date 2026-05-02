@@ -24,6 +24,9 @@
  * Fix stack overflow when calculating SFTP directory size with cyclic symlinks (#497) https://github.com/michaellukashov/Far-NetBox/issues/497
    — add visited-directory tracking to TCalculateSizeParams to detect and skip
    recursive symlink loops instead of recursing until the stack overflows
+ * Fix RSA-SHA2 host key cache lookup failures against legacy ssh-rsa cached keys (#388) https://github.com/michaellukashov/Far-NetBox/issues/388
+   — add ssh-rsa fallback in RetrieveHostKey when rsa-sha2-256/512 exact
+   lookup fails; treat RSA-SHA2 variants as equivalent in HaveHostKey
 
 ### Dependencies
 
