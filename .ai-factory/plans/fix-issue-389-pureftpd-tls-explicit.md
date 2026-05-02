@@ -161,7 +161,7 @@ Modify `FtpControlSocket.cpp` to treat `FZ_SERVERTYPE_LAYER_SSL_EXPLICIT` the sa
 - **Not a NetBox bug**, but blocks QA from verifying TLS fixes on affected machines.
 - **Action:** Updated `.ai-factory/references/INDEX.md` to document the `no-asm` rebuild workaround and NASM version requirements.
 
-#### Task 14: Fix `InitOpenssl()` `std::call_once` anti-pattern [ ]
+[x] Task 14: Fix `InitOpenssl()` `std::call_once` anti-pattern
 - **File:** `src/core/Cryptography.cpp` (lines 634-648)
 - **Why:** `std::call_once` caches failure permanently. OpenSSL's own `RUN_ONCE` mechanism inside `OPENSSL_init_ssl()` already provides thread-safe once-only semantics. NetBox's `std::call_once` wrapper is redundant — it prevents OpenSSL from retrying after transient failures (bad certificate, missing config). Even after clearing the bad `TlsCertificateFile` (Task 13), `InitOpenssl()` still returns `false` if it ever failed before.
 - **Fix:** Remove `std::call_once` and `static std::once_flag`. Call `OPENSSL_init_ssl()` directly. OpenSSL handles its own caching safely.
@@ -194,13 +194,13 @@ Modify `FtpControlSocket.cpp` to treat `FZ_SERVERTYPE_LAYER_SSL_EXPLICIT` the sa
 4. **Implicit SSL (`ftpsImplicit`):** Not affected; uses a different code path (SSL layer before any AUTH).
 5. **UI combo index 3 (`ftpsExplicitTls`):** Currently unreachable via UI; if ever used, behavior unchanged (TLS first, SSL fallback).
 
-- [ ] Pure‑FTPd with explicit encryption connects successfully.
+- [x] Pure‑FTPd with explicit encryption connects successfully.
 - [x] Logs show `AUTH TLS` sent when server type is `SSL_EXPLICIT`.
 - [x] Logs show fallback to `AUTH SSL` when TLS fails (for SSL‑only servers).
 - [x] Existing SSL‑only servers still work (no regression).
 - [x] `ftpsExplicitTls` path verified (no regression for index 3).
 - [x] `SendAuthSsl()` fallback state transition verified.
-- [ ] OpenSSL init succeeds after clearing a bad `TlsCertificateFile` (no `std::call_once` cache).
+- [x] OpenSSL init succeeds after clearing a bad `TlsCertificateFile` (no `std::call_once` cache).
 - [x] Build passes with zero warnings.
 - [x] Commit message follows conventional format.
 ## Changelog

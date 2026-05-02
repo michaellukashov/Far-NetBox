@@ -631,21 +631,18 @@ bool UnscramblePassword(const RawByteString & Scrambled, UnicodeString & Passwor
 
 static UnicodeString OpensslInitializationErrors;
 
-static std::once_flag OpenSSLInitOnce;
-
 static bool InitOpenssl()
 {
-  bool Result = false;
-  std::call_once(OpenSSLInitOnce, [&Result]() {
-    // RAND_poll already calls OPENSSL_init_crypto with OPENSSL_INIT_LOAD_CONFIG and other flags.
-    // OPENSSL_init_ssl does not do much more, so it is not really big overhead.
-    // And we need to call OPENSSL_init_ssl, as it we need to use OPENSSL_INIT_LOAD_SSL_STRINGS to match what SSL_CTX_new does
-    // OPENSSL_init_ssl passes all flags to OPENSSL_init_crypto (even those it does not understand, like the very  OPENSSL_INIT_LOAD_SSL_STRINGS).
-    // OPENSSL_init_ssl caches the initialization results based on the flags
-    ERR_clear_error();
-    Result = OPENSSL_init_ssl(OPENSSL_INIT_LOAD_SSL_STRINGS, nullptr);
-  });
-  return Result;
+  ERR_clear_error();
+  // RAND_poll already calls OPENSSL_init_crypto with OPENSSL_INIT_LOAD_CONFIG and other flags.
+  // OPENSSL_init_ssl does not do much more, so it is not really big overhead.
+  // And we need to call OPENSSL_init_ssl, as it we need to use OPENSSL_INIT_LOAD_SSL_STRINGS to match what SSL_CTX_new does
+  // OPENSSL_init_ssl passes all flags to OPENSSL_init_crypto (even those it does not understand, like the very  OPENSSL_INIT_LOAD_SSL_STRINGS).
+  // OPENSSL_init_ssl caches the initialization results based on the flags (issue #389).
+  // Note: Do NOT wrap in std::call_once — OPENSSL_init_ssl uses its own RUN_ONCE
+  // internally. An outer std::call_once would cache failure permanently, preventing
+  // retry after transient failures (e.g. bad certificate file cleared).
+  return OPENSSL_init_ssl(OPENSSL_INIT_LOAD_SSL_STRINGS, nullptr);
 }
 
 
