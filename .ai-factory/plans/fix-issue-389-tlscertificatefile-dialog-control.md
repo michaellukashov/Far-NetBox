@@ -41,7 +41,7 @@ Add a **TLS client certificate file** edit control with a **browse button** to t
 
 ### Phase I. String Resources
 
-#### Task 1: Add message string IDs
+[x] Task 1: Add message string IDs
 - **Files:**
   - `src/base/MsgIDs.h` — append `NB_LOGIN_TLS_CERTIFICATE_FILE` at the **end** of the enum (before the closing `};`), not in the middle of the FTP group. This avoids shifting 900+ subsequent .lng file lines across all 5 language files.
   - `src/NetBox/NetBoxEng.lng` — append `"TLS client &certificate:"` at the end of the file (after the last quoted string).
@@ -51,7 +51,7 @@ Add a **TLS client certificate file** edit control with a **browse button** to t
 
 ### Phase II. Dialog Controls
 
-#### Task 2: Declare dialog controls in `TSessionDialog` class
+[x] Task 2: Declare dialog controls in `TSessionDialog` class
 - **File:** `src/NetBox/WinSCPDialogs.cpp` (class member declarations, around line 1906 near `SslSessionReuseCheck`)
 - Add:
   ```cpp
@@ -64,7 +64,7 @@ Add a **TLS client certificate file** edit control with a **browse button** to t
   void TlsCertificateFileBrowseClick(TFarButton * Sender, bool & Close);
   ```
 
-#### Task 3: Create controls in dialog constructor
+[x] Task 3: Create controls in dialog constructor
 - **File:** `src/NetBox/WinSCPDialogs.cpp` (control creation, around line 2536 after `SslSessionReuseCheck`)
 - The controls are created inside the `tabFTP` group (set at line 2507). Tab-group visibility is handled by the tab system — **no `SetVisible()` calls needed.**
 - **Layout:** New line after `SslSessionReuseCheck`:
@@ -84,7 +84,7 @@ Add a **TLS client certificate file** edit control with a **browse button** to t
   TlsCertificateFileBrowseBtn->SetOnClick(nb::bind(&TSessionDialog::TlsCertificateFileBrowseClick, this));
   ```
 
-#### Task 4: Implement browse button handler
+[x] Task 4: Implement browse button handler
 - **File:** `src/NetBox/WinSCPDialogs.cpp` (new handler, near `S3CACertificateLoadClick` at line ~4813)
 - **CRITICAL:** NOT the `S3CACertificateLoadClick` pattern — that handler reads **file content** via `TFile::ReadAllText()`. We store a **file path**, so only set the file name string.
 - Use `OPENFILENAMEW` + `GetOpenFileNameW` with filter:
@@ -115,7 +115,7 @@ Add a **TLS client certificate file** edit control with a **browse button** to t
   ```
 ### Phase III. Dialog Logic (Enable / Load / Save)
 
-#### Task 5: Enable control in `UpdateControls()`
+[x] Task 5: Enable control in `UpdateControls()`
 - **File:** `src/NetBox/WinSCPDialogs.cpp` (around line 3454)
 - Controls are in `tabFTP` group — the tab system handles show/hide. Only `SetEnabled()` is needed, following the same pattern as `SslSessionReuseCheck->SetEnabled(aFtpsProtocol)`.
 - Add after `SslSessionReuseCheck->SetEnabled(aFtpsProtocol)` (line 3454):
@@ -126,14 +126,14 @@ Add a **TLS client certificate file** edit control with a **browse button** to t
   ```
 - When encryption is "No encryption" (`aFtpsProtocol = false`), all three controls are grayed out.
 
-#### Task 6: Load control value from `SessionData`
+[x] Task 6: Load control value from `SessionData`
 - **File:** `src/NetBox/WinSCPDialogs.cpp` (around line 3718, after `SslSessionReuseCheck->SetChecked`)
 - Add:
   ```cpp
   TlsCertificateFileEdit->SetText(SessionData->GetTlsCertificateFile());
   ```
 
-#### Task 7: Save control value to `SessionData`
+[x] Task 7: Save control value to `SessionData`
 - **File:** `src/NetBox/WinSCPDialogs.cpp` (around line 4039, after `SessionData->SetSslSessionReuse`)
 - Replace the TODO:
   ```cpp
@@ -142,11 +142,11 @@ Add a **TLS client certificate file** edit control with a **browse button** to t
 
 ### Phase IV. Verification
 
-#### Task 8: Build verification
+[x] Task 8: Build verification
 - Build `RelWithDebugInfo` for x64 using `build-x64.bat`.
 - Ensure zero MSVC W4 warnings.
 
-#### Task 9: Manual test scenario
+[~] Task 9: Manual test scenario
 1. Open NetBox session dialog (F11 → NetBox)
 2. Create or edit an FTP session
 3. Select "TLS/SSL Explicit encryption"
@@ -157,13 +157,13 @@ Add a **TLS client certificate file** edit control with a **browse button** to t
 8. Switch protocol to SFTP — verify the field hides
 9. Switch back to FTPS — verify the field reappears with the saved path
 
-### Phase V. Documentation
+[x] Task 10: Update knowledge references
 
 #### Task 10: Update knowledge references
 - **File:** `.ai-factory/references/INDEX.md`
 - Add entry linking to this plan and a short summary.
 
-#### Task 11: Commit changes
+[x] Task 11: Commit changes
 - Use conventional commit message:
   ```
   feat(dialog): add TLS client certificate file UI control
