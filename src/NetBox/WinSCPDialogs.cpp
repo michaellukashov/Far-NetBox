@@ -1764,6 +1764,8 @@ private:
   void S3CACertificateLoadClick(TFarButton * Sender, bool & Close);
   void S3CACertificateSaveClick(TFarButton * Sender, bool & Close);
   void TlsCertificateFileBrowseClick(TFarButton * Sender, bool & Close);
+  void WebDAVTlsCertificateFileBrowseClick(TFarButton * Sender, bool & Close);
+  void S3TlsCertificateFileBrowseClick(TFarButton * Sender, bool & Close);
   static bool IsSshProtocol(TFSProtocol FSProtocol);
   bool IsWebDAVProtocol(TFSProtocol FSProtocol) const;
   bool IsSshOrWebDAVProtocol(TFSProtocol FSProtocol) const;
@@ -1908,6 +1910,16 @@ private:
   TFarText * TlsCertificateFileLabel{nullptr};
   TFarEdit * TlsCertificateFileEdit{nullptr};
   TFarButton * TlsCertificateFileBrowseBtn{nullptr};
+
+  // WebDAV tab
+  TFarText * WebDAVTlsCertificateFileLabel{nullptr};
+  TFarEdit * WebDAVTlsCertificateFileEdit{nullptr};
+  TFarButton * WebDAVTlsCertificateFileBrowseBtn{nullptr};
+
+  // S3 tab
+  TFarText * S3TlsCertificateFileLabel{nullptr};
+  TFarEdit * S3TlsCertificateFileEdit{nullptr};
+  TFarButton * S3TlsCertificateFileBrowseBtn{nullptr};
   TFarCheckBox * WebDAVCompressionCheck{nullptr};
 
   TFarComboBox * S3UrlStyleCombo{nullptr};
@@ -2625,6 +2637,21 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   S3CACertificateSaveBtn = MakeOwnedObject<TFarButton>(this);
   S3CACertificateSaveBtn->SetCaption(GetMsg(NB_S3_SAVE_CA_CERT));
   S3CACertificateSaveBtn->SetOnClick(nb::bind(&TSessionDialog::S3CACertificateSaveClick, this));
+
+  // TLS client certificate
+  SetNextItemPosition(ipNewLine);
+  S3TlsCertificateFileLabel = MakeOwnedObject<TFarText>(this);
+  S3TlsCertificateFileLabel->SetCaption(GetMsg(NB_LOGIN_TLS_CERTIFICATE_FILE));
+  S3TlsCertificateFileLabel->SetWidth(20);
+
+  SetNextItemPosition(ipRight);
+  S3TlsCertificateFileEdit = MakeOwnedObject<TFarEdit>(this);
+  S3TlsCertificateFileEdit->SetWidth(30);
+
+  SetNextItemPosition(ipRight);
+  S3TlsCertificateFileBrowseBtn = MakeOwnedObject<TFarButton>(this);
+  S3TlsCertificateFileBrowseBtn->SetCaption(L"\u2026");
+  S3TlsCertificateFileBrowseBtn->SetOnClick(nb::bind(&TSessionDialog::S3TlsCertificateFileBrowseClick, this));
   S3CACertificateSaveBtn->SetVisible(false);
 
   // Min/Max TLS version
@@ -3180,6 +3207,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   BUGS();
 
+
   // WebDAV tab
 
   SetNextItemPosition(ipNewLine);
@@ -3191,6 +3219,22 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   WebDAVCompressionCheck = MakeOwnedObject<TFarCheckBox>(this);
   WebDAVCompressionCheck->SetCaption(GetMsg(NB_LOGIN_COMPRESSION));
+
+
+  // TLS client certificate
+  SetNextItemPosition(ipNewLine);
+  WebDAVTlsCertificateFileLabel = MakeOwnedObject<TFarText>(this);
+  WebDAVTlsCertificateFileLabel->SetCaption(GetMsg(NB_LOGIN_TLS_CERTIFICATE_FILE));
+  WebDAVTlsCertificateFileLabel->SetWidth(20);
+
+  SetNextItemPosition(ipRight);
+  WebDAVTlsCertificateFileEdit = MakeOwnedObject<TFarEdit>(this);
+  WebDAVTlsCertificateFileEdit->SetWidth(30);
+
+  SetNextItemPosition(ipRight);
+  WebDAVTlsCertificateFileBrowseBtn = MakeOwnedObject<TFarButton>(this);
+  WebDAVTlsCertificateFileBrowseBtn->SetCaption(L"\u2026");
+  WebDAVTlsCertificateFileBrowseBtn->SetOnClick(nb::bind(&TSessionDialog::WebDAVTlsCertificateFileBrowseClick, this));
 
 #undef TRISTATE
 
@@ -3482,6 +3526,10 @@ void TSessionDialog::UpdateControls()
   S3CACertificateEdit->Enabled = aS3Protocol;
   S3CACertificateLoadBtn->SetEnabled(aS3Protocol);
   S3CACertificateSaveBtn->SetEnabled(aS3Protocol);
+
+  S3TlsCertificateFileLabel->SetEnabled(aS3Protocol);
+  S3TlsCertificateFileEdit->SetEnabled(aS3Protocol);
+  S3TlsCertificateFileBrowseBtn->SetEnabled(aS3Protocol);
   S3MinTlsVersionCombo->SetEnabled(aS3Protocol);
   S3MaxTlsVersionCombo->SetEnabled(aS3Protocol);
 
@@ -3539,6 +3587,10 @@ void TSessionDialog::UpdateControls()
 
   // WebDAV tab
   WebDAVTab->SetEnabled(InternalWebDAVProtocol);
+
+  WebDAVTlsCertificateFileLabel->SetEnabled(InternalWebDAVProtocol);
+  WebDAVTlsCertificateFileEdit->SetEnabled(InternalWebDAVProtocol);
+  WebDAVTlsCertificateFileBrowseBtn->SetEnabled(InternalWebDAVProtocol);
 
   // Scp/Shell tab
   ScpTab->SetEnabled(InternalSshProtocol);
@@ -3774,6 +3826,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
   }
   S3RequesterPaysCheck->Checked = FSessionData->S3RequesterPays;
   S3CACertificateEdit->SetText(FSessionData->S3CACertificate);
+  S3TlsCertificateFileEdit->SetText(FSessionData->GetTlsCertificateFile());
   S3MinTlsVersionCombo->ItemIndex = TlsVersionToIndex(FSessionData->MinTlsVersion);
   S3MaxTlsVersionCombo->ItemIndex = TlsVersionToIndex(FSessionData->MaxTlsVersion);
   /*std::unique_ptr<TStrings> S3SessionToken(std::make_unique<TStringList>());
@@ -3927,6 +3980,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
 
   // WebDAV tab
   WebDAVCompressionCheck->SetChecked(SessionData->GetCompression());
+  WebDAVTlsCertificateFileEdit->SetText(SessionData->GetTlsCertificateFile());
 
 #undef TRISTATE
 
@@ -4059,7 +4113,8 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     SessionData->SetFtpDupFF(FtpDupFFCheck->GetChecked());
     SessionData->SetFtpUndupFF(FtpUndupFFCheck->GetChecked());
     SessionData->SetSslSessionReuse(SslSessionReuseCheck->GetChecked());
-    SessionData->SetTlsCertificateFile(TlsCertificateFileEdit->GetText());
+    if (GetFSProtocol() == fsFTP)
+      SessionData->SetTlsCertificateFile(TlsCertificateFileEdit->GetText());
     std::unique_ptr<TStrings> PostLoginCommands2(std::make_unique<TStringList>());
     for (int32_t Index4 = 0; Index4 < nb::ToInt32(_countof(PostLoginCommandsEdits)); ++Index4)
     {
@@ -4105,6 +4160,8 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     FSessionData->S3UrlStyle = S3UrlStyleCombo->ItemIndex == 0 ? s3usVirtualHost : s3usPath;
     FSessionData->S3RequesterPays = S3RequesterPaysCheck->Checked;
     FSessionData->SetS3CACertificate(S3CACertificateEdit->GetText());
+    if (GetFSProtocol() == fsS3)
+      FSessionData->SetTlsCertificateFile(S3TlsCertificateFileEdit->GetText());
     TTlsVersion MinTls = IndexToTlsVersion(S3MinTlsVersionCombo->ItemIndex);
     TTlsVersion MaxTls = IndexToTlsVersion(S3MaxTlsVersionCombo->ItemIndex);
     if (MaxTls < MinTls)
@@ -4269,6 +4326,8 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     // WebDAV tab
     if (GetFSProtocol() == fsWebDAV)
       SessionData->SetCompression(WebDAVCompressionCheck->GetChecked());
+    if (GetFSProtocol() == fsWebDAV)
+      SessionData->SetTlsCertificateFile(WebDAVTlsCertificateFileEdit->GetText());
 
 #undef TRISTATE
     //SessionData->SetBug(sbIgnore1, static_cast<TAutoSwitch>(2 - BugIgnore1Combo->GetItemIndex()));
@@ -4910,6 +4969,42 @@ void TSessionDialog::TlsCertificateFileBrowseClick(TFarButton * /*Sender*/, bool
   if (GetOpenFileNameW(&ofn))
   {
     TlsCertificateFileEdit->SetText(FileName);
+  }
+  Close = false;
+}
+
+void TSessionDialog::WebDAVTlsCertificateFileBrowseClick(TFarButton * /*Sender*/, bool & Close)
+{
+  wchar_t FileName[MAX_PATH] = { 0 };
+  OPENFILENAMEW ofn = { 0 };
+  ofn.lStructSize = sizeof(ofn);
+  ofn.hwndOwner = GetActiveWindow();
+  ofn.lpstrFile = FileName;
+  ofn.nMaxFile = MAX_PATH;
+  ofn.lpstrFilter = L"Certificate Files (*.pem;*.crt;*.cer;*.pfx;*.p12)\0*.pem;*.crt;*.cer;*.pfx;*.p12\0All Files (*.*)\0*.*\0";
+  ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
+
+  if (GetOpenFileNameW(&ofn))
+  {
+    WebDAVTlsCertificateFileEdit->SetText(FileName);
+  }
+  Close = false;
+}
+
+void TSessionDialog::S3TlsCertificateFileBrowseClick(TFarButton * /*Sender*/, bool & Close)
+{
+  wchar_t FileName[MAX_PATH] = { 0 };
+  OPENFILENAMEW ofn = { 0 };
+  ofn.lStructSize = sizeof(ofn);
+  ofn.hwndOwner = GetActiveWindow();
+  ofn.lpstrFile = FileName;
+  ofn.nMaxFile = MAX_PATH;
+  ofn.lpstrFilter = L"Certificate Files (*.pem;*.crt;*.cer;*.pfx;*.p12)\0*.pem;*.crt;*.cer;*.pfx;*.p12\0All Files (*.*)\0*.*\0";
+  ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
+
+  if (GetOpenFileNameW(&ofn))
+  {
+    S3TlsCertificateFileEdit->SetText(FileName);
   }
   Close = false;
 }
