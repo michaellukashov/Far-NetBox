@@ -5,7 +5,8 @@
 **Created:** 2026-04-23
 **Type:** Feature
 **Priority:** Critical
-**Refined:** 2026-04-23 (via /aif-improve)
+ **Refined:** 2026-04-23 (via /aif-improve)
+ **Status:** SUPERCEDED — OpenSSH certificate authentication (commit 2e93b39a4) satisfies #509
 
 ## Settings
 
