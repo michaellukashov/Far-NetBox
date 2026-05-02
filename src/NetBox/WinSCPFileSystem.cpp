@@ -3365,6 +3365,15 @@ bool TWinSCPFileSystem::Connect(TSessionData * Data)
           << " Keepalive thread skipped, interval=0 or already running";
     }
   }
+
+  catch(EAbort &)
+  {
+    // User cancelled connection — silently abort without QueryReopen prompt
+    Result = false;
+    SAFE_DESTROY(FTerminal);
+    SAFE_DESTROY(FQueue);
+    SAFE_DESTROY(FQueueStatus);
+  }
   catch(Exception & E)
   {
     // HandleException(&E);

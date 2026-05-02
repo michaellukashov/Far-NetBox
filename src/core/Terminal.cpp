@@ -1584,6 +1584,11 @@ void TTerminal::Open()
       DoInformation("", 0);
     } end_try__finally
   }
+  catch(EAbort &)
+  {
+    LogEvent("Connection cancelled by user (Esc)");
+    // User-initiated cancel — propagate silently without FatalError
+  }
   catch(EFatal &)
   {
     throw;
@@ -1697,6 +1702,13 @@ void TTerminal::InternalDoTryOpen()
   else
   {
     DebugAssert(FTunnelLocalPortNumber == 0);
+  }
+
+
+  if (CheckForEsc())
+  {
+    LogEvent("Connection cancelled by user (Esc)");
+    throw EAbort("");
   }
 
   if (FFileSystem == nullptr)
@@ -1982,6 +1994,12 @@ void TTerminal::Closed()
 
 void TTerminal::ProcessGUI()
 {
+
+  if (FStatus == ssOpening && CheckForEsc())
+  {
+    throw EAbort("");
+  }
+
   // Do not process GUI here, as we are called directly from a GUI loop and may
   // recurse for good.
   // Alternatively we may check for (FOperationProgress == nullptr)
@@ -2349,6 +2367,13 @@ void TTerminal::ShowExtendedException(Exception * E)
 void TTerminal::DoInformation(
   const UnicodeString & AStr, int32_t Phase, const UnicodeString & Additional)
 {
+
+  // Check for Esc during connection phase (status display)
+  if (FStatus == ssOpening && CheckForEsc())
+  {
+    throw EAbort("");
+  }
+
   if (GetOnInformation())
   {
     TCallbackGuard Guard(this);
