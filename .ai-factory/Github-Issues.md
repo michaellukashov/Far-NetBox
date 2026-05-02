@@ -110,6 +110,8 @@
 4. [#497](https://github.com/michaellukashov/Far-NetBox/issues/497) — F3 file info stack overflow
 5. [#393](https://github.com/michaellukashov/Far-NetBox/issues/393) — SSH chmod crash (newly surfaced)
 6. [#512](https://github.com/michaellukashov/Far-NetBox/issues/512) — IdleThread startup crash
+NetBox IdleThread starts too early and can crash (#512)
+
 
 ### Phase 2: Protocol Functionality — S3 + FTP
 

@@ -2678,6 +2678,23 @@ UnicodeString TSecureShell::RetrieveHostKey(const UnicodeString & Host, int32_t 
     PackStr(AnsiStoredKeys);
     Result = UnicodeString(AnsiStoredKeys);
   }
+  else if ((KeyType == L"rsa-sha2-256") || (KeyType == L"rsa-sha2-512"))
+  {
+    // Fallback: RSA-SHA2 variants share the same underlying key as ssh-rsa.
+    // The key may have been cached under the legacy algorithm name.
+    // (PuTTY cache_id for all three is "ssh-rsa" — see openssh-certs.c)
+    if (GetConfiguration()->ActualLogProtocol >= 1)
+    {
+      LogEvent(FORMAT(L"Host key not found as %s, trying fallback to ssh-rsa", KeyType));
+    }
+    AnsiStoredKeys.SetLength(10240);
+    if (retrieve_host_key(AnsiString(Host).c_str(), Port, "ssh-rsa",
+          ToCharPtr(AnsiStoredKeys), AnsiStoredKeys.Length()) == 0)
+    {
+      PackStr(AnsiStoredKeys);
+      Result = UnicodeString(AnsiStoredKeys);
+    }
+  }
   return Result;
 }
 
@@ -2893,6 +2910,10 @@ void TSecureShell::VerifyHostKey(
     if (!AcceptNew)
     {
       ConfigHostKey = FSessionData->HostKey;
+    }
+    if (GetConfiguration()->ActualLogProtocol >= 1)
+    {
+      LogEvent(FORMAT(L"Looking up cached host key: type=%s, host=%s, port=%d", KeyType, Host, Port));
     }
 
     const UnicodeString StoredKeys = RetrieveHostKey(Host, Port, KeyType);
@@ -3205,7 +3226,17 @@ bool TSecureShell::HaveHostKey(const UnicodeString & AHost, int32_t Port, const 
     {
       const UnicodeString ExpectedKey = CutToChar(Buf, HostKeyDelimiter, false);
       const UnicodeString ExpectedKeyType = KeyTypeFromFingerprint(ExpectedKey);
-      Result = SameText(ExpectedKeyType, KeyType);
+      if (GetConfiguration()->ActualLogProtocol >= 1)
+      {
+        LogEvent(FORMAT("Comparing session-configured key type=%s with expected=%s", ExpectedKeyType, KeyType));
+      }
+      bool KeysMatch = SameText(ExpectedKeyType, KeyType);
+      if (!KeysMatch && (ExpectedKeyType == L"ssh-rsa"))
+      {
+        // RSA-SHA2 variants share the same underlying key as ssh-rsa
+        KeysMatch = (KeyType == L"rsa-sha2-256") || (KeyType == L"rsa-sha2-512");
+      }
+      Result = KeysMatch;
     }
   }
 

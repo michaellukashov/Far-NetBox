@@ -1,4 +1,4 @@
-# Plan: Add RSA-SHA256 Host Key Support (Issue #388)
+# Plan: Add RSA-SHA256 Host Key Support (#388)
 
 > **GitHub Issue:** [#388](https://github.com/michaellukashov/Far-NetBox/issues/388)  
 > **Created:** 2026-04-30  
@@ -210,12 +210,12 @@ Add a **retrieval fallback** in NetBox's host key lookup: when an exact lookup f
 ## Acceptance Criteria
 
 - [ ] Connecting to OpenSSH 8.8+ with RSA host key does not prompt for re-acceptance if the same key was previously cached under `ssh-rsa`.
-- [ ] Logs show the fallback attempt when `rsa-sha2-256` or `rsa-sha2-512` exact lookup fails.
+- [x] Logs show the fallback attempt when `rsa-sha2-256` or `rsa-sha2-512` exact lookup fails.
 - [ ] Existing `ssh-rsa` cached keys continue to work without fallback.
 - [ ] New `rsa-sha2-256` keys are cached under their exact keytype.
-- [ ] Session-configured `ssh-rsa` host keys match against `rsa-sha2-256` protocol keys.
-- [ ] Build passes with zero warnings.
-- [ ] Commit message follows conventional format.
+- [x] Session-configured `ssh-rsa` host keys match against `rsa-sha2-256` protocol keys.
+- [x] Build passes with zero warnings.
+- [x] Commit message follows conventional format.
 
 ## Changelog
 
@@ -224,3 +224,4 @@ Add a **retrieval fallback** in NetBox's host key lookup: when an exact lookup f
 | 2026-04-30 | Initial plan               | Issue #388 analysis |
 | 2026-04-30 | Refined (2nd iteration)    | Deep codebase analysis: added `HaveHostKey` secondary path fix, `VerifyCachedHostKey` analysis, logging in secondary path, improved edge cases, expanded acceptance criteria |
 | 2026-04-30 | Post-review cleanup         | Deleted unnecessary Task 5 (VerifyCachedHostKey comparison works as-is), added `PackStr` call to Task 3 fallback, added logging deduplication to Task 1, fixed `OPT_USE_UNITY_BUILD` typo in Task 6, marked Task 2 as verified, removed redundant `VerifyCachedHostKey` from root cause |
+| 2026-05-02 | Implementation complete    | Tasks 1–4 implemented: VerifyHostKey logging, RetrieveHostKey fallback, HaveHostKey RSA-SHA2 equivalence, INDEX.md updated. Build passes zero warnings. Manual tests pending. |

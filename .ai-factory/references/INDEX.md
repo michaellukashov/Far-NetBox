@@ -37,6 +37,7 @@ qt|| [cmake-refactoring-plan-exploration](cmake-refactoring-plan-exploration.md)
 | [far-dialog-api-text-retrieval](far-dialog-api-text-retrieval.md) | Far Manager dialog API for retrieving text from edit controls | DM_GETTEXT, DM_GETDLGITEM, CreateDirectoryDialog | 2026-04-27 |
 | [issue-511-speed-limit-esc-hang-exploration](issue-511-speed-limit-esc-hang-exploration.md) | Speed limit ineffective for SSH/SFTP and Esc key hang during transfer | Queue.cpp, FileOperationProgress.cpp, WinSCPFileSystem.cpp, FarPlugin.cpp | 2026-04-29 |
 | [issue-511-cancel-yes-hang-deep-dive](issue-511-cancel-yes-hang-deep-dive.md) | Post-dialog hang after "Yes" in cancel dialog, reentrancy guard failure, CheckForEsc input buffer, exception unwinding | WinSCPFileSystem.cpp, FileOperationProgress.cpp, FarPlugin.cpp | 2026-04-29 |
+| [fix-issue-388-rsa-sha256-support](../plans/fix-issue-388-rsa-sha256-support.md) | **FIXED** — RSA-SHA2 host key cache fallback: when `rsa-sha2-256`/`rsa-sha2-512` lookup fails, retry with `ssh-rsa`. Also fixes `HaveHostKey` session-configured key comparison for RSA-SHA2 equivalence. (Issue [#388](https://github.com/michaellukashov/Far-NetBox/issues/388)) | SecureShell.cpp | 2026-05-02 |
 ## Internal Documentation (development)
 
 | Document | Purpose | Path |
