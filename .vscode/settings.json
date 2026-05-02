@@ -11,15 +11,16 @@
         "MD056": false,
         // Enable MD013: Line length with 120 character limit
         "MD013": {
-            "line_length": 120,
-            "heading_line_length": 120,
-            "code_block_line_length": 120,
+            "line_length": 140,
+            "heading_line_length": 140,
+            "code_block_line_length": 140,
             "code_blocks": true,
-            "tables": true,
+            "tables": false,
             "headings": true,
             "strict": false
         },
         "MD014": false,
+        "MD031": false,
     },
 
     // Other VS Code settings for markdown
