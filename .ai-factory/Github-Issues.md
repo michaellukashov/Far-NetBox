@@ -75,7 +75,7 @@
 | 27 | [#504](https://github.com/michaellukashov/Far-NetBox/pull/504) | PR | Fix for [#390]: DateTimeToTimeStamp timestamp clamping (open). | |
 | 28 | [#395](https://github.com/michaellukashov/Far-NetBox/issues/395) | Bug | Some misaligned text in localization (for example Russian). | UI layout |
 | 29 | [#394](https://github.com/michaellukashov/Far-NetBox/issues/394) | Bug | Getting `"; echo "NetBox: this is end-of-file:$?"` in interactive bash shell. | SSH command artifact |
-| 30 | [#387](https://github.com/michaellukashov/Far-NetBox/issues/387) | Bug | Bug in display dialogs. | UI rendering |
+ | 30 | ~~[#387](https://github.com/michaellukashov/Far-NetBox/issues/387)~~ **FIXED** | Bug | Bug in display dialogs. | UI rendering |
 | — | **Discovered** | `FTlsCertificateFile` has no UI control to clear stale `.ppk` paths (WinSCP import). Causes OpenSSL init failure. Workaround: edit session XML. | Found during #389 fix; `WinSCPDialogs.cpp:4040` TODO |
 ---
 
@@ -96,7 +96,7 @@
  **Immediate** | 6 | [#513], [#506], ~~[#508]~~, ~~[#497]~~, [#393], ~~[#501]~~ — crashes + data corruption |
  **Short-term** | 7 | ~~[#515]~~, ~~[#514]~~, ~~[#510]~~, [#512], ~~[#511]~~, ~~[#507]~~, ~~[#486]~~, ~~[#485]~~ — protocol/UX broken |
  **Medium-term** | 8 | ~~[#509]~~, ~~[#505]~~, [#481], [#472], ~~[#396]~~, [#392], ~~[#391]~~, ~~[#390]~~, [#388] — features + integration (~~#389~~ fixed) |
- **Backlog** | 6 | [#502], [#500], ~~[#504]~~, [#395], [#394], [#387] — PRs + minor UI |
+ **Backlog** | 6 | [#502], [#500], ~~[#504]~~, [#395], [#394], ~~[#387]~~ — PRs + minor UI |
 
 ---
 
@@ -127,7 +127,7 @@
 3. ~~[#505](https://github.com/michaellukashov/Far-NetBox/issues/505)~~ **FIXED** — FTP URL file fallback
 4. [#472](https://github.com/michaellukashov/Far-NetBox/issues/472) — False import prompts
 5. [#395](https://github.com/michaellukashov/Far-NetBox/issues/395) — Localization text alignment
-6. [#387](https://github.com/michaellukashov/Far-NetBox/issues/387) — Display dialog bug
+6. ~~[#387](https://github.com/michaellukashov/Far-NetBox/issues/387)~~ **FIXED** — Display dialog bug
 
 ### Phase 4: Features & Integration
 
@@ -167,7 +167,7 @@ Based on the current open issue landscape, here are the concrete recommendations
 
 4. **Prioritize the newly surfaced @alabuzhev batch** ([#387]-[#396]). These 10 issues were reported by a contributor in Feb 2024 and cover TLS, certificates, dialogs, DST, and FTP ports. Many appear to be quick wins:
    - ~~[#396]~~ (port preservation) **FIXED** — index-comparison guards in `TSessionDialog::Change()` prevent spurious `TransferProtocolComboChange()` from resetting custom port during dialog init; plus `GetIsSshProtocol()` and expanded S3 port checks.
-   - [#395] (misaligned text) and [#387] (display dialogs) are UI-only.
+   - [#395] (misaligned text) and ~~[#387]~~ (display dialogs) **FIXED** are UI-only.
    - ~~[#389] (Pure-FTPd TLS)~~ **FIXED** (`d3c3aa8`); and [#390] (WebDAV SSL) may be related to certificate validation logic.
 
 5. **S3 needs dedicated attention** ([#514], [#510]). Two separate S3 issues suggest the S3 backend may have regressed after dependency updates. Consider adding debug logging to the S3 path-normalization and bucket-listing code.
@@ -194,3 +194,4 @@ Based on the current open issue landscape, here are the concrete recommendations
  2026-05-02 | Fixed [#497] — added cycle detection to `TCalculateSizeParams` preventing infinite recursion on SFTP directory size calculation when cyclic symlinks are present. Eliminates `STATUS_STACK_OVERFLOW` on F3 for directories with ~98K+ files. Build verified. |
  2026-05-02 | Fixed [#508] — duplicate remote files with `Standalone=true` in panel `UserData` and clear `FFileList` after Edit/View operations. Prevents dangling `TRemoteFile*` pointers causing crash on second file open without Ctrl+R refresh. Build verified. |
  2026-05-02 | Fixed [#396] / FarGroup#42 — added index-comparison guards (`NewProtocolIndex != FTransferProtocolIndex`) in `TSessionDialog::Change()` to suppress spurious `TransferProtocolComboChange()` during Far dialog initialization. Also fixed SSH protocol detection (`GetIsSshProtocol`) and S3 port adjustment conditions. Build verified. |
+ 2026-05-02 | Fixed [#387] / FarGroup#25 — corrected off-by-one in `TFarDialogItem::SetWidth()` and `SetHeight()` bounds calculation. Removed `-1`/`+1` coordinate adjustments and compensating `+1` in `GetWidth()`/`GetHeight()`. Fixes text truncation in dialog labels (e.g., "Putty path" missing last character). Build verified. |
