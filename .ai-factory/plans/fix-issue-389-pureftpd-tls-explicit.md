@@ -118,7 +118,7 @@ Modify `FtpControlSocket.cpp` to treat `FZ_SERVERTYPE_LAYER_SSL_EXPLICIT` the sa
 
 ### Phase III-b. Cleanup
 
-#### Task 10: Revert TEMP debugging code
+#### Task 10: Revert TEMP debugging code [x]
 - **Critical:** All TEMP code committed during debugging must be reverted before the fix reaches production.
 - Files to clean:
   - `src/core/Cryptography.cpp:634-682` — Remove `ForceInitOpenssl()`, ERR tracing in `InitOpenssl()`, `RequireTls()` fallback.
@@ -128,13 +128,13 @@ Modify `FtpControlSocket.cpp` to treat `FZ_SERVERTYPE_LAYER_SSL_EXPLICIT` the sa
 - **Keep permanently:** `FtpControlSocket.cpp:626-637` (unconditional `AUTH TLS`) and `FtpFileSystem.cpp:517` (`FTP encryption mode` diagnostic log).
 - Reference: [.ai-factory/references/fix-issue-389-pureftpd-tls-explicit.md §9](../references/fix-issue-389-pureftpd-tls-explicit.md#9-temp-code-to-revert-after-testing)
 
-### Phase IV. Documentation
-#### Task 8: Update knowledge references
+#### Task 8: Update knowledge references [ ]
 - File: `.ai-factory/references/INDEX.md`
 - Add a link to this plan and a short summary of the fix.
 - If a Pure‑FTPd‑specific note is needed, add a troubleshooting entry.
 - **Note:** The combo label `"TLS/SSL Explicit encryption"` (`NB_LOGIN_FTP_REQUIRE_EXPLICIT_FTP`, line 413 in `NetBoxEng.lng`) historically sent `AUTH SSL` unconditionally despite the TLS-first label. After this fix the behavior finally matches the label.
-#### Task 9: Commit changes
+
+#### Task 9: Commit changes [ ]
 - **Prerequisite:** Complete Task 10 (revert TEMP code) first.
 - Use conventional commit message:
   ```
@@ -151,21 +151,20 @@ Modify `FtpControlSocket.cpp` to treat `FZ_SERVERTYPE_LAYER_SSL_EXPLICIT` the sa
   
   **Git history:** The debug commits can be squashed before merging to `main` if desired (`git rebase -i`).
 
-#### Task 11: Update `Github-Issues.md` tracker
+#### Task 11: Update `Github-Issues.md` tracker [x]
 - File: `.ai-factory/Github-Issues.md`
 - Mark issue #389 as resolved and link to the fix commit.
 - Update priority tables (lines 66, 98, 140, 153, 170) to reflect closure.
 
-#### Task 12: OpenSSL assembly bug follow-up documentation
+#### Task 12: OpenSSL assembly bug follow-up documentation [ ]
 - **Discovery:** `bn_div_words` division-by-zero in `libs/openssl-3/crypto/bn/bn_asm.c:233` triggered on all Pure‑FTPd test servers during RSA/EC operations.
 - **Not a NetBox bug**, but blocks QA from verifying TLS fixes on affected machines.
 - **Action:** Add a note to `.ai-factory/references/INDEX.md` or a dedicated troubleshooting doc documenting the `no-asm` rebuild workaround and NASM version requirements.
 
-#### Task 13: `FTlsCertificateFile` UI gap follow-up
+#### Task 13: `FTlsCertificateFile` UI gap follow-up [ ]
 - **Discovery:** `WinSCPDialogs.cpp:4040` has a TODO for `TlsCertificateFileEdit`; WinSCP-imported sessions may carry stale `.ppk` paths in `FTlsCertificateFile` with no dialog control to clear them.
 - **Impact:** This caused the initial OpenSSL init failure during debugging.
 - **Action:** Open a separate issue or add to backlog. Workaround documented: edit session XML directly to empty `<TlsCertificateFile></TlsCertificateFile>`.
-
 ## Architecture Notes
 
 - **Layer:** FileZilla‑derived FTP core (`src/filezilla/`), not WinSCP facade.

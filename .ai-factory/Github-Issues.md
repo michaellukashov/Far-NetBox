@@ -63,7 +63,7 @@
 | 20 | [#392](https://github.com/michaellukashov/Far-NetBox/issues/392) | Bug | Unable to connect with private key certificates. | Certificate auth broken | By @alabuzhev; 2 comments |
 | 21 | [#391](https://github.com/michaellukashov/Far-NetBox/issues/391) | Bug | Daylight Saving Time bug. | Time handling issue | By @alabuzhev |
 | 22 | [#390](https://github.com/michaellukashov/Far-NetBox/issues/390) | Bug | NetBox/WebDav sometimes rejects valid SSL certificates. | TLS certificate validation | By @alabuzhev; PR [#504] open |
-| 23 | [#389](https://github.com/michaellukashov/Far-NetBox/issues/389) | Integration | Unable to connect to Pure-FTPd with TLS enabled. | Pure-FTPd TLS failure | By @alabuzhev |
+| 23 | [#389](https://github.com/michaellukashov/Far-NetBox/issues/389) | Integration | ~~Unable to connect to Pure-FTPd with TLS enabled.~~ **FIXED** — AUTH TLS first for explicit SSL. | Pure-FTPd TLS failure | By @alabuzhev; fixed in `d3c3aa8` |
 | 24 | [#388](https://github.com/michaellukashov/Far-NetBox/issues/388) | Feature | RSA-SHA256 support. | Missing crypto algorithm | By @alabuzhev; 2 comments |
 
 ### LOW — Severity 1-4 — Backlog / Nice-to-have
@@ -95,7 +95,7 @@
 |---------|-------|------------|
 | **Immediate** | 6 | [#513], [#506], [#508], [#497], [#393], [#501] — crashes + data corruption |
 | **Short-term** | 7 | [#515], [#514], [#510], [#512], [#511], [#507], [#486], [#485] — protocol/UX broken |
-| **Medium-term** | 9 | [#509], [#505], [#481], [#472], [#396], [#392], [#391], [#390], [#389], [#388] — features + integration |
+| **Medium-term** | 8 | [#509], [#505], [#481], [#472], [#396], [#392], [#391], [#390], [#388] — features + integration (~~#389~~ fixed) |
 | **Backlog** | 6 | [#502], [#500], [#504], [#395], [#394], [#387] — PRs + minor UI |
 
 ---
@@ -137,7 +137,7 @@
 5. [#392](https://github.com/michaellukashov/Far-NetBox/issues/392) — Private key certificate connection
 6. [#391](https://github.com/michaellukashov/Far-NetBox/issues/391) — Daylight Saving Time bug
 7. [#390](https://github.com/michaellukashov/Far-NetBox/issues/390) — WebDav SSL certificate rejection
-8. [#389](https://github.com/michaellukashov/Far-NetBox/issues/389) — Pure-FTPd TLS connection failure
+8. ~~[#389](https://github.com/michaellukashov/Far-NetBox/issues/389)~~ — ~~Pure-FTPd TLS connection failure~~ **FIXED** (`d3c3aa8`)
 9. [#388](https://github.com/michaellukashov/Far-NetBox/issues/388) — RSA-SHA256 support
 
 ---
@@ -150,7 +150,7 @@
 | S3 protocol broken for multiple users ([#514], [#510]) | High | Isolate S3-specific issues from TLS/HTTP layer; test against AWS and MinIO |
 | FTP crash reports overlap ([#513], [#506]) | Medium | Check if all share same root cause in FTP directory listing code |
 | Open PRs accumulating without review ([#502], [#500], [#504]) | Medium | Review and merge or close stale PRs |
-| Certificate/TLS issues spread across protocols ([#390], [#389], [#392], [#388]) | Medium | Review OpenSSL and certificate validation pipeline |
+| Certificate/TLS issues spread across protocols ([#390], [#392], [#388]; ~~#389~~ fixed) | Medium | Review OpenSSL and certificate validation pipeline |
 
 ---
 
@@ -167,7 +167,7 @@ Based on the current open issue landscape, here are the concrete recommendations
 4. **Prioritize the newly surfaced @alabuzhev batch** ([#387]-[#396]). These 10 issues were reported by a contributor in Feb 2024 and cover TLS, certificates, dialogs, DST, and FTP ports. Many appear to be quick wins:
    - [#396] (port preservation) and [#391] (DST) are likely one-line fixes.
    - [#395] (misaligned text) and [#387] (display dialogs) are UI-only.
-   - [#389] (Pure-FTPd TLS) and [#390] (WebDAV SSL) may be related to certificate validation logic.
+   - ~~[#389] (Pure-FTPd TLS)~~ **FIXED** (`d3c3aa8`); and [#390] (WebDAV SSL) may be related to certificate validation logic.
 
 5. **S3 needs dedicated attention** ([#514], [#510]). Two separate S3 issues suggest the S3 backend may have regressed after dependency updates. Consider adding debug logging to the S3 path-normalization and bucket-listing code.
 
