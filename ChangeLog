@@ -41,6 +41,9 @@
  * Fix F7 directory creation ignoring autocomplete text and creating partial name (#515) https://github.com/michaellukashov/Far-NetBox/issues/515
    — add TFarEdit::GetTextFromDialog() to retrieve fresh text directly from Far
    dialog control, bypassing stale cached Data after autocomplete
+ * Fix SFTP cannot create remote folder / "Cannot get real path" error (#485) https://github.com/michaellukashov/Far-NetBox/issues/485
+   — use LocalCanonify instead of GetRealPath for TMkdirSessionAction log,
+   remove GetActive() guards from Canonify fallback, add recursive parent directory creation
 
 ### Dependencies
 
