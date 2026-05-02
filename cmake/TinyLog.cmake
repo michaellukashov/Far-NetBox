@@ -21,7 +21,6 @@ function(tinylog_get_sources TINYLOG_SOURCES)
         src/Utils.cpp
         src/LogStream.cpp
         src/Buffer.cpp
-        src/LockFreeQueue.cpp
         PARENT_SCOPE
     )
 endfunction()
@@ -41,7 +40,6 @@ function(tinylog_get_headers TINYLOG_HEADERS)
         tinylog/LogStream.h
         tinylog/Config.h
         tinylog/Buffer.h
-        tinylog/LockFreeQueue.h
         PARENT_SCOPE
     )
 endfunction()

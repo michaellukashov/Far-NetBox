@@ -5,7 +5,6 @@
 
 #include <tinylog/LogStream.h>
 #include <tinylog/Config.h>
-//#include <tinylog/LockFreeQueue.h>
 // #include <Sysutils.hpp> // for DEBUG_PRINTF
 
 
@@ -18,7 +17,6 @@ thread_local size_t LogStream::tls_buffer_used_{0};
 LogStream::LogStream(FILE * file, pthread_mutex_t & mutex, pthread_cond_t & cond, std::atomic<bool> & drain_buffer) :
   front_buff_(std::make_unique<Buffer>(LOG_BUFFER_SIZE)),
   back_buff_(std::make_unique<Buffer>(LOG_BUFFER_SIZE)),
-//  queue_(std::make_unique<LockFreeQueue>()),
   file_(file),
   mutex_(mutex),
   cond_(cond),

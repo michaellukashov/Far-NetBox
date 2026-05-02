@@ -8,7 +8,6 @@
 #include "platform_win32.h"
 #include "Buffer.h"
 #include "Utils.h"
-#include "LockFreeQueue.h"
 
 namespace tinylog {
 
@@ -47,7 +46,6 @@ private:
 
   std::unique_ptr<Buffer> front_buff_;
   std::unique_ptr<Buffer> back_buff_;
-//  std::unique_ptr<LockFreeQueue> queue_;
   FILE * file_{nullptr}; // TODO: use gsl::not_null
   const char * file_name_{nullptr}; // TODO: use gsl::not_null
   int32_t line_{0};

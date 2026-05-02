@@ -83,7 +83,6 @@ if(OPT_CREATE_TESTS)
     ${CMAKE_SOURCE_DIR}/libs/tinylog/src/LogStream.cpp
     ${CMAKE_SOURCE_DIR}/libs/tinylog/src/Buffer.cpp
     ${CMAKE_SOURCE_DIR}/libs/tinylog/src/Utils.cpp
-    ${CMAKE_SOURCE_DIR}/libs/tinylog/src/LockFreeQueue.cpp
   )
   netbox_configure_target(test_tinylog)
   target_compile_definitions(test_tinylog PRIVATE -DTINYLOG_EXPOR)
