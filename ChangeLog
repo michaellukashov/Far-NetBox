@@ -8,6 +8,8 @@
  * Fix Alt-F12 folder history not restoring session when no panel was open
  * Fix log file error when opening same session on two panels concurrently
  * Fix crash after SSH chmod 444 on remote directory (#393) https://github.com/michaellukashov/Far-NetBox/issues/393
+   — add null-pointer guards in ChangeFileProperties(), ReadDirectory(),
+   and GetFindDataEx() to prevent dereference after ReadFile() fails
  * Fix SCP/SFTP/S3 parallel transfer speed limit not applied (#511) https://github.com/michaellukashov/Far-NetBox/issues/511
  * Fix Esc key hang and panel close during SCP transfer cancellation (#511) — add reentrancy guards, fix cancel-dialog state, preserve console input
  * Fix FTP silent crash on directory listing parse failure (#506) https://github.com/michaellukashov/Far-NetBox/issues/506
@@ -22,6 +24,7 @@
  * Fix stack overflow when calculating SFTP directory size with cyclic symlinks (#497) https://github.com/michaellukashov/Far-NetBox/issues/497
    — add visited-directory tracking to TCalculateSizeParams to detect and skip
    recursive symlink loops instead of recursing until the stack overflows
+
 ### Dependencies
 
  * Upgrade WinSCP sources: WinSCP 6.5.6
