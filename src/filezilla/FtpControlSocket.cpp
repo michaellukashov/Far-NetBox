@@ -625,12 +625,14 @@ void CFtpControlSocket::LogOnToServer(BOOL bSkipReply /*=FALSE*/)
 
   if (m_Operation.nOpState == CONNECT_SSL_INIT)
   {
+    OutputDebugStringW(L"NETBOX: CONNECT_SSL_INIT - sending AUTH TLS\n");
     LogMessage(FZ_LOG_INFO, L"Trying AUTH TLS for explicit encryption (serverType=0x%04X)",
       m_CurrentServer.nServerType);
     // TLS-first for all explicit encryption modes (issue #389).
     // SSL-only servers are handled by the fallback in CONNECT_TLS_NEGOTIATE.
     if (!Send("AUTH TLS"))
       return;
+    OutputDebugStringW(L"NETBOX: AUTH TLS sent, waiting for response\n");
     m_Operation.nOpState = CONNECT_TLS_NEGOTIATE;
     return;
   }
@@ -638,25 +640,32 @@ void CFtpControlSocket::LogOnToServer(BOOL bSkipReply /*=FALSE*/)
            (m_Operation.nOpState == CONNECT_TLS_NEGOTIATE))
   {
     int res = GetReplyCode();
+    wchar_t dbg[128];
+    swprintf_s(dbg, L"NETBOX: AUTH response code=%d, opState=%d\n", res, m_Operation.nOpState);
+    OutputDebugStringW(dbg);
     if (res!=2 && res!=3)
     {
       if (m_Operation.nOpState == CONNECT_TLS_NEGOTIATE)
       {
+        OutputDebugStringW(L"NETBOX: TLS rejected, falling back to AUTH SSL\n");
         LogMessage(FZ_LOG_INFO, L"AUTH TLS rejected (code=%d), falling back to AUTH SSL", res);
         // Try to fall back to AUTH SSL
         if (!SendAuthSsl())
         {
           return;
         }
+        OutputDebugStringW(L"NETBOX: AUTH SSL sent as fallback\n");
       }
       else
       {
+        OutputDebugStringW(L"NETBOX: SSL rejected, closing\n");
         DoClose();
       }
       return;
     }
     else
     {
+      OutputDebugStringW(L"NETBOX: AUTH accepted, starting TLS handshake\n");
       if (!m_pSslLayer)
       {
         ShowStatus(L"Internal error: m_pSslLayer not initialized", FZ_LOG_ERROR);
