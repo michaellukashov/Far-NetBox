@@ -60,7 +60,7 @@
 | 17 | [#481](https://github.com/michaellukashov/Far-NetBox/issues/481) | Bug | FTP codepage ISO-8859-5 copy fails (filename encoding). | Broken non-UTF8 FTP | 3-5h |
 | 18 | [#472](https://github.com/michaellukashov/Far-NetBox/issues/472) | Bug | False positive session import prompts on every start. | Annoyance | 2-3h |
  | 19 | ~~[#396](https://github.com/michaellukashov/Far-NetBox/issues/396)~~ **FIXED** | Bug | FTP connection doesn't preserve non-default port number. | Port configuration lost | By @alabuzhev |
- 20 | ~~[#392](https://github.com/michaellukashov/Far-NetBox/issues/392)~~ **FIXED** | Bug | Unable to connect with private key certificates. | Certificate auth broken | By @alabuzhev; 2 comments |
+ 20 | ~~[#392](https://github.com/michaellukashov/Far-NetBox/issues/392)~~ **FIXED** | Bug | Unable to connect with private key certificates. | Certificate auth broken | By @alabuzhev; fixed in plan `fix-ssh-private-key-cert-392` (`e41274cd7`) |
  21 | ~~[#391](https://github.com/michaellukashov/Far-NetBox/issues/391)~~ **FIXED** | Bug | Daylight Saving Time bug — `ConvertTimestampToUnix()` subtracted DST offset for `dstmWin` on Win7+ | Time handling issue | By @alabuzhev; fixed in plan `issue-391-daylight-saving-time-dst-bug` |
  22 | ~~[#390](https://github.com/michaellukashov/Far-NetBox/issues/390)~~ **FIXED** | Bug | NetBox/WebDav sometimes rejects valid SSL certificates. | TLS certificate validation | By @alabuzhev; ~~PR [#504] open~~ merged via PR #504 |
 | 23 | ~~[#389](https://github.com/michaellukashov/Far-NetBox/issues/389)~~ **FIXED** | Integration | Unable to connect to Pure-FTPd with TLS enabled.  — AUTH TLS first for explicit SSL. | Pure-FTPd TLS failure | By @alabuzhev; fixed in `d3c3aa8` |
