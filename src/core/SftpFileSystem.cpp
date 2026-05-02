@@ -2728,8 +2728,8 @@ SSH_FX_TYPE TSFTPFileSystem::GotStatusPacket(
         HelpKeyword = HELP_SFTP_STATUS_PERMISSION_DENIED;
         break;
     }
-    UnicodeString Error = FMTLOAD(SFTP_ERROR_FORMAT3, MessageStr,
-      Code, LanguageTag, ServerMessage);
+    UnicodeString Error = FMTLOAD(SFTP_ERROR_FORMAT3, nb::EscapeFmtChars(MessageStr),
+      Code, LanguageTag, nb::EscapeFmtChars(ServerMessage));
     if (Code == SSH_FX_FAILURE)
     {
       // FTerminal->Configuration->Usage->Inc("SftpFailureErrors");

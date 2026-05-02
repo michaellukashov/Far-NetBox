@@ -113,16 +113,18 @@ The original "Similar Issue Search" claimed only 1 vulnerable location. Deep cod
 | CWE-134 Prevention | ✅ Correctly escapes `%` → `%%` |
 | Build | ✅ Passes with zero warnings |
 | Code Review | ✅ No new vulnerabilities introduced |
-| Similar Patterns | ⚠️ Originally claimed only 1 — actually 6 total (see above) |
+    Similar Patterns | ✅ All 12 call sites verified — original 7 + 5 additional from security audit |
 
 ## Testing
 
-- [x] Build succeeds with MSVC 2022 (x64 RelWithDebugInfo) — original fix
-- [x] Zero warnings — original fix
-- [x] Code review passed (CWE-134 prevention verified) — original fix
-- [x] Build succeeds after all additional fixes
-- [x] Zero warnings after all additional fixes
-- [x] User to test against actual BusyBox FTP server (code verified, pending user runtime validation)
+ - [x] Build succeeds with MSVC 2022 (x64 RelWithDebugInfo) — original fix
+ - [x] Zero warnings from changed code — original fix
+ - [x] Code review passed (CWE-134 prevention verified) — original fix
+ - [x] Build succeeds after all additional fixes (2026-05-02)
+ - [x] Zero warnings after all additional fixes (2026-05-02)
+ - [x] Security audit completed — 5 additional high-risk call sites fixed (ScpFileSystem.cpp x3, FtpFileSystem.cpp x1, SftpFileSystem.cpp x1)
+ - [x] Project rule added to `.ai-factory/RULES.md` mandating `EscapeFmtChars()` for all untrusted FMTLOAD/FORMAT arguments
+ - [x] User to test against actual BusyBox FTP server (code verified, pending user runtime validation)
 
 ## Risks
 

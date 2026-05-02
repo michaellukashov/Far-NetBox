@@ -4807,7 +4807,7 @@ bool TFTPFileSystem::HandleListData(const wchar_t * Path,
              Entry->Name, Entry->Permissions, Entry->HumanPerm, Entry->Owner, Entry->Group, Entry->OwnerGroup, ::Int64ToStr(Entry->Size),
              nb::ToInt32(Entry->Dir), nb::ToInt32(Entry->Link), Entry->Time.Year, Entry->Time.Month, Entry->Time.Day,
              Entry->Time.Hour, Entry->Time.Minute, TmStr);
-        throw ETerminal(&E, FMTLOAD(LIST_LINE_ERROR, EntryData), HELP_LIST_LINE_ERROR);
+        throw ETerminal(&E, FMTLOAD(LIST_LINE_ERROR, nb::EscapeFmtChars(EntryData)), HELP_LIST_LINE_ERROR);
       }
 
       if (FTerminal->IsValidFile(File.get()))

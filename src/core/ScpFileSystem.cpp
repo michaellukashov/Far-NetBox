@@ -652,7 +652,7 @@ void TSCPFileSystem::SkipFirstLine()
   const UnicodeString Line = FSecureShell->ReceiveLine();
   if (Line != FCommandSet->GetFirstLine())
   {
-    FTerminal->TerminalError(nullptr, FMTLOAD(FIRST_LINE_EXPECTED, Line));
+    FTerminal->TerminalError(nullptr, FMTLOAD(FIRST_LINE_EXPECTED, nb::EscapeFmtChars(Line)));
   }
 }
 
@@ -2696,7 +2696,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & TargetDir,
         switch (Ctrl) {
           case 1:
             // Error (already logged by ReceiveLine())
-            throw EScpFileSkipped(nullptr, FMTLOAD(REMOTE_ERROR, Line));
+            throw EScpFileSkipped(nullptr, FMTLOAD(REMOTE_ERROR, nb::EscapeFmtChars(Line)));
 
           case 2:
             // Fatal error, terminate copying
@@ -2727,7 +2727,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & TargetDir,
             break; // continue pass switch{}
 
           default:
-            FTerminal->FatalError(nullptr, FMTLOAD(SCP_INVALID_CONTROL_RECORD, Ctrl, Line));
+            FTerminal->FatalError(nullptr, FMTLOAD(SCP_INVALID_CONTROL_RECORD, Ctrl, nb::EscapeFmtChars(Line)));
         }
 
         TFileMasks::TParams MaskParams;

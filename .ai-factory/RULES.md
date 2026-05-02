@@ -28,3 +28,5 @@
   - MD033: Enabled with allowed elements `["br", "img", "a"]` - Only these HTML elements are permitted
   - Configuration in `.vscode/settings.json` for VS Code users
   
+
+- **CWE-134 Format String Prevention**: Any string argument passed to `FMTLOAD` or `FORMAT` that originates from an untrusted source (remote server response, shell output, redirect URI, user input, or error text from a third-party library) MUST be wrapped with `nb::EscapeFmtChars()` before passing. This prevents `%` characters in untrusted data from being interpreted as `fmt::printf` format specifiers, which causes crashes or information disclosure. When in doubt, escape.
