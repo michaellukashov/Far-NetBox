@@ -19,6 +19,9 @@
  * Fix crash on second file open without directory refresh (#508) https://github.com/michaellukashov/Far-NetBox/issues/508
    — duplicate TRemoteFile objects in CreateFileList() to avoid dangling
    pointers after panel refresh deletes the originals
+ * Fix stack overflow when calculating SFTP directory size with cyclic symlinks (#497) https://github.com/michaellukashov/Far-NetBox/issues/497
+   — add visited-directory tracking to TCalculateSizeParams to detect and skip
+   recursive symlink loops instead of recursing until the stack overflows
 ### Dependencies
 
  * Upgrade WinSCP sources: WinSCP 6.5.6
