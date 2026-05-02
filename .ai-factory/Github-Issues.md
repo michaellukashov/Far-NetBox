@@ -190,3 +190,4 @@ Based on the current open issue landscape, here are the concrete recommendations
  2026-05-02 | Marked [#509] as ADDRESSED — OpenSSH certificate authentication feature (commit 2e93b39a4) covers the certificate auth requirement; Windows Certificate Store plan superseded. |
  2026-05-02 | Marked [#501] as FIXED — disabled dynamic TCP send buffer resizing (SIO_IDEAL_SEND_BACKLOG_QUERY) by default; set SendBuf=0 and SshSimple=false in factory defaults to fix slow SSH/SCP transfers and file corruption. Build verified. |
  2026-05-02 | Merged PR #504 — DateTimeToTimeStamp milliseconds clamp fix for issue #390 (certificate timestamp validation). Build verified. |
+ 2026-05-02 | Fixed [#513] and 5 additional CWE-134 format-string vulnerabilities — added `nb::EscapeFmtChars()` to sanitize untrusted server/shell output before passing to `FMTLOAD`. Covers FTP (BusyBox), SCP, and SFTP error paths. Build verified. |
