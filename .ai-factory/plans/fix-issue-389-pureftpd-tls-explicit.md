@@ -46,16 +46,16 @@ Modify `FtpControlSocket.cpp` to treat `FZ_SERVERTYPE_LAYER_SSL_EXPLICIT` the sa
 
 #### Task 1: Add diagnostic logging to `FtpControlSocket.cpp`
 - File: `src/filezilla/FtpControlSocket.cpp`
-- Insert at the start of the `CONNECT_SSL_INIT` handler (line 622, before the AUTH branch):
+- Insert at the start of the `CONNECT_SSL_INIT` handler (line 622, before the AUTH branch):
   ```cpp
-  ShowStatus(FORMAT("Trying AUTH TLS for explicit encryption (serverType=0x%04X)",
-    m_CurrentServer.nServerType), FZ_LOG_INFO);
+  LogMessage(FZ_LOG_INFO, L"Trying AUTH TLS for explicit encryption (serverType=0x%04X)",
+    m_CurrentServer.nServerType);
   ```
-- In the fallback path (line 647, inside `if (m_Operation.nOpState == CONNECT_TLS_NEGOTIATE)` before `SendAuthSsl()`):
+- In the fallback path (line 647, inside `if (m_Operation.nOpState == CONNECT_TLS_NEGOTIATE)` before `SendAuthSsl()`):
   ```cpp
-  ShowStatus(FORMAT("AUTH TLS rejected (code=%d), falling back to AUTH SSL", res), FZ_LOG_INFO);
+  LogMessage(FZ_LOG_INFO, L"AUTH TLS rejected (code=%d), falling back to AUTH SSL", res);
   ```
-- Use `ShowStatus()` with `FZ_LOG_INFO` level (maps to NetBox verbose logging).
+- Use `LogMessage()` with `FZ_LOG_INFO` level (FileZilla layer idiom; `ShowStatus`/`FORMAT` are NetBox-layer and must not be used here).
 
 #### Task 2: Verify UI mapping and session data
 - File: `src/core/FtpFileSystem.cpp` (around line 525)
@@ -84,10 +84,9 @@ Modify `FtpControlSocket.cpp` to treat `FZ_SERVERTYPE_LAYER_SSL_EXPLICIT` the sa
     m_Operation.nOpState = CONNECT_TLS_NEGOTIATE;
   }
   ```
-- **After:**
   ```cpp
-  // TLS‑first for all explicit encryption modes. SSL‑only servers are handled
-  // by the fallback in the CONNECT_TLS_NEGOTIATE handler (issue #389).
+  // TLS-first for all explicit encryption modes (issue #389).
+  // SSL-only servers are handled by the fallback in CONNECT_TLS_NEGOTIATE.
   if (!Send("AUTH TLS"))
     return;
   m_Operation.nOpState = CONNECT_TLS_NEGOTIATE;
@@ -108,8 +107,8 @@ Modify `FtpControlSocket.cpp` to treat `FZ_SERVERTYPE_LAYER_SSL_EXPLICIT` the sa
 #### Task 6: Build verification
 - Build `RelWithDebugInfo` for x64 using `build-x64.bat`.
 - Ensure zero MSVC W4 warnings.
-- If unity‑build symbol conflicts arise, disable with `-DOPT_USE_UNITY_BUILD=OFF`.
-
+- If unity-build symbol conflicts arise, disable with `-DOPT_USE_UNITY_BUILD=OFF`.
+- **Note:** Build verified 2026-05-02 with 0 warnings. Testing required `no-asm` OpenSSL workaround on the local machine due to `bn_div_words` crash — see OpenSSL follow-up task.
 #### Task 7: Manual test scenario
 - Create a new FTP session with “TLS/SSL Explicit encryption”.
 - Connect to a Pure‑FTPd server (or a mock server that rejects `AUTH SSL`).
@@ -117,26 +116,55 @@ Modify `FtpControlSocket.cpp` to treat `FZ_SERVERTYPE_LAYER_SSL_EXPLICIT` the sa
 - Verify that the connection proceeds successfully.
 - Verify that an SSL‑only server still works (TLS fails, fallback to SSL succeeds).
 
-### Phase IV. Documentation
+### Phase III-b. Cleanup
 
+#### Task 10: Revert TEMP debugging code
+- **Critical:** All TEMP code committed during debugging must be reverted before the fix reaches production.
+- Files to clean:
+  - `src/core/Cryptography.cpp:634-682` — Remove `ForceInitOpenssl()`, ERR tracing in `InitOpenssl()`, `RequireTls()` fallback.
+  - `src/core/FtpFileSystem.cpp:517-518, 542-557` — Remove `fflush`, `OutputDebugStringW`, cert clearing.
+  - `src/filezilla/AsyncSslSocketLayer.cpp:742-745, 873-874` — Restore `SSL_VERIFY_PEER` and remove `TLS1_2_VERSION` limits.
+  - `src/filezilla/FtpControlSocket.cpp:521-525, 628, 635, 643-645, 650-651, 657, 661, 668` — Remove `OutputDebugStringW` trace calls.
+- **Keep permanently:** `FtpControlSocket.cpp:626-637` (unconditional `AUTH TLS`) and `FtpFileSystem.cpp:517` (`FTP encryption mode` diagnostic log).
+- Reference: [.ai-factory/references/fix-issue-389-pureftpd-tls-explicit.md §9](../references/fix-issue-389-pureftpd-tls-explicit.md#9-temp-code-to-revert-after-testing)
+
+### Phase IV. Documentation
 #### Task 8: Update knowledge references
 - File: `.ai-factory/references/INDEX.md`
 - Add a link to this plan and a short summary of the fix.
 - If a Pure‑FTPd‑specific note is needed, add a troubleshooting entry.
-
+- **Note:** The combo label `"TLS/SSL Explicit encryption"` (`NB_LOGIN_FTP_REQUIRE_EXPLICIT_FTP`, line 413 in `NetBoxEng.lng`) historically sent `AUTH SSL` unconditionally despite the TLS-first label. After this fix the behavior finally matches the label.
 #### Task 9: Commit changes
+- **Prerequisite:** Complete Task 10 (revert TEMP code) first.
 - Use conventional commit message:
   ```
   fix(ftp): try AUTH TLS first for explicit SSL encryption
   
-  Pure‑FTPd servers reject AUTH SSL with “500 This security scheme is not
-  implemented”. Change FtpControlSocket.cpp to treat SSL‑explicit server
+  Pure‑FTPd servers reject AUTH SSL with "500 This security scheme is not
+  implemented". Change FtpControlSocket.cpp to treat SSL‑explicit server
   type the same as TLS‑explicit for the initial AUTH command, sending
   AUTH TLS first and falling back to AUTH SSL only when TLS fails.
   
   This preserves compatibility with SSL‑only servers while fixing
   TLS‑only servers like Pure‑FTPd (GitHub issue #389).
   ```
+  
+  **Git history:** The debug commits can be squashed before merging to `main` if desired (`git rebase -i`).
+
+#### Task 11: Update `Github-Issues.md` tracker
+- File: `.ai-factory/Github-Issues.md`
+- Mark issue #389 as resolved and link to the fix commit.
+- Update priority tables (lines 66, 98, 140, 153, 170) to reflect closure.
+
+#### Task 12: OpenSSL assembly bug follow-up documentation
+- **Discovery:** `bn_div_words` division-by-zero in `libs/openssl-3/crypto/bn/bn_asm.c:233` triggered on all Pure‑FTPd test servers during RSA/EC operations.
+- **Not a NetBox bug**, but blocks QA from verifying TLS fixes on affected machines.
+- **Action:** Add a note to `.ai-factory/references/INDEX.md` or a dedicated troubleshooting doc documenting the `no-asm` rebuild workaround and NASM version requirements.
+
+#### Task 13: `FTlsCertificateFile` UI gap follow-up
+- **Discovery:** `WinSCPDialogs.cpp:4040` has a TODO for `TlsCertificateFileEdit`; WinSCP-imported sessions may carry stale `.ppk` paths in `FTlsCertificateFile` with no dialog control to clear them.
+- **Impact:** This caused the initial OpenSSL init failure during debugging.
+- **Action:** Open a separate issue or add to backlog. Workaround documented: edit session XML directly to empty `<TlsCertificateFile></TlsCertificateFile>`.
 
 ## Architecture Notes
 
@@ -155,15 +183,14 @@ Modify `FtpControlSocket.cpp` to treat `FZ_SERVERTYPE_LAYER_SSL_EXPLICIT` the sa
 
 ## Acceptance Criteria
 
-- [ ] Pure‑FTPd with explicit encryption connects successfully.
-- [ ] Logs show `AUTH TLS` sent when server type is `SSL_EXPLICIT`.
-- [ ] Logs show fallback to `AUTH SSL` when TLS fails (for SSL‑only servers).
-- [ ] Existing SSL‑only servers still work (no regression).
-- [ ] `ftpsExplicitTls` path verified (no regression for index 3).
-- [ ] `SendAuthSsl()` fallback state transition verified.
-- [ ] Build passes with zero warnings.
-- [ ] Commit message follows conventional format.
-
+- [x] Pure‑FTPd with explicit encryption connects successfully.
+- [x] Logs show `AUTH TLS` sent when server type is `SSL_EXPLICIT`.
+- [x] Logs show fallback to `AUTH SSL` when TLS fails (for SSL‑only servers).
+- [x] Existing SSL‑only servers still work (no regression).
+- [x] `ftpsExplicitTls` path verified (no regression for index 3).
+- [x] `SendAuthSsl()` fallback state transition verified.
+- [x] Build passes with zero warnings.
+- [x] Commit message follows conventional format.
 ## Changelog
 
 | Date       | Change                                      | Reason |
@@ -171,7 +198,8 @@ Modify `FtpControlSocket.cpp` to treat `FZ_SERVERTYPE_LAYER_SSL_EXPLICIT` the sa
 | 2026-04-30 | Initial plan                                | Issue #389 analysis |
 | 2026-04-30 | Refined: unconditional TLS, exact log specs   | Code review (aif-improve) |
 | 2026-04-30 | Added Tasks 4 & 5 (compatibility & fallback) | Safety verification gaps |
-
+| 2026-05-02 | Implemented and verified via DebugView      | Build + manual test |
+| 2026-05-02 | Refined: TEMP cleanup tasks, tracker update   | aif-improve second pass |
 ## Code Review (2026-05-02)
 
 ### Reviewer Findings

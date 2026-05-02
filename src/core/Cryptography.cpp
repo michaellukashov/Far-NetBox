@@ -632,7 +632,6 @@ bool UnscramblePassword(const RawByteString & Scrambled, UnicodeString & Passwor
 static UnicodeString OpensslInitializationErrors;
 
 static std::once_flag OpenSSLInitOnce;
-static bool OpenSSLInitResult = false;
 
 static bool InitOpenssl()
 {
@@ -645,41 +644,10 @@ static bool InitOpenssl()
     // OPENSSL_init_ssl caches the initialization results based on the flags
     ERR_clear_error();
     Result = OPENSSL_init_ssl(OPENSSL_INIT_LOAD_SSL_STRINGS, nullptr);
-    // TEMP: log OpenSSL errors for debugging issue #389
-    if (!Result)
-    {
-      unsigned long Err = ERR_get_error();
-      while (Err != 0)
-      {
-        char Buf[256];
-        ERR_error_string_n(Err, Buf, sizeof(Buf));
-        AppLogFmt(L"OpenSSL init error: 0x%08lX - %s", Err, UnicodeString(UTF8String(Buf)));
-        Err = ERR_get_error();
-      }
-    }
   });
   return Result;
 }
 
-// TEMP: force re-init OpenSSL on current thread (bypasses call_once for debugging #389)
-static bool ForceInitOpenssl()
-{
-  ERR_clear_error();
-  int Ret = OPENSSL_init_ssl(OPENSSL_INIT_LOAD_SSL_STRINGS, nullptr);
-  if (!Ret)
-  {
-    unsigned long Err = ERR_get_error();
-    while (Err != 0)
-    {
-      char Buf[256];
-      ERR_error_string_n(Err, Buf, sizeof(Buf));
-      AppLogFmt(L"ForceInitOpenssl error: 0x%08lX - %s", Err, UnicodeString(UTF8String(Buf)));
-      Err = ERR_get_error();
-    }
-    return false;
-  }
-  return true;
-}
 
 void CryptographyInitialize()
 {
@@ -735,8 +703,7 @@ void CryptographyFinalize()
 
 void RequireTls()
 {
-  // TEMP: try force-init if cached init failed (issue #389 debugging)
-  if (!InitOpenssl() && !ForceInitOpenssl())
+  if (!InitOpenssl())
   {
 #if defined(__BORLANDC__)
     UnicodeString Errors = DefaultStr(GetTlsErrorStrs(), OpensslInitializationErrors);

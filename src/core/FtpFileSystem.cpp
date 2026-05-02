@@ -514,8 +514,6 @@ void TFTPFileSystem::Open()
   }
   else
   {
-    fflush(nullptr); // TEMP: flush immediately after first log (issue #389)
-    OutputDebugStringW(L"NETBOX: FTP Connect entered\n");
     FTerminal->LogEvent(FORMAT("FTP encryption mode: Ftps=%d", nb::ToInt32(Data->GetFtps())));
     switch (Data->GetFtps())
     {
@@ -539,23 +537,6 @@ void TFTPFileSystem::Open()
         DebugFail();
         break;
     }
-    // TEMP: trace and bypass client certificate to avoid OpenSSL init failure (issue #389 debugging)
-    const UnicodeString & CertFile = Data->GetTlsCertificateFile();
-    if (FTerminal->GetConfiguration()->GetActualLogProtocol() >= 0)
-    {
-      FTerminal->LogEvent(FORMAT("TLS client certificate file: [%s]",
-        (CertFile.IsEmpty() ? UnicodeString(L"<none>") : CertFile)));
-    }
-    if (!CertFile.IsEmpty())
-    {
-      FTerminal->LogEvent(FORMAT(L"TEMP: clearing TLS client certificate \"%s\" to bypass OpenSSL init failure",
-        CertFile));
-      Data->SetTlsCertificateFile(L"");
-    }
-
-    // TEMP: flush all log streams before connection (issue #389 debugging)
-    fflush(nullptr);
-
     RequireTls();
   }
 
