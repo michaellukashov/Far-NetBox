@@ -36,7 +36,7 @@
 | 3 | [#508](https://github.com/michaellukashov/Far-NetBox/issues/508) | Bug | Far crashes after 2nd file open via SFTP unless Ctrl+R refresh between opens. | Workflow-breaking crash | 2 comments |
 | 4 | [#497](https://github.com/michaellukashov/Far-NetBox/issues/497) | Bug | `STATUS_STACK_OVERFLOW` on F3 (file info) via SFTP to certain servers. | Crash on info view | 2 comments |
 | 5 | [#393](https://github.com/michaellukashov/Far-NetBox/issues/393) | Bug | FAR Manager crash after SSH chmod. | Crash after remote operation | By @alabuzhev |
-| 6 | [#501](https://github.com/michaellukashov/Far-NetBox/issues/501) | Bug | Slow SSH/SCP copy + corrupted files on certain SSH servers. | Data corruption risk | |
+ 6 | ~~[#501](https://github.com/michaellukashov/Far-NetBox/issues/501)~~ **FIXED** | Bug | Slow SSH/SCP copy + corrupted files on certain SSH servers. | Data corruption risk | |
 
 ### HIGH — Severity 7-8 — Short-term Resolution
 
@@ -93,7 +93,7 @@
 
 | Urgency | Count | Key Issues |
 |---------|-------|------------|
-| **Immediate** | 6 | [#513], [#506], [#508], [#497], [#393], [#501] — crashes + data corruption |
+ **Immediate** | 6 | [#513], [#506], [#508], [#497], [#393], ~~[#501]~~ — crashes + data corruption |
  **Short-term** | 7 | ~~[#515]~~, [#514], [#510], [#512], ~~[#511]~~, ~~[#507]~~, ~~[#486]~~, ~~[#485]~~ — protocol/UX broken |
  **Medium-term** | 8 | ~~[#509]~~, [#505], [#481], [#472], [#396], [#392], [#391], [#390], [#388] — features + integration (~~#389~~ fixed) |
 | **Backlog** | 6 | [#502], [#500], [#504], [#395], [#394], [#387] — PRs + minor UI |
@@ -133,7 +133,7 @@
 
  1. ~~[#509](https://github.com/michaellukashov/Far-NetBox/issues/509)~~ **ADDRESSED** — Auth certificate support (OpenSSH cert auth in 2e93b39a4)
 2. [#481](https://github.com/michaellukashov/Far-NetBox/issues/481) — FTP codepage fix
-3. [#501](https://github.com/michaellukashov/Far-NetBox/issues/501) — Corrupted file copy (SSH/SCP)
+ 3. ~~[#501](https://github.com/michaellukashov/Far-NetBox/issues/501)~~ **FIXED** — Corrupted file copy (SSH/SCP)
 4. [#396](https://github.com/michaellukashov/Far-NetBox/issues/396) — FTP non-default port not preserved
 5. [#392](https://github.com/michaellukashov/Far-NetBox/issues/392) — Private key certificate connection
 6. [#391](https://github.com/michaellukashov/Far-NetBox/issues/391) — Daylight Saving Time bug
@@ -188,3 +188,4 @@ Based on the current open issue landscape, here are the concrete recommendations
  2026-05-02 | Marked [#511] speed-limit fix as FIXED — FCPSLimit was not set from ACPSLimit in TFileOperationProgressType::Start(), leaving throttling uninitialized. Single-line fix `FCPSLimit = ACPSLimit;` at FileOperationProgress.cpp:212. Build verified. |
  2026-05-02 | Marked [#486] as FIXED — reduced KexListBox height (15→8) and CipherListBox height (10→6) in Session dialog to prevent visual overflow on 80x25 terminals with Proxy+Tunnel enabled. TFarListBox scrollbar preserves full accessibility. Build verified. |
  2026-05-02 | Marked [#509] as ADDRESSED — OpenSSH certificate authentication feature (commit 2e93b39a4) covers the certificate auth requirement; Windows Certificate Store plan superseded. |
+ 2026-05-02 | Marked [#501] as FIXED — disabled dynamic TCP send buffer resizing (SIO_IDEAL_SEND_BACKLOG_QUERY) by default; set SendBuf=0 and SshSimple=false in factory defaults to fix slow SSH/SCP transfers and file corruption. Build verified. |
