@@ -59,7 +59,7 @@
 | 16 | ~~[#505](https://github.com/michaellukashov/Far-NetBox/issues/505)~~ **FIXED** | Feature | Fall back to opening FTP URL as file if directory access fails. | UX improvement | 3-5h |
 | 17 | [#481](https://github.com/michaellukashov/Far-NetBox/issues/481) | Bug | FTP codepage ISO-8859-5 copy fails (filename encoding). | Broken non-UTF8 FTP | 3-5h |
 | 18 | [#472](https://github.com/michaellukashov/Far-NetBox/issues/472) | Bug | False positive session import prompts on every start. | Annoyance | 2-3h |
-| 19 | [#396](https://github.com/michaellukashov/Far-NetBox/issues/396) | Bug | FTP connection doesn't preserve non-default port number. | Port configuration lost | By @alabuzhev |
+ | 19 | ~~[#396](https://github.com/michaellukashov/Far-NetBox/issues/396)~~ **FIXED** | Bug | FTP connection doesn't preserve non-default port number. | Port configuration lost | By @alabuzhev |
 | 20 | [#392](https://github.com/michaellukashov/Far-NetBox/issues/392) | Bug | Unable to connect with private key certificates. | Certificate auth broken | By @alabuzhev; 2 comments |
  21 | ~~[#391](https://github.com/michaellukashov/Far-NetBox/issues/391)~~ **FIXED** | Bug | Daylight Saving Time bug — `ConvertTimestampToUnix()` subtracted DST offset for `dstmWin` on Win7+ | Time handling issue | By @alabuzhev; fixed in plan `issue-391-daylight-saving-time-dst-bug` |
  22 | ~~[#390](https://github.com/michaellukashov/Far-NetBox/issues/390)~~ **FIXED** | Bug | NetBox/WebDav sometimes rejects valid SSL certificates. | TLS certificate validation | By @alabuzhev; ~~PR [#504] open~~ merged via PR #504 |
@@ -95,7 +95,7 @@
 |---------|-------|------------|
  **Immediate** | 6 | [#513], [#506], ~~[#508]~~, ~~[#497]~~, [#393], ~~[#501]~~ — crashes + data corruption |
  **Short-term** | 7 | ~~[#515]~~, ~~[#514]~~, ~~[#510]~~, [#512], ~~[#511]~~, ~~[#507]~~, ~~[#486]~~, ~~[#485]~~ — protocol/UX broken |
- **Medium-term** | 8 | ~~[#509]~~, ~~[#505]~~, [#481], [#472], [#396], [#392], ~~[#391]~~, ~~[#390]~~, [#388] — features + integration (~~#389~~ fixed) |
+ **Medium-term** | 8 | ~~[#509]~~, ~~[#505]~~, [#481], [#472], ~~[#396]~~, [#392], ~~[#391]~~, ~~[#390]~~, [#388] — features + integration (~~#389~~ fixed) |
  **Backlog** | 6 | [#502], [#500], ~~[#504]~~, [#395], [#394], [#387] — PRs + minor UI |
 
 ---
@@ -134,7 +134,7 @@
  1. ~~[#509](https://github.com/michaellukashov/Far-NetBox/issues/509)~~ **ADDRESSED** — Auth certificate support (OpenSSH cert auth in 2e93b39a4)
 2. [#481](https://github.com/michaellukashov/Far-NetBox/issues/481) — FTP codepage fix
  3. ~~[#501](https://github.com/michaellukashov/Far-NetBox/issues/501)~~ **FIXED** — Corrupted file copy (SSH/SCP)
-4. [#396](https://github.com/michaellukashov/Far-NetBox/issues/396) — FTP non-default port not preserved
+4. ~~[#396](https://github.com/michaellukashov/Far-NetBox/issues/396)~~ **FIXED** — FTP non-default port not preserved
 5. [#392](https://github.com/michaellukashov/Far-NetBox/issues/392) — Private key certificate connection
 6. ~~[#391](https://github.com/michaellukashov/Far-NetBox/issues/391)~~ **FIXED** — Daylight Saving Time bug
 7. ~~[#390](https://github.com/michaellukashov/Far-NetBox/issues/390)~~ **FIXED** (via PR [#504] — WebDav SSL certificate rejection
@@ -166,7 +166,7 @@ Based on the current open issue landscape, here are the concrete recommendations
  3. **Re-test issues previously claimed as FIXED** (~~[#485]~~, ~~[#515]~~, ~~[#511]~~, ~~[#507]~~, ~~[#486]~~, [#512]). These are still open on GitHub. Verify whether fixes were merged to `main` or only exist on feature branches (e.g., `lmv/dev`). If fixes are ready, close the issues.
 
 4. **Prioritize the newly surfaced @alabuzhev batch** ([#387]-[#396]). These 10 issues were reported by a contributor in Feb 2024 and cover TLS, certificates, dialogs, DST, and FTP ports. Many appear to be quick wins:
-   - [#396] (port preservation) and ~~[#391] (DST)~~ **FIXED** — one-line fix in `ConvertTimestampToUnix()`.
+   - ~~[#396]~~ (port preservation) **FIXED** — index-comparison guards in `TSessionDialog::Change()` prevent spurious `TransferProtocolComboChange()` from resetting custom port during dialog init; plus `GetIsSshProtocol()` and expanded S3 port checks.
    - [#395] (misaligned text) and [#387] (display dialogs) are UI-only.
    - ~~[#389] (Pure-FTPd TLS)~~ **FIXED** (`d3c3aa8`); and [#390] (WebDAV SSL) may be related to certificate validation logic.
 
@@ -193,3 +193,4 @@ Based on the current open issue landscape, here are the concrete recommendations
  2026-05-02 | Fixed [#513] and 5 additional CWE-134 format-string vulnerabilities — added `nb::EscapeFmtChars()` to sanitize untrusted server/shell output before passing to `FMTLOAD`. Covers FTP (BusyBox), SCP, and SFTP error paths. Build verified. |
  2026-05-02 | Fixed [#497] — added cycle detection to `TCalculateSizeParams` preventing infinite recursion on SFTP directory size calculation when cyclic symlinks are present. Eliminates `STATUS_STACK_OVERFLOW` on F3 for directories with ~98K+ files. Build verified. |
  2026-05-02 | Fixed [#508] — duplicate remote files with `Standalone=true` in panel `UserData` and clear `FFileList` after Edit/View operations. Prevents dangling `TRemoteFile*` pointers causing crash on second file open without Ctrl+R refresh. Build verified. |
+ 2026-05-02 | Fixed [#396] / FarGroup#42 — added index-comparison guards (`NewProtocolIndex != FTransferProtocolIndex`) in `TSessionDialog::Change()` to suppress spurious `TransferProtocolComboChange()` during Far dialog initialization. Also fixed SSH protocol detection (`GetIsSshProtocol`) and S3 port adjustment conditions. Build verified. |
