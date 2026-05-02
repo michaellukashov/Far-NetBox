@@ -62,7 +62,7 @@
 | 19 | [#396](https://github.com/michaellukashov/Far-NetBox/issues/396) | Bug | FTP connection doesn't preserve non-default port number. | Port configuration lost | By @alabuzhev |
 | 20 | [#392](https://github.com/michaellukashov/Far-NetBox/issues/392) | Bug | Unable to connect with private key certificates. | Certificate auth broken | By @alabuzhev; 2 comments |
 | 21 | [#391](https://github.com/michaellukashov/Far-NetBox/issues/391) | Bug | Daylight Saving Time bug. | Time handling issue | By @alabuzhev |
-| 22 | [#390](https://github.com/michaellukashov/Far-NetBox/issues/390) | Bug | NetBox/WebDav sometimes rejects valid SSL certificates. | TLS certificate validation | By @alabuzhev; PR [#504] open |
+ 22 | ~~[#390](https://github.com/michaellukashov/Far-NetBox/issues/390)~~ **FIXED** | Bug | NetBox/WebDav sometimes rejects valid SSL certificates. | TLS certificate validation | By @alabuzhev; ~~PR [#504] open~~ merged via PR #504 |
 | 23 | [#389](https://github.com/michaellukashov/Far-NetBox/issues/389) | Integration | ~~Unable to connect to Pure-FTPd with TLS enabled.~~ **FIXED** — AUTH TLS first for explicit SSL. | Pure-FTPd TLS failure | By @alabuzhev; fixed in `d3c3aa8` |
 | 24 | [#388](https://github.com/michaellukashov/Far-NetBox/issues/388) | Feature | RSA-SHA256 support. | Missing crypto algorithm | By @alabuzhev; 2 comments |
 
@@ -95,8 +95,8 @@
 |---------|-------|------------|
  **Immediate** | 6 | [#513], [#506], [#508], [#497], [#393], ~~[#501]~~ — crashes + data corruption |
  **Short-term** | 7 | ~~[#515]~~, [#514], [#510], [#512], ~~[#511]~~, ~~[#507]~~, ~~[#486]~~, ~~[#485]~~ — protocol/UX broken |
- **Medium-term** | 8 | ~~[#509]~~, [#505], [#481], [#472], [#396], [#392], [#391], [#390], [#388] — features + integration (~~#389~~ fixed) |
-| **Backlog** | 6 | [#502], [#500], [#504], [#395], [#394], [#387] — PRs + minor UI |
+ **Medium-term** | 8 | ~~[#509]~~, [#505], [#481], [#472], [#396], [#392], [#391], ~~[#390]~~, [#388] — features + integration (~~#389~~ fixed) |
+ **Backlog** | 6 | [#502], [#500], ~~[#504]~~, [#395], [#394], [#387] — PRs + minor UI |
 
 ---
 
@@ -137,7 +137,7 @@
 4. [#396](https://github.com/michaellukashov/Far-NetBox/issues/396) — FTP non-default port not preserved
 5. [#392](https://github.com/michaellukashov/Far-NetBox/issues/392) — Private key certificate connection
 6. [#391](https://github.com/michaellukashov/Far-NetBox/issues/391) — Daylight Saving Time bug
-7. [#390](https://github.com/michaellukashov/Far-NetBox/issues/390) — WebDav SSL certificate rejection
+ 7. ~~[#390](https://github.com/michaellukashov/Far-NetBox/issues/390)~~ **FIXED** (via PR #504) — WebDav SSL certificate rejection
 8. ~~[#389](https://github.com/michaellukashov/Far-NetBox/issues/389)~~ — ~~Pure-FTPd TLS connection failure~~ **FIXED** (`d3c3aa8`)
 9. ~~[#388](https://github.com/michaellukashov/Far-NetBox/issues/388)~~ **FIXED** — RSA-SHA256 support
 
@@ -151,7 +151,7 @@
 | S3 protocol broken for multiple users ([#514], [#510]) | High | Isolate S3-specific issues from TLS/HTTP layer; test against AWS and MinIO |
 | FTP crash reports overlap ([#513], [#506]) | Medium | Check if all share same root cause in FTP directory listing code |
 | Open PRs accumulating without review ([#502], [#500], [#504]) | Medium | Review and merge or close stale PRs |
-| Certificate/TLS issues spread across protocols ([#390], [#392], [#388]; ~~#389~~ fixed) | Medium | Review OpenSSL and certificate validation pipeline |
+ Certificate/TLS issues spread across protocols (~~[#390]~~ via #504, [#392], ~~[#388]~~; ~~#389~~ fixed) | Medium | Review OpenSSL and certificate validation pipeline |
 
 ---
 
@@ -159,7 +159,7 @@
 
 Based on the current open issue landscape, here are the concrete recommendations:
 
-1. **Merge or close stale PRs first** ([#502], [#500], [#504]). PR [#504] fixes [#390] (timestamp clamping) and appears ready for review. Closing PR debt reduces noise.
+ 1. **Merge or close stale PRs first** ([#502], [#500], ~~[#504]~~). ~~PR [#504] fixes [#390] (timestamp clamping) and appears ready for review.~~ PR #504 merged. Closing PR debt reduces noise.
 
 2. **Investigate the stack-overflow cluster** ([#513], [#497]). Both are `STATUS_STACK_OVERFLOW` but in different protocols (FTP and SFTP). This suggests a shared recursion pattern — likely in directory traversal or file info gathering. A single fix may resolve both.
 
@@ -189,3 +189,4 @@ Based on the current open issue landscape, here are the concrete recommendations
  2026-05-02 | Marked [#486] as FIXED — reduced KexListBox height (15→8) and CipherListBox height (10→6) in Session dialog to prevent visual overflow on 80x25 terminals with Proxy+Tunnel enabled. TFarListBox scrollbar preserves full accessibility. Build verified. |
  2026-05-02 | Marked [#509] as ADDRESSED — OpenSSH certificate authentication feature (commit 2e93b39a4) covers the certificate auth requirement; Windows Certificate Store plan superseded. |
  2026-05-02 | Marked [#501] as FIXED — disabled dynamic TCP send buffer resizing (SIO_IDEAL_SEND_BACKLOG_QUERY) by default; set SendBuf=0 and SshSimple=false in factory defaults to fix slow SSH/SCP transfers and file corruption. Build verified. |
+ 2026-05-02 | Merged PR #504 — DateTimeToTimeStamp milliseconds clamp fix for issue #390 (certificate timestamp validation). Build verified. |

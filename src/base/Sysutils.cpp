@@ -499,6 +499,13 @@ TTimeStamp DateTimeToTimeStamp(const TDateTime & DateTime)
   double intpart{0.0};
   const double fractpart = modf(DateTime, &intpart);
   Result.Time = nb::ToInt32(fractpart * MSecsPerDay + 0.5);
+  // Due to conversions from int to float and back to int (with rounding) we might end up with a value
+  // that exceeds the maximum possible number of milliseconds in a day (MSecsPerDay - 1).
+  // Clamp the value to the maximum allowed.
+  if (Result.Time >= MSecsPerDay)
+  {
+    Result.Time = MSecsPerDay - 1;
+  }
   Result.Date = nb::ToInt32(intpart + DateDelta);
   return Result;
 }

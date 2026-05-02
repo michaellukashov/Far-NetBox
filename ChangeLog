@@ -50,6 +50,9 @@
  * Fix slow SSH/SCP copy and corrupted files on certain servers (#501) https://github.com/michaellukashov/Far-NetBox/issues/501
    — disable dynamic TCP send buffer resizing (SIO_IDEAL_SEND_BACKLOG_QUERY) by default;
    set SendBuf=0 and SshSimple=false in factory defaults to avoid data reordering and CPU saturation
+ * Fix timestamp milliseconds overflow in DateTimeToTimeStamp causing certificate validation failures (#390) https://github.com/michaellukashov/Far-NetBox/issues/390, PR [#504](https://github.com/michaellukashov/Far-NetBox/pull/504)
+   — clamp Result.Time to MSecsPerDay - 1 (86399999) to prevent float-to-int rounding
+   from producing illegal millisecond values (86400000); fixes WebDAV SSL cert rejection
 
 ### Dependencies
 
