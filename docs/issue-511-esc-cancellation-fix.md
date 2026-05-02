@@ -204,10 +204,26 @@ User presses Esc during SCP download:
 | 8 | No hex garbage after cancel | Clean text responses | ✓ |
 | 9 | No 15-second timeout after cancel | Response < 1s | ✓ |
 
+
+## Post-Commit Review Notes (2026-05-01)
+
+A second review pass on the Layer 5 reconnect implementation identified six maintainability findings. None are critical or affect runtime correctness, but they should be addressed in a future cleanup commit.
+
+| ID | File | Finding | Severity | Recommendation |
+|----|------|---------|----------|----------------|
+| WR-001 | `src/core/ScpFileSystem.cpp` (~2561) | Misleading `__finally` comment says flag is only for `SendCommand` | Warning | Update comment to reflect dual-consumer architecture (`ChangeDirectory` primary, `SendCommand` fallback) |
+| WR-002 | `src/core/SecureShell.h` (~180) | `DrainSocket()` declared but never called from production code | Warning | Remove or annotate as retained for future `FIONREAD` experimentation |
+| WR-003 | `src/core/ScpFileSystem.cpp` (~1058, ~575) | Duplicate reconnect logic in `ChangeDirectory` and `SendCommand` | Warning | Extract `TSCPFileSystem::ReconnectSession()` private helper to eliminate duplication |
+| WR-004 | `src/core/ScpFileSystem.cpp` (~1098, ~1042) | `FLastDirectory` assigned unconditionally; empty string overwrites valid state | Warning | Guard assignment with `if (!Directory.IsEmpty())` |
+| IN-001 | `src/core/SecureShell.h` (~180) | Dead code in public API inflates surface area | Info | Same as WR-002; remove or document |
+| IN-002 | `src/core/ScpFileSystem.cpp` (~1058) | `FNeedsSessionReset` guard lacks comment explaining SCP-only scope | Info | Add comment clarifying this guard is SCP-specific |
+
+---
+
 ## Related Documentation
 
 - [Issue #511 Plan](../.ai-factory/plans/issue-511-speed-limit-esc-hang.md)
 - [Comprehensive Fix Reference](../.ai-factory/references/esc-cancellation-comprehensive-fix.md)
-- [Code Review Report](../.ai-factory/REVIEW-esc-cancellation.md)
+- [Code Review Report](../.ai-factory/reviews/REVIEW-esc-cancellation.md)
 - [AGENTS.md](AGENTS.md)
 - [ARCHITECTURE.md](architecture.md)
