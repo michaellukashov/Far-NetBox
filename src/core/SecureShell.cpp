@@ -490,6 +490,7 @@ void TSecureShell::Open()
       nb::ToInt32(FSessionData->GetTryAgent()), nb::ToInt32(FSessionData->FAuthKI),
       nb::ToInt32(FSessionData->FAuthGSSAPI), nb::ToInt32(FSessionData->FAuthGSSAPIKEX),
       nb::ToInt32(FSessionData->SshNoUserAuth()), nb::ToInt32(!FSessionData->GetPassphrase().IsEmpty())));
+    FSeat = std::make_unique<ScpSeat>(this);
     FLogPolicy = std::make_unique<ScpLogPolicy>();
     FLogPolicy->vt = &ScpLogPolicyVTable;
     FLogPolicy->SecureShell = this;
