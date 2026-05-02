@@ -2910,7 +2910,6 @@ void TWinSCPFileSystem::ExportSession(TSessionData * Data, void * AParam)
   const TExportSessionParam & Param = *static_cast<TExportSessionParam *>(AParam);
 
   std::unique_ptr<TSessionData> ExportData(std::make_unique<TSessionData>(Data->GetName()));
-  std::unique_ptr<TSessionData> FactoryDefaults(std::make_unique<TSessionData>(""));
   ExportData->Assign(Data);
   ExportData->SetModified(true);
   const UnicodeString XmlFileName = ::IncludeTrailingBackslash(Param.DestPath) +
@@ -2931,7 +2930,7 @@ void TWinSCPFileSystem::ExportSession(TSessionData * Data, void * AParam)
   ExportStorage->SetAccessMode(smReadWrite);
   if (ExportStorage->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), true))
   {
-    ExportData->Save(ExportStorage.get(), false, FactoryDefaults.get());
+    ExportData->Save(ExportStorage.get(), false, nullptr);
     ExportStorage->CloseSubKey();
   }
 }
