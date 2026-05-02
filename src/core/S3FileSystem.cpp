@@ -1580,16 +1580,9 @@ S3Status TS3FileSystem::LibS3ListBucketCallback(
       // Doing own parting instead as it's easier.
       // Might be replaced with ISO8601ToDate.
       // Keep is sync with WebDAV.
-      // const int32_t Filled =
-      //   sscanf(Content->lastModifiedStr, ISO8601_FORMAT, &Year, &Month, &Day, &Hour, &Min, &Sec);
       const int32_t Filled = sscanf(Content->lastModifiedStr, ISO8601_FORMAT, &Year, &Month, &Day, &Hour, &Min, &Sec);
       if (Filled == 6)
       {
-        // TDateTime Modification =
-        //   EncodeDateVerbose(static_cast<uint16_t>(Year), static_cast<uint16_t>(Month), static_cast<uint16_t>(Day)) +
-        //   EncodeTimeVerbose(static_cast<uint16_t>(Hour), static_cast<uint16_t>(Min), static_cast<uint16_t>(Sec), 0);
-        // File->Modification = ConvertTimestampFromUTC(Modification);
-        // File->ModificationFmt = mfFull;
         // Normalize 24:00:00 to next day 00:00:00 if needed (ISO 8601 allows 24:00)
         if (Hour == 24)
         {
