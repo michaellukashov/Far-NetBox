@@ -156,3 +156,18 @@ catch(Exception &e)
 - `src/filezilla/FtpListResult.cpp` (line 239 - throws exception)
 - `src/filezilla/FtpListResult.h` (safety limits)
 - `src/NetBox/NetBoxEng.lng` (error message text)
+## Completion Log
+
+- **2026-04-26**: Initial fix — added try/catch at 3 getList() call sites (commit `61ee7eeb2`)
+- **2026-04-27**: Switched to localized `MSG_FTP_LISTING_PARSE_FAILED` constant (commit `17a155383`)
+- **2026-04-29**: Fixed indentation, marked plan complete (commit `88fe7e2c1`)
+- **2026-05-02**: Post-review fix — replaced `return` with `error = TRUE; break;` in `ListFile()`
+  catch block to ensure `ResetOperation(FZ_REPLY_ERROR)` is invoked (commit `95ceb0b56`)
+
+## Verification
+
+- Build: x64 RelWithDebugInfo — zero warnings ✅
+- All 3 getList() call sites protected ✅
+- Memory cleanup verified (destructors + explicit delete) ✅
+- `MSG_FTP_LISTING_PARSE_FAILED` present in all .lng files ✅
+- No remaining unprotected getList() call sites in src/filezilla/ ✅
