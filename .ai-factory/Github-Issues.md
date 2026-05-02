@@ -11,7 +11,7 @@
 | Metric | Count |
 |--------|-------|
 | Total open issues | **28** |
-| Open Pull Requests | **3** (#502, #500, #504) |
+| Open Pull Requests | **3** ([#502], [#500], [#504]) |
 | Non-PR Issues | **25** |
 
 ### Issue Category Breakdown (non-PR only: 25)
@@ -62,7 +62,7 @@
 | 19 | [#396](https://github.com/michaellukashov/Far-NetBox/issues/396) | Bug | FTP connection doesn't preserve non-default port number. | Port configuration lost | By @alabuzhev |
 | 20 | [#392](https://github.com/michaellukashov/Far-NetBox/issues/392) | Bug | Unable to connect with private key certificates. | Certificate auth broken | By @alabuzhev; 2 comments |
 | 21 | [#391](https://github.com/michaellukashov/Far-NetBox/issues/391) | Bug | Daylight Saving Time bug. | Time handling issue | By @alabuzhev |
-| 22 | [#390](https://github.com/michaellukashov/Far-NetBox/issues/390) | Bug | NetBox/WebDav sometimes rejects valid SSL certificates. | TLS certificate validation | By @alabuzhev; PR #504 open |
+| 22 | [#390](https://github.com/michaellukashov/Far-NetBox/issues/390) | Bug | NetBox/WebDav sometimes rejects valid SSL certificates. | TLS certificate validation | By @alabuzhev; PR [#504] open |
 | 23 | [#389](https://github.com/michaellukashov/Far-NetBox/issues/389) | Integration | Unable to connect to Pure-FTPd with TLS enabled. | Pure-FTPd TLS failure | By @alabuzhev |
 | 24 | [#388](https://github.com/michaellukashov/Far-NetBox/issues/388) | Feature | RSA-SHA256 support. | Missing crypto algorithm | By @alabuzhev; 2 comments |
 
@@ -93,10 +93,10 @@
 
 | Urgency | Count | Key Issues |
 |---------|-------|------------|
-| **Immediate** | 6 | #513, #506, #508, #497, #393, #501 — crashes + data corruption |
-| **Short-term** | 7 | #515, #514, #510, #512, #511, #507, #486, #485 — protocol/UX broken |
-| **Medium-term** | 9 | #509, #505, #481, #472, #396, #392, #391, #390, #389, #388 — features + integration |
-| **Backlog** | 6 | #502, #500, #504, #395, #394, #387 — PRs + minor UI |
+| **Immediate** | 6 | [#513], [#506], [#508], [#497], [#393], [#501] — crashes + data corruption |
+| **Short-term** | 7 | [#515], [#514], [#510], [#512], [#511], [#507], [#486], [#485] — protocol/UX broken |
+| **Medium-term** | 9 | [#509], [#505], [#481], [#472], [#396], [#392], [#391], [#390], [#389], [#388] — features + integration |
+| **Backlog** | 6 | [#502], [#500], [#504], [#395], [#394], [#387] — PRs + minor UI |
 
 ---
 
@@ -147,10 +147,10 @@
 | Risk | Likelihood | Mitigation |
 |------|------------|------------|
 | Multiple stack overflow crashes suggest concurrency / recursion bugs | High | Audit threading model; check for infinite recursion in directory traversal |
-| S3 protocol broken for multiple users (#514, #510) | High | Isolate S3-specific issues from TLS/HTTP layer; test against AWS and MinIO |
-| FTP crash reports overlap (#513, #506) | Medium | Check if all share same root cause in FTP directory listing code |
-| Open PRs accumulating without review (#502, #500, #504) | Medium | Review and merge or close stale PRs |
-| Certificate/TLS issues spread across protocols (#390, #389, #392, #388) | Medium | Review OpenSSL and certificate validation pipeline |
+| S3 protocol broken for multiple users ([#514], [#510]) | High | Isolate S3-specific issues from TLS/HTTP layer; test against AWS and MinIO |
+| FTP crash reports overlap ([#513], [#506]) | Medium | Check if all share same root cause in FTP directory listing code |
+| Open PRs accumulating without review ([#502], [#500], [#504]) | Medium | Review and merge or close stale PRs |
+| Certificate/TLS issues spread across protocols ([#390], [#389], [#392], [#388]) | Medium | Review OpenSSL and certificate validation pipeline |
 
 ---
 
@@ -158,18 +158,18 @@
 
 Based on the current open issue landscape, here are the concrete recommendations:
 
-1. **Merge or close stale PRs first** (#502, #500, #504). PR #504 fixes #390 (timestamp clamping) and appears ready for review. Closing PR debt reduces noise.
+1. **Merge or close stale PRs first** ([#502], [#500], [#504]). PR [#504] fixes [#390] (timestamp clamping) and appears ready for review. Closing PR debt reduces noise.
 
-2. **Investigate the stack-overflow cluster** (#513, #497). Both are `STATUS_STACK_OVERFLOW` but in different protocols (FTP and SFTP). This suggests a shared recursion pattern — likely in directory traversal or file info gathering. A single fix may resolve both.
+2. **Investigate the stack-overflow cluster** ([#513], [#497]). Both are `STATUS_STACK_OVERFLOW` but in different protocols (FTP and SFTP). This suggests a shared recursion pattern — likely in directory traversal or file info gathering. A single fix may resolve both.
 
-3. **Re-test issues previously claimed as FIXED** (#485, #515, #511, #507, #512). These are still open on GitHub. Verify whether fixes were merged to `main` or only exist on feature branches (e.g., `lmv/dev`). If fixes are ready, close the issues.
+3. **Re-test issues previously claimed as FIXED** ([#485], [#515], [#511], [#507], [#512]). These are still open on GitHub. Verify whether fixes were merged to `main` or only exist on feature branches (e.g., `lmv/dev`). If fixes are ready, close the issues.
 
-4. **Prioritize the newly surfaced @alabuzhev batch** (#387-#396). These 10 issues were reported by a contributor in Feb 2024 and cover TLS, certificates, dialogs, DST, and FTP ports. Many appear to be quick wins:
-   - #396 (port preservation) and #391 (DST) are likely one-line fixes.
-   - #395 (misaligned text) and #387 (display dialogs) are UI-only.
-   - #389 (Pure-FTPd TLS) and #390 (WebDAV SSL) may be related to certificate validation logic.
+4. **Prioritize the newly surfaced @alabuzhev batch** ([#387]-[#396]). These 10 issues were reported by a contributor in Feb 2024 and cover TLS, certificates, dialogs, DST, and FTP ports. Many appear to be quick wins:
+   - [#396] (port preservation) and [#391] (DST) are likely one-line fixes.
+   - [#395] (misaligned text) and [#387] (display dialogs) are UI-only.
+   - [#389] (Pure-FTPd TLS) and [#390] (WebDAV SSL) may be related to certificate validation logic.
 
-5. **S3 needs dedicated attention** (#514, #510). Two separate S3 issues suggest the S3 backend may have regressed after dependency updates. Consider adding debug logging to the S3 path-normalization and bucket-listing code.
+5. **S3 needs dedicated attention** ([#514], [#510]). Two separate S3 issues suggest the S3 backend may have regressed after dependency updates. Consider adding debug logging to the S3 path-normalization and bucket-listing code.
 
 6. **Create a tracking issue or milestone** for the crash bugs. With 6 crash-related issues open, users perceive instability. A milestone focused on "Crash & Stability" would communicate progress.
 
@@ -179,5 +179,5 @@ Based on the current open issue landscape, here are the concrete recommendations
 
 | Date | Change |
 |------|--------|
-| 2026-04-25 | Full re-analysis of last 100 issues; expanded from 10 to all open issues; added links; marked #485 as fixed, #432 as closed |
-| 2026-04-30 | Re-analyzed all **28 currently open issues** (previous count was 20 within last-100 window). Added 10 newly visible issues (#387-#396). Updated status of issues previously marked FIXED that remain open on GitHub (#485, #515, #511, #507, #512). Added Suggestions for Next Steps section. |
+| 2026-04-25 | Full re-analysis of last 100 issues; expanded from 10 to all open issues; added links; marked [#485] as fixed, [#432] as closed |
+| 2026-04-30 | Re-analyzed all **28 currently open issues** (previous count was 20 within last-100 window). Added 10 newly visible issues ([#387]-[#396]). Updated status of issues previously marked FIXED that remain open on GitHub ([[#485]], [[#515]), [[#511]], [[#507]], [[#512]]). Added Suggestions for Next Steps section. |
