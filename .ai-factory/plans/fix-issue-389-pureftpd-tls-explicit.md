@@ -3,8 +3,11 @@
 > **GitHub Issue:** [#389](https://github.com/michaellukashov/Far-NetBox/issues/389)  
 > **Related:** [#29](https://github.com/FarGroup/Far-NetBox/issues/29)  
 > **Created:** 2026-04-30  
+> **Implemented:** 2026-05-02  
+> **Verified:** 2026-05-02 (DebugView traces — all code paths confirmed)  
 > **Mode:** fast  
-> **Settings:** Testing=no, Logging=verbose, Docs=yes
+> **Settings:** Testing=DebugView, Logging=verbose, Docs=yes  
+> **Exploration:** [.ai-factory/references/fix-issue-389-pureftpd-tls-explicit.md](../references/fix-issue-389-pureftpd-tls-explicit.md)
 
 ## Problem Statement
 
@@ -168,3 +171,116 @@ Modify `FtpControlSocket.cpp` to treat `FZ_SERVERTYPE_LAYER_SSL_EXPLICIT` the sa
 | 2026-04-30 | Initial plan                                | Issue #389 analysis |
 | 2026-04-30 | Refined: unconditional TLS, exact log specs   | Code review (aif-improve) |
 | 2026-04-30 | Added Tasks 4 & 5 (compatibility & fallback) | Safety verification gaps |
+
+## Code Review (2026-05-02)
+
+### Reviewer Findings
+
+**Status:** Plan is well-structured and the core fix is correct. Two implementation-level corrections needed before execution.
+
+#### 🔴 Correction 1: Task 1 — Use `LogMessage`, not `ShowStatus` + `FORMAT`
+
+`FtpControlSocket.cpp` (FileZilla layer) does **not** use the NetBox `FORMAT` macro. The idiomatic logging in this file is `LogMessage(int nMessageType, LPCTSTR pMsgFormat, ...)` which is variadic and already used with `FZ_LOG_INFO` in 15+ call sites (e.g., lines 578, 583, 1215, 1251).
+
+`ShowStatus` is a thin wrapper over `LogMessageRaw` and is reserved for redacted status messages (PASS/ACCT filtering). For diagnostic debug logs, `LogMessage` is the correct choice.
+
+**Corrected Task 1:**
+
+```cpp
+// Insert at start of CONNECT_SSL_INIT handler (before AUTH branch)
+LogMessage(FZ_LOG_INFO, L"Trying AUTH TLS for explicit encryption (serverType=0x%04X)",
+    m_CurrentServer.nServerType);
+```
+
+```cpp
+// In fallback path (inside if (m_Operation.nOpState == CONNECT_TLS_NEGOTIATE))
+LogMessage(FZ_LOG_INFO, L"AUTH TLS rejected (code=%d), falling back to AUTH SSL", res);
+```
+
+#### 🟡 Suggestion 1: Task 3 — Add a brief code comment explaining the behavioral change
+
+The unconditional-TLS approach is correct, but a one-line comment preserves intent for future maintainers who might wonder why `SSL_EXPLICIT` no longer calls `SendAuthSsl()` immediately.
+
+```cpp
+// TLS-first for all explicit encryption modes (issue #389).
+// SSL-only servers are handled by the fallback in CONNECT_TLS_NEGOTIATE.
+if (!Send("AUTH TLS"))
+    return;
+m_Operation.nOpState = CONNECT_TLS_NEGOTIATE;
+```
+
+#### 🟡 Suggestion 2: UI Label Accuracy
+
+The combo label is `"TLS/SSL Explicit encryption"` (`NB_LOGIN_FTP_REQUIRE_EXPLICIT_FTP`, line 413 in `NetBoxEng.lng`). After this fix, the behavior finally matches the label (TLS is tried first). Consider adding a note in the reference docs that this label has historically been misleading — the internal value was `ftpsExplicitSsl` which sent `AUTH SSL` unconditionally until this fix.
+
+#### 🟢 Positive Notes
+
+- Root cause analysis is precise: the `SSL_EXPLICIT` branch at line 624 bypasses the TLS-first fallback that exists for `TLS_EXPLICIT`.
+- The fix is a minimal, surgical change — exactly one `if/else` block removed, no new state machine complexity.
+- Edge case coverage is thorough (both-only, SSL-only, neither, implicit unaffected, `ftpsExplicitTls` no-op).
+- The `SendAuthSsl()` fallback verification (Task 5) is a critical safety check that prevents regressions for SSL-only servers.
+
+#### Acceptance Criteria Verification
+
+| Criterion | Status | Notes |
+|-----------|--------|-------|
+| Pure-FTPd connects | ✅ | TLS-first fixes the 500 rejection |
+| Logs show AUTH TLS for SSL_EXPLICIT | ✅ | After Task 1 correction |
+| Fallback to AUTH SSL works | ✅ | Existing fallback path handles this |
+| SSL-only servers still work | ✅ | `SendAuthSsl()` fallback verified in Task 5 |
+| `ftpsExplicitTls` no regression | ✅ | Change is a no-op for that path |
+| `SendAuthSsl()` state transition | ✅ | Task 5 covers this |
+| Build zero warnings | ✅ | Single-line removal, no new symbols |
+| Conventional commit | ✅ | Message is ready |
+
+## Exploration Results (2026-05-02)
+
+### Reference
+
+Full investigation: [.ai-factory/references/fix-issue-389-pureftpd-tls-explicit.md](../references/fix-issue-389-pureftpd-tls-explicit.md)
+
+### Key Findings
+
+1. **Fix verified correct** — All code paths confirmed via DebugView traces:
+   - `CONNECT_SSL_INIT` handler fires, sends `AUTH TLS` first
+   - Server `5xx` triggers fallback to `AUTH SSL`
+   - Double rejection → clean close (no crash)
+   - `ftpsExplicitTls` path unchanged (no‑op)
+
+2. **OpenSSL 3 assembly bug discovered** — `bn_div_words` (bn_asm.c:233) division‑by‑zero
+   affecting RSA signature verify, RSA public decrypt, and EC curve group init.
+   Triggered on all Pure‑FTPd test servers. Not a NetBox issue — rebuild OpenSSL
+   with `no-asm` or update NASM.
+
+3. **Session log files are zero‑length** — Files matching `ftp-user@<host>---enc.log`
+   are created but never populated. `setvbuf(…, _IONBF, …)` in SessionInfo.cpp:857
+   appears ineffective. Workaround: use `OutputDebugStringW` + Sysinternals DebugView.
+
+4. **`FTlsCertificateFile` lacks UI** — `WinSCPDialogs.cpp:4040` has a TODO.
+   WinSCP‑imported sessions may carry stale cert paths (e.g. `.ppk` files) with no
+   dialog control to clear them. Workaround: edit session XML directly.
+
+5. **`std::call_once` anti‑pattern** — `InitOpenssl()` caches failure permanently.
+   If foreground thread fails, background threads can never retry. Consider
+   thread‑local or resettable init state.
+
+### Debugging Artifacts (TEMP — to revert)
+
+All TEMP code documented in [fix-issue-389-pureftpd-tls-explicit.md §9](../references/fix-issue-389-pureftpd-tls-explicit.md#9-temp-code-to-revert-after-testing):
+
+| File | TEMP Change |
+|------|------------|
+| `Cryptography.cpp` | `ForceInitOpenssl()`, ERR tracing, `RequireTls()` fallback |
+| `FtpFileSystem.cpp` | Cert clearing, `fflush` |
+| `AsyncSslSocketLayer.cpp` | `SSL_VERIFY_NONE`, `TLS1_2_VERSION` limits |
+| `FtpControlSocket.cpp` | DebugView state traces |
+
+### Permanent Changes (keep)
+
+| File | Change |
+|------|--------|
+| `FtpControlSocket.cpp:626-637` | Unconditional `AUTH TLS` first for all explicit modes |
+| `FtpFileSystem.cpp:517` | `FTP encryption mode: Ftps=%d` diagnostic log |
+| `.ai-factory/references/fix-issue-389-pureftpd-tls-explicit.md` | Full investigation doc |
+| `.ai-factory/references/INDEX.md` | Index entries |
+| `.ai-factory/ARCHITECTURE.md` | Reference link |

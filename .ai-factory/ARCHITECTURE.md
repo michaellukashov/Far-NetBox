@@ -308,6 +308,7 @@ catch (const std::exception &E)
 |-----------|-------|
 | [cwe134-fmtload-vulnerability-scan](references/cwe134-fmtload-vulnerability-scan.md) | CWE-134 format string vulnerability scan: all vulnerable FMTLOAD call sites, risk levels, EscapeFmtChars utility |
 | [message-loading-system](references/message-loading-system.md) | GetMsg/FmtLoadStr resolution, ID mapping tables, debugging unmapped IDs |
+| [fix-issue-389-pureftpd-tls-explicit](references/fix-issue-389-pureftpd-tls-explicit.md) | Full investigation: FTP explicit TLS AUTH flow, state machine, OpenSSL 3 bn_div_words assembly crash, session log debugging |
 | [multithreading-audit-exploration](references/multithreading-audit-exploration.md) | Far API thread affinity violations, race conditions, busy-waiting, static state |
 | [crash-second-file-open-analysis](references/crash-second-file-open-analysis.md) | Dangling TRemoteFile pointers, directory listing invalidation |
 | [issue-501-ssh-scp-buffer-corruption-exploration](references/issue-501-ssh-scp-buffer-corruption-exploration.md) | Dynamic TCP send buffer resizing (SIO_IDEAL_SEND_BACKLOG_QUERY) causing SCP corruption and CPU saturation |
