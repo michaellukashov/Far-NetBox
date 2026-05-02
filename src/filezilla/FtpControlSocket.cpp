@@ -621,19 +621,13 @@ void CFtpControlSocket::LogOnToServer(BOOL bSkipReply /*=FALSE*/)
 
   if (m_Operation.nOpState == CONNECT_SSL_INIT)
   {
-    if (m_CurrentServer.nServerType & FZ_SERVERTYPE_LAYER_SSL_EXPLICIT)
-    {
-      if (!SendAuthSsl())
-      {
-        return;
-      }
-    }
-    else
-    {
-      if (!Send("AUTH TLS"))
-        return;
-      m_Operation.nOpState = CONNECT_TLS_NEGOTIATE;
-    }
+    LogMessage(FZ_LOG_INFO, L"Trying AUTH TLS for explicit encryption (serverType=0x%04X)",
+      m_CurrentServer.nServerType);
+    // TLS-first for all explicit encryption modes (issue #389).
+    // SSL-only servers are handled by the fallback in CONNECT_TLS_NEGOTIATE.
+    if (!Send("AUTH TLS"))
+      return;
+    m_Operation.nOpState = CONNECT_TLS_NEGOTIATE;
     return;
   }
   else if ((m_Operation.nOpState == CONNECT_SSL_NEGOTIATE) ||
@@ -644,6 +638,7 @@ void CFtpControlSocket::LogOnToServer(BOOL bSkipReply /*=FALSE*/)
     {
       if (m_Operation.nOpState == CONNECT_TLS_NEGOTIATE)
       {
+        LogMessage(FZ_LOG_INFO, L"AUTH TLS rejected (code=%d), falling back to AUTH SSL", res);
         // Try to fall back to AUTH SSL
         if (!SendAuthSsl())
         {

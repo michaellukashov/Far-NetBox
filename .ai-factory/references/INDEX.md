@@ -27,6 +27,7 @@ qt|| [cmake-refactoring-plan-exploration](cmake-refactoring-plan-exploration.md)
 | [fix-crash-second-file-open](fix-crash-second-file-open.md) | Fix crash on second file open without refresh | Planned | 2026-04-26 |
 | [silent-mode-research](silent-mode-research.md) | Silent mode research | Internal research | 2026-04-22 |
 | [winscp-source-architecture](winscp-source-architecture.md) | WinSCP source code architecture and integration guide | D:\Projects\WinSCP-work\winscp-master\source | 2026-04-22 |
+|| [fix-issue-389-pureftpd-tls-explicit](fix-issue-389-pureftpd-tls-explicit.md) | Pure-FTPd explicit TLS encryption fix: AUTH TLS first for SSL_EXPLICIT server type, with SSL fallback | FtpControlSocket.cpp, FtpFileSystem.cpp | 2026-05-02 |
 | [winscp-sessiondata-encryption-settings](winscp-sessiondata-encryption-settings.md) | WinSCP encryption field definitions, property macros, and TLS defaults | WinSCP source: SessionData.h, serialization macros | 2026-04-26 |
 | [netbox-s3filesystem-session-mapping](netbox-s3filesystem-session-mapping.md) | NetBox S3 session data fields, serialization gaps, and TLS setup | NetBox core/SessionData.h, core/S3FileSystem.cpp | 2026-04-26 |
 | [netbox-ui-dialogs-s3-config](netbox-ui-dialogs-s3-config.md) | NetBox S3 configuration UI controls and Load/Save patterns | NetBox WinSCPDialogs.cpp/h, FarDialog | 2026-04-26 |

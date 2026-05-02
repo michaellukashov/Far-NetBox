@@ -514,6 +514,7 @@ void TFTPFileSystem::Open()
   }
   else
   {
+    FTerminal->LogEvent(FORMAT("FTP encryption mode: Ftps=%d", nb::ToInt32(Data->GetFtps())));
     switch (Data->GetFtps())
     {
       case ftpsImplicit:
