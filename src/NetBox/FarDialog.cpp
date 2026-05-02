@@ -2060,7 +2060,7 @@ UnicodeString TFarEdit::GetTextFromDialog()
   }
 
   // Allocate buffer and retrieve full item data
-  std::vector<uint8_t> Buffer(Size);
+  nb::vector_t<uint8_t> Buffer(Size);
   FarGetDialogItem ItemInfo{};
   ItemInfo.StructSize = sizeof(FarGetDialogItem);
   ItemInfo.Size = Size;

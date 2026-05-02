@@ -12,7 +12,6 @@
 #include <TextsCore.h>
 #include <StrUtils.hpp>
 #if defined(__BORLANDC__)
-#include <vector>
 
 #pragma package(smart_init)
 #endif // defined(__BORLANDC__)
