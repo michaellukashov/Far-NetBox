@@ -69,6 +69,8 @@
      remembered SSH password from being submitted as a key passphrase;
      fix inverted `Result` check in `PromptUser()`; add diagnostic logging
 
+ * Session import prompts (#472) https://github.com/michaellukashov/Far-NetBox/issues/472
+
 ### Dependencies
 
  * Upgrade WinSCP sources: WinSCP 6.5.6
