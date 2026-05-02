@@ -518,7 +518,11 @@ void CFtpControlSocket::Connect(t_server &server)
     m_Operation.nOpState = InitConnectState();
   }
 
-  if (server.nServerType & FZ_SERVERTYPE_LAYER_SSL_IMPLICIT)
+    // TEMP: trace which TLS path is taken (issue #389 debugging)
+    LogMessage(FZ_LOG_INFO, L"DEBUG: nOpState=%d, nServerType=0x%04X, ssl_layer=%d, implicit_chk=%d",
+      m_Operation.nOpState, server.nServerType, m_pSslLayer?1:0,
+      ((server.nServerType & FZ_SERVERTYPE_LAYER_SSL_IMPLICIT) ? 1 : 0));
+    if (server.nServerType & FZ_SERVERTYPE_LAYER_SSL_IMPLICIT)
   {
     if (!m_pSslLayer)
     {
