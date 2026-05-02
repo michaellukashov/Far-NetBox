@@ -161,6 +161,20 @@ Modify `FtpControlSocket.cpp` to treat `FZ_SERVERTYPE_LAYER_SSL_EXPLICIT` the sa
 - **Not a NetBox bug**, but blocks QA from verifying TLS fixes on affected machines.
 - **Action:** Updated `.ai-factory/references/INDEX.md` to document the `no-asm` rebuild workaround and NASM version requirements.
 
+#### Task 14: Fix `InitOpenssl()` `std::call_once` anti-pattern [ ]
+- **File:** `src/core/Cryptography.cpp` (lines 634-648)
+- **Why:** `std::call_once` caches failure permanently. OpenSSL's own `RUN_ONCE` mechanism inside `OPENSSL_init_ssl()` already provides thread-safe once-only semantics. NetBox's `std::call_once` wrapper is redundant — it prevents OpenSSL from retrying after transient failures (bad certificate, missing config). Even after clearing the bad `TlsCertificateFile` (Task 13), `InitOpenssl()` still returns `false` if it ever failed before.
+- **Fix:** Remove `std::call_once` and `static std::once_flag`. Call `OPENSSL_init_ssl()` directly. OpenSSL handles its own caching safely.
+  ```cpp
+  static bool InitOpenssl()
+  {
+    ERR_clear_error();
+    return OPENSSL_init_ssl(OPENSSL_INIT_LOAD_SSL_STRINGS, nullptr);
+  }
+  ```
+- **Note:** The comment "OPENSSL_init_ssl caches the initialization results based on the flags" (line 644) is correct — OpenSSL DOES cache. NetBox's `std::call_once` is unnecessary and harmful.
+- **Verification:** After applying this fix, clear a bad certificate from a session and reconnect. `InitOpenssl()` should return `true` and the TLS connection should proceed.
+
 #### Task 13: `FTlsCertificateFile` UI gap follow-up [x]
 - **Discovery:** `WinSCPDialogs.cpp:4040` has a TODO for `TlsCertificateFileEdit`; WinSCP-imported sessions may carry stale `.ppk` paths in `FTlsCertificateFile` with no dialog control to clear them.
 - **Impact:** This caused the initial OpenSSL init failure during debugging.
@@ -180,14 +194,13 @@ Modify `FtpControlSocket.cpp` to treat `FZ_SERVERTYPE_LAYER_SSL_EXPLICIT` the sa
 4. **Implicit SSL (`ftpsImplicit`):** Not affected; uses a different code path (SSL layer before any AUTH).
 5. **UI combo index 3 (`ftpsExplicitTls`):** Currently unreachable via UI; if ever used, behavior unchanged (TLS first, SSL fallback).
 
-## Acceptance Criteria
-
-- [x] Pure‑FTPd with explicit encryption connects successfully.
+- [ ] Pure‑FTPd with explicit encryption connects successfully.
 - [x] Logs show `AUTH TLS` sent when server type is `SSL_EXPLICIT`.
 - [x] Logs show fallback to `AUTH SSL` when TLS fails (for SSL‑only servers).
 - [x] Existing SSL‑only servers still work (no regression).
 - [x] `ftpsExplicitTls` path verified (no regression for index 3).
 - [x] `SendAuthSsl()` fallback state transition verified.
+- [ ] OpenSSL init succeeds after clearing a bad `TlsCertificateFile` (no `std::call_once` cache).
 - [x] Build passes with zero warnings.
 - [x] Commit message follows conventional format.
 ## Changelog
@@ -199,6 +212,7 @@ Modify `FtpControlSocket.cpp` to treat `FZ_SERVERTYPE_LAYER_SSL_EXPLICIT` the sa
 | 2026-04-30 | Added Tasks 4 & 5 (compatibility & fallback) | Safety verification gaps |
 | 2026-05-02 | Implemented and verified via DebugView      | Build + manual test |
 | 2026-05-02 | Refined: TEMP cleanup tasks, tracker update   | aif-improve second pass |
+| 2026-05-02 | Added Task 14: Remove `std::call_once` from `InitOpenssl()` | Root cause of init failure after cert clear |
 ## Code Review (2026-05-02)
 
 ### Reviewer Findings
@@ -279,18 +293,14 @@ Full investigation: [.ai-factory/references/fix-issue-389-pureftpd-tls-explicit.
    Triggered on all Pure‑FTPd test servers. Not a NetBox issue — rebuild OpenSSL
    with `no-asm` or update NASM.
 
-3. **Session log files are zero‑length** — Files matching `ftp-user@<host>---enc.log`
+| 3. **`std::call_once` anti-pattern in `InitOpenssl()`** — `static std::once_flag OpenSSLInitOnce` (Cryptography.cpp:634) caches OpenSSL init failure permanently. Even after clearing the bad `TlsCertificateFile` (Task 13) and the certificate field showing `[Client certificate: No]`, `InitOpenssl()` still returns `false` because the lambda never re-runs. OpenSSL's own `RUN_ONCE` inside `OPENSSL_init_ssl()` already handles once-only semantics safely; NetBox's `std::call_once` wrapper is redundant and harmful.
+4. **Session log files are zero‑length** — Files matching `ftp-user@<host>---enc.log`
    are created but never populated. `setvbuf(…, _IONBF, …)` in SessionInfo.cpp:857
    appears ineffective. Workaround: use `OutputDebugStringW` + Sysinternals DebugView.
 
-4. **`FTlsCertificateFile` lacks UI** — `WinSCPDialogs.cpp:4040` has a TODO.
+5. **`FTlsCertificateFile` lacks UI** — `WinSCPDialogs.cpp:4040` has a TODO.
    WinSCP‑imported sessions may carry stale cert paths (e.g. `.ppk` files) with no
    dialog control to clear them. Workaround: edit session XML directly.
-
-5. **`std::call_once` anti‑pattern** — `InitOpenssl()` caches failure permanently.
-   If foreground thread fails, background threads can never retry. Consider
-   thread‑local or resettable init state.
-
 ### Debugging Artifacts (TEMP — to revert)
 
 All TEMP code documented in [fix-issue-389-pureftpd-tls-explicit.md §9](../references/fix-issue-389-pureftpd-tls-explicit.md#9-temp-code-to-revert-after-testing):
