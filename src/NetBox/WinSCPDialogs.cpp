@@ -1766,6 +1766,8 @@ private:
   void TlsCertificateFileBrowseClick(TFarButton * Sender, bool & Close);
   void WebDAVTlsCertificateFileBrowseClick(TFarButton * Sender, bool & Close);
   void S3TlsCertificateFileBrowseClick(TFarButton * Sender, bool & Close);
+  void PrivateKeyFileBrowseClick(TFarButton * Sender, bool & Close);
+  void OpensshCertFileBrowseClick(TFarButton * Sender, bool & Close);
   static bool IsSshProtocol(TFSProtocol FSProtocol);
   bool IsWebDAVProtocol(TFSProtocol FSProtocol) const;
   bool IsSshOrWebDAVProtocol(TFSProtocol FSProtocol) const;
@@ -1806,6 +1808,8 @@ private:
   TFarEdit * S3CACertificateEdit{nullptr};
   TFarEdit * PasswordEdit{nullptr};
   TFarEdit * PrivateKeyEdit{nullptr};
+  TFarButton * PrivateKeyBrowseBtn{nullptr};
+  TFarButton * PrivateKeyViewBtn{nullptr};
   TFarComboBox * TransferProtocolCombo{nullptr};
   TFarCheckBox * AllowScpFallbackCheck{nullptr};
   TFarText * HostNameLabel{nullptr};
@@ -1878,11 +1882,12 @@ private:
   TFarCheckBox * AgentFwdCheck{nullptr};
   TFarCheckBox * AuthGSSAPICheck3{nullptr};
   TFarCheckBox * GSSAPIFwdTGTCheck{nullptr};
-  TFarCheckBox * UseOpensshCertCheck{nullptr};
+  // TFarCheckBox * UseOpensshCertCheck{nullptr};
   TFarText * OpensshCertLabel{nullptr};
+  TFarButton * OpensshCertBrowseBtn{nullptr};
   TFarEdit * OpensshCertEdit{nullptr};
-  TFarText * OpensshKeyLabel{nullptr};
-  TFarEdit * OpensshKeyEdit{nullptr};
+  // TFarText * OpensshKeyLabel{nullptr};
+  // TFarEdit * OpensshKeyEdit{nullptr};
   TFarCheckBox * DeleteToRecycleBinCheck{nullptr};
   TFarCheckBox * OverwrittenToRecycleBinCheck{nullptr};
   TFarEdit * RecycleBinPathEdit{nullptr};
@@ -1893,6 +1898,7 @@ private:
   TFarListBox * KexListBox{nullptr};
   TFarButton * KexUpButton{nullptr};
   TFarButton * KexDownButton{nullptr};
+  TFarCheckBox * AuthGSSAPIKEXCheck{nullptr};
   TFarEdit * SFTPMinPacketSizeEdit{nullptr};
   TFarEdit * SFTPMaxPacketSizeEdit{nullptr};
   TFarEdit * RekeyTimeEdit{nullptr};
@@ -2208,17 +2214,6 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   PasswordEdit->SetRight(CRect.Right - 12 - 2);
   PasswordEdit->SetVisible(true);
 
-  SetNextItemPosition(ipNewLine);
-  Text = MakeOwnedObject<TFarText>(this);
-  SetNextItemPosition(ipNewLine);
-
-  Text = MakeOwnedObject<TFarText>(this);
-  Text->SetCaption(GetMsg(NB_LOGIN_PRIVATE_KEY));
-
-  PrivateKeyEdit = MakeOwnedObject<TFarEdit>(this);
-  Text->SetEnabledFollow(PrivateKeyEdit);
-
-  Separator = MakeOwnedObject<TFarSeparator>(this);
 
   Text = MakeOwnedObject<TFarText>(this);
   Text->SetTop(CRect.Bottom - 3);
@@ -3079,6 +3074,11 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
     Ssh2DESCheck = nullptr;
   }
 
+  AuthGSSAPIKEXCheck = MakeOwnedObject<TFarCheckBox>(this);
+  AuthGSSAPIKEXCheck->SetCaption(GetMsg(NB_LOGIN_KEX_GSSAPI));
+
+  SetNextItemPosition(ipNewLine);
+
   // KEX tab
 
   SetDefaultGroup(tabKex);
@@ -3158,11 +3158,56 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   AuthKIPasswordCheck->SetCaption(GetMsg(NB_LOGIN_AUTH_KI_PASSWORD));
   AuthKIPasswordCheck->Move(4, 0);
 
+  // Authentication parameters
   Separator = MakeOwnedObject<TFarSeparator>(this);
   Separator->SetCaption(GetMsg(NB_LOGIN_AUTH_PARAMS_GROUP));
 
   AgentFwdCheck = MakeOwnedObject<TFarCheckBox>(this);
   AgentFwdCheck->SetCaption(GetMsg(NB_LOGIN_AUTH_AGENT_FWD));
+  SetNextItemPosition(ipNewLine);
+
+  Text = MakeOwnedObject<TFarText>(this);
+  Text->SetCaption(GetMsg(NB_LOGIN_PRIVATE_KEY));
+  SetNextItemPosition(ipNewLine);
+
+  PrivateKeyEdit = MakeOwnedObject<TFarEdit>(this);
+  Text->SetEnabledFollow(PrivateKeyEdit);
+  PrivateKeyEdit->SetWidth(40);
+  SetNextItemPosition(ipRight);
+  PrivateKeyBrowseBtn = MakeOwnedObject<TFarButton>(this);
+  PrivateKeyBrowseBtn->SetCaption(L"\u2026");
+  PrivateKeyBrowseBtn->SetOnClick(nb::bind(&TSessionDialog::PrivateKeyFileBrowseClick, this));
+  SetNextItemPosition(ipNewLine);
+
+  PrivateKeyViewBtn = MakeOwnedObject<TFarButton>(this);
+  PrivateKeyViewBtn->SetCaption(GetMsg(NB_LOGIN_DISPLAY_PUBLIC_KEY));
+  PrivateKeyViewBtn->SetRight(PrivateKeyBrowseBtn->GetRight());
+  SetNextItemPosition(ipNewLine);
+
+  // OpenSSH Certificate
+  // Separator = MakeOwnedObject<TFarSeparator>(this);
+  // Separator->SetCaption(GetMsg(NB_LOGIN_AUTH_OPENSSH_CERT_GROUP));
+
+  // UseOpensshCertCheck = MakeOwnedObject<TFarCheckBox>(this);
+  // UseOpensshCertCheck->SetCaption(GetMsg(NB_LOGIN_AUTH_USE_OPENSSH_CERT));
+  // UseOpensshCertCheck->SetOnAllowChange(nb::bind(&TSessionDialog::UseOpensshCertCheckAllowChange, this));
+
+  OpensshCertLabel = MakeOwnedObject<TFarText>(this);
+  OpensshCertLabel->SetCaption(GetMsg(NB_LOGIN_AUTH_OPENSSH_CERT_FILE));
+
+  OpensshCertEdit = MakeOwnedObject<TFarEdit>(this);
+  OpensshCertEdit->SetWidth(30);
+  SetNextItemPosition(ipRight);
+  OpensshCertBrowseBtn = MakeOwnedObject<TFarButton>(this);
+  OpensshCertBrowseBtn->SetCaption(L"\u2026");
+  OpensshCertBrowseBtn->SetOnClick(nb::bind(&TSessionDialog::OpensshCertFileBrowseClick, this));
+
+  // OpensshKeyLabel = MakeOwnedObject<TFarText>(this);
+  // OpensshKeyLabel->SetCaption(GetMsg(NB_LOGIN_AUTH_OPENSSH_KEY_FILE));
+
+  // OpensshKeyEdit = MakeOwnedObject<TFarEdit>(this);
+  // OpensshKeyEdit->SetWidth(30);
+  SetNextItemPosition(ipNewLine);
 
   // GSSAPI
   Separator = MakeOwnedObject<TFarSeparator>(this);
@@ -3177,25 +3222,6 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   MakeOwnedObject<TFarSeparator>(this);
 
-  // OpenSSH Certificate
-  Separator = MakeOwnedObject<TFarSeparator>(this);
-  Separator->SetCaption(GetMsg(NB_LOGIN_AUTH_OPENSSH_CERT_GROUP));
-
-  UseOpensshCertCheck = MakeOwnedObject<TFarCheckBox>(this);
-  UseOpensshCertCheck->SetCaption(GetMsg(NB_LOGIN_AUTH_USE_OPENSSH_CERT));
-  UseOpensshCertCheck->SetOnAllowChange(nb::bind(&TSessionDialog::UseOpensshCertCheckAllowChange, this));
-
-  OpensshCertLabel = MakeOwnedObject<TFarText>(this);
-  OpensshCertLabel->SetCaption(GetMsg(NB_LOGIN_AUTH_OPENSSH_CERT_FILE));
-
-  OpensshCertEdit = MakeOwnedObject<TFarEdit>(this);
-  OpensshCertEdit->SetWidth(30);
-
-  OpensshKeyLabel = MakeOwnedObject<TFarText>(this);
-  OpensshKeyLabel->SetCaption(GetMsg(NB_LOGIN_AUTH_OPENSSH_KEY_FILE));
-
-  OpensshKeyEdit = MakeOwnedObject<TFarEdit>(this);
-  OpensshKeyEdit->SetWidth(30);
 
   // Bugs tab
 
@@ -3473,6 +3499,8 @@ void TSessionDialog::UpdateControls()
   FtpEncryptionLabel->SetVisible(FtpEncryptionVisible);
   FtpEncryptionCombo->SetVisible(FtpEncryptionVisible);
   PrivateKeyEdit->SetEnabled(aSshProtocol || aFtpsProtocol || HTTPSProtocol);
+  PrivateKeyBrowseBtn->SetEnabled(PrivateKeyEdit->GetEnabled());
+  PrivateKeyViewBtn->SetEnabled(PrivateKeyEdit->GetEnabled() && !PrivateKeyEdit->GetText().IsEmpty());
 //  HostNameLabel->SetCaption(GetMsg(NB_LOGIN_HOST_NAME));
 
   UserNameEdit->SetEnabled(!LoginAnonymous);
@@ -3550,12 +3578,14 @@ void TSessionDialog::UpdateControls()
   AuthGSSAPICheck3->SetEnabled(Authentication);
   GSSAPIFwdTGTCheck->SetEnabled(Authentication);
 
-  const bool UseOpensshCert = UseOpensshCertCheck->GetChecked();
-  UseOpensshCertCheck->SetEnabled(aSshProtocol && Authentication);
+  // const bool UseOpensshCert = UseOpensshCertCheck->GetChecked();
+  // UseOpensshCertCheck->SetEnabled(aSshProtocol && Authentication);
+  const bool UseOpensshCert = !OpensshCertEdit->GetText().IsEmpty();
   OpensshCertLabel->SetEnabled(aSshProtocol && Authentication && UseOpensshCert);
   OpensshCertEdit->SetEnabled(aSshProtocol && Authentication && UseOpensshCert);
-  OpensshKeyLabel->SetEnabled(aSshProtocol && Authentication && UseOpensshCert);
-  OpensshKeyEdit->SetEnabled(aSshProtocol && Authentication && UseOpensshCert);
+  OpensshCertBrowseBtn->SetEnabled(OpensshCertEdit->GetEnabled());
+  // OpensshKeyLabel->SetEnabled(aSshProtocol && Authentication && UseOpensshCert);
+  // OpensshKeyEdit->SetEnabled(aSshProtocol && Authentication && UseOpensshCert);
 
   // Directories tab
   CacheDirectoryChangesCheck->SetEnabled(
@@ -3581,6 +3611,7 @@ void TSessionDialog::UpdateControls()
   KexUpButton->SetEnabled((KexListBox->GetItems()->GetLastPosChange() > 0));
   KexDownButton->SetEnabled(
     (KexListBox->GetItems()->GetLastPosChange() < KexListBox->GetItems()->GetCount() - 1));
+  AuthGSSAPIKEXCheck->SetEnabled(aSshProtocol);
 
   // Bugs tab
   BugsTab->SetEnabled(aSshProtocol);
@@ -3944,6 +3975,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
   RekeyTimeEdit->SetAsInteger(SessionData->GetRekeyTime());
   RekeyDataEdit->SetText(SessionData->GetRekeyData());
 
+  AuthGSSAPIKEXCheck->SetChecked(SessionData->AuthGSSAPIKEX);
   KexListBox->GetItems()->BeginUpdate();
   try__finally
   {
@@ -3970,9 +4002,9 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
   AuthGSSAPICheck3->SetChecked(SessionData->GetAuthGSSAPI());
   GSSAPIFwdTGTCheck->SetChecked(SessionData->GetGSSAPIFwdTGT());
 
-  UseOpensshCertCheck->SetChecked(SessionData->GetUseOpensshCertificate());
+  // UseOpensshCertCheck->SetChecked(SessionData->GetUseOpensshCertificate());
   OpensshCertEdit->SetText(SessionData->DetachedCertificate);
-  OpensshKeyEdit->SetText(SessionData->GetOpensshPrivateKeyFile());
+  // OpensshKeyEdit->SetText(SessionData->GetOpensshPrivateKeyFile());
 
   // Bugs tab
 
@@ -4306,6 +4338,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     {
       SessionData->SetKex(Index6, static_cast<TKex>(nb::ToUIntPtr(KexListBox->GetItems()->Objects[Index6])));
     }
+    SessionData->AuthGSSAPIKEX = AuthGSSAPIKEXCheck->GetChecked();
 
     // Authentication tab
     SessionData->SetSshNoUserAuth(SshNoUserAuthCheck->GetChecked());
@@ -4316,9 +4349,9 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     SessionData->SetAuthGSSAPI(AuthGSSAPICheck3->GetChecked());
     SessionData->SetGSSAPIFwdTGT(GSSAPIFwdTGTCheck->GetChecked());
 
-    SessionData->SetUseOpensshCertificate(UseOpensshCertCheck->GetChecked());
+    // SessionData->SetUseOpensshCertificate(UseOpensshCertCheck->GetChecked());
     SessionData->SetDetachedCertificate(OpensshCertEdit->GetText());
-    SessionData->SetOpensshPrivateKeyFile(OpensshKeyEdit->GetText());
+    // SessionData->SetOpensshPrivateKeyFile(OpensshKeyEdit->GetText()); // TODO: sync with WinSCP
 
     // Bugs tab
     // BUGS();
@@ -5005,6 +5038,42 @@ void TSessionDialog::S3TlsCertificateFileBrowseClick(TFarButton * /*Sender*/, bo
   if (GetOpenFileNameW(&ofn))
   {
     S3TlsCertificateFileEdit->SetText(FileName);
+  }
+  Close = false;
+}
+
+void TSessionDialog::PrivateKeyFileBrowseClick(TFarButton * /*Sender*/, bool & Close)
+{
+  wchar_t FileName[MAX_PATH] = { 0 };
+  OPENFILENAMEW ofn = { 0 };
+  ofn.lStructSize = sizeof(ofn);
+  ofn.hwndOwner = GetConsoleWindow();
+  ofn.lpstrFile = FileName;
+  ofn.nMaxFile = MAX_PATH;
+  ofn.lpstrFilter = L"PuTTY Private Key Files (*.ppk)\0*.ppk\0All Private Key Files (*.ppk;*.pem;*.key;id_*)\0*.ppk;*.pem;*.key;id_*\0All Files (*.*)\0*.*\0";
+  ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
+
+  if (GetOpenFileNameW(&ofn))
+  {
+    PrivateKeyEdit->SetText(FileName);
+  }
+  Close = false;
+}
+
+void TSessionDialog::OpensshCertFileBrowseClick(TFarButton * /*Sender*/, bool & Close)
+{
+  wchar_t FileName[MAX_PATH] = { 0 };
+  OPENFILENAMEW ofn = { 0 };
+  ofn.lStructSize = sizeof(ofn);
+  ofn.hwndOwner = GetConsoleWindow();
+  ofn.lpstrFile = FileName;
+  ofn.nMaxFile = MAX_PATH;
+  ofn.lpstrFilter = L"Public key files (*.pub)\0*.pub\0All Files (*.*)\0*.*\0";
+  ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
+
+  if (GetOpenFileNameW(&ofn))
+  {
+    OpensshCertEdit->SetText(FileName);
   }
   Close = false;
 }

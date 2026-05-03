@@ -284,7 +284,12 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
   conf_set_filename(conf, CONF_ssh_gss_custom, GssLibCustomFileName);
   filename_free(GssLibCustomFileName);
 
-  Filename * AFileName = filename_from_utf8(UTF8String(Data->ResolvePublicKeyFile()).c_str());
+  UnicodeString KeyFile = Data->ResolvePublicKeyFile();
+  if (Data->GetUseOpensshCertificate() && !Data->GetOpensshPrivateKeyFile().IsEmpty())
+  {
+    KeyFile = ExpandEnvironmentVariables(Data->GetOpensshPrivateKeyFile());
+  }
+  Filename * AFileName = filename_from_utf8(UTF8String(KeyFile).c_str());
   conf_set_filename(conf, CONF_keyfile, AFileName);
   filename_free(AFileName);
 
