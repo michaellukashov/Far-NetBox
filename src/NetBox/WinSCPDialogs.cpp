@@ -1808,8 +1808,8 @@ private:
   TFarEdit * UserNameEdit{nullptr};
   TFarText * PasswordLabel{nullptr};
   TFarText * S3SecretAccessKeyLabel{nullptr};
-  TFarText * S3CACertificateLabel{nullptr};
-  TFarEdit * S3CACertificateEdit{nullptr};
+  // TFarText * S3CACertificateLabel{nullptr};
+  // TFarEdit * S3CACertificateEdit{nullptr};
   TFarEdit * PasswordEdit{nullptr};
   TFarEdit * PrivateKeyEdit{nullptr};
   TFarButton * PrivateKeyBrowseBtn{nullptr};
@@ -1931,8 +1931,8 @@ private:
   TFarComboBox * S3UrlStyleCombo{nullptr};
   TFarComboBox * S3DefaultRegionCombo{nullptr};
   TFarCheckBox * S3RequesterPaysCheck{nullptr};
-  TFarButton * S3CACertificateLoadBtn{nullptr};
-  TFarButton * S3CACertificateSaveBtn{nullptr};
+  // TFarButton * S3CACertificateLoadBtn{nullptr};
+  // TFarButton * S3CACertificateSaveBtn{nullptr};
   TFarComboBox * MinTlsVersionCombo{nullptr};
   TFarComboBox * MaxTlsVersionCombo{nullptr};
   TFarEdit * S3SessionTokenEdit{nullptr};
@@ -1941,9 +1941,9 @@ private:
   TFarEdit * S3RoleArnEdit{nullptr};
   TFarText * S3RoleSessionNameLabel{nullptr};
   TFarEdit * S3RoleSessionNameEdit{nullptr};
-  TFarCheckBox * S3CredentialsEnvCheck{nullptr};
-  TFarComboBox * S3ProfileCombo{nullptr};
-  TFarText * S3ProfileLabel{nullptr};
+  // TFarCheckBox * S3CredentialsEnvCheck{nullptr};
+  // TFarComboBox * S3ProfileCombo{nullptr};
+  // TFarText * S3ProfileLabel{nullptr};
 
   std::unique_ptr<TObjectList> FTabs{std::make_unique<TObjectList>()};
   int32_t FFirstVisibleTabIndex{0};
@@ -2616,26 +2616,26 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   // Credentials from AWS environment
   SetNextItemPosition(ipNewLine);
-  S3CACertificateLabel = MakeOwnedObject<TFarText>(this);
-  S3CACertificateLabel->SetCaption(GetMsg(NB_LOGIN_S3_CA_CERTIFICATE));
-  S3CACertificateLabel->SetWidth(20);
-  S3CACertificateLabel->SetVisible(false);
-  S3CredentialsEnvCheck = MakeOwnedObject<TFarCheckBox>(this);
-  S3CredentialsEnvCheck->SetCaption(GetMsg(NB_S3_CREDENTIALS_ENV));
-  S3CredentialsEnvCheck->SetVisible(false);
-  S3CredentialsEnvCheck->SetOnAllowChange(nb::bind(&TSessionDialog::S3CredentialsEnvCheckAllowChange, this));
+  // S3CACertificateLabel = MakeOwnedObject<TFarText>(this);
+  // S3CACertificateLabel->SetCaption(GetMsg(NB_LOGIN_S3_CA_CERTIFICATE));
+  // S3CACertificateLabel->SetWidth(20);
+  // S3CACertificateLabel->SetVisible(false);
+  // S3CredentialsEnvCheck = MakeOwnedObject<TFarCheckBox>(this);
+  // S3CredentialsEnvCheck->SetCaption(GetMsg(NB_S3_CREDENTIALS_ENV));
+  // S3CredentialsEnvCheck->SetVisible(false);
+  // S3CredentialsEnvCheck->SetOnAllowChange(nb::bind(&TSessionDialog::S3CredentialsEnvCheckAllowChange, this));
 
   // Profile dropdown
-  SetNextItemPosition(ipRight);
-  S3ProfileLabel = MakeOwnedObject<TFarText>(this);
-  S3ProfileLabel->SetCaption(GetMsg(NB_S3_PROFILE));
-  S3ProfileLabel->SetVisible(false);
+  // SetNextItemPosition(ipRight);
+  // S3ProfileLabel = MakeOwnedObject<TFarText>(this);
+  // S3ProfileLabel->SetCaption(GetMsg(NB_S3_PROFILE));
+  // S3ProfileLabel->SetVisible(false);
 
-  SetNextItemPosition(ipRight);
-  S3ProfileCombo = MakeOwnedObject<TFarComboBox>(this);
-  S3ProfileCombo->SetWidth(25);
-  S3ProfileCombo->SetVisible(false);
-  S3ProfileCombo->GetItems()->Add(GetMsg(NB_S3_GENERAL_NAME));
+  // SetNextItemPosition(ipRight);
+  // S3ProfileCombo = MakeOwnedObject<TFarComboBox>(this);
+  // S3ProfileCombo->SetWidth(25);
+  // S3ProfileCombo->SetVisible(false);
+  // S3ProfileCombo->GetItems()->Add(GetMsg(NB_S3_GENERAL_NAME));
 
   // Session Token
   SetNextItemPosition(ipNewLine);
@@ -2918,10 +2918,6 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   Separator->SetCaption(GetMsg(NB_TLS_OPTIONS));
 
   SetNextItemPosition(ipNewLine);
-  SslSessionReuseCheck = MakeOwnedObject<TFarCheckBox>(this);
-  SslSessionReuseCheck->SetCaption(GetMsg(NB_LOGIN_FTP_SSLSESSIONREUSE));
-
-  SetNextItemPosition(ipNewLine);
   Text = MakeOwnedObject<TFarText>(this);
   Text->SetCaption(GetMsg(NB_TLS_MIN_VERSION));
   Text->SetWidth(20);
@@ -2937,10 +2933,10 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   MinTlsVersionCombo->GetItems()->AddObject(GetTlsVersionName(tls12), ToObj(nb::ToPtr(tls12)));
   MinTlsVersionCombo->GetItems()->AddObject(GetTlsVersionName(tls13), ToObj(nb::ToPtr(tls13)));
 
-  SetNextItemPosition(ipRight);
+  SetNextItemPosition(ipNewLine);
   Text = MakeOwnedObject<TFarText>(this);
   Text->SetCaption(GetMsg(NB_TLS_MAX_VERSION));
-  Text->SetWidth(3);
+  Text->SetWidth(20);
   Text->SetVisible(false);
 
   SetNextItemPosition(ipRight);
@@ -2952,6 +2948,11 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   MaxTlsVersionCombo->GetItems()->AddObject(GetTlsVersionName(tls11), ToObj(nb::ToPtr(tls11)));
   MaxTlsVersionCombo->GetItems()->AddObject(GetTlsVersionName(tls12), ToObj(nb::ToPtr(tls12)));
   MaxTlsVersionCombo->GetItems()->AddObject(GetTlsVersionName(tls13), ToObj(nb::ToPtr(tls13)));
+
+  SetNextItemPosition(ipNewLine);
+  SslSessionReuseCheck = MakeOwnedObject<TFarCheckBox>(this);
+  SslSessionReuseCheck->SetCaption(GetMsg(NB_LOGIN_FTP_SSLSESSIONREUSE));
+
   // Tunnel tab
 
   SetNextItemPosition(ipNewLine);
@@ -3566,13 +3567,13 @@ void TSessionDialog::UpdateControls()
   S3AccessKeyIDLabel->SetVisible(IsMainTab && aS3Protocol);
   PasswordLabel->SetVisible(IsMainTab && !aS3Protocol);
   S3SecretAccessKeyLabel->SetVisible(IsMainTab && aS3Protocol);
-  S3CACertificateLabel->SetVisible(IsMainTab && aS3Protocol);
-  S3CACertificateEdit->SetVisible(IsMainTab && aS3Protocol);
-  S3CACertificateLoadBtn->SetVisible(IsMainTab && aS3Protocol);
-  S3CACertificateSaveBtn->SetVisible(IsMainTab && aS3Protocol);
-  S3CredentialsEnvCheck->SetVisible(IsMainTab && aS3Protocol);
-  S3ProfileLabel->SetVisible(IsMainTab && aS3Protocol);
-  S3ProfileCombo->SetVisible(IsMainTab && aS3Protocol);
+  // S3CACertificateLabel->SetVisible(IsMainTab && aS3Protocol);
+  // S3CACertificateEdit->SetVisible(IsMainTab && aS3Protocol);
+  // S3CACertificateLoadBtn->SetVisible(IsMainTab && aS3Protocol);
+  // S3CACertificateSaveBtn->SetVisible(IsMainTab && aS3Protocol);
+  // S3CredentialsEnvCheck->SetVisible(IsMainTab && aS3Protocol);
+  // S3ProfileLabel->SetVisible(IsMainTab && aS3Protocol);
+  // S3ProfileCombo->SetVisible(IsMainTab && aS3Protocol);
 
   // Connection sheet
   FtpPasvModeCheck->SetEnabled(aFtpProtocol);
@@ -3605,12 +3606,12 @@ void TSessionDialog::UpdateControls()
   S3UrlStyleCombo->Enabled = aS3Protocol;
   S3DefaultRegionCombo->Enabled = aS3Protocol;
   S3RequesterPaysCheck->Enabled = aS3Protocol;
-  S3CACertificateEdit->Enabled = aS3Protocol;
-  S3CACertificateLoadBtn->SetEnabled(aS3Protocol);
-  S3CACertificateSaveBtn->SetEnabled(aS3Protocol);
-  const bool autoCred = S3CredentialsEnvCheck->GetChecked();
-  S3CredentialsEnvCheck->Enabled = aS3Protocol;
-  S3ProfileCombo->Enabled = aS3Protocol && autoCred;
+  // S3CACertificateEdit->Enabled = aS3Protocol;
+  // S3CACertificateLoadBtn->SetEnabled(aS3Protocol);
+  // S3CACertificateSaveBtn->SetEnabled(aS3Protocol);
+  // const bool autoCred = S3CredentialsEnvCheck->GetChecked();
+  // S3CredentialsEnvCheck->Enabled = aS3Protocol;
+  // S3ProfileCombo->Enabled = aS3Protocol;
 
   S3SessionTokenEdit->Enabled = aS3Protocol && !FSessionData->HasAutoCredentials();
   S3SessionTokenLabel->Enabled = S3SessionTokenEdit->GetEnabled();
@@ -3924,29 +3925,29 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     S3UrlStyleCombo->ItemIndex = 0;
   }
   S3RequesterPaysCheck->Checked = FSessionData->S3RequesterPays;
-  S3CACertificateEdit->SetText(FSessionData->S3CACertificate);
+  // S3CACertificateEdit->SetText(FSessionData->S3CACertificate);
   MinTlsVersionCombo->ItemIndex = TlsVersionToIndex(FSessionData->MinTlsVersion);
   MaxTlsVersionCombo->ItemIndex = TlsVersionToIndex(FSessionData->MaxTlsVersion);
-  S3CredentialsEnvCheck->SetChecked(FSessionData->S3CredentialsEnv);
+  // S3CredentialsEnvCheck->SetChecked(FSessionData->S3CredentialsEnv);
   UnicodeString S3ProfileValue = FSessionData->S3Profile;
   // Populate profile combo from AWS config files
   // "General S3" already added as item 0 during creation
-  {
-    S3ProfileCombo->GetItems()->BeginUpdate();
-    SCOPE_EXIT
-    {
-      S3ProfileCombo->GetItems()->EndUpdate();
-    };
-    std::unique_ptr<TStrings> Profiles(GetS3Profiles());
-    for (int32_t Idx = 0; Idx < Profiles->GetCount(); ++Idx)
-    {
-      UnicodeString Prof = Profiles->GetString(Idx);
-      if (S3ProfileCombo->GetItems()->IndexOf(Prof) < 0)
-        S3ProfileCombo->GetItems()->Add(Prof);
-    }
-  }
-  S3ProfileCombo->SetText(S3ProfileValue.IsEmpty() ? GetMsg(NB_S3_GENERAL_NAME) : S3ProfileValue);
-  S3ProfileCombo->Enabled = FSessionData->S3CredentialsEnv;
+  // {
+  //   S3ProfileCombo->GetItems()->BeginUpdate();
+  //   SCOPE_EXIT
+  //   {
+  //     S3ProfileCombo->GetItems()->EndUpdate();
+  //   };
+  //   std::unique_ptr<TStrings> Profiles(GetS3Profiles());
+  //   for (int32_t Idx = 0; Idx < Profiles->GetCount(); ++Idx)
+  //   {
+  //     UnicodeString Prof = Profiles->GetString(Idx);
+  //     if (S3ProfileCombo->GetItems()->IndexOf(Prof) < 0)
+  //       S3ProfileCombo->GetItems()->Add(Prof);
+  //   }
+  // }
+  // S3ProfileCombo->SetText(S3ProfileValue.IsEmpty() ? GetMsg(NB_S3_GENERAL_NAME) : S3ProfileValue);
+  // S3ProfileCombo->Enabled = FSessionData->S3CredentialsEnv;
   S3SessionTokenEdit->SetText(FSessionData->S3SessionToken);
   S3RoleArnEdit->SetText(FSessionData->S3RoleArn);
   S3RoleSessionNameEdit->SetText(FSessionData->S3RoleSessionName);
@@ -4283,18 +4284,18 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     FSessionData->S3DefaultRegion = S3DefaultRegionCombo->Text;
     FSessionData->S3UrlStyle = S3UrlStyleCombo->ItemIndex == 0 ? s3usVirtualHost : s3usPath;
     FSessionData->S3RequesterPays = S3RequesterPaysCheck->Checked;
-    FSessionData->SetS3CACertificate(S3CACertificateEdit->GetText());
+    // FSessionData->SetS3CACertificate(S3CACertificateEdit->GetText());
     TTlsVersion MinTls = ssl2;
     TTlsVersion MaxTls = ssl2;
     MinTls = IndexToTlsVersion(MinTlsVersionCombo->ItemIndex);
     MaxTls = IndexToTlsVersion(MaxTlsVersionCombo->ItemIndex);
-    FSessionData->SetS3CredentialsEnv(S3CredentialsEnvCheck->GetChecked());
-    {
-      UnicodeString Profile = S3ProfileCombo->GetText();
-      if (Profile == GetMsg(NB_S3_GENERAL_NAME))
-        Profile = EmptyStr;
-      FSessionData->SetS3Profile(Profile);
-    }
+    // FSessionData->SetS3CredentialsEnv(S3CredentialsEnvCheck->GetChecked());
+    // {
+    //   UnicodeString Profile = S3ProfileCombo->GetText();
+    //   if (Profile == GetMsg(NB_S3_GENERAL_NAME))
+    //     Profile = EmptyStr;
+    //   FSessionData->SetS3Profile(Profile);
+    // }
     FSessionData->SetS3SessionToken(S3SessionTokenEdit->GetText());
     FSessionData->SetS3RoleArn(S3RoleArnEdit->GetText());
     FSessionData->SetS3RoleSessionName(S3RoleSessionNameEdit->GetText());
@@ -5056,7 +5057,7 @@ void TSessionDialog::S3CACertificateLoadClick(TFarButton * /*Sender*/, bool & Cl
         WinSCPPlugin->MoreMessageDialog(GetMsg(MSG_TITLE_WARNING),
           nullptr, qtWarning, qaOK);
       }
-      S3CACertificateEdit->SetText(Content);
+      // S3CACertificateEdit->SetText(Content);
     }
     catch(Exception & E)
     {
@@ -5085,7 +5086,7 @@ void TSessionDialog::S3CACertificateSaveClick(TFarButton * /*Sender*/, bool & Cl
   {
     try
     {
-      TFile::WriteAllText(FileName, S3CACertificateEdit->GetText());
+      // TFile::WriteAllText(FileName, S3CACertificateEdit->GetText());
     }
     catch(Exception & E)
     {
