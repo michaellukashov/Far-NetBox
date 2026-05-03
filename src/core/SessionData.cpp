@@ -2992,7 +2992,7 @@ UnicodeString TSessionData::GetSessionPasswordEncryptionKey() const
     DEBUG_PRINTF("SessionPasswordEncryptionKey: using MasterKey");
     return Key;
   }
-  DEBUG_PRINTF("SessionPasswordEncryptionKey: using default (UserName+HostName)");
+  // DEBUG_PRINTF("SessionPasswordEncryptionKey: using default (UserName+HostName)");
   return UserName() + HostName();
 }
 
