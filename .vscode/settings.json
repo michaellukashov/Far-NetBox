@@ -26,6 +26,7 @@
     // Other VS Code settings for markdown
     "[markdown]": {
         "editor.formatOnSave": false,
-        "editor.wordWrap": "on"
+        "editor.wordWrap": "on",
+        "editor.colorDecorators": false,
     }
 }
