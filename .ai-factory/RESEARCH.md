@@ -1,6 +1,6 @@
 # Research
 
-Updated: 2026-05-03 12:00
+Updated: 2026-05-03 14:30
 Status: active
 
 ## Active Summary (input for /aif-plan)
@@ -25,15 +25,13 @@ Decisions:
 - S3 TLS alignment: Add S3CACertificate serialization + UI; expose Min/Max TLS version on S3 tab.
 - SFTP Log Protocol: Level 3 added for binary dump (separate from Level 2 headers).
 - CMake: 97% reduction in main CMakeLists.txt via modular orchestrator pattern.
-
+- OpenSSH certificate auth (WinSCP-aligned): Silent pre-connect conversion inside StoreToConfig(). Effective key file resolved before CONF_keyfile. Passphrase encryption uses effective key file path. Temp PPK cleaned in TSecureShell destructor. No interactive dialogs (Far plugin context).
 Open questions:
-- OpenSSH certificate auth: PuTTY 0.81 supports certs, but OpenSSH private key format requires runtime conversion to PPK before CONF_keyfile.
 - Silent mode file operations: Error collection mechanism designed but not implemented.
 - Stack overflow (#497): Symlink cycle detection needed in CalculateFilesSize (mirrors FilesFind pattern).
 - DST timestamp (#391): Remove erroneous DST subtraction in ConvertTimestampToUnix for dstmWin on Win7+.
 - Private key auth (#392): Passphrase prompt misclassification or path encoding issue suspected; needs diagnostic logging.
 - Second file open crash: Dangling TRemoteFile pointers after directory refresh; Duplicate(false) recommended in CreateFileList.
-
 Success signals:
 - Zero build warnings under /W4
 - Plugin DLL in Far3_<platform>/Plugins/NetBox/
@@ -292,3 +290,27 @@ Key notes:
 Links (paths):
 - .ai-factory/references/logging-subsystem.md
 - libs/tinylog/, src/core/SessionInfo.cpp, src/NetBox/WinSCPPlugin.cpp
+
+### 2026-05-03 — OpenSSH Certificate Auth: WinSCP Alignment
+
+What changed:
+- Cross-referenced NetBox implementation against WinSCP master source at D:\Projects\WinSCP-work\winscp-master\source
+- Discovered WinSCP master has NO OpensshPrivateKeyFile/UseOpensshCertificate fields — these are NetBox-specific additions
+- WinSCP converts keys INTERACTIVELY before StoreToConfig() via VerifyAndConvertKey() in GUI layer (SiteAdvanced.cpp, ImportSessions.cpp, TerminalManager.cpp)
+- NetBox must convert SILENTLY inside StoreToConfig() or Open() because Far plugin has no interactive conversion dialogs during connect
+- Confirmed: PuTTY 0.81 auth flow (userauth2-client.c:1282) only accepts PPK format for CONF_keyfile
+
+Key notes:
+- WinSCP passphrase encryption: always uses PublicKeyFile as key; re-encrypts when PublicKeyFile changes (SetPublicKeyFile handles this)
+- NetBox gap: ResolvePublicKeyFile() never checks UseOpensshCertificate/OpensshPrivateKeyFile — always returns PublicKeyFile
+- NetBox gap: Passphrase encrypted with PublicKeyFile even when cert mode uses OpensshPrivateKeyFile as the actual key
+- NetBox gap: No silent conversion utility — only interactive ConvertKey() in Tools.cpp
+- WinSCP temp key pattern: FTemporaryKeyFile in TWinConfiguration for embedded session keys, not for converted SSH keys
+- Recommended approach: Add ResolveEffectiveKeyFile() to TSessionData; add silent ConvertKeyToTemporaryPPK() in PuttyIntf.cpp; wire in StoreToConfig(); cleanup in ~TSecureShell()
+
+Links (paths):
+- D:\Projects\WinSCP-work\winscp-master\source\core\SecureShell.cpp (StoreToConfig:251)
+- D:\Projects\WinSCP-work\winscp-master\source\core\SessionData.cpp (SetPassphrase:3272, SetPublicKeyFile:3237)
+- D:\Projects\WinSCP-work\winscp-master\source\windows\Tools.cpp (ConvertKey:1299, VerifyAndConvertKey:1444)
+- D:\Projects\WinSCP-work\winscp-master\source\forms\SiteAdvanced.cpp (DetachedCertificateEdit UI)
+- src/core/SecureShell.cpp, src/core/SessionData.h, src/core/PuttyIntf.cpp, src/NetBox/WinSCPDialogs.cpp
