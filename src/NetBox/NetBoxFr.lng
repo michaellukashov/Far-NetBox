@@ -1,4 +1,4 @@
-.Language=French,Français
+﻿.Language=French,Français
 
 "NetBox"
 "NetBox"
@@ -1351,11 +1351,17 @@
 "Le fichier sélectionné ne contient pas de certificat PEM valide."
 "Échec du chargement du fichier de certificat CA."
 "Échec de l'enregistrement du fichier de certificat CA."
-"[T]  OpenSSH certificate "
-"[T] Use OpenSSH certificate authentication"
-"[T] &Certificate file:"
-"[T] OpenSSH private &key file:"
-"[T] &Display Public Key"
-"[T] Attempt GSSAPI key exchange"
+" OpenSSH certificate "
+"Use OpenSSH certificate authentication"
+"Certificate to &use with the private key:"
+"Private &key file:"
+"&Display Public Key"
+"Attempt GSSAPI key exchange"
+
+"&Role ARN:"
+"Role &session name:"
+"Credentials from A&WS environment"
+"&Profile:"
+"General S3"
 "TLS/SSL"
 "TLS options"

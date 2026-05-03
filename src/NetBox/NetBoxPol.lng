@@ -1,4 +1,4 @@
-.Language=Polish,Polish (Polski)
+﻿.Language=Polish,Polish (Polski)
 
 "NetBox"
 "NetBox"
@@ -1344,17 +1344,20 @@
 "**Master password successfully set.**\n\nYour stored passwords are secured by AES cipher now."
 "**You have deleted your master password.**\n\nYour stored passwords are not secured now."
 
-"Wersja min. TLS:"
-"Wersja maks. TLS:"
-"&Wczytaj"
-"&Zapisz"
-"Wybrany plik nie zawiera prawidłowego certyfikatu PEM."
-"Nie udało się wczytać pliku certyfikatu CA."
-"Nie udało się zapisać pliku certyfikatu CA."
-" Certyfikat OpenSSH "
-"Użyj uwierzytelniania certyfikatem OpenSSH"
-"&Plik certyfikatu:"
-"Plik klucza prywatnego OpenSSH:"
+"Minimum TLS version:"
+"Maximum TLS version:"
+"&Load"
+"&Save"
+"The selected file does not contain a valid PEM certificate."
+"Failed to load the CA certificate file."
+"Failed to save the CA certificate file."
+" OpenSSH certificate "
+"Use OpenSSH certificate authentication"
+"Certificate to &use with the private key:"
+"Private &key file:"
+"&Display Public Key"
+"Attempt GSSAPI key exchange"
+
 "&Role ARN:"
 "Role &session name:"
 "Credentials from A&WS environment"
