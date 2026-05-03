@@ -4991,13 +4991,14 @@ void TTerminal::CalculateFileSize(const UnicodeString & AFileName,
           UnicodeString RealDirectory;
           if (AFile->GetIsSymLink() && !AFile->GetLinkTo().IsEmpty())
           {
-            // Symlink: resolve to absolute path
-            RealDirectory = base::AbsolutePath(FileName, AFile->GetLinkTo());
+            // Symlink: resolve to absolute path relative to the containing directory
+            const UnicodeString ParentDir = base::UnixExtractFilePath(FileName);
+            RealDirectory = base::AbsolutePath(ParentDir, AFile->GetLinkTo());
           }
           else
           {
-            // Regular directory: join path
-            RealDirectory = base::UnixIncludeTrailingBackslash(FileName) + AFile->GetFileName();
+            // Regular directory: FileName is already the full path to this directory entry
+            RealDirectory = FileName;
           }
           // Normalize for comparison
           RealDirectory = base::UnixExcludeTrailingBackslash(RealDirectory);
@@ -5109,6 +5110,16 @@ bool TTerminal::CalculateFilesSize(TStrings * AFileList, int64_t & Size, TCalcul
   if (Params.VisitedDirs == nullptr)
   {
     Params.VisitedDirs = CreateSortedStringList();
+  }
+  // Add parent directories of top-level items as defense against cycles back to ancestor paths
+  for (int32_t Index = 0; Index < AFileList->GetCount(); ++Index)
+  {
+    const UnicodeString ItemPath = base::UnixExcludeTrailingBackslash(AFileList->GetString(Index));
+    const UnicodeString ParentDir = base::UnixExtractFilePath(ItemPath);
+    if (!ParentDir.IsEmpty() && (AFileList->IndexOf(ParentDir) < 0))
+    {
+      Params.VisitedDirs->Add(base::UnixExcludeTrailingBackslash(ParentDir));
+    }
   }
 
   TValueRestorer<bool> UseBusyCursorRestorer(FUseBusyCursor, false);
