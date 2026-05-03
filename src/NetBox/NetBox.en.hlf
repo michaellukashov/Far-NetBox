@@ -371,12 +371,21 @@ $# Supported Protocols
      Amazon Resource Name of the IAM role to assume via STS AssumeRole.
      Format: arn:aws:iam::account-id:role/role-name
 
-  \b Min/Max TLS version\b0
-     Configure the TLS version range for HTTPS connections.
+  \b Role session name\b0
+     Session name for the assumed role. Optional — AWS generates a default
+     if left empty.
 
-  \b TLS client certificate\b0
-     Path to a client certificate file (PEM format) for TLS authentication.
+  \b TLS/SSL tab\b0
+     The TLS/SSL tab contains transport-layer security settings shared
+     across FTPS, WebDAV/HTTPS, and S3 protocols:
 
+  \b Minimum TLS version / Maximum TLS version\b0
+     Restrict the TLS protocol version range for secure connections.
+     Both endpoints must support a common version within this range.
+
+  \b Reuse TLS session ID for data connections\b0
+     (FTP only) Reuse the TLS session ID when opening data connections,
+     reducing handshake overhead. May be incompatible with some servers.
   Each protocol has its own configuration options in the session dialog.
 
 @errors
