@@ -338,7 +338,44 @@ $# Supported Protocols
 
   #S3#
      Amazon S3 and S3-compatible storage.
-     Supports TLS version configuration and custom CA certificates.
+
+  S3 tab settings in the session dialog:
+
+  \b Credentials from AWS environment\b0
+     When enabled, access key, secret key, session token, and role ARN are
+     populated from AWS environment variables and credentials files. Manual
+     entry fields for session token and role ARN are disabled.
+
+  \b Profile\b0
+     AWS configuration profile name. Select from profiles found in
+     ~/.aws/credentials and ~/.aws/config, or type a custom profile.
+     "General S3" uses the default profile.
+
+  \b Default Region\b0
+     AWS region for API requests. Select from known regions or type a custom
+     region name. If empty, the S3 library default is used.
+
+  \b URL Style\b0
+     How the bucket name is included in the request URL:
+     - Virtual-hosted style: bucket-name.s3.region.amazonaws.com
+     - Path style: s3.region.amazonaws.com/bucket-name
+
+  \b Requester Pays\b0
+     Enable requester pays mode for S3 requests.
+
+  \b Session token\b0
+     AWS STS session token for temporary credentials. Used with
+     AssumeRole, AssumeRoleWithWebIdentity, or IMDSv2.
+
+  \b Role ARN\b0
+     Amazon Resource Name of the IAM role to assume via STS AssumeRole.
+     Format: arn:aws:iam::account-id:role/role-name
+
+  \b Min/Max TLS version\b0
+     Configure the TLS version range for HTTPS connections.
+
+  \b TLS client certificate\b0
+     Path to a client certificate file (PEM format) for TLS authentication.
 
   Each protocol has its own configuration options in the session dialog.
 

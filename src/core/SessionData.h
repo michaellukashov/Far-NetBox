@@ -624,6 +624,7 @@ public:
   bool HasAutoCredentials() const;
   int32_t GetDefaultPort() const;
   UnicodeString ResolvePublicKeyFile();
+  UnicodeString ResolveEffectiveKeyFile();
   UnicodeString GetSessionPasswordEncryptionKey() const;
 
   UnicodeString GenerateOpenCommandArgs(bool Rtf) const;
@@ -972,6 +973,7 @@ public:
   bool GetSsh2DES() const { return FSsh2DES; }
   bool GetSshNoUserAuth() const { return FSshNoUserAuth; }
   UnicodeString GetPublicKeyFile() const { return FPublicKeyFile; }
+  UnicodeString GetEffectiveKeyFile() const;
   UnicodeString GetPuttyProtocol() const { return FPuttyProtocol; }
   TFSProtocol GetFSProtocol() const { return FFSProtocol; }
   bool GetModified() const { return FModified; }

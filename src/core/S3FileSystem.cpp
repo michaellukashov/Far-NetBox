@@ -499,6 +499,12 @@ UnicodeString S3EnvRoleArn(const UnicodeString & Profile, UnicodeString * Source
 constexpr const int32_t TS3FileSystem::S3MinMultiPartChunkSize = 5 * 1024 * 1024;
 constexpr const int32_t TS3FileSystem::S3MaxMultiPartChunks = 10000;
 
+#else // not __BORLANDC__
+TStrings * GetS3Profiles()
+{
+  // TODO: port AWS config file reading to MSVC (NeedS3Config, TMemIniFile, etc.)
+  return CreateSortedStringList();
+}
 #endif // defined(__BORLANDC__)
 
 TS3FileSystem::TS3FileSystem(TTerminal * ATerminal) noexcept :
@@ -519,6 +525,12 @@ TS3FileSystem::~TS3FileSystem() noexcept
   S3_destroy_request_context(FRequestContext);
   FRequestContext = nullptr;
   UnregisterFromNeonDebug(FTerminal);
+  // Clean up temporary CA certificate file if session was closed abnormally
+  if (!FS3CACertificateTempFile.IsEmpty())
+  {
+    ::DeleteFileW(FS3CACertificateTempFile.c_str());
+    FS3CACertificateTempFile.Clear();
+  }
 }
 
 void TS3FileSystem::Init(void *)
@@ -754,6 +766,8 @@ void TS3FileSystem::InitSslSessionImpl(ssl_st * Ssl, void * /* ne_session */ Ses
   UnicodeString CACert = FTerminal->SessionData->S3CACertificate;
   FTerminal->LogEvent(FORMAT(L"InitSslSessionImpl: S3CACertificate is %s", CACert.IsEmpty() ? L"(empty)" : L"(configured)"));
 
+  // S3 CA cert UI removed — use global CertificateStorage instead (see SetNeonTlsInit)
+  #if 0 // Per-session S3 CA certificate no longer exposed in UI
   if (!CACert.IsEmpty())
   {
     try
@@ -779,9 +793,10 @@ void TS3FileSystem::InitSslSessionImpl(ssl_st * Ssl, void * /* ne_session */ Ses
     }
     catch(Exception & E)
     {
-      FTerminal->LogEvent(FORMAT(L"InitSslSessionImpl: Failed to apply custom CA certificate: %s", E.Message));
+      FTerminal->LogEvent(L"InitSslSessionImpl: Failed to apply custom CA certificate");
     }
   }
+  #endif
 }
 
 int32_t TS3FileSystem::LibS3SslCallback(int32_t Failures, const ne_ssl_certificate_s * Certificate, void * CallbackData)

@@ -329,6 +329,8 @@ void TSessionData::DefaultSettings()
   // S3
   S3DefaultRegion = EmptyStr;
   S3SessionToken = EmptyStr;
+  S3RoleArn = EmptyStr;
+  S3RoleSessionName = EmptyStr;
   S3Profile = EmptyStr;
   FS3UrlStyle = s3usVirtualHost;
   FS3MaxKeys = asAuto;
@@ -522,6 +524,8 @@ void TSessionData::NonPersistent()
   \
   PROPERTY2(S3DefaultRegion); \
   PROPERTY2(S3SessionToken); \
+  PROPERTY2(S3RoleArn); \
+  PROPERTY2(S3RoleSessionName); \
   PROPERTY2(S3Profile); \
   PROPERTY2(S3UrlStyle); \
   PROPERTY2(S3MaxKeys); \
@@ -936,6 +940,8 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool PuttyImport, bool
 
   FS3DefaultRegion = Storage->ReadString("S3DefaultRegion", FS3DefaultRegion);
   FS3SessionToken = Storage->ReadString("S3SessionToken", FS3SessionToken);
+  FS3RoleArn = Storage->ReadString("S3RoleArn", FS3RoleArn);
+  FS3RoleSessionName = Storage->ReadString("S3RoleSessionName", FS3RoleSessionName);
   S3Profile = Storage->ReadString("S3Profile", S3Profile);
   FS3UrlStyle = static_cast<TS3UrlStyle>(Storage->ReadInteger(L"S3UrlStyle", FS3UrlStyle));
   FS3MaxKeys = Storage->ReadEnum("S3MaxKeys", FS3MaxKeys, AutoSwitchMapping);
@@ -1314,6 +1320,8 @@ void TSessionData::DoSave(THierarchicalStorage * Storage,
     WRITE_DATA2(Integer, InternalEditorEncoding);
     WRITE_DATA(String, S3DefaultRegion);
     WRITE_DATA4(String, S3SessionToken);
+    WRITE_DATA4(String, S3RoleArn);
+    WRITE_DATA4(String, S3RoleSessionName);
     WRITE_DATA4(String, S3Profile);
     WRITE_DATA3(Integer, S3UrlStyle);
     WRITE_DATA3(Integer, S3MaxKeys);
@@ -3501,14 +3509,17 @@ void TSessionData::SetPublicKeyFile(const UnicodeString & Value)
 {
   if (FPublicKeyFile != Value)
   {
-    // PublicKeyFile is key for Passphrase encryption
     UnicodeString XPassphrase = GetPassphrase();
+    UnicodeString EffectiveKeyFileBefore = GetEffectiveKeyFile();
 
     // StripPathQuotes should not be needed as we do not feed quotes anymore
     FPublicKeyFile = StripPathQuotes(Value);
     Modify();
 
-    SetPassphrase(XPassphrase);
+    if (GetEffectiveKeyFile() != EffectiveKeyFileBefore)
+    {
+      SetPassphrase(XPassphrase);
+    }
     Shred(XPassphrase);
   }
 }
@@ -3519,14 +3530,40 @@ void TSessionData::SetDetachedCertificate(const UnicodeString & value)
 }
 
 
-void TSessionData::SetOpensshPrivateKeyFile(const UnicodeString & value)
+void TSessionData::SetOpensshPrivateKeyFile(const UnicodeString & Value)
 {
-  SET_SESSION_PROPERTY(OpensshPrivateKeyFile);
+  if (FOpensshPrivateKeyFile != Value)
+  {
+    UnicodeString XPassphrase = GetPassphrase();
+    UnicodeString EffectiveKeyFileBefore = GetEffectiveKeyFile();
+
+    FOpensshPrivateKeyFile = StripPathQuotes(Value);
+    Modify();
+
+    if (GetEffectiveKeyFile() != EffectiveKeyFileBefore)
+    {
+      SetPassphrase(XPassphrase);
+    }
+    Shred(XPassphrase);
+  }
 }
 
-void TSessionData::SetUseOpensshCertificate(bool value)
+void TSessionData::SetUseOpensshCertificate(bool Value)
 {
-  SET_SESSION_PROPERTY(UseOpensshCertificate);
+  if (FUseOpensshCertificate != Value)
+  {
+    UnicodeString XPassphrase = GetPassphrase();
+    UnicodeString EffectiveKeyFileBefore = GetEffectiveKeyFile();
+
+    FUseOpensshCertificate = Value;
+    Modify();
+
+    if (GetEffectiveKeyFile() != EffectiveKeyFileBefore)
+    {
+      SetPassphrase(XPassphrase);
+    }
+    Shred(XPassphrase);
+  }
 }
 void TSessionData::SetS3CACertificate(const UnicodeString & value)
 {
@@ -3545,16 +3582,36 @@ UnicodeString TSessionData::ResolvePublicKeyFile()
   return Result;
 }
 
+UnicodeString TSessionData::ResolveEffectiveKeyFile()
+{
+  UnicodeString Result = GetEffectiveKeyFile();
+  if (Result.IsEmpty())
+  {
+    Result = GetConfiguration()->DefaultKeyFile;
+  }
+  Result = StripPathQuotes(::ExpandEnvironmentVariables(Result));
+  return Result;
+}
 void TSessionData::SetPassphrase(const UnicodeString & AValue)
 {
-  const RawByteString value = EncryptPassword(AValue, GetPublicKeyFile());
+  const RawByteString value = EncryptPassword(AValue, GetEffectiveKeyFile());
   SET_SESSION_PROPERTY(Passphrase);
 }
 
 UnicodeString TSessionData::GetPassphrase() const
 {
-  return DecryptPassword(FPassphrase, GetPublicKeyFile());
+  return DecryptPassword(FPassphrase, GetEffectiveKeyFile());
 }
+
+UnicodeString TSessionData::GetEffectiveKeyFile() const
+{
+  if (GetUseOpensshCertificate() && !GetOpensshPrivateKeyFile().IsEmpty())
+  {
+    return GetOpensshPrivateKeyFile();
+  }
+  return GetPublicKeyFile();
+}
+
 
 void TSessionData::SetReturnVar(const UnicodeString & value)
 {

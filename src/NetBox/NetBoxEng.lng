@@ -1344,8 +1344,8 @@
 "**Master password successfully set.**\n\nYour stored passwords are secured by AES cipher now."
 "**You have deleted your master password.**\n\nYour stored passwords are not secured now."
 
-"Min TLS version:"
-"Max TLS version:"
+tv|"Minimum TLS version:"
+ef|"Maximum TLS version:"
 "&Load"
 "&Save"
 "The selected file does not contain a valid PEM certificate."
@@ -1357,3 +1357,11 @@
 "Private &key file:"
 "&Display Public Key"
 "Attempt GSSAPI key exchange"
+
+"&Role ARN:"
+"Role &session name:"
+"Credentials from A&WS environment"
+"&Profile:"
+"General S3"
+"TLS/SSL"
+"TLS options"

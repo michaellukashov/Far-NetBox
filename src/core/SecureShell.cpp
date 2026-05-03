@@ -116,13 +116,23 @@ TSecureShell::~TSecureShell() noexcept
     Close();
   }
   ResetConnection();
+
+  // Clean up temporary PPK file as safety net (Close() should have done it)
+  if (!FTempPPKFile.IsEmpty())
+  {
+    if (::FileExists(ApiPath(FTempPPKFile)))
+    {
+      ::DeleteFile(ApiPath(FTempPPKFile).c_str());
+    }
+    FTempPPKFile = L"";
+  }
+
 #if defined(__BORLANDC__)
   CloseHandle(FSocketEvent);
   delete FCallbackSet;
 #endif // defined(__BORLANDC__)
   SAFE_CLOSE_HANDLE(FSocketEvent); } catch(...) { DEBUG_PRINTF("Error"); }
 }
-
 void TSecureShell::ResetConnection()
 {
   FreeBackend();
@@ -196,7 +206,6 @@ void TSecureShell::GetHostKeyFingerprint(UnicodeString & SHA256, UnicodeString &
   SHA256 = FSessionInfo.HostKeyFingerprintSHA256;
   MD5 = FSessionInfo.HostKeyFingerprintMD5;
 }
-
 Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
 {
   Conf * conf = conf_new();
@@ -284,15 +293,29 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
   conf_set_filename(conf, CONF_ssh_gss_custom, GssLibCustomFileName);
   filename_free(GssLibCustomFileName);
 
-  UnicodeString KeyFile = Data->ResolvePublicKeyFile();
-  if (Data->GetUseOpensshCertificate() && !Data->GetOpensshPrivateKeyFile().IsEmpty())
+  // UnicodeString KeyFile = Data->ResolvePublicKeyFile();
+  UnicodeString EffectiveKeyFile = Data->ResolveEffectiveKeyFile();
+  // if (Data->GetUseOpensshCertificate() && !Data->GetOpensshPrivateKeyFile().IsEmpty())
+  if (!EffectiveKeyFile.IsEmpty())
   {
-    KeyFile = ExpandEnvironmentVariables(Data->GetOpensshPrivateKeyFile());
+    const TKeyType KeyType = GetKeyType(EffectiveKeyFile);
+    if ((KeyType == ktOpenSSHPEM) || (KeyType == ktOpenSSHNew) || (KeyType == ktSSHCom))
+    {
+      EffectiveKeyFile = ConvertKeyToTemporaryPPK(EffectiveKeyFile, Data->GetPassphrase());
+      if (EffectiveKeyFile != Data->ResolveEffectiveKeyFile())
+      {
+        // Clean up previous temp PPK if any
+        if (!FTempPPKFile.IsEmpty() && ::FileExists(ApiPath(FTempPPKFile)))
+        {
+          ::DeleteFile(ApiPath(FTempPPKFile).c_str());
+        }
+        FTempPPKFile = EffectiveKeyFile;
+      }
+    }
   }
-  Filename * AFileName = filename_from_utf8(UTF8String(KeyFile).c_str());
+  Filename * AFileName = filename_from_utf8(UTF8String(EffectiveKeyFile).c_str());
   conf_set_filename(conf, CONF_keyfile, AFileName);
   filename_free(AFileName);
-
   AFileName = filename_from_utf8(UTF8String(ExpandEnvironmentVariables(Data->DetachedCertificate)).c_str());
   conf_set_filename(conf, CONF_detached_cert, AFileName);
   filename_free(AFileName);
@@ -2158,6 +2181,16 @@ void TSecureShell::Close()
   }
 
   FreeBackend();
+
+  // Clean up temporary PPK file created for OpenSSH key conversion
+  if (!FTempPPKFile.IsEmpty())
+  {
+    if (::FileExists(ApiPath(FTempPPKFile)))
+    {
+      ::DeleteFile(ApiPath(FTempPPKFile).c_str());
+    }
+    FTempPPKFile = L"";
+  }
 
   Discard();
 }

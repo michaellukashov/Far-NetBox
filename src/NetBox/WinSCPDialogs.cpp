@@ -28,6 +28,7 @@
 #include "resource.h"
 #include <System.IOUtils.hpp>
 #include <commdlg.h>
+#include <S3FileSystem.h>
 
 #ifdef max
 #undef max
@@ -1703,6 +1704,7 @@ public:
     tabConnection,
     tabTunnel,
     tabProxy,
+    tabTLS,
     tabSsh,
     tabKex,
     tabAuthentication,
@@ -1782,6 +1784,7 @@ private:
   TSessionData * FSessionData{nullptr};
   int32_t FTransferProtocolIndex{0};
   int32_t FFtpEncryptionComboIndex{0};
+  int32_t FNonS3EncryptionIndex{0};
   int32_t FProxyComboIndex{0};
 
   TTabButton * SshTab{nullptr};
@@ -1793,6 +1796,7 @@ private:
   TTabButton * SftpTab{nullptr};
   TTabButton * FtpTab{nullptr};
   TTabButton * S3Tab{nullptr};
+  TTabButton * TLSTab{nullptr};
   TTabButton * TunnelTab{nullptr};
   TTabButton * PrevTab{nullptr};
   TTabButton * NextTab{nullptr};
@@ -1933,9 +1937,15 @@ private:
   TFarCheckBox * S3RequesterPaysCheck{nullptr};
   TFarButton * S3CACertificateLoadBtn{nullptr};
   TFarButton * S3CACertificateSaveBtn{nullptr};
-  TFarComboBox * S3MinTlsVersionCombo{nullptr};
-  TFarComboBox * S3MaxTlsVersionCombo{nullptr};
-  // TFarEdit * S3SessionTokenEdits[3]{nullptr};
+  TFarComboBox * MinTlsVersionCombo{nullptr};
+  TFarComboBox * MaxTlsVersionCombo{nullptr};
+  TFarEdit * S3SessionTokenEdit{nullptr};
+  TFarText * S3SessionTokenLabel{nullptr};
+  TFarText * S3RoleArnLabel{nullptr};
+  TFarEdit * S3RoleArnEdit{nullptr};
+  // TFarCheckBox * S3CredentialsEnvCheck{nullptr};
+  // TFarComboBox * S3ProfileCombo{nullptr};
+  // TFarText * S3ProfileLabel{nullptr};
 
   std::unique_ptr<TObjectList> FTabs{std::make_unique<TObjectList>()};
   int32_t FFirstVisibleTabIndex{0};
@@ -2080,6 +2090,9 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   Index1 = AddTab(tabConnection, GetMsg(NB_LOGIN_TAB_CONNECTION));
 
   Index1 = AddTab(tabProxy, GetMsg(NB_LOGIN_TAB_PROXY));
+
+  Index1 = AddTab(tabTLS, GetMsg(NB_LOGIN_TAB_TLS));
+  TLSTab = nb::dyn_cast_or_null<TTabButton>(GetItem(Index1));
 
   Index1 = AddTab(tabTunnel, GetMsg(NB_LOGIN_TAB_TUNNEL));
   TunnelTab = nb::dyn_cast_or_null<TTabButton>(GetItem(Index1));
@@ -2588,7 +2601,6 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   SetNextItemPosition(ipRight);
   S3DefaultRegionCombo = MakeOwnedObject<TFarComboBox>(this);
-  S3DefaultRegionCombo->SetDropDownList(true);
   for (int32_t Index1 = 0; Index1 < _countof(S3Regions); Index1++)
     S3DefaultReqionComboAddNewItem(S3Regions[Index1], Index1);
   // S3DefaultRegionCombo->SetWidth(20);
@@ -2609,78 +2621,57 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   S3RequesterPaysCheck = MakeOwnedObject<TFarCheckBox>(this);
   S3RequesterPaysCheck->SetCaption(GetMsg(NB_S3_REQUESTERPAYS));
 
-  // CA Certificate
+  // Credentials from AWS environment
   SetNextItemPosition(ipNewLine);
   S3CACertificateLabel = MakeOwnedObject<TFarText>(this);
   S3CACertificateLabel->SetCaption(GetMsg(NB_LOGIN_S3_CA_CERTIFICATE));
   S3CACertificateLabel->SetWidth(20);
   S3CACertificateLabel->SetVisible(false);
+  // S3CredentialsEnvCheck = MakeOwnedObject<TFarCheckBox>(this);
+  // S3CredentialsEnvCheck->SetCaption(GetMsg(NB_S3_CREDENTIALS_ENV));
+  // S3CredentialsEnvCheck->SetVisible(false);
 
-  SetNextItemPosition(ipRight);
-  S3CACertificateEdit = MakeOwnedObject<TFarEdit>(this);
-  S3CACertificateEdit->SetWidth(30);
-  S3CACertificateEdit->SetVisible(false);
+  // Profile dropdown
+  // SetNextItemPosition(ipRight);
+  // S3ProfileLabel = MakeOwnedObject<TFarText>(this);
+  // S3ProfileLabel->SetCaption(GetMsg(NB_S3_PROFILE));
+  // S3ProfileLabel->SetVisible(false);
 
-  // CA Certificate Load/Save buttons
-  SetNextItemPosition(ipRight);
-  S3CACertificateLoadBtn = MakeOwnedObject<TFarButton>(this);
-  S3CACertificateLoadBtn->SetCaption(GetMsg(NB_S3_LOAD_CA_CERT));
-  S3CACertificateLoadBtn->SetOnClick(nb::bind(&TSessionDialog::S3CACertificateLoadClick, this));
-  S3CACertificateLoadBtn->SetVisible(false);
+  // SetNextItemPosition(ipRight);
+  // S3ProfileCombo = MakeOwnedObject<TFarComboBox>(this);
+  // S3ProfileCombo->SetWidth(25);
+  // S3ProfileCombo->SetVisible(false);
+  // S3ProfileCombo->GetItems()->Add(GetMsg(NB_S3_GENERAL_NAME));
 
-  SetNextItemPosition(ipRight);
-  S3CACertificateSaveBtn = MakeOwnedObject<TFarButton>(this);
-  S3CACertificateSaveBtn->SetCaption(GetMsg(NB_S3_SAVE_CA_CERT));
-  S3CACertificateSaveBtn->SetOnClick(nb::bind(&TSessionDialog::S3CACertificateSaveClick, this));
-
-  // TLS client certificate
+  // Session Token
   SetNextItemPosition(ipNewLine);
-  S3TlsCertificateFileLabel = MakeOwnedObject<TFarText>(this);
-  S3TlsCertificateFileLabel->SetCaption(GetMsg(NB_LOGIN_TLS_CERTIFICATE_FILE));
-  S3TlsCertificateFileLabel->SetWidth(20);
+  S3SessionTokenLabel = MakeOwnedObject<TFarText>(this);
+  S3SessionTokenLabel->SetCaption(GetMsg(NB_S3_SESSIONTOKEN));
+  S3SessionTokenLabel->SetWidth(20);
+  S3SessionTokenLabel->SetVisible(false);
 
   SetNextItemPosition(ipRight);
-  S3TlsCertificateFileEdit = MakeOwnedObject<TFarEdit>(this);
-  S3TlsCertificateFileEdit->SetWidth(30);
+  S3SessionTokenEdit = MakeOwnedObject<TFarEdit>(this);
+  S3SessionTokenEdit->SetWidth(25);
+  S3SessionTokenEdit->SetVisible(false);
 
-  SetNextItemPosition(ipRight);
-  S3TlsCertificateFileBrowseBtn = MakeOwnedObject<TFarButton>(this);
-  S3TlsCertificateFileBrowseBtn->SetCaption(L"\u2026");
-  S3TlsCertificateFileBrowseBtn->SetOnClick(nb::bind(&TSessionDialog::S3TlsCertificateFileBrowseClick, this));
-  S3CACertificateSaveBtn->SetVisible(false);
-
-  // Min/Max TLS version
+  // Role ARN
   SetNextItemPosition(ipNewLine);
-  Text = MakeOwnedObject<TFarText>(this);
-  Text->SetCaption(GetMsg(NB_S3_MIN_TLS_VERSION));
-  Text->SetWidth(20);
-  Text->SetVisible(false);
+  S3RoleArnLabel = MakeOwnedObject<TFarText>(this);
+  S3RoleArnLabel->SetCaption(GetMsg(NB_S3_ROLE_ARN));
+  S3RoleArnLabel->SetWidth(20);
+  S3RoleArnLabel->SetVisible(false);
 
   SetNextItemPosition(ipRight);
-  S3MinTlsVersionCombo = MakeOwnedObject<TFarComboBox>(this);
-  S3MinTlsVersionCombo->SetDropDownList(true);
-  S3MinTlsVersionCombo->SetWidth(12);
-  S3MinTlsVersionCombo->SetVisible(false);
-  S3MinTlsVersionCombo->GetItems()->AddObject(GetTlsVersionName(tls10), ToObj(nb::ToPtr(tls10)));
-  S3MinTlsVersionCombo->GetItems()->AddObject(GetTlsVersionName(tls11), ToObj(nb::ToPtr(tls11)));
-  S3MinTlsVersionCombo->GetItems()->AddObject(GetTlsVersionName(tls12), ToObj(nb::ToPtr(tls12)));
-  S3MinTlsVersionCombo->GetItems()->AddObject(GetTlsVersionName(tls13), ToObj(nb::ToPtr(tls13)));
+  MinTlsVersionCombo = MakeOwnedObject<TFarComboBox>(this);
+  MinTlsVersionCombo->SetDropDownList(true);
+  MinTlsVersionCombo->SetWidth(12);
+  MinTlsVersionCombo->SetVisible(false);
+  MinTlsVersionCombo->GetItems()->AddObject(GetTlsVersionName(tls10), ToObj(nb::ToPtr(tls10)));
+  MinTlsVersionCombo->GetItems()->AddObject(GetTlsVersionName(tls11), ToObj(nb::ToPtr(tls11)));
+  MinTlsVersionCombo->GetItems()->AddObject(GetTlsVersionName(tls12), ToObj(nb::ToPtr(tls12)));
+  MinTlsVersionCombo->GetItems()->AddObject(GetTlsVersionName(tls13), ToObj(nb::ToPtr(tls13)));
 
-  SetNextItemPosition(ipRight);
-  Text = MakeOwnedObject<TFarText>(this);
-  Text->SetCaption(GetMsg(NB_S3_MAX_TLS_VERSION));
-  Text->SetWidth(3);
-  Text->SetVisible(false);
-
-  SetNextItemPosition(ipRight);
-  S3MaxTlsVersionCombo = MakeOwnedObject<TFarComboBox>(this);
-  S3MaxTlsVersionCombo->SetDropDownList(true);
-  S3MaxTlsVersionCombo->SetWidth(12);
-  S3MaxTlsVersionCombo->SetVisible(false);
-  S3MaxTlsVersionCombo->GetItems()->AddObject(GetTlsVersionName(tls10), ToObj(nb::ToPtr(tls10)));
-  S3MaxTlsVersionCombo->GetItems()->AddObject(GetTlsVersionName(tls11), ToObj(nb::ToPtr(tls11)));
-  S3MaxTlsVersionCombo->GetItems()->AddObject(GetTlsVersionName(tls12), ToObj(nb::ToPtr(tls12)));
-  S3MaxTlsVersionCombo->GetItems()->AddObject(GetTlsVersionName(tls13), ToObj(nb::ToPtr(tls13)));
 
   // Authentication
   /*SetNextItemPosition(ipNewLine);
@@ -2919,6 +2910,49 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   MakeOwnedObject<TFarSeparator>(this);
 
+
+  // TLS/SSL tab
+
+  SetDefaultGroup(tabTLS);
+  Separator = MakeOwnedObject<TFarSeparator>(this);
+  Separator->SetPosition(GroupTop);
+  Separator->SetCaption(GetMsg(NB_TLS_OPTIONS));
+
+  SetNextItemPosition(ipNewLine);
+  SslSessionReuseCheck = MakeOwnedObject<TFarCheckBox>(this);
+  SslSessionReuseCheck->SetCaption(GetMsg(NB_LOGIN_FTP_SSLSESSIONREUSE));
+
+  SetNextItemPosition(ipNewLine);
+  Text = MakeOwnedObject<TFarText>(this);
+  Text->SetCaption(GetMsg(NB_S3_MIN_TLS_VERSION));
+  Text->SetWidth(20);
+  Text->SetVisible(false);
+
+  SetNextItemPosition(ipRight);
+  MinTlsVersionCombo = MakeOwnedObject<TFarComboBox>(this);
+  MinTlsVersionCombo->SetDropDownList(true);
+  MinTlsVersionCombo->SetWidth(12);
+  MinTlsVersionCombo->SetVisible(false);
+  MinTlsVersionCombo->GetItems()->AddObject(GetTlsVersionName(tls10), ToObj(nb::ToPtr(tls10)));
+  MinTlsVersionCombo->GetItems()->AddObject(GetTlsVersionName(tls11), ToObj(nb::ToPtr(tls11)));
+  MinTlsVersionCombo->GetItems()->AddObject(GetTlsVersionName(tls12), ToObj(nb::ToPtr(tls12)));
+  MinTlsVersionCombo->GetItems()->AddObject(GetTlsVersionName(tls13), ToObj(nb::ToPtr(tls13)));
+
+  SetNextItemPosition(ipRight);
+  Text = MakeOwnedObject<TFarText>(this);
+  Text->SetCaption(GetMsg(NB_S3_MAX_TLS_VERSION));
+  Text->SetWidth(3);
+  Text->SetVisible(false);
+
+  SetNextItemPosition(ipRight);
+  MaxTlsVersionCombo = MakeOwnedObject<TFarComboBox>(this);
+  MaxTlsVersionCombo->SetDropDownList(true);
+  MaxTlsVersionCombo->SetWidth(12);
+  MaxTlsVersionCombo->SetVisible(false);
+  MaxTlsVersionCombo->GetItems()->AddObject(GetTlsVersionName(tls10), ToObj(nb::ToPtr(tls10)));
+  MaxTlsVersionCombo->GetItems()->AddObject(GetTlsVersionName(tls11), ToObj(nb::ToPtr(tls11)));
+  MaxTlsVersionCombo->GetItems()->AddObject(GetTlsVersionName(tls12), ToObj(nb::ToPtr(tls12)));
+  MaxTlsVersionCombo->GetItems()->AddObject(GetTlsVersionName(tls13), ToObj(nb::ToPtr(tls13)));
   // Tunnel tab
 
   SetNextItemPosition(ipNewLine);
@@ -3498,6 +3532,27 @@ void TSessionDialog::UpdateControls()
     (aFtpProtocol || aFtpsProtocol || InternalWebDAVProtocol || HTTPSProtocol || aS3Protocol);
   FtpEncryptionLabel->SetVisible(FtpEncryptionVisible);
   FtpEncryptionCombo->SetVisible(FtpEncryptionVisible);
+  // Filter FtpEncryptionCombo for S3: only "No encryption" and "TLS/SSL Implicit"
+  if (aS3Protocol && FtpEncryptionCombo->GetItems()->GetCount() > 2)
+  {
+    FNonS3EncryptionIndex = FFtpEncryptionComboIndex;
+    while (FtpEncryptionCombo->GetItems()->GetCount() > 2)
+      FtpEncryptionCombo->GetItems()->Delete(FtpEncryptionCombo->GetItems()->GetCount() - 1);
+    if (FFtpEncryptionComboIndex >= 2)
+    {
+      FFtpEncryptionComboIndex = 1;
+      FtpEncryptionCombo->SetItemIndex(1);
+    }
+  }
+  else if (!aS3Protocol && FtpEncryptionCombo->GetItems()->GetCount() < 3)
+  {
+    FtpEncryptionCombo->GetItems()->Add(GetMsg(NB_LOGIN_FTP_REQUIRE_EXPLICIT_FTP));
+    if (FNonS3EncryptionIndex >= 2)
+    {
+      FFtpEncryptionComboIndex = FNonS3EncryptionIndex;
+      FtpEncryptionCombo->SetItemIndex(FNonS3EncryptionIndex);
+    }
+  }
   PrivateKeyEdit->SetEnabled(aSshProtocol || aFtpsProtocol || HTTPSProtocol);
   PrivateKeyBrowseBtn->SetEnabled(PrivateKeyEdit->GetEnabled());
   PrivateKeyViewBtn->SetEnabled(PrivateKeyEdit->GetEnabled() && !PrivateKeyEdit->GetText().IsEmpty());
@@ -3516,8 +3571,11 @@ void TSessionDialog::UpdateControls()
   S3CACertificateEdit->SetVisible(IsMainTab && aS3Protocol);
   S3CACertificateLoadBtn->SetVisible(IsMainTab && aS3Protocol);
   S3CACertificateSaveBtn->SetVisible(IsMainTab && aS3Protocol);
-  S3MinTlsVersionCombo->SetVisible(IsMainTab && aS3Protocol);
-  S3MaxTlsVersionCombo->SetVisible(IsMainTab && aS3Protocol);
+  MinTlsVersionCombo->SetVisible(IsMainTab && aS3Protocol);
+  MaxTlsVersionCombo->SetVisible(IsMainTab && aS3Protocol);
+  // S3CredentialsEnvCheck->SetVisible(IsMainTab && aS3Protocol);
+  // S3ProfileLabel->SetVisible(IsMainTab && aS3Protocol);
+  // S3ProfileCombo->SetVisible(IsMainTab && aS3Protocol);
 
   // Connection sheet
   FtpPasvModeCheck->SetEnabled(aFtpProtocol);
@@ -3541,7 +3599,6 @@ void TSessionDialog::UpdateControls()
   // FTP tab
   FtpTab->SetEnabled(aFtpProtocol || aFtpsProtocol);
   FtpAllowEmptyPasswordCheck->SetEnabled(aFtpProtocol || aFtpsProtocol);
-  SslSessionReuseCheck->SetEnabled(aFtpsProtocol);
   TlsCertificateFileLabel->SetEnabled(aFtpsProtocol);
   TlsCertificateFileEdit->SetEnabled(aFtpsProtocol);
   TlsCertificateFileBrowseBtn->SetEnabled(aFtpsProtocol);
@@ -3554,12 +3611,23 @@ void TSessionDialog::UpdateControls()
   S3CACertificateEdit->Enabled = aS3Protocol;
   S3CACertificateLoadBtn->SetEnabled(aS3Protocol);
   S3CACertificateSaveBtn->SetEnabled(aS3Protocol);
+  // const bool autoCred = S3CredentialsEnvCheck->GetChecked();
+  // S3CredentialsEnvCheck->Enabled = aS3Protocol;
+  // S3ProfileCombo->Enabled = aS3Protocol && autoCred;
+  S3SessionTokenEdit->Enabled = aS3Protocol;
+  S3RoleArnEdit->Enabled = aS3Protocol;
 
   S3TlsCertificateFileLabel->SetEnabled(aS3Protocol);
   S3TlsCertificateFileEdit->SetEnabled(aS3Protocol);
   S3TlsCertificateFileBrowseBtn->SetEnabled(aS3Protocol);
-  S3MinTlsVersionCombo->SetEnabled(aS3Protocol);
-  S3MaxTlsVersionCombo->SetEnabled(aS3Protocol);
+  MinTlsVersionCombo->SetEnabled(aS3Protocol);
+  MaxTlsVersionCombo->SetEnabled(aS3Protocol);
+
+  // TLS/SSL tab
+  TLSTab->SetEnabled(aFtpsProtocol || HTTPSProtocol || aS3Protocol);
+  SslSessionReuseCheck->SetEnabled(aFtpsProtocol);
+  MinTlsVersionCombo->SetEnabled(aFtpsProtocol || HTTPSProtocol || aS3Protocol);
+  MaxTlsVersionCombo->SetEnabled(aFtpsProtocol || HTTPSProtocol || aS3Protocol);
 
   // SSH tab
   SshTab->SetEnabled(aSshProtocol);
@@ -3858,8 +3926,32 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
   S3RequesterPaysCheck->Checked = FSessionData->S3RequesterPays;
   S3CACertificateEdit->SetText(FSessionData->S3CACertificate);
   S3TlsCertificateFileEdit->SetText(FSessionData->GetTlsCertificateFile());
-  S3MinTlsVersionCombo->ItemIndex = TlsVersionToIndex(FSessionData->MinTlsVersion);
-  S3MaxTlsVersionCombo->ItemIndex = TlsVersionToIndex(FSessionData->MaxTlsVersion);
+  MinTlsVersionCombo->ItemIndex = TlsVersionToIndex(FSessionData->MinTlsVersion);
+  MaxTlsVersionCombo->ItemIndex = TlsVersionToIndex(FSessionData->MaxTlsVersion);
+  // CredentialsEnvCheck->SetChecked(FSessionData->S3CredentialsEnv);
+  UnicodeString S3ProfileValue = FSessionData->S3Profile;
+  // Populate profile combo from AWS config files
+  // "General S3" already added as item 0 during creation
+  // {
+  //   S3ProfileCombo->GetItems()->BeginUpdate();
+  //   SCOPE_EXIT
+  //   {
+  //     S3ProfileCombo->GetItems()->EndUpdate();
+  //   };
+  //   std::unique_ptr<TStrings> Profiles(GetS3Profiles());
+  //   for (int32_t Idx = 0; Idx < Profiles->GetCount(); ++Idx)
+  //   {
+  //     UnicodeString Prof = Profiles->GetString(Idx);
+  //     if (S3ProfileCombo->GetItems()->IndexOf(Prof) < 0)
+  //       S3ProfileCombo->GetItems()->Add(Prof);
+  //   }
+  // }
+  // S3ProfileCombo->SetText(S3ProfileValue.IsEmpty() ? GetMsg(NB_S3_GENERAL_NAME) : S3ProfileValue);
+  // S3ProfileCombo->Enabled = FSessionData->S3CredentialsEnv;
+  S3SessionTokenEdit->SetText(FSessionData->S3SessionToken);
+  S3RoleArnEdit->SetText(FSessionData->S3RoleArn);
+  MinTlsVersionCombo->ItemIndex = TlsVersionToIndex(FSessionData->MinTlsVersion);
+  MaxTlsVersionCombo->ItemIndex = TlsVersionToIndex(FSessionData->MaxTlsVersion);
   /*std::unique_ptr<TStrings> S3SessionToken(std::make_unique<TStringList>());
   S3SessionToken->SetText(SessionData->S3SessionToken());
   for (int32_t Index = 0; (Index < S3SessionToken->GetCount()) &&
@@ -4194,8 +4286,21 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     FSessionData->SetS3CACertificate(S3CACertificateEdit->GetText());
     if (GetFSProtocol() == fsS3)
       FSessionData->SetTlsCertificateFile(S3TlsCertificateFileEdit->GetText());
-    TTlsVersion MinTls = IndexToTlsVersion(S3MinTlsVersionCombo->ItemIndex);
-    TTlsVersion MaxTls = IndexToTlsVersion(S3MaxTlsVersionCombo->ItemIndex);
+    TTlsVersion MinTls = ssl2;
+    TTlsVersion MaxTls = ssl2;
+    MinTls = IndexToTlsVersion(MinTlsVersionCombo->ItemIndex);
+    MaxTls = IndexToTlsVersion(MaxTlsVersionCombo->ItemIndex);
+    // FSessionData->SetS3CredentialsEnv(S3CredentialsEnvCheck->GetChecked());
+    // {
+    //   UnicodeString Profile = S3ProfileCombo->GetText();
+    //   if (Profile == GetMsg(NB_S3_GENERAL_NAME))
+    //     Profile = EmptyStr;
+    //   FSessionData->SetS3Profile(Profile);
+    // }
+    FSessionData->SetS3SessionToken(S3SessionTokenEdit->GetText());
+    FSessionData->SetS3RoleArn(S3RoleArnEdit->GetText());
+    MinTls = IndexToTlsVersion(MinTlsVersionCombo->ItemIndex);
+    MaxTls = IndexToTlsVersion(MaxTlsVersionCombo->ItemIndex);
     if (MaxTls < MinTls)
     {
       MessageDialog(L"Maximum TLS version must be greater than or equal to minimum version.", qtError, qaOK);

@@ -1090,6 +1090,50 @@ void FreeKey(TPrivateKey * PrivateKey)
   sfree(Ssh2Key);
 }
 
+UnicodeString ConvertKeyToTemporaryPPK(const UnicodeString & FileName,
+  const UnicodeString & Passphrase)
+{
+  const TKeyType KeyType = GetKeyType(FileName);
+
+  if (KeyType == ktSSH2)
+  {
+    // Already PPK format, no conversion needed
+    return FileName;
+  }
+
+  if ((KeyType != ktOpenSSHPEM) && (KeyType != ktOpenSSHNew) && (KeyType != ktSSHCom))
+  {
+    // Unsupported key type for conversion
+    return FileName;
+  }
+
+  UnicodeString TempFileName = IncludeTrailingBackslash(SystemTemporaryDirectory()) +
+    L"nbc_" + base::ExtractFileName(FileName, false) + L".ppk";
+
+  // Ensure unique filename by appending counter if needed
+  int32_t Counter = 0;
+  UnicodeString UniqueTempFileName = TempFileName;
+  while (base::FileExists(ApiPath(UniqueTempFileName)))
+  {
+    Counter++;
+    UniqueTempFileName = IncludeTrailingBackslash(SystemTemporaryDirectory()) +
+      L"nbc_" + base::ExtractFileName(FileName, false) + L"_" + ::IntToStr(Counter) + L".ppk";
+  }
+
+  TPrivateKey * PrivateKey = LoadKey(KeyType, FileName, Passphrase);
+
+  try__finally
+  {
+    SaveKey(ktSSH2, UniqueTempFileName, Passphrase, PrivateKey);
+  }
+  __finally
+  {
+    FreeKey(PrivateKey);
+  } end_try__finally
+
+  return UniqueTempFileName;
+}
+
 RawByteString StrBufToString(strbuf * StrBuf)
 {
   return RawByteString(reinterpret_cast<char *>(StrBuf->s), nb::ToInt32(StrBuf->len));

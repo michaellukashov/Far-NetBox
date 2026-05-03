@@ -84,6 +84,7 @@ private:
   UnicodeString FCWriteTemp;
   UnicodeString FAuthenticationLog;
   UnicodeString FLastTunnelError;
+  UnicodeString FTempPPKFile;
   UnicodeString FUserName;
   bool FUtfStrings{false};
   DWORD FLastSendBufferUpdate{0};
@@ -152,7 +153,7 @@ protected:
   void FatalError(const UnicodeString & Error, const UnicodeString & HelpKeyword = "");
   UnicodeString FormatKeyStr(const UnicodeString & AKeyStr) const;
   void ParseFingerprint(const UnicodeString & Fingerprint, UnicodeString & SignKeyType, UnicodeString & Hash);
-  static Conf * StoreToConfig(TSessionData * Data, bool Simple);
+  Conf * StoreToConfig(TSessionData * Data, bool Simple);
 
 public:
   explicit TSecureShell(TSessionUI * UI, TSessionData * SessionData,
