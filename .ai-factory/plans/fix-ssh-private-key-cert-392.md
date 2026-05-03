@@ -145,34 +145,100 @@ Based on diagnostic logs, implement one of:
   - **Blocked by:** Task 5
 
 ### Phase 4: Manual QA
-- [ ] **Task 7:** Smoke-test key auth in Far Manager
-  - Create SFTP session with PPK key to `publickey`-only server
-  - Verify successful connection
-  - Verify passphrase prompt (if key encrypted, no stored passphrase)
-  - Verify password-only server still works
-  - **Skipped:** Testing=No per plan settings; build verification (Task 6) confirms code compiles
-  - **Blocked by:** Task 6
+dm|- [ ] **Task 7:** Smoke-test key auth in Far Manager
+ov|  - Create SFTP session with PPK key to `publickey`-only server
+rc|  - Verify successful connection
+vo|  - Verify passphrase prompt (if key encrypted, no stored passphrase)
+ll|  - Verify password-only server still works
+cy|  - Verify browse buttons on SSH tab open file dialogs with correct filters
+xt|  - Verify "Display Public Key" button shows public key blob for valid key files
+pk|  - **Skipped:** Testing=No per plan settings; build verification (Task 6) confirms code compiles
+dm|  - **Blocked by:** Task 6
 
-### Phase 5: Documentation
-- [x] **Task 8:** Update `ChangeLog`
-  - Added fix description for #392 referencing GitHub issue
-  - **Blocked by:** Task 7
+lu|### Phase 5: Documentation
+ah|- [x] **Task 8:** Update `ChangeLog`
+xs|  - Added fix description for #392 referencing GitHub issue
+um|  - **Blocked by:** Task 7
+bj|
+ae|- [x] **Task 9:** Update `.ai-factory/Github-Issues.md`
+tb|  - Marked #392 as FIXED
+um|  - **Blocked by:** Task 7
+oc|
+### Phase 6: UI Alignment with WinSCP
+yd|
+kh|mr|ul|- [x] **Task 10:** Add browse button and "Display Public Key" button to `PrivateKeyEdit` on Session tab
+kp|nw|  - File: `src/NetBox/WinSCPDialogs.cpp` (TSessionDialog)
+wv|ao|  - **Note:** `PrivateKeyEdit` (bound to `FPublicKeyFile` used for SSH auth) is on the **main Session tab**, not the Authentication tab. WinSCP groups it under "Authentication parameters" in its tabbed dialog.
+sw|gk|  - Add `TFarButton` with `\u2026` (ellipsis) caption next to `PrivateKeyEdit`
+hq|xi|  - Wire `OPENFILENAMEW` dialog with filter: `PuTTY Private Key Files (*.ppk)|*.ppk|All Private Key Files (*.ppk;*.pem;*.key;id_*)|*.ppk;*.pem;*.key;id_*|All Files (*.*)|*.*`
+em|lr|  - Add "Display Public Key" button (`TFarButton`) — calls `GetPublicKeyLine()` and shows result in message box
+kg|rb|  - **Tools dropdown deferred** — Full "Generate/Import/Convert Key" menu requires PuTTYgen integration. Mark as `// TODO` placeholder or skip for this plan.
+ks|
+xs|da|- [x] **Task 11:** Add browse button to Certificate field
+mp|  - File: `src/NetBox/WinSCPDialogs.cpp` (TSessionDialog)
+zn|  - Add `TFarButton` with `\u2026` next to `OpensshCertEdit` / detached certificate edit
+rp|  - Wire `OPENFILENAMEW` with filter: `Public key files (*.pub)|*.pub|All Files (*.*)|*.*`
+ne|  - Follow same pattern as TLS/S3 certificate browse buttons (`TlsCertificateFileBrowseClick`)
+qf|  - **Blocked by:** Task 10 (shares browse handler pattern)
 
-- [x] **Task 9:** Update `.ai-factory/Github-Issues.md`
-  - Marked #392 as FIXED
-  - **Blocked by:** Task 7
+du|bk|- [x] **Task 12:** Add message strings for new UI elements
+xa|  - Files: `src/base/MsgIDs.h`, `src/NetBox/NetBoxEng.lng`, `src/NetBox/NetBoxFr.lng`, `src/NetBox/NetBoxSpa.lng`
+qp|  - Add IDs: `NB_LOGIN_DISPLAY_PUBLIC_KEY`, `NB_LOGIN_TOOLS`, `NB_LOGIN_PRIVATE_KEY_BROWSE_FILTER`, `NB_LOGIN_CERTIFICATE_BROWSE_FILTER`
+jd|  - Add English, French, Spanish translations (mark non-English as `[T]` for translation)
+pw|  - Update `src/resource/TextsCore1.rc` if needed for runtime string loading
+my|  - **Blocked by:** Tasks 10-11 (need final button captions)
 
+cp|
+### Phase 7: SSH/Key Exchange Tab Alignment with WinSCP
+yd|
+mc|ul|- [x] **Task 13:** Add missing "Attempt GSSAPI key exchange" checkbox to KEX tab
+kp|  - File: `src/NetBox/WinSCPDialogs.cpp` (TSessionDialog class)
+nw|  - Add `TFarCheckBox * AuthGSSAPIKEXCheck{nullptr}` member declaration (near `KexDownButton`)
+ao|  - Create checkbox in `Init()` under `tabKex`, after `KexDownButton`, before next separator
+sw|  - Caption: new message `NB_LOGIN_KEX_GSSAPI` (WinSCP: "Attempt &GSSAPI key exchange")
+gk|  - Wire in dialog load (`Init()`): `AuthGSSAPIKEXCheck->SetChecked(SessionData->GetAuthGSSAPIKEX())`
+hq|  - Wire in dialog save (`Execute()`): `SessionData->SetAuthGSSAPIKEX(AuthGSSAPIKEXCheck->GetChecked())`
+xi|  - Enable logic: `AuthGSSAPIKEXCheck->SetEnabled(aSshProtocol)` (or existing Kex tab enablement)
+em|  - **Rationale:** `FAuthGSSAPIKEX` data field exists in `TSessionData`, is stored, wired to PuTTY (`CONF_try_gssapi_kex`), and logged — but has NO UI control. WinSCP exposes it on KEX tab.
+lr|  - **Blocked by:** Task 5 (core fix stable)
+rb|
+wf|da|- [x] **Task 14:** Add message strings for GSSAPI KEX checkbox
+mp|  - Files: `src/base/MsgIDs.h`, `src/NetBox/NetBoxEng.lng`, `src/NetBox/NetBoxFr.lng`, `src/NetBox/NetBoxSpa.lng`
+zn|  - Add ID: `NB_LOGIN_KEX_GSSAPI`
+rp|  - English: `"Attempt GSSAPI key exchange"` (with accelerator `&` if desired)
+ne|  - French/Spanish: `[T]` placeholder for translators
+qf|  - Update `src/resource/TextsCore1.rc` if needed
+my|  - **Blocked by:** Task 13
+hk|
+fr|
+gf|ul|- [x] **Task 15:** Wire or remove dead `FOpensshPrivateKeyFile` field
+kp|  - File: `src/core/SecureShell.cpp` (`StoreToConfig()`), `src/NetBox/WinSCPDialogs.cpp`
+nw|  - **Finding:** `FOpensshPrivateKeyFile` has full UI controls (`OpensshKeyEdit` on Authentication tab's "OpenSSH Certificate" group), storage serialization (`ReadString`/`WriteString`), and property accessors — but is **never passed to PuTTY** for SSH authentication. Only `FPublicKeyFile` → `CONF_keyfile` is used.
+ao|  - **Options:**
+sw|    1. Wire it: When `UseOpensshCertificate` is enabled and `FOpensshPrivateKeyFile` is non-empty, pass it to `CONF_keyfile` instead of `FPublicKeyFile` (or in addition, if PuTTY supports multiple key files).
+gk|    2. Consolidate: Rebind `OpensshKeyEdit` to `FPublicKeyFile` and remove `FOpensshPrivateKeyFile` from data model + storage + UI to eliminate confusion.
+hq|  - **Rationale:** The current UI implies the "OpenSSH private key file" field is functional for connections, but it is dead code. This causes user confusion when they configure a key in the certificate group and auth still fails.
+xi|  - **Blocked by:** Task 5 (core auth fix stable)
+em|
 ## Commit Message (Draft)
 
 ```
 fix(ssh): resolve private key authentication failure (#392)
-
-Fix SSH public-key authentication so sessions with configured PPK/OpenSSH
-key files connect successfully to publickey-only servers. Adds diagnostic
-logging to trace key file resolution, loading, and auth prompt handling.
-
-Fixes GitHub issue #392
 ```
+at|
+fix(ssh): resolve private key authentication failure and align SSH UI with WinSCP (#392)
+ct|
+Fix SSH public-key authentication so sessions with configured PPK/OpenSSH
+ot|key files connect successfully to publickey-only servers. Adds diagnostic
+vk|logging to trace key file resolution, loading, and auth prompt handling.
+wk|
+oa|Also aligns Session Editor SSH UI with WinSCP:
+to|no|- Authentication tab: browse button for private key file selection
+vm|iz|- Authentication tab: "Display Public Key" and "Tools" action buttons
+gx|at|- Authentication tab: browse button for certificate file selection
+aq|du|- Key Exchange tab: "Attempt GSSAPI key exchange" checkbox (WinSCP parity)
+no|Fixes GitHub issue #392
+xn|```
 
 ## Acceptance Criteria
 
@@ -182,7 +248,14 @@ Fixes GitHub issue #392
 - [ ] Password-only SFTP server still works (no regression)
 - [ ] Agent-only auth still works (no regression)
 - [ ] Build passes with zero warnings
-- [ ] ChangeLog and Github-Issues.md updated
+dp|- [ ] ChangeLog and Github-Issues.md updated
+er|- [ ] Private key file field has browse button with correct filters (PPK, PEM, KEY, id_*)
+ld|- [ ] "Display Public Key" button shows key fingerprint/blob for valid key files
+sw|za|- [ ] Tools dropdown button deferred (Generate/Import/Convert require PuTTYgen integration)
+zz|- [ ] Certificate file field has browse button with .pub filter
+rv|- [ ] Key Exchange tab shows "Attempt GSSAPI key exchange" checkbox and persists value
+rv|- [ ] `FOpensshPrivateKeyFile` is either wired to `CONF_keyfile` when certificate auth is enabled, or removed from UI to avoid user confusion
+zf|
 
 ## Notes
 
@@ -192,3 +265,16 @@ Fixes GitHub issue #392
 - `DoVerifyKey()` auto-converts OpenSSH→PPK in the UI save path. Sessions created via import or command line may bypass this conversion. PuTTY 0.81 natively supports OpenSSH keys, so conversion should not be required for auth.
 - The `SetPassphrase()` method in `SessionData` encrypts the passphrase with `PublicKeyFile` as the encryption key. If `PublicKeyFile` changes, the passphrase is re-encrypted — this could cause issues if the path changes during session loading.
 - Do NOT modify `libs/putty/` — any PuTTY-level fix must be applied as a patch or handled in NetBox's glue code.
+yx|oc|- **WinSCP UI alignment:** WinSCP uses `TFilenameEdit` (VCL) with built-in browse and action buttons for private key and certificate fields. NetBox uses custom `TFarDialog` controls — implement browse/action buttons as `TFarButton` controls with `OPENFILENAMEW` dialogs and `GetPublicKeyLine()` for display.
+ij|ea|- **KEX tab parity:** `FAuthGSSAPIKEX` field exists in `TSessionData`, persisted to storage, cloned for tunnels, wired to PuTTY `CONF_try_gssapi_kex`, and included in session info logging — but the KEX tab has no `AuthGSSAPIKEXCheck` checkbox. WinSCP exposes this on its Key Exchange tab as "Attempt GSSAPI key exchange".
+ea|
+ag|
+## Changelog
+gr|
+op|| Date       | Change                     | Reason |
+ql||------------|----------------------------|--------|
+mr|| 2026-05-02 | Initial plan               | Issue #392 analysis |
+ok|| 2026-05-02 | Refined (2nd iteration)    | /aif-improve: added UI alignment tasks (10-12) for WinSCP SSH Authentication tab parity |
+mc|| 2026-05-03 | Refined (3rd iteration)    | /aif-improve: added KEX tab alignment tasks (13-14) — missing `AuthGSSAPIKEXCheck` checkbox for GSSAPI key exchange (WinSCP parity) |
+zc|| 2026-05-03 | Refined (4th iteration)    | /aif-improve: corrected Task 10 (PrivateKeyEdit is on Session tab, not Auth tab; deferred Tools dropdown); added Task 15 (dead `FOpensshPrivateKeyFile` field) |
+wi||            |                            |  |

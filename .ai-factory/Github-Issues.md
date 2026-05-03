@@ -11,7 +11,7 @@
 | Metric | Count |
 |--------|-------|
 | Total open issues | **28** |
-| Open Pull Requests | **3** ([#502], [#500], [#504]) |
+| Open Pull Requests | **3** (~~[#502]~~, [#500], [#504]) |
 | Non-PR Issues | **25** |
 
 ### Issue Category Breakdown (non-PR only: 25)
@@ -70,13 +70,14 @@
 
 | # | Issue | Type | Summary | Notes |
 |---|-------|------|---------|-------|
-| 25 | [#502](https://github.com/michaellukashov/Far-NetBox/pull/502) | PR | Patch for NetBox.rc version string (open). | By @VictorVG |
-| 26 | [#500](https://github.com/michaellukashov/Far-NetBox/pull/500) | PR | Open PR. | |
-| 27 | [#504](https://github.com/michaellukashov/Far-NetBox/pull/504) | PR | Fix for [#390]: DateTimeToTimeStamp timestamp clamping (open). | |
+| 25 | ~~[#502](https://github.com/michaellukashov/Far-NetBox/pull/502)~~ | PR | Patch for NetBox.rc version string (open). | By @VictorVG |
+| 26 | [#500](https://github.com/michaellukashov/Far-NetBox/pull/500) | PR | Open PR. | 
+| 27 | ~~[#504](https://github.com/michaellukashov/Far-NetBox/pull/504)~~ | PR | Fix for ~[#390]~: DateTimeToTimeStamp timestamp clamping (open). | |
 | 28 | [#395](https://github.com/michaellukashov/Far-NetBox/issues/395) | Bug | Some misaligned text in localization (for example Russian). | UI layout |
 | 29 | [#394](https://github.com/michaellukashov/Far-NetBox/issues/394) | Bug | Getting `"; echo "NetBox: this is end-of-file:$?"` in interactive bash shell. | SSH command artifact |
  | 30 | ~~[#387](https://github.com/michaellukashov/Far-NetBox/issues/387)~~ **FIXED** | Bug | Bug in display dialogs. | UI rendering |
 | — | **Discovered** | `FTlsCertificateFile` has no UI control to clear stale `.ppk` paths (WinSCP import). Causes OpenSSL init failure. Workaround: edit session XML. | Found during #389 fix; `WinSCPDialogs.cpp:4040` TODO |
+
 ---
 
 ## Summary by Category
@@ -96,7 +97,7 @@
  **Immediate** | 6 | [#513], [#506], ~~[#508]~~, ~~[#497]~~, [#393], ~~[#501]~~ — crashes + data corruption |
  **Short-term** | 7 | ~~[#515]~~, ~~[#514]~~, ~~[#510]~~, [#512], ~~[#511]~~, ~~[#507]~~, ~~[#486]~~, ~~[#485]~~ — protocol/UX broken |
  ~~[#509]~~, ~~[#505]~~, [#481], [#472], ~~[#396]~~, ~~[#392]~~ **FIXED**, ~~[#391]~~, ~~[#390]~~, [#388] — features + integration (~~#389~~ fixed)
- **Backlog** | 6 | [#502], [#500], ~~[#504]~~, [#395], [#394], ~~[#387]~~ — PRs + minor UI |
+ **Backlog** | 6 | ~~[#502]~~, [#500], ~~[#504]~~, [#395], [#394], ~~[#387]~~ — PRs + minor UI |
 
 ---
 
@@ -149,8 +150,8 @@
 |------|------------|------------|
 | Multiple stack overflow crashes suggest concurrency / recursion bugs | High | Audit threading model; check for infinite recursion in directory traversal |
  ~~S3 protocol broken for multiple users ([#514], [#510])~~ | ~~High~~ | ~~Isolate S3-specific issues from TLS/HTTP layer; test against AWS and MinIO~~ |
-| FTP crash reports overlap ([#513], [#506]) | Medium | Check if all share same root cause in FTP directory listing code |
-| Open PRs accumulating without review ([#502], [#500], [#504]) | Medium | Review and merge or close stale PRs |
+| ~~FTP crash reports overlap (#513, #506)~~ | Medium | Check if all share same root cause in FTP directory listing code |
+| Open PRs accumulating without review (~~[#502]~~, [#500], [#504]) | Medium | Review and merge or close stale PRs |
  Certificate/TLS issues spread across protocols (~~[#390]~~ via #504, [#392], ~~[#388]~~; ~~#389~~ fixed) | Medium | Review OpenSSL and certificate validation pipeline |
 
 ---
@@ -159,7 +160,7 @@
 
 Based on the current open issue landscape, here are the concrete recommendations:
 
- 1. **Merge or close stale PRs first** ([#502], [#500], ~~[#504]~~). ~~PR [#504] fixes [#390] (timestamp clamping) and appears ready for review.~~ PR #504 merged. Closing PR debt reduces noise.
+ 1. **Merge or close stale PRs first** (~~[#502]~~, [#500], ~~[#504]~~). ~~PR [#504] fixes [#390] (timestamp clamping) and appears ready for review.~~ PR #504 merged. Closing PR debt reduces noise.
 
 2. **Investigate the stack-overflow cluster** (~~[#513]~~, ~~[#497]~~). Both are `STATUS_STACK_OVERFLOW` but in different protocols (FTP and SFTP). This suggests a shared recursion pattern — likely in directory traversal or file info gathering. A single fix may resolve both.
 
