@@ -1344,8 +1344,8 @@
 "**Master password successfully set.**\n\nYour stored passwords are secured by AES cipher now."
 "**You have deleted your master password.**\n\nYour stored passwords are not secured now."
 
-tv|"Minimum TLS version:"
-ef|"Maximum TLS version:"
+"Minimum TLS version:"
+"Maximum TLS version:"
 "&Load"
 "&Save"
 "The selected file does not contain a valid PEM certificate."
