@@ -3246,7 +3246,7 @@ bool TSecureShell::HaveHostKey(const UnicodeString & AHost, int32_t Port, const 
       const UnicodeString ExpectedKeyType = KeyTypeFromFingerprint(ExpectedKey);
       if (GetConfiguration()->ActualLogProtocol >= 1)
       {
-        LogEvent(FORMAT("Comparing session-configured key type=%s with expected=%s", ExpectedKeyType, KeyType));
+        LogEvent(FORMAT(L"Comparing session-configured key type=%s with expected=%s", ExpectedKeyType, KeyType));
       }
       bool KeysMatch = SameText(ExpectedKeyType, KeyType);
       if (!KeysMatch && (ExpectedKeyType == L"ssh-rsa"))
