@@ -4,6 +4,9 @@
 ## [Unreleased]
 
 ### Fixes
+ * Fix version string mismatch in NetBox.rc resource file (#502) https://github.com/michaellukashov/Far-NetBox/pull/502
+   — replace hardcoded "24.12.2.608" literals with PLUGIN_VERSION_STR macro so
+   FileVersion and ProductVersion always stay in sync with plugin_version.hpp
 
  * Fix Alt-F12 folder history not restoring session when no panel was open
  * Fix log file error when opening same session on two panels concurrently
