@@ -1767,7 +1767,6 @@ private:
   void S3CACertificateSaveClick(TFarButton * Sender, bool & Close);
   void TlsCertificateFileBrowseClick(TFarButton * Sender, bool & Close);
   void WebDAVTlsCertificateFileBrowseClick(TFarButton * Sender, bool & Close);
-  void S3TlsCertificateFileBrowseClick(TFarButton * Sender, bool & Close);
   void PrivateKeyFileBrowseClick(TFarButton * Sender, bool & Close);
   void OpensshCertFileBrowseClick(TFarButton * Sender, bool & Close);
   static bool IsSshProtocol(TFSProtocol FSProtocol);
@@ -1926,10 +1925,6 @@ private:
   TFarEdit * WebDAVTlsCertificateFileEdit{nullptr};
   TFarButton * WebDAVTlsCertificateFileBrowseBtn{nullptr};
 
-  // S3 tab
-  TFarText * S3TlsCertificateFileLabel{nullptr};
-  TFarEdit * S3TlsCertificateFileEdit{nullptr};
-  TFarButton * S3TlsCertificateFileBrowseBtn{nullptr};
   TFarCheckBox * WebDAVCompressionCheck{nullptr};
 
   TFarComboBox * S3UrlStyleCombo{nullptr};
@@ -1943,9 +1938,11 @@ private:
   TFarText * S3SessionTokenLabel{nullptr};
   TFarText * S3RoleArnLabel{nullptr};
   TFarEdit * S3RoleArnEdit{nullptr};
-  // TFarCheckBox * S3CredentialsEnvCheck{nullptr};
-  // TFarComboBox * S3ProfileCombo{nullptr};
-  // TFarText * S3ProfileLabel{nullptr};
+  TFarText * S3RoleSessionNameLabel{nullptr};
+  TFarEdit * S3RoleSessionNameEdit{nullptr};
+  TFarCheckBox * S3CredentialsEnvCheck{nullptr};
+  TFarComboBox * S3ProfileCombo{nullptr};
+  TFarText * S3ProfileLabel{nullptr};
 
   std::unique_ptr<TObjectList> FTabs{std::make_unique<TObjectList>()};
   int32_t FFirstVisibleTabIndex{0};
@@ -2553,11 +2550,6 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   FtpUndupFFCheck->SetCaption(GetMsg(NB_LOGIN_FTP_UNDUPFF));
 
   SetNextItemPosition(ipNewLine);
-
-  SslSessionReuseCheck = MakeOwnedObject<TFarCheckBox>(this);
-  SslSessionReuseCheck->SetCaption(GetMsg(NB_LOGIN_FTP_SSLSESSIONREUSE));
-
-  SetNextItemPosition(ipNewLine);
   TlsCertificateFileLabel = MakeOwnedObject<TFarText>(this);
   TlsCertificateFileLabel->SetCaption(GetMsg(NB_LOGIN_TLS_CERTIFICATE_FILE));
   TlsCertificateFileLabel->SetWidth(20);
@@ -2627,21 +2619,21 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   S3CACertificateLabel->SetCaption(GetMsg(NB_LOGIN_S3_CA_CERTIFICATE));
   S3CACertificateLabel->SetWidth(20);
   S3CACertificateLabel->SetVisible(false);
-  // S3CredentialsEnvCheck = MakeOwnedObject<TFarCheckBox>(this);
-  // S3CredentialsEnvCheck->SetCaption(GetMsg(NB_S3_CREDENTIALS_ENV));
-  // S3CredentialsEnvCheck->SetVisible(false);
+  S3CredentialsEnvCheck = MakeOwnedObject<TFarCheckBox>(this);
+  S3CredentialsEnvCheck->SetCaption(GetMsg(NB_S3_CREDENTIALS_ENV));
+  S3CredentialsEnvCheck->SetVisible(false);
 
   // Profile dropdown
-  // SetNextItemPosition(ipRight);
-  // S3ProfileLabel = MakeOwnedObject<TFarText>(this);
-  // S3ProfileLabel->SetCaption(GetMsg(NB_S3_PROFILE));
-  // S3ProfileLabel->SetVisible(false);
+  SetNextItemPosition(ipRight);
+  S3ProfileLabel = MakeOwnedObject<TFarText>(this);
+  S3ProfileLabel->SetCaption(GetMsg(NB_S3_PROFILE));
+  S3ProfileLabel->SetVisible(false);
 
-  // SetNextItemPosition(ipRight);
-  // S3ProfileCombo = MakeOwnedObject<TFarComboBox>(this);
-  // S3ProfileCombo->SetWidth(25);
-  // S3ProfileCombo->SetVisible(false);
-  // S3ProfileCombo->GetItems()->Add(GetMsg(NB_S3_GENERAL_NAME));
+  SetNextItemPosition(ipRight);
+  S3ProfileCombo = MakeOwnedObject<TFarComboBox>(this);
+  S3ProfileCombo->SetWidth(25);
+  S3ProfileCombo->SetVisible(false);
+  S3ProfileCombo->GetItems()->Add(GetMsg(NB_S3_GENERAL_NAME));
 
   // Session Token
   SetNextItemPosition(ipNewLine);
@@ -2663,16 +2655,21 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   S3RoleArnLabel->SetVisible(false);
 
   SetNextItemPosition(ipRight);
-  MinTlsVersionCombo = MakeOwnedObject<TFarComboBox>(this);
-  MinTlsVersionCombo->SetDropDownList(true);
-  MinTlsVersionCombo->SetWidth(12);
-  MinTlsVersionCombo->SetVisible(false);
-  MinTlsVersionCombo->GetItems()->AddObject(GetTlsVersionName(tls10), ToObj(nb::ToPtr(tls10)));
-  MinTlsVersionCombo->GetItems()->AddObject(GetTlsVersionName(tls11), ToObj(nb::ToPtr(tls11)));
-  MinTlsVersionCombo->GetItems()->AddObject(GetTlsVersionName(tls12), ToObj(nb::ToPtr(tls12)));
-  MinTlsVersionCombo->GetItems()->AddObject(GetTlsVersionName(tls13), ToObj(nb::ToPtr(tls13)));
+  S3RoleArnEdit = MakeOwnedObject<TFarEdit>(this);
+  S3RoleArnEdit->SetWidth(25);
+  S3RoleArnEdit->SetVisible(false);
 
+  // Role session name
+  SetNextItemPosition(ipNewLine);
+  S3RoleSessionNameLabel = MakeOwnedObject<TFarText>(this);
+  S3RoleSessionNameLabel->SetCaption(GetMsg(NB_S3_ROLE_SESSION_NAME));
+  S3RoleSessionNameLabel->SetWidth(20);
+  S3RoleSessionNameLabel->SetVisible(false);
 
+  SetNextItemPosition(ipRight);
+  S3RoleSessionNameEdit = MakeOwnedObject<TFarEdit>(this);
+  S3RoleSessionNameEdit->SetWidth(25);
+  S3RoleSessionNameEdit->SetVisible(false);
   // Authentication
   /*SetNextItemPosition(ipNewLine);
   Separator = MakeOwnedObject<TFarSeparator>(this);
@@ -2924,7 +2921,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   SetNextItemPosition(ipNewLine);
   Text = MakeOwnedObject<TFarText>(this);
-  Text->SetCaption(GetMsg(NB_S3_MIN_TLS_VERSION));
+  Text->SetCaption(GetMsg(NB_TLS_MIN_VERSION));
   Text->SetWidth(20);
   Text->SetVisible(false);
 
@@ -2940,7 +2937,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   SetNextItemPosition(ipRight);
   Text = MakeOwnedObject<TFarText>(this);
-  Text->SetCaption(GetMsg(NB_S3_MAX_TLS_VERSION));
+  Text->SetCaption(GetMsg(NB_TLS_MAX_VERSION));
   Text->SetWidth(3);
   Text->SetVisible(false);
 
@@ -3571,11 +3568,9 @@ void TSessionDialog::UpdateControls()
   S3CACertificateEdit->SetVisible(IsMainTab && aS3Protocol);
   S3CACertificateLoadBtn->SetVisible(IsMainTab && aS3Protocol);
   S3CACertificateSaveBtn->SetVisible(IsMainTab && aS3Protocol);
-  MinTlsVersionCombo->SetVisible(IsMainTab && aS3Protocol);
-  MaxTlsVersionCombo->SetVisible(IsMainTab && aS3Protocol);
-  // S3CredentialsEnvCheck->SetVisible(IsMainTab && aS3Protocol);
-  // S3ProfileLabel->SetVisible(IsMainTab && aS3Protocol);
-  // S3ProfileCombo->SetVisible(IsMainTab && aS3Protocol);
+  S3CredentialsEnvCheck->SetVisible(IsMainTab && aS3Protocol);
+  S3ProfileLabel->SetVisible(IsMainTab && aS3Protocol);
+  S3ProfileCombo->SetVisible(IsMainTab && aS3Protocol);
 
   // Connection sheet
   FtpPasvModeCheck->SetEnabled(aFtpProtocol);
@@ -3611,17 +3606,20 @@ void TSessionDialog::UpdateControls()
   S3CACertificateEdit->Enabled = aS3Protocol;
   S3CACertificateLoadBtn->SetEnabled(aS3Protocol);
   S3CACertificateSaveBtn->SetEnabled(aS3Protocol);
-  // const bool autoCred = S3CredentialsEnvCheck->GetChecked();
-  // S3CredentialsEnvCheck->Enabled = aS3Protocol;
-  // S3ProfileCombo->Enabled = aS3Protocol && autoCred;
-  S3SessionTokenEdit->Enabled = aS3Protocol;
-  S3RoleArnEdit->Enabled = aS3Protocol;
+  const bool autoCred = S3CredentialsEnvCheck->GetChecked();
+  S3CredentialsEnvCheck->Enabled = aS3Protocol;
+  S3ProfileCombo->Enabled = aS3Protocol && autoCred;
 
-  S3TlsCertificateFileLabel->SetEnabled(aS3Protocol);
-  S3TlsCertificateFileEdit->SetEnabled(aS3Protocol);
-  S3TlsCertificateFileBrowseBtn->SetEnabled(aS3Protocol);
-  MinTlsVersionCombo->SetEnabled(aS3Protocol);
-  MaxTlsVersionCombo->SetEnabled(aS3Protocol);
+  S3SessionTokenEdit->Enabled = aS3Protocol && !FSessionData->HasAutoCredentials();
+  S3SessionTokenLabel->Enabled = S3SessionTokenEdit->GetEnabled();
+
+  const bool SessionTokenEnabled = S3SessionTokenEdit->GetEnabled();
+  const bool IsAmazonS3 = IsAmazonS3SessionData(FSessionData);
+  S3RoleArnEdit->Enabled = SessionTokenEnabled && IsAmazonS3;
+  S3RoleArnLabel->Enabled = S3RoleArnEdit->GetEnabled();
+  S3RoleSessionNameEdit->Enabled = SessionTokenEnabled && IsAmazonS3;
+  S3RoleSessionNameLabel->Enabled = S3RoleSessionNameEdit->GetEnabled();
+
 
   // TLS/SSL tab
   TLSTab->SetEnabled(aFtpsProtocol || HTTPSProtocol || aS3Protocol);
@@ -3925,31 +3923,31 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
   }
   S3RequesterPaysCheck->Checked = FSessionData->S3RequesterPays;
   S3CACertificateEdit->SetText(FSessionData->S3CACertificate);
-  S3TlsCertificateFileEdit->SetText(FSessionData->GetTlsCertificateFile());
   MinTlsVersionCombo->ItemIndex = TlsVersionToIndex(FSessionData->MinTlsVersion);
   MaxTlsVersionCombo->ItemIndex = TlsVersionToIndex(FSessionData->MaxTlsVersion);
-  // CredentialsEnvCheck->SetChecked(FSessionData->S3CredentialsEnv);
+  S3CredentialsEnvCheck->SetChecked(FSessionData->S3CredentialsEnv);
   UnicodeString S3ProfileValue = FSessionData->S3Profile;
   // Populate profile combo from AWS config files
   // "General S3" already added as item 0 during creation
-  // {
-  //   S3ProfileCombo->GetItems()->BeginUpdate();
-  //   SCOPE_EXIT
-  //   {
-  //     S3ProfileCombo->GetItems()->EndUpdate();
-  //   };
-  //   std::unique_ptr<TStrings> Profiles(GetS3Profiles());
-  //   for (int32_t Idx = 0; Idx < Profiles->GetCount(); ++Idx)
-  //   {
-  //     UnicodeString Prof = Profiles->GetString(Idx);
-  //     if (S3ProfileCombo->GetItems()->IndexOf(Prof) < 0)
-  //       S3ProfileCombo->GetItems()->Add(Prof);
-  //   }
-  // }
-  // S3ProfileCombo->SetText(S3ProfileValue.IsEmpty() ? GetMsg(NB_S3_GENERAL_NAME) : S3ProfileValue);
-  // S3ProfileCombo->Enabled = FSessionData->S3CredentialsEnv;
+  {
+    S3ProfileCombo->GetItems()->BeginUpdate();
+    SCOPE_EXIT
+    {
+      S3ProfileCombo->GetItems()->EndUpdate();
+    };
+    std::unique_ptr<TStrings> Profiles(GetS3Profiles());
+    for (int32_t Idx = 0; Idx < Profiles->GetCount(); ++Idx)
+    {
+      UnicodeString Prof = Profiles->GetString(Idx);
+      if (S3ProfileCombo->GetItems()->IndexOf(Prof) < 0)
+        S3ProfileCombo->GetItems()->Add(Prof);
+    }
+  }
+  S3ProfileCombo->SetText(S3ProfileValue.IsEmpty() ? GetMsg(NB_S3_GENERAL_NAME) : S3ProfileValue);
+  S3ProfileCombo->Enabled = FSessionData->S3CredentialsEnv;
   S3SessionTokenEdit->SetText(FSessionData->S3SessionToken);
   S3RoleArnEdit->SetText(FSessionData->S3RoleArn);
+  S3RoleSessionNameEdit->SetText(FSessionData->S3RoleSessionName);
   MinTlsVersionCombo->ItemIndex = TlsVersionToIndex(FSessionData->MinTlsVersion);
   MaxTlsVersionCombo->ItemIndex = TlsVersionToIndex(FSessionData->MaxTlsVersion);
   /*std::unique_ptr<TStrings> S3SessionToken(std::make_unique<TStringList>());
@@ -4284,21 +4282,20 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     FSessionData->S3UrlStyle = S3UrlStyleCombo->ItemIndex == 0 ? s3usVirtualHost : s3usPath;
     FSessionData->S3RequesterPays = S3RequesterPaysCheck->Checked;
     FSessionData->SetS3CACertificate(S3CACertificateEdit->GetText());
-    if (GetFSProtocol() == fsS3)
-      FSessionData->SetTlsCertificateFile(S3TlsCertificateFileEdit->GetText());
     TTlsVersion MinTls = ssl2;
     TTlsVersion MaxTls = ssl2;
     MinTls = IndexToTlsVersion(MinTlsVersionCombo->ItemIndex);
     MaxTls = IndexToTlsVersion(MaxTlsVersionCombo->ItemIndex);
-    // FSessionData->SetS3CredentialsEnv(S3CredentialsEnvCheck->GetChecked());
-    // {
-    //   UnicodeString Profile = S3ProfileCombo->GetText();
-    //   if (Profile == GetMsg(NB_S3_GENERAL_NAME))
-    //     Profile = EmptyStr;
-    //   FSessionData->SetS3Profile(Profile);
-    // }
+    FSessionData->SetS3CredentialsEnv(S3CredentialsEnvCheck->GetChecked());
+    {
+      UnicodeString Profile = S3ProfileCombo->GetText();
+      if (Profile == GetMsg(NB_S3_GENERAL_NAME))
+        Profile = EmptyStr;
+      FSessionData->SetS3Profile(Profile);
+    }
     FSessionData->SetS3SessionToken(S3SessionTokenEdit->GetText());
     FSessionData->SetS3RoleArn(S3RoleArnEdit->GetText());
+    FSessionData->SetS3RoleSessionName(S3RoleSessionNameEdit->GetText());
     MinTls = IndexToTlsVersion(MinTlsVersionCombo->ItemIndex);
     MaxTls = IndexToTlsVersion(MaxTlsVersionCombo->ItemIndex);
     if (MaxTls < MinTls)
@@ -5129,23 +5126,6 @@ void TSessionDialog::WebDAVTlsCertificateFileBrowseClick(TFarButton * /*Sender*/
   Close = false;
 }
 
-void TSessionDialog::S3TlsCertificateFileBrowseClick(TFarButton * /*Sender*/, bool & Close)
-{
-  wchar_t FileName[MAX_PATH] = { 0 };
-  OPENFILENAMEW ofn = { 0 };
-  ofn.lStructSize = sizeof(ofn);
-  ofn.hwndOwner = GetConsoleWindow();
-  ofn.lpstrFile = FileName;
-  ofn.nMaxFile = MAX_PATH;
-  ofn.lpstrFilter = L"Certificate Files (*.pem;*.crt;*.cer;*.pfx;*.p12)\0*.pem;*.crt;*.cer;*.pfx;*.p12\0All Files (*.*)\0*.*\0";
-  ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
-
-  if (GetOpenFileNameW(&ofn))
-  {
-    S3TlsCertificateFileEdit->SetText(FileName);
-  }
-  Close = false;
-}
 
 void TSessionDialog::PrivateKeyFileBrowseClick(TFarButton * /*Sender*/, bool & Close)
 {
