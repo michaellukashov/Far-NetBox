@@ -1751,6 +1751,7 @@ private:
   void KexButtonClick(TFarButton * Sender, bool & Close);
   void AuthGSSAPICheckAllowChange(TFarDialogItem * Sender, void * NewState, bool & Allow);
   void UseOpensshCertCheckAllowChange(TFarDialogItem * Sender, void * NewState, bool & Allow);
+  void S3CredentialsEnvCheckAllowChange(TFarDialogItem * Sender, void * NewState, bool & Allow);
   void UnixEnvironmentButtonClick(TFarButton * Sender, bool & Close);
   void WindowsEnvironmentButtonClick(TFarButton * Sender, bool & Close);
   void UpdateControls();
@@ -2622,6 +2623,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   S3CredentialsEnvCheck = MakeOwnedObject<TFarCheckBox>(this);
   S3CredentialsEnvCheck->SetCaption(GetMsg(NB_S3_CREDENTIALS_ENV));
   S3CredentialsEnvCheck->SetVisible(false);
+  S3CredentialsEnvCheck->SetOnAllowChange(nb::bind(&TSessionDialog::S3CredentialsEnvCheckAllowChange, this));
 
   // Profile dropdown
   SetNextItemPosition(ipRight);
@@ -4982,6 +4984,12 @@ void TSessionDialog::AuthGSSAPICheckAllowChange(TFarDialogItem * /*Sender*/,
 }
 
 void TSessionDialog::UseOpensshCertCheckAllowChange(TFarDialogItem * /*Sender*/,
+  void * /*NewState*/, bool & /*Allow*/)
+{
+  UpdateControls();
+}
+
+void TSessionDialog::S3CredentialsEnvCheckAllowChange(TFarDialogItem * /*Sender*/,
   void * /*NewState*/, bool & /*Allow*/)
 {
   UpdateControls();
