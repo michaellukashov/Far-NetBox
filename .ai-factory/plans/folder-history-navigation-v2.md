@@ -260,13 +260,13 @@ FileSystem->UpdatePanelDirectoryParam();
 **Files changed:** `src/NetBox/WinSCPPlugin.cpp` (review fixes).
 
 #### 2026-05-01: Fixed session name mismatch bug (gh-391)
-bh|**Bug:** Session history navigation triggered reconnect after every directory change.
-in|**Root cause:** `DecodeSessionParam()` returned full `Folder/Session` format but comparison at line 358 used `GetSessionName()` which returns only local session name.
-it|**Fix:** Added `TSessionData::ExtractLocalName(SessionName)` at line 355 to normalize session names before comparison. Now correctly matches existing session and avoids reconnect.
-by|**Files changed:** `src/NetBox/WinSCPPlugin.cpp` (2 lines added).
+**Bug:** Session history navigation triggered reconnect after every directory change.
+**Root cause:** `DecodeSessionParam()` returned full `Folder/Session` format but comparison at line 358 used `GetSessionName()` which returns only local session name.
+**Fix:** Added `TSessionData::ExtractLocalName(SessionName)` at line 355 to normalize session names before comparison. Now correctly matches existing session and avoids reconnect.
+**Files changed:** `src/NetBox/WinSCPPlugin.cpp` (2 lines added).
 
 #### 2026-05-01: Fixed Alt-F12 folder history reconnect — session reuse (FINAL FIX)
-ag|**Bug:** Alt-F12 folder history created new session instead of reusing existing connected panel.
-hh|**Root cause:** Session matching guard only handled `OPEN_SHORTCUT`. Far Manager folder history (Alt-F12) fires `OPEN_COMMANDLINE` with a valid history entry, bypassing the guard and falling through to `ParseUrl` → `Connect()` → new session created.
-pu|**Fix:** Extended guard condition to `(OpenFrom == OPEN_SHORTCUT || (OpenFrom == OPEN_COMMANDLINE && Entry.Valid && !Directory.IsEmpty()))`. This catches both entry points when history data is valid, matches against existing panel via `GetLocalName()`, and aborts early to prevent reconnect.
-yd|**Files changed:** `src/NetBox/WinSCPPlugin.cpp` (guard condition extended, `Another` flag ternary added).
+**Bug:** Alt-F12 folder history created new session instead of reusing existing connected panel.
+**Root cause:** Session matching guard only handled `OPEN_SHORTCUT`. Far Manager folder history (Alt-F12) fires `OPEN_COMMANDLINE` with a valid history entry, bypassing the guard and falling through to `ParseUrl` → `Connect()` → new session created.
+**Fix:** Extended guard condition to `(OpenFrom == OPEN_SHORTCUT || (OpenFrom == OPEN_COMMANDLINE && Entry.Valid && !Directory.IsEmpty()))`. This catches both entry points when history data is valid, matches against existing panel via `GetLocalName()`, and aborts early to prevent reconnect.
+**Files changed:** `src/NetBox/WinSCPPlugin.cpp` (guard condition extended, `Another` flag ternary added).

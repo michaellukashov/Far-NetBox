@@ -153,27 +153,27 @@ Based on diagnostic logs, implement one of:
   - **Blocked by:** Task 5
 
 ### Phase 4: Manual QA
-dm|- [ ] **Task 7:** Smoke-test key auth in Far Manager
-ov|  - Create SFTP session with PPK key to `publickey`-only server
-rc|  - Verify successful connection
-vo|  - Verify passphrase prompt (if key encrypted, no stored passphrase)
-ll|  - Verify password-only server still works
-cy|  - Verify browse buttons on SSH tab open file dialogs with correct filters
-xt|  - Verify "Display Public Key" button shows public key blob for valid key files
-pk|  - **Skipped:** Testing=No per plan settings; build verification (Task 6) confirms code compiles
-dm|  - **Blocked by:** Task 6
+- [ ] **Task 7:** Smoke-test key auth in Far Manager
+  - Create SFTP session with PPK key to `publickey`-only server
+  - Verify successful connection
+  - Verify passphrase prompt (if key encrypted, no stored passphrase)
+  - Verify password-only server still works
+  - Verify browse buttons on SSH tab open file dialogs with correct filters
+  - Verify "Display Public Key" button shows public key blob for valid key files
+  - **Skipped:** Testing=No per plan settings; build verification (Task 6) confirms code compiles
+  - **Blocked by:** Task 6
 
-lu|### Phase 5: Documentation
-ah|- [x] **Task 8:** Update `ChangeLog`
-xs|  - Added fix description for #392 referencing GitHub issue
-um|  - **Blocked by:** Task 7
-bj|
-ae|- [x] **Task 9:** Update `.ai-factory/Github-Issues.md`
-tb|  - Marked #392 as FIXED
-um|  - **Blocked by:** Task 7
-oc|
+### Phase 5: Documentation
+- [x] **Task 8:** Update `ChangeLog`
+  - Added fix description for #392 referencing GitHub issue
+  - **Blocked by:** Task 7
+
+- [x] **Task 9:** Update `.ai-factory/Github-Issues.md`
+  - Marked #392 as FIXED
+  - **Blocked by:** Task 7
+
 ### Phase 6: UI Alignment with WinSCP
-yd|
+
 - [x] **Task 10:** Wire "Display Public Key" button click handler (`PrivateKeyViewButtonClick`)
   - File: `src/NetBox/WinSCPDialogs.cpp` (TSessionDialog class)
   - **Note:** `DisplayPublicKeyBtn` UI element already exists in `Init()` at lines 3173-3176 but has **no `SetOnClick` handler bound** — it is dead code. The remaining work is to implement and wire the click handler.
@@ -196,10 +196,10 @@ yd|
   - **Tools dropdown deferred** — Full "Generate/Import/Convert Key" menu requires PuTTYgen integration. Mark as `// TODO` placeholder or skip for this plan.
 - [x] **Task 11:** Add browse button to Certificate field
   - File: `src/NetBox/WinSCPDialogs.cpp` (TSessionDialog)
-zn|  - Add `TFarButton` with `\u2026` next to `OpensshCertEdit` / detached certificate edit
-rp|  - Wire `OPENFILENAMEW` with filter: `Public key files (*.pub)|*.pub|All Files (*.*)|*.*`
-ne|  - Follow same pattern as TLS/S3 certificate browse buttons (`TlsCertificateFileBrowseClick`)
-qf|  - **Blocked by:** Task 10 (shares browse handler pattern)
+  - Add `TFarButton` with `\u2026` next to `OpensshCertEdit` / detached certificate edit
+  - Wire `OPENFILENAMEW` with filter: `Public key files (*.pub)|*.pub|All Files (*.*)|*.*`
+  - Follow same pattern as TLS/S3 certificate browse buttons (`TlsCertificateFileBrowseClick`)
+  - **Blocked by:** Task 10 (shares browse handler pattern)
 
 
 - [x] **Task 12:** Add message strings for new UI elements and public key dialog
@@ -216,9 +216,9 @@ qf|  - **Blocked by:** Task 10 (shares browse handler pattern)
     - Ensure corresponding `NB_` IDs are added to `MsgIDs.h` and mapped in `FarPluginStrings.cpp`
   - **Blocked by:** none (button caption `NB_LOGIN_DISPLAY_PUBLIC_KEY` already exists; dialog content strings are independent)
 
-cp|
+
 ### Phase 7: SSH/Key Exchange Tab Alignment with WinSCP
-yd|
+
 - [x] **Task 13:** Add missing "Attempt GSSAPI key exchange" checkbox to KEX tab
   - File: `src/NetBox/WinSCPDialogs.cpp` (TSessionDialog class)
   - Add `TFarCheckBox * AuthGSSAPIKEXCheck{nullptr}` member declaration (near `KexDownButton`)
@@ -236,8 +236,8 @@ yd|
   - French/Spanish: `[T]` placeholder for translators
   - Update `src/resource/TextsCore1.rc` if needed
   - **Blocked by:** Task 13
-hk|
-fr|
+
+
 - [x] **Task 15:** Wire or remove dead `FOpensshPrivateKeyFile` field
   - File: `src/core/SecureShell.cpp` (`StoreToConfig()`), `src/NetBox/WinSCPDialogs.cpp`
   - **Finding:** `FOpensshPrivateKeyFile` has full UI controls (`OpensshKeyEdit` on Authentication tab's "OpenSSH Certificate" group), storage serialization (`ReadString`/`WriteString`), and property accessors — but is **never passed to PuTTY** for SSH authentication. Only `FPublicKeyFile` → `CONF_keyfile` is used.
@@ -246,26 +246,26 @@ fr|
     2. Consolidate: Rebind `OpensshKeyEdit` to `FPublicKeyFile` and remove `FOpensshPrivateKeyFile` from data model + storage + UI to eliminate confusion.
   - **Rationale:** The current UI implies the "OpenSSH private key file" field is functional for connections, but it is dead code. This causes user confusion when they configure a key in the certificate group and auth still fails.
   - **Blocked by:** Task 5 (core auth fix stable)
-em|
+
 ## Commit Message (Draft)
 
 ```
 fix(ssh): resolve private key authentication failure (#392)
 ```
-at|
+
 fix(ssh): resolve private key authentication failure and align SSH UI with WinSCP (#392)
-ct|
+
 Fix SSH public-key authentication so sessions with configured PPK/OpenSSH
-ot|key files connect successfully to publickey-only servers. Adds diagnostic
-vk|logging to trace key file resolution, loading, and auth prompt handling.
-wk|
+key files connect successfully to publickey-only servers. Adds diagnostic
+logging to trace key file resolution, loading, and auth prompt handling.
+
 Also aligns Session Editor SSH UI with WinSCP:
 - Session tab: browse button for private key file selection
 - Session tab: "Display Public Key" button (Tools dropdown deferred)
 - Session tab: browse button for certificate file selection
 - Key Exchange tab: "Attempt GSSAPI key exchange" checkbox (WinSCP parity)
 Fixes GitHub issue #392
-xn|```
+```
 
 ## Acceptance Criteria
 

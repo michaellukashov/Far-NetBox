@@ -32,9 +32,9 @@ Copying files via SSH/SCP in NetBox with default settings produces corrupted fil
 
 ## Solution
 
-if|Change the **factory default** for `SendBuf` from `DefaultSendBuf` to `0`, and `SshSimple` from `true` to `false`. Disabling `SendBuf` skips the dynamic buffer resize logic. Setting `SshSimple=false` aligns factory defaults with the dialog unchecked state so the first dialog edit does not silently flip the value.
-th|
-xx|Existing saved sessions retain their stored values and are not affected. Users with existing sessions can manually uncheck the "Optimize connection buffer size" checkbox as a workaround.
+Change the **factory default** for `SendBuf` from `DefaultSendBuf` to `0`, and `SshSimple` from `true` to `false`. Disabling `SendBuf` skips the dynamic buffer resize logic. Setting `SshSimple=false` aligns factory defaults with the dialog unchecked state so the first dialog edit does not silently flip the value.
+
+Existing saved sessions retain their stored values and are not affected. Users with existing sessions can manually uncheck the "Optimize connection buffer size" checkbox as a workaround.
 
 ### Key Changes
 
@@ -65,7 +65,7 @@ SetTcpNoDelay(true);
 SetSendBuf(0);  // Disabled by default: see GitHub issue #501
 FSourceAddress = L"";
 FProtocolFeatures = L"";
-bb|SetSshSimple(false);  // Default matches dialog unchecked state
+SetSshSimple(false);  // Default matches dialog unchecked state
 
 ### File: `src/core/SecureShell.cpp`
 
@@ -92,17 +92,17 @@ else if (FSendBuf == 0)
 LogEvent(FORMAT("Increasing send buffer from %d to %d (issue #501 diagnostic)",
     FSendBuf, nb::ToInt32(BufferLen)));
 ```
-th|
-zz|#### Location: `TSecureShell::Open()` (line ~469)
-th|
-go|**Add log after `FSendBuf` assignment:**
-th|
-pb|```cpp
-rp|FSendBuf = FSessionData->GetSendBuf();
-pi|LogEvent(FORMAT("Send buffer optimization: %s (FSendBuf=%d)",
-de|  (FSendBuf > 0 ? "enabled" : "disabled"), FSendBuf));
-ug|FInteractive = FSessionData->GetInteractiveTerminal();
-bb|```
+
+#### Location: `TSecureShell::Open()` (line ~469)
+
+**Add log after `FSendBuf` assignment:**
+
+```cpp
+FSendBuf = FSessionData->GetSendBuf();
+LogEvent(FORMAT("Send buffer optimization: %s (FSendBuf=%d)",
+  (FSendBuf > 0 ? "enabled" : "disabled"), FSendBuf));
+FInteractive = FSessionData->GetInteractiveTerminal();
+```
 
 ### File: `src/NetBox/WinSCPDialogs.cpp`
 
@@ -123,12 +123,12 @@ SessionData->SetSshSimple(SshBufferSizeCheck->GetChecked());
 ### Phase I: Core Fix
 
 - [x] 1. **Change default `SendBuf` and `SshSimple` initialization**
-jc|   - File: `src/core/SessionData.cpp`
-gd|   - Function: `TSessionData::DefaultSettings()` (line ~247)
-tl|   - Changes:
-ur|     - `SetSendBuf(DefaultSendBuf)` -> `SetSendBuf(0)`
-tb|     - `SetSshSimple(true)` -> `SetSshSimple(false)`
-oz|   - Rationale: Disables `WSAIoctl(SIO_IDEAL_SEND_BACKLOG_QUERY)` by default. `SshSimple` must also default to `false` so new session defaults match the dialog unchecked state (checkbox saves `SshSimple=false` when unchecked). SCP works with `SshSimple=false` — confirmed by existing workaround users.
+   - File: `src/core/SessionData.cpp`
+   - Function: `TSessionData::DefaultSettings()` (line ~247)
+   - Changes:
+     - `SetSendBuf(DefaultSendBuf)` -> `SetSendBuf(0)`
+     - `SetSshSimple(true)` -> `SetSshSimple(false)`
+   - Rationale: Disables `WSAIoctl(SIO_IDEAL_SEND_BACKLOG_QUERY)` by default. `SshSimple` must also default to `false` so new session defaults match the dialog unchecked state (checkbox saves `SshSimple=false` when unchecked). SCP works with `SshSimple=false` — confirmed by existing workaround users.
 
 - [x] 2. **Add verbose diagnostic logging to buffer resize path**
    - File: `src/core/SecureShell.cpp`
@@ -136,35 +136,35 @@ oz|   - Rationale: Disables `WSAIoctl(SIO_IDEAL_SEND_BACKLOG_QUERY)` by default.
    - Changes:
      - Log query attempt with current `FSendBuf` value
      - Log old/new buffer size when resize occurs
-ff|     - Use `LogEvent(FORMAT("..."))` (standard `TSecureShell` session logging)
-ol|   - Expected log output example:
-ny|     ```
-kk|     Querying ideal send backlog (current FSendBuf=262144)
-zb|     Increasing send buffer from 262144 to 524288 (issue #501 diagnostic)
-ec|     ```
+     - Use `LogEvent(FORMAT("..."))` (standard `TSecureShell` session logging)
+   - Expected log output example:
+     ```
+     Querying ideal send backlog (current FSendBuf=262144)
+     Increasing send buffer from 262144 to 524288 (issue #501 diagnostic)
+     ```
 
 - [x] 3. **Document the checkbox coupling in session dialog**
    - File: `src/NetBox/WinSCPDialogs.cpp`
    - Location: Near `SshBufferSizeCheck` save logic (line ~3996)
    - Change: Add inline comment referencing issue #501
    - No functional code change
-st|
+
 - [x] 4. **Build verification**
-jc|   - Command: `cmd /c build-x64.bat`
-gd|   - Expected: Zero warnings (MSVC W4)
-tl|   - Output: `Far3_x64/Plugins/NetBox/NetBox.dll`
-ur|   - If symbol conflicts: disable unity build with `-DOPT_USE_UNITY_BUILD=OFF`
+   - Command: `cmd /c build-x64.bat`
+   - Expected: Zero warnings (MSVC W4)
+   - Output: `Far3_x64/Plugins/NetBox/NetBox.dll`
+   - If symbol conflicts: disable unity build with `-DOPT_USE_UNITY_BUILD=OFF`
 
 ### Phase II: Documentation
 
 - [x] 5. **Update knowledge references**
-jc|   - File: `.ai-factory/references/INDEX.md`
-wc|   - Already completed: link to `issue-501-ssh-scp-buffer-corruption-exploration.md`
+   - File: `.ai-factory/references/INDEX.md`
+   - Already completed: link to `issue-501-ssh-scp-buffer-corruption-exploration.md`
    - File: `.ai-factory/ARCHITECTURE.md`
    - **Status: NOT DONE** — add link in References section to `issue-501-ssh-scp-buffer-corruption-exploration.md`
-th|
+
 - [x] 6. **Update `NetBoxRus.lng` timeout hint and add docs note**
-dz|   - File: `src/NetBox/NetBoxRus.lng` (and other `.lng` files)
+   - File: `src/NetBox/NetBoxRus.lng` (and other `.lng` files)
    - Update message at ID 1104: append "This setting is now disabled by default." or similar
 
    - Check other language files (`NetBoxEng.lng`, `NetBoxFr.lng`, `NetBoxSpa.lng`, etc.) for the same message ID
@@ -215,11 +215,11 @@ Core (SessionData.cpp)
 
 ### Checkbox State for New Sessions
 
-ma|With `SendBuf=0` and `SshSimple=false` by default:
-th|
-cv|- `SshBufferSizeCheck->SetChecked((0 > 0) && false)` evaluates to **unchecked**
-yl|- New sessions will show the checkbox unchecked, matching the safe configuration
-rx|- Dialog save preserves both values: no silent state change on first OK
+With `SendBuf=0` and `SshSimple=false` by default:
+
+- `SshBufferSizeCheck->SetChecked((0 > 0) && false)` evaluates to **unchecked**
+- New sessions will show the checkbox unchecked, matching the safe configuration
+- Dialog save preserves both values: no silent state change on first OK
 
 ### FTP / S3 / WebDAV Impact
 
@@ -245,30 +245,30 @@ rx|- Dialog save preserves both values: no silent state change on first OK
 Single commit:
 
 ```
-ir|fix(ssh): disable dynamic send buffer optimization by default
-th|
-sc|Change TSessionData::DefaultSettings() to initialize SendBuf to 0 instead of
-au|DefaultSendBuf (262144), and SshSimple to false instead of true. The dynamic
-zy|TCP send buffer resizing via WSAIoctl(SIO_IDEAL_SEND_BACKLOG_QUERY) in
-tf|TSecureShell::EventSelectLoop() causes file corruption and excessive CPU usage
-dj|during SCP transfers on certain SSH servers (GitHub issue #501).
-th|
-pd|With SendBuf=0, new sessions skip the buffer resize logic entirely,
-ch|restoring normal transfer speed and data integrity. SshSimple defaults to
-un|false so dialog unchecked state matches factory defaults — no silent flip on
-st|first dialog edit.
-th|
-dn|Changes:
-tn|- Set SendBuf default to 0 in TSessionData::DefaultSettings()
-gn|- Set SshSimple default to false in TSessionData::DefaultSettings()
-px|- Add verbose logging to EventSelectLoop buffer resize path
-wm|- Add initial SendBuf state log in TSecureShell::Open()
-ia|- Add inline comment in session dialog referencing issue #501
-th|
-cs|Fixes: slow SSH/SCP transfers
-rq|Fixes: file corruption during SCP copy
-es|Refs: GitHub issue #501
-ki|```
+fix(ssh): disable dynamic send buffer optimization by default
+
+Change TSessionData::DefaultSettings() to initialize SendBuf to 0 instead of
+DefaultSendBuf (262144), and SshSimple to false instead of true. The dynamic
+TCP send buffer resizing via WSAIoctl(SIO_IDEAL_SEND_BACKLOG_QUERY) in
+TSecureShell::EventSelectLoop() causes file corruption and excessive CPU usage
+during SCP transfers on certain SSH servers (GitHub issue #501).
+
+With SendBuf=0, new sessions skip the buffer resize logic entirely,
+restoring normal transfer speed and data integrity. SshSimple defaults to
+false so dialog unchecked state matches factory defaults — no silent flip on
+first dialog edit.
+
+Changes:
+- Set SendBuf default to 0 in TSessionData::DefaultSettings()
+- Set SshSimple default to false in TSessionData::DefaultSettings()
+- Add verbose logging to EventSelectLoop buffer resize path
+- Add initial SendBuf state log in TSecureShell::Open()
+- Add inline comment in session dialog referencing issue #501
+
+Fixes: slow SSH/SCP transfers
+Fixes: file corruption during SCP copy
+Refs: GitHub issue #501
+```
 
 
 
