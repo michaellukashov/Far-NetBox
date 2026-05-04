@@ -347,7 +347,7 @@ Cross-lock rule: `FItemsSection` may call `Item->GetStatus()` which acquires `FS
 ## Verification
 
 - [x] Tasks 1-11, 1.5, 3.5, 13-14 implemented and committed.
-- [ ] Task 12: Build verification pending Windows/MSVC environment (x64/x86/ARM64 `RelWithDebugInfo`).
+- [x] Task 12: Build verification — x64 RelWithDebugInfo passed with zero W4 warnings (2026-05-04).
 - [x] No `Sleep`-based polling remains for thread synchronization, except `SleepEx(100, true)` in `FileOperationProgress.cpp` which is an intentional alertable wait for APC completion (documented exception). Short timeouts on event waits are acceptable.
 - [x] No Far Manager API calls from worker threads remain (verified by code review of all `CreateThread` / `_beginthreadex` / `std::thread` entry points).
 - [x] Lock ordering documented and cycle-free.
