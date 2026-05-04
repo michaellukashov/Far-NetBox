@@ -1,5 +1,9 @@
 # Plan - Implement Unfinished TODOs
 
+> **Cross-reference:** This plan covers 4 TODOs in `src/base/SysUtils.cpp`.
+> See the full inventory at `.ai-factory/TODO-INVENTORY.md` (~100 items across all of `src/`).
+
+
 **Feature:** Implement unfinished TODO functions in core/base
 **Branch:** feature/implement-todos
 

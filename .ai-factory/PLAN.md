@@ -1,47 +1,47 @@
-# Fast Plan: Refactor Monolithic CMakeLists.txt
+# Fast Plan: Consolidate TODO Items into Tracked Tasks
 
 ## Settings
 - **Mode**: Fast
-- **Testing**: Yes (verify build)
+- **Testing**: No
 - **Logging**: Verbose
-- **Docs**: No (plan only, no new docs needed)
-- **Milestone**: None (user skipped linkage)
+- **Docs**: Yes (inventory document)
+- **Milestone**: Technical Debt / Refactoring
 
 ## Roadmap Linkage
-- **Milestone**: "none"
-- **Rationale**: Skipped by user
+- **Milestone**: "Technical Debt / Refactoring"
+- **Rationale**: Consolidating TODOs into a tracked inventory enables systematic cleanup and prevents TODOs from being forgotten.
 
 ## Context
-The NetBox CMakeLists.txt refactoring (Phases 1-7) is effectively complete per `.ai-factory/plans/REFACTORING_PLAN.md`:
-- Main `CMakeLists.txt` reduced from 2478 to ~81 lines (97% reduction)
-- All library builds extracted to `libs/*/CMakeLists.txt`
-- All configuration modules exist under `cmake/`
-- `src/CMakeLists.txt` is a lean orchestrator (~104 lines)
+The NetBox `src/` directory contains ~50+ TODO/FIXME/HACK markers scattered across ~25 files. These span NetBox UI (`src/NetBox/`), base utilities (`src/base/`), core protocols (`src/core/`), filezilla integration (`src/filezilla/`), and Windows UI (`src/windows/`). There is already a partial plan at `.ai-factory/plans/implement-todos.md` (2026-04-20) covering 4 TODOs in `src/base/SysUtils.cpp`.
 
-**Identified remaining cleanup** from Phase 7:
-- Stale directory `libs/tinylog.backup/` still exists (not referenced by build)
-- ROADMAP.md still lists this item as unchecked
+This plan does **not** implement the TODOs — it inventories and catalogs them so they can be scheduled and tracked in future `/aif-plan` / `/aif-implement` cycles.
 
 ## Tasks
 
-### [x] Task 1: Remove stale `libs/tinylog.backup/` directory
-- **Files**: `libs/tinylog.backup/`
-- **Action**: Delete the entire directory and its contents
-- **Rationale**: Identified in REFACTORING_PLAN.md Phase 7 as leftover from prior logging refactor; not referenced by `cmake/Libraries.cmake`
+### Task 1: Create TODO inventory document
+- **Files**: `.ai-factory/TODO-INVENTORY.md` (new)
+- **Action**: Create a categorized inventory of all TODO/FIXME/HACK markers found in `src/`
+- **Categories**:
+  - `NetBox UI` — Far dialog, plugin interface, WinSCP dialogs/filesystem
+  - `Base/Core` — SysUtils, Classes, Common, nbstring, rtti
+  - `Protocols` — Terminal, SFTP, SCP, FTP, WebDAV, S3, Queue
+  - `FileZilla` — AsyncSslSocketLayer, FtpControlSocket
+  - `Windows UI` — GUI tools, Synchronize controller, VCL, WinConfiguration
+- **Columns per entry**: File, Line, Type (TODO/FIXME/HACK), Summary, Priority (High/Medium/Low based on user-facing impact), Existing Plan (if any)
+- **Note**: Mark `implement-todos.md` entries as "Plan exists" and cross-reference
 
+### Task 2: Update ROADMAP.md status
 ### [x] Task 2: Update ROADMAP.md status
-- **Files**: `.ai-factory/ROADMAP.md`
-- **Action**: Mark `Refactor monolithic CMakeLists.txt` as complete (date: 2026-05-04)
-- **Note**: Reference existing `.ai-factory/plans/REFACTORING_PLAN.md`
+- **Action**: Mark `Consolidate TODO items into tracked tasks` as complete (date: 2026-05-04)
+- **Reference**: Point to `.ai-factory/TODO-INVENTORY.md` and `.ai-factory/plans/implement-todos.md`
 
-### [x] Task 3: Verify build
-- **Action**: Run `cmd /c build-x64.bat` to confirm modular CMake structure builds successfully
-- **Expected**: Zero warnings, plugin DLL produced in `Far3_x64/Plugins/NetBox/`
-- **Acceptance**: Build completes with exit code 0
+### [x] Task 3: Update implement-todos.md with inventory cross-reference
+- **Files**: `.ai-factory/plans/implement-todos.md`
+- **Action**: Add a note at the top linking back to the master inventory
 
 ## Commit Plan
-- Single commit after Task 1 + Task 2 (Task 3 is verification only)
-- Commit message: `chore(build): complete CMakeLists.txt refactoring cleanup`
+- Single commit after Task 1 + Task 2 + Task 3
+- Commit message: `docs(todo): consolidate TODO items into tracked inventory`
 
 ## Next Step
 Run `/aif-implement` to execute this plan.

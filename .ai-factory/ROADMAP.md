@@ -44,7 +44,8 @@
 
 ## Technical Debt / Refactoring
 
-- [ ] Consolidate `TODO` items into tracked tasks (`/aif-implement`)
+[x] Consolidate `TODO` items into tracked tasks — **COMPLETE** (2026-05-04)
+  See `.ai-factory/TODO-INVENTORY.md` and `.ai-factory/plans/implement-todos.md`
 - [x] Review and improve static RTTI usage — **COMPLETE** (2026-04)
 - [x] Clean up OpenSSL sync scripts — **COMPLETE** (2026-04-17)
 - [ ] Add comprehensive documentation for all new features
