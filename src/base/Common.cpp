@@ -4321,7 +4321,7 @@ static FILE * OpenCertificate(const UnicodeString & Path)
   if (Result == nullptr)
   {
     const int32_t Error = errno;
-    throw EOSExtException(MainInstructions(FMTLOAD(CERTIFICATE_OPEN_ERROR, Path)), Error);
+    throw EOSExtException(MainInstructions(FMTLOAD(CERTIFICATE_OPEN_ERROR, nb::EscapeFmtChars(Path))), Error);
   }
 
   return Result;
@@ -4363,7 +4363,7 @@ static void ThrowTlsCertificateErrorIgnorePassphraseErrors(const UnicodeString &
   const uint32_t Error = ERR_get_error();
   if (!IsTlsPassphraseError(Error, HasPassphrase))
   {
-    throw ExtException(MainInstructions(FMTLOAD(CERTIFICATE_READ_ERROR, Path)), GetTlsErrorStr(Error));
+    throw ExtException(MainInstructions(FMTLOAD(CERTIFICATE_READ_ERROR, nb::EscapeFmtChars(Path))), GetTlsErrorStr(Error));
   }
 }
 
@@ -4465,7 +4465,7 @@ void ParseCertificate(const UnicodeString & Path,
 
           if (!base::FileExists(CertificatePath))
           {
-            throw Exception(MainInstructions(FMTLOAD(CERTIFICATE_PUBLIC_KEY_NOT_FOUND, Path)));
+            throw Exception(MainInstructions(FMTLOAD(CERTIFICATE_PUBLIC_KEY_NOT_FOUND, nb::EscapeFmtChars(Path))));
           }
           else
           {
@@ -4491,7 +4491,7 @@ void ParseCertificate(const UnicodeString & Path,
               {
                 const int32_t DERError = ERR_get_error();
 
-                const UnicodeString Message = MainInstructions(FMTLOAD(CERTIFICATE_READ_ERROR, CertificatePath));
+                const UnicodeString Message = MainInstructions(FMTLOAD(CERTIFICATE_READ_ERROR, nb::EscapeFmtChars(CertificatePath)));
                 const UnicodeString MoreMessages =
                   FORMAT("Base64: %s\nDER: %s", GetTlsErrorStr(Base64Error), GetTlsErrorStr(DERError));
                 throw ExtException(Message, MoreMessages);
