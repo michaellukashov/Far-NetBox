@@ -2,7 +2,7 @@
 
 **Branch:** `feature/win32-kitty-input-mode`
 **Created:** 2026-04-12
-**Status:** Draft — awaiting review
+**Status:** DEFERRED to next version (2026-05-04). 5 tasks not started.
 
 ## Settings
 

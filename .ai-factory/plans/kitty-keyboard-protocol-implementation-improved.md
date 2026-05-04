@@ -1,5 +1,6 @@
 # Implementation Plan: Kitty Keyboard Protocol Support (Improved)
 
+**Status:** DEFERRED to next version (2026-05-04). 8 tasks not started.
 Branch: lmv/dev
 Created: 2026-04-24
 Improved: 2026-04-24

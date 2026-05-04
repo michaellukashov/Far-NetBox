@@ -1,5 +1,6 @@
 # Implementation Plan: Verify Windows XP Compatibility with VS2022 v143 Toolset (Improved)
 
+**Status:** DEFERRED to next version (2026-05-04). 17 tasks not started.
 **Branch:** feature/winxp-compat  
 **Created:** 2026-04-24  
 **Improved:** 2026-04-24  

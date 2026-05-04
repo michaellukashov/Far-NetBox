@@ -1,4 +1,5 @@
 # Implementation Plan: Port Windows XP Compatibility from Far3 to NetBox Plugin
+**Status:** DEFERRED to next version (2026-05-04). 24 tasks not started.
 
 **Branch:** feature/winxp-compat  
 **Created:** 2026-04-24  
