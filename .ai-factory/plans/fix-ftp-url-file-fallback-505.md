@@ -175,14 +175,13 @@ Fixes GitHub issue #505
 
 ## Acceptance Criteria
 
-- [ ] Entering `ftp://host/path/to/file.txt` in Far command line shows `/path/to/` directory
-- [ ] The file `file.txt` is focused in the panel
-- [ ] Entering `ftp://host/path/to/dir/` still works as before (directory opened)
-- [ ] Entering `ftp://host/path/to/dir` (no trailing slash, actual directory) shows parent with `dir` focused
-- [ ] Build passes with zero warnings
-- [ ] No regression for existing session opening paths (menu, shortcut, analyse)
-- [ ] Non-existent file in URL is handled gracefully (no crash, debug log emitted)
-
+- [~] Entering `ftp://host/path/to/file.txt` in Far command line shows `/path/to/` directory — **Skipped:** requires manual Far Manager testing (Testing=No)
+- [~] The file `file.txt` is focused in the panel — **Skipped:** requires manual Far Manager testing (Testing=No)
+- [~] Entering `ftp://host/path/to/dir/` still works as before (directory opened) — **Skipped:** requires manual Far Manager testing (Testing=No)
+- [~] Entering `ftp://host/path/to/dir` (no trailing slash, actual directory) shows parent with `dir` focused — **Skipped:** requires manual Far Manager testing (Testing=No)
+- [x] Build passes with zero warnings — Verified: `build-x64.bat` clean
+- [~] No regression for existing session opening paths (menu, shortcut, analyse) — **Skipped:** requires manual Far Manager testing (Testing=No)
+- [~] Non-existent file in URL is handled gracefully (no crash, debug log emitted) — **Skipped:** requires manual Far Manager testing (Testing=No)
 ## Notes
 
 - `ParseUrl` already contains the logic to extract filename and set parent directory when `AFileName != nullptr` (SessionData.cpp:2705-2710)
@@ -190,3 +189,10 @@ Fixes GitHub issue #505
 - The existing panel reuse path is not affected because `Directory` is empty for raw URLs
 - The fix is **protocol-agnostic**; it works for SFTP, SCP, S3, WebDAV, and FTP because `ParseUrl` and `OpenPluginEx` are shared across all protocols
 - `SetFocusedItem()` triggers `FCTL_REDRAWPANEL` internally, so calling `RedrawPanel()` after it is unnecessary
+
+## Changelog
+
+| Date | Change | Reason |
+|------|--------|--------|
+| 2026-05-02 | Initial plan | Issue #505 analysis |
+| 2026-05-04 | Plan complete | All 8 tasks implemented. Acceptance criteria: build verified; manual tests skipped per Testing=No. No remaining work. |
