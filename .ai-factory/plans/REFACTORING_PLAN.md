@@ -548,15 +548,15 @@ qm|**Lines**: ~189 lines
 1. Added CMake structure documentation section
 2. Added build verification instructions
 3. Added library addition guidelines
-th|
-hk|bc|#### `libs/tinylog.backup/` (Identified Leftover)
-pu|ul|**Status**: Stale backup directory from prior logging refactor — still present in repository
-gt|th|
-tf|su|**Details**:
-hw|qe|- Directory `libs/tinylog.backup/` contains a complete `CMakeLists.txt` and `src/` subtree
-ir|sz|- Not referenced by `cmake/Libraries.cmake` — safe to remove
-id|bk|- Identified during plan refinement; should be removed to prevent confusion
-gt|th|
+|
+#### `libs/tinylog.backup/` (Identified Leftover)
+**Status**: Stale backup directory from prior logging refactor — still present in repository
+
+**Details**:
+- Directory `libs/tinylog.backup/` contains a complete `CMakeLists.txt` and `src/` subtree
+- Not referenced by `cmake/Libraries.cmake` — safe to remove
+- Identified during plan refinement; should be removed to prevent confusion
+|
 ---
 
 ## Final Project Structure

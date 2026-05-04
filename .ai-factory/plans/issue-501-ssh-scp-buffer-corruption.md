@@ -11,7 +11,7 @@
 | **Created** | 2026-04-29 |
 | **Type** | Bug fix |
 | **Priority** | High |
-|| **Status** | Completed |
+| **Status** | Completed |
 | **Testing** | No |
 | **Logging** | Verbose |
 | **Docs** | Yes |
@@ -296,4 +296,4 @@ ki|```
 | 2026-04-29 | Corrected `TSessionData` constructor → `DefaultSettings()` in plan text and code block locations | Actual code change is in `DefaultSettings()`, not constructor |
 | 2026-04-29 | Added Phase III tasks (missing ARCHITECTURE.md reference, commit, smoke-test) | Gaps found during /aif-improve review |
 | 2026-04-29 | Updated Task 5 to flag ARCHITECTURE.md link as NOT DONE | Reference was not actually added to file |
-|| 2026-04-29 | Corrected note: `NetBoxPol.lng` contains message 1104 but lacks the "Disabled by default." suffix | Pre‑existing incomplete translation identified during review |
+| 2026-04-29 | Corrected note: `NetBoxPol.lng` contains message 1104 but lacks the "Disabled by default." suffix | Pre-existing incomplete translation identified during review |

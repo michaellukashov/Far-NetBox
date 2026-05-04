@@ -495,5 +495,5 @@ feat(s3): add S3 session editor controls and WinSCP alignment improvements
 | 2026-05-03 | aif-improve: added Task 0.75 — S3CredentialsEnv checkbox + S3Profile dropdown for auto-credentials
 | 2026-05-03 | aif-improve: added Task 0.8 — remove S3 CA certificate PEM controls from S3 tab
 | 2026-05-03 | aif-improve: fixed Task 4 docs — removed obsolete CA Certificate reference, added final control list
-|| 2026-05-03 | aif-improve: fixed Task 3 tab placement — Session Token and Role ARN controls must appear on S3 tab via `SetDefaultGroup(tabS3)`, not on Main tab via explicit `IsMainTab` visibility |
-|| 2026-05-03 | aif-improve: fixed Task 3 width — reduced S3SessionTokenEdit and S3RoleArnEdit from 40 to 25 to fit within S3 tab boundaries |
+| 2026-05-03 | aif-improve: fixed Task 3 tab placement — Session Token and Role ARN controls must appear on S3 tab via `SetDefaultGroup(tabS3)`, not on Main tab via explicit `IsMainTab` visibility |
+| 2026-05-03 | aif-improve: fixed Task 3 width — reduced S3SessionTokenEdit and S3RoleArnEdit from 40 to 25 to fit within S3 tab boundaries |
