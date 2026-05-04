@@ -757,7 +757,6 @@ void TS3FileSystem::InitSslSessionImpl(ssl_st * Ssl, void * /* ne_session */ Ses
 {
   SetupSsl(Ssl, FTerminal->SessionData->MinTlsVersion, FTerminal->SessionData->MaxTlsVersion);
 
-  SetupSsl(Ssl, FTerminal->SessionData->MinTlsVersion, FTerminal->SessionData->MaxTlsVersion);
 }
 
 int32_t TS3FileSystem::LibS3SslCallback(int32_t Failures, const ne_ssl_certificate_s * Certificate, void * CallbackData)
