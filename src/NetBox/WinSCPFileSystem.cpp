@@ -289,7 +289,9 @@ void TKeepAliveThread::Execute()
     if ((::WaitForSingleObject(FEvent, nb::ToDWord(FInterval.GetValue() * MSecsPerDay)) != WAIT_FAILED) &&
       !IsFinished())
     {
-      FFileSystem->KeepaliveThreadCallback();
+      // Marshal keepalive processing to the main thread via the sanctioned synchro path.
+      // Far Manager 3 requires all plugin-side idle work to happen on the main thread.
+      FFileSystem->GetPlugin()->PostMainThreadSynchro(nullptr);
     }
   }
   SAFE_CLOSE_HANDLE(FEvent);
@@ -352,24 +354,6 @@ void TWinSCPFileSystem::HandleException(Exception * E, OPERATION_MODES OpMode)
   if (DoClose && !GetClosed())
   {
     ClosePanel();
-  }
-}
-
-void TWinSCPFileSystem::KeepaliveThreadCallback()
-{
-  const TGuard Guard(GetCriticalSection());
-
-  if (Connected())
-  {
-    try
-    {
-      FTerminal->Idle();
-    }
-    catch (Exception & E)
-    {
-      TINYLOG_WARNING(g_tinylog) << TLogContext::Format()
-          << " Keepalive thread caught exception: " << UTF8String(E.Message).c_str();
-    }
   }
 }
 

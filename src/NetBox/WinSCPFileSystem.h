@@ -121,7 +121,6 @@ protected:
   void ProcessEditorEvent(intptr_t Event, void * Param);
 
   virtual void HandleException(Exception * E, OPERATION_MODES OpMode = 0) override;
-  void KeepaliveThreadCallback();
 
   bool IsSessionList() const;
   bool Connected() const;
