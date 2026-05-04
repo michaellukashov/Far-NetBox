@@ -1761,6 +1761,7 @@ private:
   static int32_t TlsVersionToIndex(TTlsVersion Version);
   void TlsCertificateFileBrowseClick(TFarButton * Sender, bool & Close);
   void WebDAVTlsCertificateFileBrowseClick(TFarButton * Sender, bool & Close);
+  void BrowseForCertificateFile(TFarEdit * TargetEdit);
   void PrivateKeyFileBrowseClick(TFarButton * Sender, bool & Close);
   void PrivateKeyViewButtonClick(TFarButton * Sender, bool & Close);
   void DetachedCertificateFileBrowseClick(TFarButton * Sender, bool & Close);
@@ -4994,7 +4995,7 @@ int32_t TSessionDialog::TlsVersionToIndex(TTlsVersion Version)
     default: return 2;
   }
 }
-void TSessionDialog::TlsCertificateFileBrowseClick(TFarButton * /*Sender*/, bool & Close)
+void TSessionDialog::BrowseForCertificateFile(TFarEdit * TargetEdit)
 {
   wchar_t FileName[MAX_PATH] = { 0 };
   OPENFILENAMEW ofn = { 0 };
@@ -5002,31 +5003,24 @@ void TSessionDialog::TlsCertificateFileBrowseClick(TFarButton * /*Sender*/, bool
   ofn.hwndOwner = GetConsoleWindow();
   ofn.lpstrFile = FileName;
   ofn.nMaxFile = MAX_PATH;
-  ofn.lpstrFilter = L"Certificate Files (*.pem;*.crt;*.cer;*.pfx;*.p12)\0*.pem;*.crt;*.cer;*.pfx;*.p12\0All Files (*.*)\0*.*\0";
+  ofn.lpstrFilter = L"Certificate Files (*.pem;*.crt;*.cer;*.pfx;*.p12;*.key)\0*.pem;*.crt;*.cer;*.pfx;*.p12;*.key\0All Files (*.*)\0*.*\0";
   ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
 
   if (GetOpenFileNameW(&ofn))
   {
-    TlsCertificateFileEdit->SetText(FileName);
+    TargetEdit->SetText(FileName);
   }
+}
+
+void TSessionDialog::TlsCertificateFileBrowseClick(TFarButton * /*Sender*/, bool & Close)
+{
+  BrowseForCertificateFile(TlsCertificateFileEdit);
   Close = false;
 }
 
 void TSessionDialog::WebDAVTlsCertificateFileBrowseClick(TFarButton * /*Sender*/, bool & Close)
 {
-  wchar_t FileName[MAX_PATH] = { 0 };
-  OPENFILENAMEW ofn = { 0 };
-  ofn.lStructSize = sizeof(ofn);
-  ofn.hwndOwner = GetConsoleWindow();
-  ofn.lpstrFile = FileName;
-  ofn.nMaxFile = MAX_PATH;
-  ofn.lpstrFilter = L"Certificate Files (*.pem;*.crt;*.cer;*.pfx;*.p12)\0*.pem;*.crt;*.cer;*.pfx;*.p12\0All Files (*.*)\0*.*\0";
-  ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
-
-  if (GetOpenFileNameW(&ofn))
-  {
-    WebDAVTlsCertificateFileEdit->SetText(FileName);
-  }
+  BrowseForCertificateFile(WebDAVTlsCertificateFileEdit);
   Close = false;
 }
 
