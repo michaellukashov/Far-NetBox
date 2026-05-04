@@ -48,7 +48,8 @@
   See `.ai-factory/TODO-INVENTORY.md` and `.ai-factory/plans/implement-todos.md`
 - [x] Review and improve static RTTI usage — **COMPLETE** (2026-04)
 - [x] Clean up OpenSSL sync scripts — **COMPLETE** (2026-04-17)
-- [ ] Add comprehensive documentation for all new features
+[x] Add comprehensive documentation for all new features — **COMPLETE** (2026-05-04)
+  See `docs/user-guide.md` and `docs/getting-started.md`
 [x] Refactor monolithic CMakeLists.txt (see `REFACTORING_PLAN.md`) — **COMPLETE** (2026-05-04)
 
 ## Process

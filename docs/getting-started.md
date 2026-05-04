@@ -92,6 +92,56 @@ After connecting, you should see the remote file listing in a Far panel. Try:
 
 Check the log at `%LOCALAPPDATA%\NetBox\netbox.log` if something goes wrong.
 
+## Troubleshooting
+
+### Transfer Cancellation Hang (Fixed in 2026-04)
+
+**Symptom**: Pressing `Esc` during a file transfer does not immediately cancel; the cancellation dialog becomes unresponsive.
+
+**Cause**: Interaction between the speed-limit (CPS) throttle and the cancellation dialog event loop.
+
+**Fix**: Update to NetBox 2026-04 or newer. The cancellation path now correctly breaks out of the CPS throttle loop.
+
+**Workaround for older builds**: Wait for the current file chunk to complete (~1–2 seconds at most), then press `Esc` again.
+
+### SSH/SCP Buffer Corruption on High-Speed Transfers (Fixed in 2026-04)
+
+**Symptom**: Large file transfers over SSH or SCP abort with "connection reset" or produce corrupted files.
+
+**Cause**: PuTTY's dynamic send buffer (`SendBuf`) could overflow during high-speed transfers, causing packet corruption.
+
+**Fix**: NetBox 2026-04 sets the default `SendBuf` to `0` (dynamic buffer disabled). Existing sessions automatically pick up the new default on the next connection.
+
+**Manual tuning**: If you need higher throughput on high-latency links, increase `SendBuf` incrementally (e.g., `262144`, `524288`) in the session **SSH** → **Advanced** settings. Monitor for corruption.
+
+### Far Manager Version Too Old for Folder History
+
+**Symptom**: `Alt+F12` shows the session name but does not restore the remote directory.
+
+**Cause**: Far Manager older than 3.0.5955 does not expose `FCTL_GETPANELDIRECTORY` / `FCTL_SETPANELDIRECTORY`.
+
+**Fix**: Update Far Manager to 3.0.5955 or newer.
+
+### OpenSSL Assembly Build Errors
+
+**Symptom**: `cmake --build` fails with NASM errors on x86 or x64.
+
+**Cause**: NASM is not installed or not in `PATH`.
+
+**Fix**: Install NASM 2.15+ and ensure `nasm.exe` is accessible. For CI builds, the pre-built `buildtools/tools/nasm.exe` is used automatically.
+
+### Unity Build Symbol Conflicts
+
+**Symptom**: Build fails with "redefinition of ..." errors in Release mode.
+
+**Cause**: Unity build (`OPT_USE_UNITY_BUILD=ON`) merges translation units that define the same static symbols.
+
+**Fix**: Disable unity build for the affected configuration:
+
+```cmd
+cmake -S . -B build-RelWithDebugInfo -DOPT_USE_UNITY_BUILD=OFF
+```
+
 ## Next Steps
 
 - [User Guide](user-guide.md) — Supported protocols and features

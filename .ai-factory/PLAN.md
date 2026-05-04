@@ -1,47 +1,63 @@
-# Fast Plan: Consolidate TODO Items into Tracked Tasks
+# Fast Plan: Add Comprehensive Documentation for New Features
 
 ## Settings
 - **Mode**: Fast
 - **Testing**: No
 - **Logging**: Verbose
-- **Docs**: Yes (inventory document)
+- **Docs**: Yes (this IS the docs work)
 - **Milestone**: Technical Debt / Refactoring
 
 ## Roadmap Linkage
 - **Milestone**: "Technical Debt / Refactoring"
-- **Rationale**: Consolidating TODOs into a tracked inventory enables systematic cleanup and prevents TODOs from being forgotten.
+- **Rationale**: User-facing documentation is essential for adoption of 2026-04 features.
 
 ## Context
-The NetBox `src/` directory contains ~50+ TODO/FIXME/HACK markers scattered across ~25 files. These span NetBox UI (`src/NetBox/`), base utilities (`src/base/`), core protocols (`src/core/`), filezilla integration (`src/filezilla/`), and Windows UI (`src/windows/`). There is already a partial plan at `.ai-factory/plans/implement-todos.md` (2026-04-20) covering 4 TODOs in `src/base/SysUtils.cpp`.
+The 2026-04 release cycle delivered ~15 features/fixes. `docs/user-guide.md` currently documents only **Folder History Navigation**. Multiple user-facing capabilities lack documentation:
 
-This plan does **not** implement the TODOs — it inventories and catalogs them so they can be scheduled and tracked in future `/aif-plan` / `/aif-implement` cycles.
+| Feature | User Impact | Current Doc Status |
+|---------|-------------|-------------------|
+| FTP heartbeat / NOOP keep-alive | Connection stability | ❌ Missing |
+| CPS speed limit + Esc cancellation | Transfer control, UI hang fix | ❌ Missing |
+| SSH/SCP buffer settings (`SendBuf`) | Performance tuning | ❌ Missing |
+| S3 TLS version + custom CA cert | Security configuration | Partial (protocol table only) |
+| Combo box keyboard shortcuts | Daily UX (Alt+Down/Ctrl+Down) | ❌ Missing |
+| WebDAV overwrite/refresh fix | File operation reliability | ❌ Missing |
+| SFTP remote folder creation | File operations | ❌ Missing |
+| FTP port preservation | Session configuration | ❌ Missing |
+| DateTime format functions | Scripting/automation | ❌ Missing |
 
 ## Tasks
 
-### Task 1: Create TODO inventory document
-- **Files**: `.ai-factory/TODO-INVENTORY.md` (new)
-- **Action**: Create a categorized inventory of all TODO/FIXME/HACK markers found in `src/`
-- **Categories**:
-  - `NetBox UI` — Far dialog, plugin interface, WinSCP dialogs/filesystem
-  - `Base/Core` — SysUtils, Classes, Common, nbstring, rtti
-  - `Protocols` — Terminal, SFTP, SCP, FTP, WebDAV, S3, Queue
-  - `FileZilla` — AsyncSslSocketLayer, FtpControlSocket
-  - `Windows UI` — GUI tools, Synchronize controller, VCL, WinConfiguration
-- **Columns per entry**: File, Line, Type (TODO/FIXME/HACK), Summary, Priority (High/Medium/Low based on user-facing impact), Existing Plan (if any)
-- **Note**: Mark `implement-todos.md` entries as "Plan exists" and cross-reference
+### Task 1: Expand user-guide.md with Feature Reference sections
+- **Files**: `docs/user-guide.md`
+- **Action**: Add documented sections for user-facing 2026-04 features
+- **Sections to add**:
+  1. **Connection Keep-Alive** — FTP NOOP heartbeat interval, SSH keep-alive via PuTTY settings
+  2. **Speed Limits** — CPS limit per session, global limit propagation, Esc-cancel behavior
+  3. **Security Settings** — S3 TLS version selection, custom CA certificate path, per-session overrides
+  4. **Keyboard Shortcuts** — Alt+Down / Ctrl+Down to open combo box dropdowns
+  5. **Session Configuration** — Non-default FTP ports, SSH send buffer (`SendBuf=0` default), SCP simplicity mode (`SshSimple`)
+  6. **File Operations** — WebDAV overwrite/refresh reliability, SFTP remote folder creation
+  7. **Scripting & Automation** — `FormatDateTime` token reference, `ISO8601ToDate` parsing
+- **Requirements**: Use existing document style (markdown tables, code blocks for examples, cross-links to Getting Started)
+- **Note**: Keep Folder History Navigation section as-is; add new sections after it
 
-### Task 2: Update ROADMAP.md status
-### [x] Task 2: Update ROADMAP.md status
-- **Action**: Mark `Consolidate TODO items into tracked tasks` as complete (date: 2026-05-04)
-- **Reference**: Point to `.ai-factory/TODO-INVENTORY.md` and `.ai-factory/plans/implement-todos.md`
+### Task 2: Update getting-started.md with new build/prerequisite notes
+- **Files**: `docs/getting-started.md`
+- **Action**: Add notes for any new prerequisites or build behaviors introduced in 2026-04
+- **Checklist**:
+  - Verify NASM prerequisite is still accurate (OpenSSL 3.3.7)
+  - Note WinXP compatibility status if changed
+  - Add "Troubleshooting" subsection for common 2026-04 issues (Esc hang, buffer corruption)
 
-### [x] Task 3: Update implement-todos.md with inventory cross-reference
-- **Files**: `.ai-factory/plans/implement-todos.md`
-- **Action**: Add a note at the top linking back to the master inventory
+### Task 3: Mark ROADMAP.md documentation item complete
+- **Files**: `.ai-factory/ROADMAP.md`
+- **Action**: Mark `Add comprehensive documentation for all new features` as complete (date: 2026-05-04)
+- **Reference**: Link to updated `docs/user-guide.md`
 
 ## Commit Plan
 - Single commit after Task 1 + Task 2 + Task 3
-- Commit message: `docs(todo): consolidate TODO items into tracked inventory`
+- Commit message: `docs(user-guide): document 2026-04 features`
 
 ## Next Step
 Run `/aif-implement` to execute this plan.

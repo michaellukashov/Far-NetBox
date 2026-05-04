@@ -24,7 +24,6 @@ Cryptography based on OpenSSL 3.3.7 Copyright (c) 1998-2025 The OpenSSL Project
 | **WebDAV** | Web-based Distributed Authoring and Versioning |
 | **S3**   | Amazon Simple Storage Service (TLS version selection and custom CA certificate support) |
 
-
 ## Folder History Navigation
 
 NetBox integrates with Far Manager's built-in folder history, allowing you to quickly return to previously visited remote sessions and directories.
@@ -55,6 +54,159 @@ Older versions of NetBox and WinSCP-based plugins stored history entries in a le
 
 - Far Manager 3.0.5955 or newer (provides `FCTL_GETPANELDIRECTORY` / `FCTL_SETPANELDIRECTORY` support)
 - NetBox must be connected to the session when you navigate away; the history entry captures the current session and directory automatically
+
+## Connection Keep-Alive
+
+To prevent idle connections from being closed by firewalls or servers, NetBox sends periodic keep-alive commands.
+
+### FTP NOOP Heartbeat
+
+When the **Keep connection alive** option is enabled in session settings, NetBox sends `NOOP` commands at regular intervals during idle FTP control connections. This prevents the server from timing out the control channel during long file transfers or periods of inactivity.
+
+- The interval is controlled by the **Send dummy SSH packets / Keep connection alive interval** setting (shared with SSH).
+- Applies to FTP and FTPS connections.
+
+### SSH Keep-Alive
+
+For SFTP and SCP sessions, keep-alive uses PuTTY's built-in SSH null-packet mechanism (`CONF_tcp_keepalives`). The setting is enabled by default.
+
+| Setting | Default | Description |
+|---------|---------|-------------|
+| Keep connection alive | Enabled | Sends periodic null packets on idle SSH connections |
+| Keepalive interval | Server-dependent | Configured via session settings; sent via PuTTY backend |
+
+## Speed Limits
+
+NetBox supports per-session and global speed limits to throttle upload/download bandwidth.
+
+### CPS (Characters Per Second) Limit
+
+Set a maximum transfer speed in bytes per second for individual sessions:
+
+1. Open the session login dialog (`F4` on a saved session).
+2. Navigate to the **Environment** tab.
+3. Set **Speed limit (CPS)** to a non-zero value.
+
+The limit is enforced across all file operations in that session. A value of `0` means unlimited.
+
+### Esc Cancellation Fix
+
+During transfers, pressing `Esc` opens a cancellation dialog. Prior to the 2026-04 release, repeated cancellation attempts could cause the dialog to hang. This has been fixed — cancellation now completes cleanly even when the speed limit is active.
+
+## Security Settings
+
+### S3 TLS Version Selection
+
+S3 sessions can enforce a specific TLS protocol version:
+
+1. Open the session settings dialog.
+2. Navigate to the **S3** tab.
+3. Select the desired **TLS/SSL version** from the dropdown.
+
+Available options range from TLS 1.0 through TLS 1.3 (depending on OpenSSL build). Selecting a newer version increases security; selecting an older version improves compatibility with legacy S3 endpoints.
+
+### Custom CA Certificate
+
+For S3, WebDAV, and FTPS connections, you can specify a custom CA certificate file instead of the system certificate store:
+
+1. In session settings, set **Custom CA certificate** to the full path of a `.pem` or `.crt` file.
+2. The certificate is loaded per-session and does not affect other connections.
+
+This is useful for connecting to internal or development endpoints with self-signed certificates.
+
+## Keyboard Shortcuts
+
+NetBox follows Far Manager's keyboard conventions and adds shortcuts for common UI elements.
+
+### Combo Box Shortcuts
+
+When a combo box (dropdown list) has focus:
+
+| Shortcut | Action |
+|----------|--------|
+| `Alt+Down` | Open the dropdown list |
+| `Ctrl+Down` | Open the dropdown list (alternative) |
+
+These shortcuts are available throughout NetBox dialogs, including the login dialog, transfer settings, and preferences.
+
+## Session Configuration
+
+### Non-Default FTP Ports
+
+NetBox preserves explicit FTP port settings when saving and reconnecting sessions. If your FTP server runs on a non-standard port (e.g., `2121` instead of `21`):
+
+1. Enter the port number in the **Port number** field of the login dialog.
+2. Save the session — the port is stored and reused on reconnect.
+
+Previously, some configurations could lose the custom port on session reload. This is now fixed.
+
+### SSH Send Buffer (`SendBuf`)
+
+The **Send buffer size** setting controls how much data PuTTY buffers before sending over SSH:
+
+- **Default**: `0` (dynamic buffer disabled as of 2026-04)
+- **Purpose**: Larger buffers improve throughput on high-latency links; smaller buffers reduce latency.
+- **Recommendation**: Leave at `0` unless you have a specific performance tuning need. The 2026-04 default addresses a buffer corruption issue in high-speed transfers.
+
+### SCP Simplicity Mode (`SshSimple`)
+
+The **SshSimple** setting simplifies the SCP command set for compatibility with restricted shells:
+
+- When enabled, NetBox avoids advanced SCP features that some shells (e.g., busybox, chroot) do not support.
+- Disable for full feature access on standard OpenSSH servers.
+
+## File Operations
+
+### WebDAV Overwrite and Refresh
+
+When copying files to a WebDAV server, NetBox now correctly handles overwrite prompts and refreshes the remote panel after the operation completes. Previously, the panel could display stale content after an overwrite.
+
+- **Overwrite**: A confirmation dialog appears if the destination exists.
+- **Refresh**: The remote directory listing is automatically reloaded after transfer.
+
+### SFTP Remote Folder Creation
+
+When uploading files to an SFTP session, NetBox automatically creates missing remote directories in the destination path. If the server returns a "cannot create remote folder" error:
+
+- Verify your account has write permission to the parent directory.
+- Check that the path does not contain invalid characters for the remote filesystem.
+
+## Scripting & Automation
+
+NetBox supports scriptable date/time formatting for automation and logging use cases.
+
+### FormatDateTime Tokens
+
+The `FormatDateTime` function accepts standard formatting tokens:
+
+| Token | Output | Example |
+|-------|--------|---------|
+| `yyyy` | 4-digit year | `2026` |
+| `mm` | 2-digit month | `05` |
+| `dd` | 2-digit day | `04` |
+| `hh` | 2-digit hour (24h) | `14` |
+| `nn` | 2-digit minute | `30` |
+| `ss` | 2-digit second | `45` |
+| `zzz` | Milliseconds | `123` |
+
+Example usage in session logging or scripting:
+
+```
+FormatDateTime("yyyy-mm-dd hh:nn:ss", Now())
+→ 2026-05-04 14:30:45
+```
+
+### ISO 8601 Parsing
+
+The `ISO8601ToDate` function parses ISO 8601 formatted timestamps commonly used in S3 and WebDAV metadata:
+
+| Input Format | Parsed Result |
+|--------------|---------------|
+| `2026-05-04T14:30:45Z` | UTC datetime |
+| `2026-05-04T14:30:45+03:00` | With timezone offset |
+
+This enables accurate timestamp comparison and synchronization across protocols.
+
 ## Links
 
 - Project main page: [https://github.com/michaellukashov/Far-NetBox](https://github.com/michaellukashov/Far-NetBox)
@@ -80,4 +232,3 @@ Far-NetBox is distributed in the hope that it will be useful, but without any wa
 
 - [Getting Started](getting-started.md) — Installation and first run
 - [Architecture](architecture.md) — Project structure and build system
-
