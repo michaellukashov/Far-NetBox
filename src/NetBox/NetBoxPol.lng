@@ -1104,7 +1104,7 @@
 "Plik '%s' jest tylko do odczytu. Zastąpić go?"
 "**Zastąpić lokalny plik '%s'?**\n\nW folderze docelowym istnieje już plik '%s'.\nZdecyduj, czy chcesz zastąpić plik czy ominąć jego przesłanie i zachować bieżący plik."
 "**Zastąpić zdalny plik '%s'?**\n\nW folderze docelowym istnieje już plik '%s'.\nZdecyduj, czy chcesz zastąpić plik czy ominąć jego przesłanie i zachować bieżący plik."
-"Serwer nie odpowiada od więcej niż %d sekund.\nCiągle czekam...\n\nUwaga: Jeżeli problem powróci, proszę spróbować wyłączyć opcję 'Optymalizuj wielkość bufora połączenia'."
+"Serwer nie odpowiada od więcej niż %d sekund.\nCiągle czekam...\n\nUwaga: Jeżeli problem powróci, proszę spróbować wyłączyć opcję 'Optymalizuj wielkość bufora połączenia'. (Domyślnie wyłączona.)"
 "&Wznów połączenie"
 "N&owa nazwa"
 "Tunel dla %s"
