@@ -1765,7 +1765,7 @@ private:
   void TlsCertificateFileBrowseClick(TFarButton * Sender, bool & Close);
   void WebDAVTlsCertificateFileBrowseClick(TFarButton * Sender, bool & Close);
   void PrivateKeyFileBrowseClick(TFarButton * Sender, bool & Close);
-  void OpensshCertFileBrowseClick(TFarButton * Sender, bool & Close);
+  void DetachedCertificateFileBrowseClick(TFarButton * Sender, bool & Close);
   static bool IsSshProtocol(TFSProtocol FSProtocol);
   bool IsWebDAVProtocol(TFSProtocol FSProtocol) const;
   bool IsSshOrWebDAVProtocol(TFSProtocol FSProtocol) const;
@@ -1807,7 +1807,10 @@ private:
   TFarEdit * PasswordEdit{nullptr};
   TFarEdit * PrivateKeyEdit{nullptr};
   TFarButton * PrivateKeyBrowseBtn{nullptr};
-  TFarButton * PrivateKeyViewBtn{nullptr};
+  TFarButton * DisplayPublicKeyBtn{nullptr};
+  TFarText * DetachedCertificateLabel{nullptr};
+  TFarEdit * DetachedCertificateEdit{nullptr};
+  TFarButton * DetachedCertificateBrowseBtn{nullptr};
   TFarComboBox * TransferProtocolCombo{nullptr};
   TFarCheckBox * AllowScpFallbackCheck{nullptr};
   TFarText * HostNameLabel{nullptr};
@@ -1880,9 +1883,6 @@ private:
   TFarCheckBox * AgentFwdCheck{nullptr};
   TFarCheckBox * AuthGSSAPICheck3{nullptr};
   TFarCheckBox * GSSAPIFwdTGTCheck{nullptr};
-  TFarText * OpensshCertLabel{nullptr};
-  TFarButton * OpensshCertBrowseBtn{nullptr};
-  TFarEdit * OpensshCertEdit{nullptr};
   TFarCheckBox * DeleteToRecycleBinCheck{nullptr};
   TFarCheckBox * OverwrittenToRecycleBinCheck{nullptr};
   TFarEdit * RecycleBinPathEdit{nullptr};
@@ -3156,6 +3156,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   AgentFwdCheck->SetCaption(GetMsg(NB_LOGIN_AUTH_AGENT_FWD));
   SetNextItemPosition(ipNewLine);
 
+  // Private &key file:
   Text = MakeOwnedObject<TFarText>(this);
   Text->SetCaption(GetMsg(NB_LOGIN_PRIVATE_KEY));
   SetNextItemPosition(ipNewLine);
@@ -3169,12 +3170,24 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   PrivateKeyBrowseBtn->SetOnClick(nb::bind(&TSessionDialog::PrivateKeyFileBrowseClick, this));
   SetNextItemPosition(ipNewLine);
 
-  PrivateKeyViewBtn = MakeOwnedObject<TFarButton>(this);
-  PrivateKeyViewBtn->SetCaption(GetMsg(NB_LOGIN_DISPLAY_PUBLIC_KEY));
-  PrivateKeyViewBtn->SetRight(PrivateKeyBrowseBtn->GetRight());
+  // Display Public Key
+  DisplayPublicKeyBtn = MakeOwnedObject<TFarButton>(this);
+  DisplayPublicKeyBtn->SetCaption(GetMsg(NB_LOGIN_DISPLAY_PUBLIC_KEY));
+  DisplayPublicKeyBtn->SetRight(PrivateKeyBrowseBtn->GetRight());
   SetNextItemPosition(ipNewLine);
 
-  // OpenSSH Certificate
+  // Detached Certificate
+  DetachedCertificateLabel = MakeOwnedObject<TFarText>(this);
+  DetachedCertificateLabel->SetCaption(GetMsg(NB_LOGIN_AUTH_DETACHED_CERTIFICATE_LABEL));
+  SetNextItemPosition(ipNewLine);
+
+  DetachedCertificateEdit = MakeOwnedObject<TFarEdit>(this);
+  DetachedCertificateEdit->SetWidth(40);
+  SetNextItemPosition(ipRight);
+
+  DetachedCertificateBrowseBtn = MakeOwnedObject<TFarButton>(this);
+  DetachedCertificateBrowseBtn->SetCaption(L"\u2026");
+  DetachedCertificateBrowseBtn->SetOnClick(nb::bind(&TSessionDialog::DetachedCertificateFileBrowseClick, this));
   SetNextItemPosition(ipNewLine);
 
   // GSSAPI
@@ -3187,9 +3200,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   GSSAPIFwdTGTCheck = MakeOwnedObject<TFarCheckBox>(this);
   GSSAPIFwdTGTCheck->SetCaption(GetMsg(NB_LOGIN_AUTH_ALLOW_GSSAPI_CREDENTIAL_DELEGATION));
-
-  MakeOwnedObject<TFarSeparator>(this);
-
+  GSSAPIFwdTGTCheck->Move(3, 0);
 
   // Bugs tab
 
@@ -3488,7 +3499,6 @@ void TSessionDialog::UpdateControls()
   }
   PrivateKeyEdit->SetEnabled(aSshProtocol || aFtpsProtocol || HTTPSProtocol);
   PrivateKeyBrowseBtn->SetEnabled(PrivateKeyEdit->GetEnabled());
-  PrivateKeyViewBtn->SetEnabled(PrivateKeyEdit->GetEnabled() && !PrivateKeyEdit->GetText().IsEmpty());
 
   UserNameEdit->SetEnabled(!LoginAnonymous);
   UserNameEdit->SetVisible(IsMainTab);
@@ -3563,13 +3573,13 @@ void TSessionDialog::UpdateControls()
   AuthKIPasswordCheck->SetEnabled(
     Authentication &&
     AuthKICheck->GetEnabled() && AuthKICheck->GetChecked());
-  AuthGSSAPICheck3->SetEnabled(Authentication);
-  GSSAPIFwdTGTCheck->SetEnabled(Authentication);
+  // AuthGSSAPICheck3->SetEnabled(Authentication);
+  GSSAPIFwdTGTCheck->SetEnabled(AuthGSSAPICheck3->Checked);
 
-  const bool UseOpensshCert = !OpensshCertEdit->GetText().IsEmpty();
-  OpensshCertLabel->SetEnabled(aSshProtocol && Authentication && UseOpensshCert);
-  OpensshCertEdit->SetEnabled(aSshProtocol && Authentication && UseOpensshCert);
-  OpensshCertBrowseBtn->SetEnabled(OpensshCertEdit->GetEnabled());
+  const bool UseDetachedCertificate = !PrivateKeyEdit->GetText().IsEmpty();
+  DetachedCertificateLabel->SetEnabled(aSshProtocol && Authentication && UseDetachedCertificate);
+  DetachedCertificateEdit->SetEnabled(aSshProtocol && Authentication && UseDetachedCertificate);
+  DetachedCertificateBrowseBtn->SetEnabled(DetachedCertificateEdit->GetEnabled());
 
   // Directories tab
   CacheDirectoryChangesCheck->SetEnabled(
@@ -3990,7 +4000,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
   AuthGSSAPICheck3->SetChecked(SessionData->GetAuthGSSAPI());
   GSSAPIFwdTGTCheck->SetChecked(SessionData->GetGSSAPIFwdTGT());
 
-  OpensshCertEdit->SetText(SessionData->DetachedCertificate);
+  DetachedCertificateEdit->SetText(SessionData->DetachedCertificate);
 
   // Bugs tab
 
@@ -4347,7 +4357,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     SessionData->SetGSSAPIFwdTGT(GSSAPIFwdTGTCheck->GetChecked());
 
     // SessionData->SetUseOpensshCertificate(UseOpensshCertCheck->GetChecked());
-    SessionData->SetDetachedCertificate(OpensshCertEdit->GetText());
+    SessionData->SetDetachedCertificate(DetachedCertificateEdit->GetText());
     // SessionData->SetOpensshPrivateKeyFile(OpensshKeyEdit->GetText()); // TODO: sync with WinSCP
 
     // Bugs tab
@@ -5036,7 +5046,7 @@ void TSessionDialog::PrivateKeyFileBrowseClick(TFarButton * /*Sender*/, bool & C
   Close = false;
 }
 
-void TSessionDialog::OpensshCertFileBrowseClick(TFarButton * /*Sender*/, bool & Close)
+void TSessionDialog::DetachedCertificateFileBrowseClick(TFarButton * /*Sender*/, bool & Close)
 {
   wchar_t FileName[MAX_PATH] = { 0 };
   OPENFILENAMEW ofn = { 0 };
@@ -5049,7 +5059,7 @@ void TSessionDialog::OpensshCertFileBrowseClick(TFarButton * /*Sender*/, bool & 
 
   if (GetOpenFileNameW(&ofn))
   {
-    OpensshCertEdit->SetText(FileName);
+    DetachedCertificateEdit->SetText(FileName);
   }
   Close = false;
 }
