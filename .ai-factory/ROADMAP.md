@@ -33,15 +33,19 @@
 | WebDAV panel refresh | 2026-04 | Fix overwrite and refresh issues |
 | OpenSSL sync cleanup | 2026-04 | Synced with WinSCP 6.5.6 baseline, removed 300 unused files |
 
-## Upcoming Features
-
 - Background copy & progress UI (Version 1.2)
 - KiTTY keyboard protocol full implementation
 - OpenSSH certificate authentication
 - S3 bucket access fix
 - Local background copy optimization
 - Editor external modification handling improvements
-
+- WinSCP feature alignment — see `.ai-factory/plans/winscp-feature-alignment-roadmap.md`
+  - Phase 1: Dialog UX & upstream bug fix porting
+  - Phase 2: Productivity features (Generate URL, KeyGen, Cleanup, FS Info)
+  - Phase 3: Workspace save/restore and location profiles
+  - Phase 4: Directory comparison and advanced sync
+  - Phase 5: Security hardening (master password)
+  - Phase 6: Scripting engine (deferred to v2.0)
 ## Technical Debt / Refactoring
 
 [x] Consolidate `TODO` items into tracked tasks — **COMPLETE** (2026-05-04)
