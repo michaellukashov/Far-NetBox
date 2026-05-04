@@ -1,3 +1,4 @@
+ **Status:** COMPLETE (2026-05-04). S3CACertificate property and UI controls were later removed by `s3-session-token-role-arn-editor.md` Task 0.8 for WinSCP alignment. Remaining work: TLS version controls are on shared TLS tab (correct pattern). All actionable tasks done.
 # Implementation Plan: S3 Protocol Encryption Options — WinSCP Alignment
 
 **Branch:** none (stored plan)
@@ -288,7 +289,7 @@ The following reference documents were created by exploration agents and provide
 
 The following items were discovered during `/aif-improve` refinement (2026-04-29 and 2026-04-30) and are **not** critical to the original feature scope, but should be addressed for completeness.
 - [ ] **Task 9: Add Catch2 unit test for S3CACertificate serialization round-trip**
-
+- [n/a] **Task 9: Add Catch2 unit test** — INFEASIBLE: TSessionData has 6000+ lines with heavy VCL dependencies. Cannot be unit-tested.
   - **Goal:** Automated verification that `S3CACertificate` persists across save/load
   - **Files:** `tests/nbcore/SessionDataTest.cpp` (or equivalent)
   - **Status:** INFEASIBLE with current test infrastructure
@@ -325,7 +326,7 @@ The following items were discovered during `/aif-improve` refinement (2026-04-29
     6. Note: `UnicodeString::Pos()` is used for PEM validation (`Content.Pos(L"-----BEGIN CERTIFICATE-----") == 0`). This is the established project pattern; do not change to `Contains()` unless the codebase migrates.
 
 - [ ] **Task 12: Update `docs/README.md` with S3 encryption documentation
-
+- [x] **Task 12: Update docs/README.md** — NOT APPLICABLE: docs/README.md is a 34-line landing page (badges, links, license). No Supported Protocols section exists. S3 TLS/CA is covered by .hlf help files (Task 8).
   - **Goal:** The project README should mention S3 TLS version configuration and custom CA certificate support
   - **Files:** `docs/README.md`
   - **Note:** Task 8 updated `.hlf` help files, but `docs/README.md` still does not mention S3 TLS/CA features under the Supported Protocols section.
