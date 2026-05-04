@@ -46,14 +46,14 @@ Align NetBox's `BrowseForCertificateFile()` with WinSCP's `TSslSheet` pattern:
 
 ### Phase 1: Filter Alignment
 
-- [ ] **Task 1: Align certificate file filter with WinSCP**
+- [x] **Task 1: Align certificate file filter with WinSCP**
   - Change `BrowseForCertificateFile()` filter from `*.pem;*.crt;*.cer;*.pfx;*.p12;*.key`
     to WinSCP's `*.pfx;*.p12;*.key;*.pem`
   - **File:** `src/NetBox/WinSCPDialogs.cpp` (line 5006)
 
 ### Phase 2: Certificate Validation
 
-- [ ] **Task 2: Integrate CheckCertificate() into browse handler**
+- [x] **Task 2: Integrate CheckCertificate() into browse handler**
   - After `TargetEdit->SetText(FileName)`, wrap in try/catch calling `CheckCertificate(FileName)`
   - On failure, show `WinSCPPlugin->MoreMessageDialog(E.Message, nullptr, qtWarning, qaIgnore | qaAbort)`
   - If user clicks Abort, clear the edit (`TargetEdit->SetText(L"")`)
@@ -62,7 +62,7 @@ Align NetBox's `BrowseForCertificateFile()` with WinSCP's `TSslSheet` pattern:
 
 ### Phase 3: Verification
 
-- [ ] **Task 3: Build and verify**
+- [x] **Task 3: Build and verify**
   - Build x64 RelWithDebugInfo via `build-x64.bat`
   - Ensure zero MSVC W4 warnings
 
