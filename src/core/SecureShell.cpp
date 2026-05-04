@@ -508,13 +508,17 @@ void TSecureShell::Open()
       FInteractive, FTerminalType, FTerminalWidth, FTerminalHeight,
       FSessionData->GetKittyKeyboardProtocol(), FWin32InputMode));
     const UnicodeString ResolvedKeyFile = FSessionData->ResolvePublicKeyFile();
-    LogEvent(FORMAT("SSH key file: raw=[%s], resolved=[%s], exists=%d",
-      FSessionData->GetPublicKeyFile().c_str(), ResolvedKeyFile.c_str(),
-      nb::ToInt32(::FileExists(ApiPath(ResolvedKeyFile)))));
-    LogEvent(FORMAT("SSH auth config: tryagent=%d, try_ki=%d, try_gssapi=%d, gssapi_kex=%d, ssh_no_userauth=%d, has_passphrase=%d",
-      nb::ToInt32(FSessionData->GetTryAgent()), nb::ToInt32(FSessionData->FAuthKI),
-      nb::ToInt32(FSessionData->FAuthGSSAPI), nb::ToInt32(FSessionData->FAuthGSSAPIKEX),
-      nb::ToInt32(FSessionData->SshNoUserAuth()), nb::ToInt32(!FSessionData->GetPassphrase().IsEmpty())));
+    LogEvent("Starting SSH authentication");
+    if (GetConfiguration()->GetActualLogProtocol() >= 1)
+    {
+      LogEvent(FORMAT("SSH key file: raw=[%s], resolved=[%s], exists=%d",
+        FSessionData->GetPublicKeyFile().c_str(), ResolvedKeyFile.c_str(),
+        nb::ToInt32(::FileExists(ApiPath(ResolvedKeyFile)))));
+      LogEvent(FORMAT("SSH auth config: tryagent=%d, try_ki=%d, try_gssapi=%d, gssapi_kex=%d, ssh_no_userauth=%d, has_passphrase=%d",
+        nb::ToInt32(FSessionData->GetTryAgent()), nb::ToInt32(FSessionData->FAuthKI),
+        nb::ToInt32(FSessionData->FAuthGSSAPI), nb::ToInt32(FSessionData->FAuthGSSAPIKEX),
+        nb::ToInt32(FSessionData->SshNoUserAuth()), nb::ToInt32(!FSessionData->GetPassphrase().IsEmpty())));
+    }
     FSeat = std::make_unique<ScpSeat>(this);
     FLogPolicy = std::make_unique<ScpLogPolicy>();
     FLogPolicy->vt = &ScpLogPolicyVTable;
@@ -860,9 +864,8 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
   DebugAssert(Results->GetCount() == Prompts->GetCount());
 
   UnicodeString Name = AName;
-  LogEvent(FORMAT("PromptUser raw name: [%s]", AName.c_str()));
   const TPromptKind PromptKind = IdentifyPromptKind(Name);
-  LogEvent(FORMAT("PromptUser detected kind: PromptKind=%d, translated name=[%s]", nb::ToInt32(PromptKind), Name.c_str()));
+  LogEvent(FORMAT("PromptUser: kind=%d", nb::ToInt32(PromptKind)));
   const TPuttyTranslation * InstructionTranslation = nullptr;
   const TPuttyTranslation * PromptTranslation = nullptr;
   int32_t PromptTranslationCount = 1;

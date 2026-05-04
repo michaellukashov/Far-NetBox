@@ -1765,6 +1765,7 @@ private:
   void TlsCertificateFileBrowseClick(TFarButton * Sender, bool & Close);
   void WebDAVTlsCertificateFileBrowseClick(TFarButton * Sender, bool & Close);
   void PrivateKeyFileBrowseClick(TFarButton * Sender, bool & Close);
+  void PrivateKeyViewButtonClick(TFarButton * Sender, bool & Close);
   void DetachedCertificateFileBrowseClick(TFarButton * Sender, bool & Close);
   static bool IsSshProtocol(TFSProtocol FSProtocol);
   bool IsWebDAVProtocol(TFSProtocol FSProtocol) const;
@@ -3174,6 +3175,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   DisplayPublicKeyBtn = MakeOwnedObject<TFarButton>(this);
   DisplayPublicKeyBtn->SetCaption(GetMsg(NB_LOGIN_DISPLAY_PUBLIC_KEY));
   DisplayPublicKeyBtn->SetRight(PrivateKeyBrowseBtn->GetRight());
+  DisplayPublicKeyBtn->SetOnClick(nb::bind(&TSessionDialog::PrivateKeyViewButtonClick, this));
   SetNextItemPosition(ipNewLine);
 
   // Detached Certificate
@@ -5043,6 +5045,57 @@ void TSessionDialog::PrivateKeyFileBrowseClick(TFarButton * /*Sender*/, bool & C
   {
     PrivateKeyEdit->SetText(FileName);
   }
+  Close = false;
+}
+
+void TSessionDialog::PrivateKeyViewButtonClick(TFarButton * /*Sender*/, bool & Close)
+{
+  UnicodeString FileName = PrivateKeyEdit->GetText();
+  if (FileName.IsEmpty())
+  {
+    return;
+  }
+
+  try
+  {
+    ::VerifyAndConvertKey(FileName, false);
+    PrivateKeyEdit->SetText(FileName);
+
+    UnicodeString CommentDummy;
+    bool HasCertificate = false;
+    const UnicodeString Line = GetPublicKeyLine(FileName, CommentDummy, HasCertificate);
+
+    TClipboardHandler ClipboardHandler;
+    ClipboardHandler.Text = Line;
+
+    TQueryButtonAlias Alias{};
+    Alias.Button = qaRetry;
+    Alias.Alias = LoadStr(COPY_KEY_BUTTON);
+    Alias.OnSubmit = nb::bind(&TClipboardHandler::Copy, &ClipboardHandler);
+
+    TMessageParams Params(nullptr);
+    Params.Aliases = &Alias;
+    Params.AliasesCount = 1;
+
+    std::unique_ptr<TStringList> Messages(new TStringList());
+    Messages->Add(Line);
+
+    TWinSCPPlugin * WinSCPPlugin = nb::dyn_cast_or_null<TWinSCPPlugin>(FarPlugin);
+    Ensures(WinSCPPlugin);
+    WinSCPPlugin->MoreMessageDialog(
+      GetMsg(HasCertificate ? NB_LOGIN_KEY_WITH_CERTIFICATE : NB_LOGIN_AUTHORIZED_KEYS),
+      Messages.get(), qtInformation, qaOK | qaRetry, &Params);
+  }
+  catch (Exception & E)
+  {
+    // Key file not found or unsupported format — show error
+    TWinSCPPlugin * WinSCPPlugin = nb::dyn_cast_or_null<TWinSCPPlugin>(FarPlugin);
+    if (WinSCPPlugin)
+    {
+      WinSCPPlugin->MoreMessageDialog(E.Message, nullptr, qtError, qaOK);
+    }
+  }
+
   Close = false;
 }
 

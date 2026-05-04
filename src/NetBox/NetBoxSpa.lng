@@ -1,4 +1,4 @@
-﻿.Language=Spanish,Spanish (Español)
+.Language=Spanish,Spanish (Español)
 
 "NetBox"
 "NetBox"
@@ -371,6 +371,7 @@
 "NTRU Prime / Curve25519 hybrid kex"
 "ML-KEM / Curve25519 hybrid kex"
 "ML-KEM / NIST ECDH hybrid kex"
+"[T] Public key for pasting into OpenSSH authorized_keys file:"
 "**This key contains an OpenSSH certificate.**\nIt is not supposed to be added to OpenSSH authorized_keys file."
 "Matching certificate was detected in '%s' and added to the converted key file."
 "Edit trusted host certificate authority"
