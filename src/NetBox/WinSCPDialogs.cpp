@@ -5003,12 +5003,26 @@ void TSessionDialog::BrowseForCertificateFile(TFarEdit * TargetEdit)
   ofn.hwndOwner = GetConsoleWindow();
   ofn.lpstrFile = FileName;
   ofn.nMaxFile = MAX_PATH;
-  ofn.lpstrFilter = L"Certificate Files (*.pem;*.crt;*.cer;*.pfx;*.p12;*.key)\0*.pem;*.crt;*.cer;*.pfx;*.p12;*.key\0All Files (*.*)\0*.*\0";
+  ofn.lpstrFilter = L"Certificates and private key files (*.pfx;*.p12;*.key;*.pem)\0*.pfx;*.p12;*.key;*.pem\0All Files (*.*)\0*.*\0";
   ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
 
   if (GetOpenFileNameW(&ofn))
   {
     TargetEdit->SetText(FileName);
+
+    try
+    {
+      CheckCertificate(FileName);
+    }
+    catch (Exception & E)
+    {
+      TWinSCPPlugin * WinSCPPlugin = nb::dyn_cast_or_null<TWinSCPPlugin>(FarPlugin);
+      if (WinSCPPlugin != nullptr &&
+          WinSCPPlugin->MoreMessageDialog(E.Message, nullptr, qtWarning, qaIgnore | qaAbort) == qaAbort)
+      {
+        TargetEdit->SetText(L"");
+      }
+    }
   }
 }
 
