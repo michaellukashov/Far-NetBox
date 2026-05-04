@@ -193,7 +193,6 @@ private:
   UnicodeString FDetachedCertificate;
   UnicodeString FOpensshPrivateKeyFile;
   bool FUseOpensshCertificate{false};
-  UnicodeString FS3CACertificate;
   UnicodeString FPuttyProtocol;
   TFSProtocol FFSProtocol{};
   bool FModified{false};
@@ -359,7 +358,6 @@ public:
   UnicodeString GetPassphrase() const;
   void SetPassphrase(const UnicodeString & AValue);
   void SetDetachedCertificate(const UnicodeString & AValue);
-  void SetS3CACertificate(const UnicodeString & AValue);
   void SetOpensshPrivateKeyFile(const UnicodeString & AValue);
   void SetUseOpensshCertificate(bool AValue);
   UnicodeString GetOpensshPrivateKeyFile() const { return FOpensshPrivateKeyFile; }
@@ -702,8 +700,6 @@ public:
   RWProperty<UnicodeString> Passphrase{nb::bind(&TSessionData::GetPassphrase, this), nb::bind(&TSessionData::SetPassphrase, this)};
   __property UnicodeString DetachedCertificate  = { read=FDetachedCertificate, write=SetDetachedCertificate };
   RWPropertySimple<UnicodeString> DetachedCertificate{&FDetachedCertificate, nb::bind(&TSessionData::SetDetachedCertificate, this)};
-  __property UnicodeString S3CACertificate  = { read=FS3CACertificate, write=SetS3CACertificate };
-  RWPropertySimple<UnicodeString> S3CACertificate{&FS3CACertificate, nb::bind(&TSessionData::SetS3CACertificate, this)};
   __property UnicodeString OpensshPrivateKeyFile = { read=FOpensshPrivateKeyFile, write=SetOpensshPrivateKeyFile };
   RWPropertySimple<UnicodeString> OpensshPrivateKeyFile{&FOpensshPrivateKeyFile, nb::bind(&TSessionData::SetOpensshPrivateKeyFile, this)};
   __property bool UseOpensshCertificate = { read=FUseOpensshCertificate, write=SetUseOpensshCertificate };

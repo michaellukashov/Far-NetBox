@@ -137,7 +137,6 @@ protected:
   UnicodeString FTlsVersionStr;
   UnicodeString FResponse;
   bool FResponseIgnore{false};
-  UnicodeString FS3CACertificateTempFile;
 #if defined(__BORLANDC__)
   typedef std::map<UnicodeString, UnicodeString> TRegions;
 #else

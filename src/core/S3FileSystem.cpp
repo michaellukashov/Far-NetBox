@@ -525,12 +525,6 @@ TS3FileSystem::~TS3FileSystem() noexcept
   S3_destroy_request_context(FRequestContext);
   FRequestContext = nullptr;
   UnregisterFromNeonDebug(FTerminal);
-  // Clean up temporary CA certificate file if session was closed abnormally
-  if (!FS3CACertificateTempFile.IsEmpty())
-  {
-    ::DeleteFileW(FS3CACertificateTempFile.c_str());
-    FS3CACertificateTempFile.Clear();
-  }
 }
 
 void TS3FileSystem::Init(void *)
@@ -763,40 +757,7 @@ void TS3FileSystem::InitSslSessionImpl(ssl_st * Ssl, void * /* ne_session */ Ses
 {
   SetupSsl(Ssl, FTerminal->SessionData->MinTlsVersion, FTerminal->SessionData->MaxTlsVersion);
 
-  UnicodeString CACert = FTerminal->SessionData->S3CACertificate;
-  FTerminal->LogEvent(FORMAT(L"InitSslSessionImpl: S3CACertificate is %s", CACert.IsEmpty() ? L"(empty)" : L"(configured)"));
-
-  // S3 CA cert UI removed — use global CertificateStorage instead (see SetNeonTlsInit)
-  #if 0 // Per-session S3 CA certificate no longer exposed in UI
-  if (!CACert.IsEmpty())
-  {
-    try
-    {
-      UnicodeString TempPath = SystemTemporaryDirectory();
-      UnicodeString TempFileName = TempPath + L"NetBox_S3_CA_" + ::IntToStr(::GetCurrentProcessId()) + L"_" +
-                                   ::IntToStr(reinterpret_cast<intptr_t>(this)) + L".pem";
-
-      TFile::WriteAllText(TempFileName, CACert);
-
-      FTerminal->LogEvent(L"InitSslSessionImpl: Wrote CA cert to temp file");
-      FS3CACertificateTempFile = TempFileName;
-
-      if (Session != nullptr)
-      {
-        ne_ssl_set_certificates_storage(static_cast<ne_session *>(Session), StrToNeon(FS3CACertificateTempFile));
-        FTerminal->LogEvent(L"InitSslSessionImpl: Custom CA certificate applied to SSL context");
-      }
-      else
-      {
-        FTerminal->LogEvent(L"InitSslSessionImpl: Session is null, cannot apply CA certificate");
-      }
-    }
-    catch(Exception & E)
-    {
-      FTerminal->LogEvent(L"InitSslSessionImpl: Failed to apply custom CA certificate");
-    }
-  }
-  #endif
+  SetupSsl(Ssl, FTerminal->SessionData->MinTlsVersion, FTerminal->SessionData->MaxTlsVersion);
 }
 
 int32_t TS3FileSystem::LibS3SslCallback(int32_t Failures, const ne_ssl_certificate_s * Certificate, void * CallbackData)
@@ -1322,12 +1283,6 @@ void TS3FileSystem::Close()
   FTerminal->Closed();
   FActive = false;
   UnregisterFromNeonDebug(FTerminal);
-  // Clean up temporary CA certificate file if created
-  if (!FS3CACertificateTempFile.IsEmpty())
-  {
-    ::DeleteFileW(FS3CACertificateTempFile.c_str());
-    FS3CACertificateTempFile.Clear();
-  }
 }
 
 bool TS3FileSystem::GetActive() const
