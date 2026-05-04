@@ -1351,11 +1351,8 @@
 "Выбранный файл не содержит действительный PEM-сертификат."
 "Не удалось загрузить файл CA-сертификата."
 "Не удалось сохранить файл CA-сертификата."
-" OpenSSH certificate "
-"Use OpenSSH certificate authentication"
-"Использовать аутентификацию сертификата OpenSSH"
-"&Файл сертификата:"
-"Файл закрытого &ключа OpenSSH:"
+"Сертификат для приватного ключа"
+"&Display Public Key"
 "Attempt GSSAPI key exchange"
 
 "&Role ARN:"

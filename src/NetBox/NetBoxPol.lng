@@ -1351,10 +1351,7 @@
 "The selected file does not contain a valid PEM certificate."
 "Failed to load the CA certificate file."
 "Failed to save the CA certificate file."
-" OpenSSH certificate "
-"Use OpenSSH certificate authentication"
 "Certificate to &use with the private key:"
-"Private &key file:"
 "&Display Public Key"
 "Attempt GSSAPI key exchange"
 
