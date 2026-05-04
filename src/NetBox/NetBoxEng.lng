@@ -1366,3 +1366,8 @@
 "&Tolerate non-encoded special characters in filenames"
 "&Canonicalize paths on the server"
 "&Use POSIX rename"
+"&Support for listing of hidden files:"
+"&Force IP address for passive mode connections:"
+"Use &HOST command to select host on the server"
+"&Account:"
+"Display all file &revisions on VMS servers"

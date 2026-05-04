@@ -1904,6 +1904,11 @@ private:
   TFarRadioButton * IPv6Button{nullptr};
   TFarCheckBox * SshBufferSizeCheck{nullptr};
   TFarComboBox * FtpUseMlsdCombo{nullptr};
+  TFarComboBox * FtpListAllCombo{nullptr};
+  TFarComboBox * FtpForcePasvIpCombo{nullptr};
+  TFarComboBox * FtpHostCombo{nullptr};
+  TFarEdit * FtpAccountEdit{nullptr};
+  TFarCheckBox * VMSAllRevisionsCheck{nullptr};
   TFarCheckBox * FtpPasvModeCheck{nullptr};
   TFarCheckBox * FtpAllowEmptyPasswordCheck{nullptr};
   TFarCheckBox * FtpDupFFCheck{nullptr};
@@ -2533,6 +2538,18 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   TRISTATE(FtpUseMlsdCombo, FtpUseMlsd, NB_LOGIN_FTP_USE_MLSD);
 
+  TRISTATE(FtpListAllCombo, FtpListAll, NB_LOGIN_FTP_LIST_ALL);
+  TRISTATE(FtpForcePasvIpCombo, FtpForcePasvIp, NB_LOGIN_FTP_FORCE_PASV_IP);
+  TRISTATE(FtpHostCombo, FtpHost, NB_LOGIN_FTP_HOST_COMMAND);
+
+  Text = MakeOwnedObject<TFarText>(this);
+  Text->SetCaption(GetMsg(NB_LOGIN_FTP_ACCOUNT));
+  SetNextItemPosition(ipRight);
+  FtpAccountEdit = MakeOwnedObject<TFarEdit>(this);
+  Text->SetEnabledFollow(FtpAccountEdit);
+
+  VMSAllRevisionsCheck = MakeOwnedObject<TFarCheckBox>(this);
+  VMSAllRevisionsCheck->SetCaption(GetMsg(NB_LOGIN_FTP_VMS_ALL_REVISIONS));
   FtpPasvModeCheck = MakeOwnedObject<TFarCheckBox>(this);
   FtpPasvModeCheck->SetCaption(GetMsg(NB_LOGIN_FTP_PASV_MODE));
 
@@ -3561,6 +3578,11 @@ void TSessionDialog::UpdateControls()
   // FTP tab
   FtpTab->SetEnabled(aFtpProtocol || aFtpsProtocol);
   FtpAllowEmptyPasswordCheck->SetEnabled(aFtpProtocol || aFtpsProtocol);
+  FtpListAllCombo->SetEnabled(aFtpProtocol || aFtpsProtocol);
+  FtpForcePasvIpCombo->SetEnabled(aFtpProtocol || aFtpsProtocol);
+  FtpHostCombo->SetEnabled(aFtpProtocol || aFtpsProtocol);
+  FtpAccountEdit->SetEnabled(aFtpProtocol || aFtpsProtocol);
+  VMSAllRevisionsCheck->SetEnabled(aFtpProtocol || aFtpsProtocol);
   TlsCertificateFileLabel->SetEnabled(aFtpsProtocol);
   TlsCertificateFileEdit->SetEnabled(aFtpsProtocol);
   TlsCertificateFileBrowseBtn->SetEnabled(aFtpsProtocol);
@@ -3837,6 +3859,11 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
 
   // FTP tab
   FtpUseMlsdCombo->SetItemIndex(nb::ToInt32(2 - SessionData->GetFtpUseMlsd()));
+  FtpListAllCombo->SetItemIndex(nb::ToInt32(2 - SessionData->GetFtpListAll()));
+  FtpForcePasvIpCombo->SetItemIndex(nb::ToInt32(2 - SessionData->GetFtpForcePasvIp()));
+  FtpHostCombo->SetItemIndex(nb::ToInt32(2 - SessionData->GetFtpHost()));
+  FtpAccountEdit->SetText(SessionData->GetFtpAccount());
+  VMSAllRevisionsCheck->SetChecked(SessionData->VMSAllRevisions);
   FtpAllowEmptyPasswordCheck->SetChecked(SessionData->GetFtpAllowEmptyPassword());
   std::unique_ptr<TStrings> PostLoginCommands(std::make_unique<TStringList>());
   PostLoginCommands->SetText(SessionData->GetPostLoginCommands());
@@ -4184,6 +4211,11 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
 
     // FTP tab
     SessionData->SetFtpUseMlsd(static_cast<TAutoSwitch>(2 - FtpUseMlsdCombo->GetItemIndex()));
+    SessionData->SetFtpListAll(static_cast<TAutoSwitch>(2 - FtpListAllCombo->GetItemIndex()));
+    SessionData->SetFtpForcePasvIp(static_cast<TAutoSwitch>(2 - FtpForcePasvIpCombo->GetItemIndex()));
+    SessionData->SetFtpHost(static_cast<TAutoSwitch>(2 - FtpHostCombo->GetItemIndex()));
+    SessionData->SetFtpAccount(FtpAccountEdit->GetText());
+    SessionData->VMSAllRevisions = VMSAllRevisionsCheck->GetChecked();
     SessionData->SetFtpAllowEmptyPassword(FtpAllowEmptyPasswordCheck->GetChecked());
     SessionData->SetFtpDupFF(FtpDupFFCheck->GetChecked());
     SessionData->SetFtpUndupFF(FtpUndupFFCheck->GetChecked());
