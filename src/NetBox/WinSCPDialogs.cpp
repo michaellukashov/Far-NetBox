@@ -3871,8 +3871,24 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
   S3RequesterPaysCheck->Checked = FSessionData->S3RequesterPays;
   MinTlsVersionCombo->ItemIndex = TlsVersionToIndex(FSessionData->MinTlsVersion);
   MaxTlsVersionCombo->ItemIndex = TlsVersionToIndex(FSessionData->MaxTlsVersion);
-  S3SessionTokenEdit->SetText(FSessionData->S3SessionToken);
-  S3RoleArnEdit->SetText(FSessionData->S3RoleArn);
+  UnicodeString S3SessionToken = FSessionData->S3SessionToken;
+  UnicodeString S3RoleArn = FSessionData->S3RoleArn;
+#if defined(__BORLANDC__)
+  if (FSessionData->HasAutoCredentials())
+  {
+    try
+    {
+      S3SessionToken = S3EnvSessionToken(FSessionData->S3Profile);
+      S3RoleArn = S3EnvRoleArn(FSessionData->S3Profile);
+    }
+    catch (...)
+    {
+      // noop
+    }
+  }
+#endif // defined(__BORLANDC__)
+  S3SessionTokenEdit->SetText(S3SessionToken);
+  S3RoleArnEdit->SetText(S3RoleArn);
   S3RoleSessionNameEdit->SetText(FSessionData->S3RoleSessionName);
   // Connection tab
   FtpPasvModeCheck->SetChecked(SessionData->GetFtpPasvMode());
@@ -4203,7 +4219,14 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     TTlsVersion MaxTls = ssl2;
     MinTls = IndexToTlsVersion(MinTlsVersionCombo->ItemIndex);
     MaxTls = IndexToTlsVersion(MaxTlsVersionCombo->ItemIndex);
-    FSessionData->SetS3SessionToken(S3SessionTokenEdit->GetText());
+    if (FSessionData->HasAutoCredentials())
+    {
+      FSessionData->SetS3SessionToken(EmptyStr);
+    }
+    else
+    {
+      FSessionData->SetS3SessionToken(S3SessionTokenEdit->GetText());
+    }
     FSessionData->SetS3RoleArn(S3RoleArnEdit->GetText());
     FSessionData->SetS3RoleSessionName(S3RoleSessionNameEdit->GetText());
     if (MaxTls < MinTls)
