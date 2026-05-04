@@ -191,8 +191,6 @@ private:
   UnicodeString FPublicKeyFile;
   UnicodeString FPassphrase;
   UnicodeString FDetachedCertificate;
-  UnicodeString FOpensshPrivateKeyFile;
-  bool FUseOpensshCertificate{false};
   UnicodeString FPuttyProtocol;
   TFSProtocol FFSProtocol{};
   bool FModified{false};
@@ -358,10 +356,6 @@ public:
   UnicodeString GetPassphrase() const;
   void SetPassphrase(const UnicodeString & AValue);
   void SetDetachedCertificate(const UnicodeString & AValue);
-  void SetOpensshPrivateKeyFile(const UnicodeString & AValue);
-  void SetUseOpensshCertificate(bool AValue);
-  UnicodeString GetOpensshPrivateKeyFile() const { return FOpensshPrivateKeyFile; }
-  bool GetUseOpensshCertificate() const { return FUseOpensshCertificate; }
 
   void SetPuttyProtocol(const UnicodeString & AValue);
   bool GetCanLogin() const;
@@ -622,7 +616,6 @@ public:
   bool HasAutoCredentials() const;
   int32_t GetDefaultPort() const;
   UnicodeString ResolvePublicKeyFile();
-  UnicodeString ResolveEffectiveKeyFile();
   UnicodeString GetSessionPasswordEncryptionKey() const;
 
   UnicodeString GenerateOpenCommandArgs(bool Rtf) const;
@@ -700,10 +693,6 @@ public:
   RWProperty<UnicodeString> Passphrase{nb::bind(&TSessionData::GetPassphrase, this), nb::bind(&TSessionData::SetPassphrase, this)};
   __property UnicodeString DetachedCertificate  = { read=FDetachedCertificate, write=SetDetachedCertificate };
   RWPropertySimple<UnicodeString> DetachedCertificate{&FDetachedCertificate, nb::bind(&TSessionData::SetDetachedCertificate, this)};
-  __property UnicodeString OpensshPrivateKeyFile = { read=FOpensshPrivateKeyFile, write=SetOpensshPrivateKeyFile };
-  RWPropertySimple<UnicodeString> OpensshPrivateKeyFile{&FOpensshPrivateKeyFile, nb::bind(&TSessionData::SetOpensshPrivateKeyFile, this)};
-  __property bool UseOpensshCertificate = { read=FUseOpensshCertificate, write=SetUseOpensshCertificate };
-  RWPropertySimple<bool> UseOpensshCertificate{&FUseOpensshCertificate, nb::bind(&TSessionData::SetUseOpensshCertificate, this)};
   __property UnicodeString PuttyProtocol  = { read=FPuttyProtocol, write=SetPuttyProtocol };
   RWProperty<UnicodeString> PuttyProtocol{nb::bind(&TSessionData::GetPuttyProtocol, this), nb::bind(&TSessionData::SetPuttyProtocol, this)};
   __property TFSProtocol FSProtocol  = { read=FFSProtocol, write=SetFSProtocol  };
@@ -970,7 +959,6 @@ public:
   bool GetSsh2DES() const { return FSsh2DES; }
   bool GetSshNoUserAuth() const { return FSshNoUserAuth; }
   UnicodeString GetPublicKeyFile() const { return FPublicKeyFile; }
-  UnicodeString GetEffectiveKeyFile() const;
   UnicodeString GetPuttyProtocol() const { return FPuttyProtocol; }
   TFSProtocol GetFSProtocol() const { return FFSProtocol; }
   bool GetModified() const { return FModified; }

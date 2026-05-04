@@ -439,8 +439,6 @@ void TSessionData::NonPersistent()
   PROPERTY2(DetachedCertificate); \
   PROPERTY_HANDLER(Passphrase, F); \
   PROPERTY(FSProtocol); \
- PROPERTY2(OpensshPrivateKeyFile); \
- PROPERTY(UseOpensshCertificate); \
   PROPERTY(Ftps); \
   PROPERTY(LocalDirectory); \
   PROPERTY2(OtherLocalDirectory); \
@@ -880,8 +878,6 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool PuttyImport, bool
   SetGssLibCustom(Storage->ReadString("GSSCustom", GetGssLibCustom()));
   SetPublicKeyFile(Storage->ReadString("PublicKeyFile", GetPublicKeyFile()));
   DetachedCertificate = Storage->ReadString("DetachedCertificate", DetachedCertificate);
-  OpensshPrivateKeyFile = Storage->ReadString("OpensshPrivateKeyFile", OpensshPrivateKeyFile);
-  UseOpensshCertificate = Storage->ReadBool("UseOpensshCertificate", UseOpensshCertificate);
   SetAddressFamily(static_cast<TAddressFamily>
     (Storage->ReadInteger("AddressFamily", GetAddressFamily())));
   SetRekeyData(Storage->ReadString("RekeyBytes", GetRekeyData()));
@@ -1250,8 +1246,6 @@ void TSessionData::DoSave(THierarchicalStorage * Storage,
     // To allow relative paths in our sessions, we have to expand them for PuTTY.
     WRITE_DATA_EX(StringRaw, "PublicKeyFile", GetPublicKeyFile(), ExpandFileName);
     WRITE_DATA_EX(StringRaw, "DetachedCertificate", DetachedCertificate, ExpandFileName);
-    WRITE_DATA_EX(StringRaw, "OpensshPrivateKeyFile", OpensshPrivateKeyFile, ExpandFileName);
-    WRITE_DATA(Bool, UseOpensshCertificate);
   }
   else
   {
@@ -1260,8 +1254,6 @@ void TSessionData::DoSave(THierarchicalStorage * Storage,
     WRITE_DATA_EX(String, "DetachedCertificate", FDetachedCertificate, );
     WRITE_DATA_EX2(String, "FSProtocol", GetFSProtocolStr(), );
     WRITE_DATA(String, LocalDirectory);
-    WRITE_DATA_EX(String, "OpensshPrivateKeyFile", FOpensshPrivateKeyFile, );
-    WRITE_DATA(Bool, UseOpensshCertificate);
     WRITE_DATA_EX(String, "OtherLocalDirectory", FOtherLocalDirectory, );
     WRITE_DATA(String, RemoteDirectory);
     WRITE_DATA(Bool, SynchronizeBrowsing);
@@ -3501,13 +3493,13 @@ void TSessionData::SetPublicKeyFile(const UnicodeString & Value)
   if (FPublicKeyFile != Value)
   {
     UnicodeString XPassphrase = GetPassphrase();
-    UnicodeString EffectiveKeyFileBefore = GetEffectiveKeyFile();
+    UnicodeString EffectiveKeyFileBefore = GetPublicKeyFile();
 
     // StripPathQuotes should not be needed as we do not feed quotes anymore
     FPublicKeyFile = StripPathQuotes(Value);
     Modify();
 
-    if (GetEffectiveKeyFile() != EffectiveKeyFileBefore)
+    if (GetPublicKeyFile() != EffectiveKeyFileBefore)
     {
       SetPassphrase(XPassphrase);
     }
@@ -3521,41 +3513,6 @@ void TSessionData::SetDetachedCertificate(const UnicodeString & value)
 }
 
 
-void TSessionData::SetOpensshPrivateKeyFile(const UnicodeString & Value)
-{
-  if (FOpensshPrivateKeyFile != Value)
-  {
-    UnicodeString XPassphrase = GetPassphrase();
-    UnicodeString EffectiveKeyFileBefore = GetEffectiveKeyFile();
-
-    FOpensshPrivateKeyFile = StripPathQuotes(Value);
-    Modify();
-
-    if (GetEffectiveKeyFile() != EffectiveKeyFileBefore)
-    {
-      SetPassphrase(XPassphrase);
-    }
-    Shred(XPassphrase);
-  }
-}
-
-void TSessionData::SetUseOpensshCertificate(bool Value)
-{
-  if (FUseOpensshCertificate != Value)
-  {
-    UnicodeString XPassphrase = GetPassphrase();
-    UnicodeString EffectiveKeyFileBefore = GetEffectiveKeyFile();
-
-    FUseOpensshCertificate = Value;
-    Modify();
-
-    if (GetEffectiveKeyFile() != EffectiveKeyFileBefore)
-    {
-      SetPassphrase(XPassphrase);
-    }
-    Shred(XPassphrase);
-  }
-}
 
 UnicodeString TSessionData::ResolvePublicKeyFile()
 {
@@ -3569,35 +3526,17 @@ UnicodeString TSessionData::ResolvePublicKeyFile()
   return Result;
 }
 
-UnicodeString TSessionData::ResolveEffectiveKeyFile()
-{
-  UnicodeString Result = GetEffectiveKeyFile();
-  if (Result.IsEmpty())
-  {
-    Result = GetConfiguration()->DefaultKeyFile;
-  }
-  Result = StripPathQuotes(::ExpandEnvironmentVariables(Result));
-  return Result;
-}
 void TSessionData::SetPassphrase(const UnicodeString & AValue)
 {
-  const RawByteString value = EncryptPassword(AValue, GetEffectiveKeyFile());
+  const RawByteString value = EncryptPassword(AValue, GetPublicKeyFile());
   SET_SESSION_PROPERTY(Passphrase);
 }
 
 UnicodeString TSessionData::GetPassphrase() const
 {
-  return DecryptPassword(FPassphrase, GetEffectiveKeyFile());
+  return DecryptPassword(FPassphrase, GetPublicKeyFile());
 }
 
-UnicodeString TSessionData::GetEffectiveKeyFile() const
-{
-  if (GetUseOpensshCertificate() && !GetOpensshPrivateKeyFile().IsEmpty())
-  {
-    return GetOpensshPrivateKeyFile();
-  }
-  return GetPublicKeyFile();
-}
 
 
 void TSessionData::SetReturnVar(const UnicodeString & value)

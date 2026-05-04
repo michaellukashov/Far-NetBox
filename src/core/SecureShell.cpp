@@ -293,14 +293,14 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
   conf_set_filename(conf, CONF_ssh_gss_custom, GssLibCustomFileName);
   filename_free(GssLibCustomFileName);
 
-  UnicodeString EffectiveKeyFile = Data->ResolveEffectiveKeyFile();
+  UnicodeString EffectiveKeyFile = Data->ResolvePublicKeyFile();
   if (!EffectiveKeyFile.IsEmpty())
   {
     const TKeyType KeyType = GetKeyType(EffectiveKeyFile);
     if ((KeyType == ktOpenSSHPEM) || (KeyType == ktOpenSSHNew) || (KeyType == ktSSHCom))
     {
       EffectiveKeyFile = ConvertKeyToTemporaryPPK(EffectiveKeyFile, Data->GetPassphrase());
-      if (EffectiveKeyFile != Data->ResolveEffectiveKeyFile())
+      if (EffectiveKeyFile != Data->ResolvePublicKeyFile())
       {
         // Clean up previous temp PPK if any
         if (!FTempPPKFile.IsEmpty() && ::FileExists(ApiPath(FTempPPKFile)))

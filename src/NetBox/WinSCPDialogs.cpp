@@ -1747,7 +1747,6 @@ private:
   void CipherButtonClick(TFarButton * Sender, bool & Close);
   void KexButtonClick(TFarButton * Sender, bool & Close);
   void AuthGSSAPICheckAllowChange(TFarDialogItem * Sender, void * NewState, bool & Allow);
-  void UseOpensshCertCheckAllowChange(TFarDialogItem * Sender, void * NewState, bool & Allow);
   void S3CredentialsEnvCheckAllowChange(TFarDialogItem * Sender, void * NewState, bool & Allow);
   void UnixEnvironmentButtonClick(TFarButton * Sender, bool & Close);
   void WindowsEnvironmentButtonClick(TFarButton * Sender, bool & Close);
@@ -4429,9 +4428,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     SessionData->SetAuthGSSAPI(AuthGSSAPICheck3->GetChecked());
     SessionData->SetGSSAPIFwdTGT(GSSAPIFwdTGTCheck->GetChecked());
 
-    // SessionData->SetUseOpensshCertificate(UseOpensshCertCheck->GetChecked());
     SessionData->SetDetachedCertificate(DetachedCertificateEdit->GetText());
-    // SessionData->SetOpensshPrivateKeyFile(OpensshKeyEdit->GetText()); // TODO: sync with WinSCP
 
     // Bugs tab
     // BUGS();
@@ -4953,11 +4950,6 @@ void TSessionDialog::AuthGSSAPICheckAllowChange(TFarDialogItem * /*Sender*/,
   }
 }
 
-void TSessionDialog::UseOpensshCertCheckAllowChange(TFarDialogItem * /*Sender*/,
-  void * /*NewState*/, bool & /*Allow*/)
-{
-  UpdateControls();
-}
 
 void TSessionDialog::S3CredentialsEnvCheckAllowChange(TFarDialogItem * /*Sender*/,
   void * /*NewState*/, bool & /*Allow*/)
