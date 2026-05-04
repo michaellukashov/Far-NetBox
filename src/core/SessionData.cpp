@@ -429,7 +429,6 @@ void TSessionData::NonPersistent()
   SetPreserveDirectoryChanges(false);
 }
 
-  //PROPERTY(UserName);
 
 #define PROPERTY(P) PROPERTY_HANDLER(P, )
 #define BASE_PROPERTIES \
@@ -752,7 +751,6 @@ bool TSessionData::IsSame(
   if (!AdvancedOnly)
   {
     BASE_PROPERTIES
-    // META_PROPERTIES;
   }
   ADVANCED_PROPERTIES
   #undef PROPERTY_HANDLER
@@ -760,13 +758,11 @@ bool TSessionData::IsSame(
 
   for (int32_t Index = 0; Index < nb::ToIntPtr(_countof(FBugs)); ++Index)
   {
-    // PROPERTY(Bug[(TSshBug)Index]);
     if (GetBug(static_cast<TSshBug>(Index)) != Default->GetBug(static_cast<TSshBug>(Index)))
       return false;
   }
   for (int32_t Index = 0; Index < nb::ToIntPtr(_countof(FSFTPBugs)); ++Index)
   {
-    // PROPERTY(SFTPBug[(TSftpBug)Index]);
     if (GetSFTPBug(static_cast<TSftpBug>(Index)) != Default->GetSFTPBug(static_cast<TSftpBug>(Index)))
       return false;
   }
@@ -895,7 +891,6 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool PuttyImport, bool
   LocalDirectory = Storage->ReadString("LocalDirectory", LocalDirectory);
   OtherLocalDirectory = Storage->ReadString("OtherLocalDirectory", OtherLocalDirectory);
   RemoteDirectory = Storage->ReadString("RemoteDirectory", RemoteDirectory);
-  // SynchronizeBrowsing = Storage->ReadBool("SynchronizeBrowsing", SynchronizeBrowsing);
   UpdateDirectories = Storage->ReadBool("UpdateDirectories", UpdateDirectories);
   CacheDirectories = Storage->ReadBool("CacheDirectories", CacheDirectories);
   CacheDirectoryChanges = Storage->ReadBool("CacheDirectoryChanges", CacheDirectoryChanges);
@@ -1282,7 +1277,6 @@ void TSessionData::DoSave(THierarchicalStorage * Storage,
     // Special is never stored (if it would, login dialog must be modified not to
     // duplicate Special parameter when Special session is loaded and then stored
     // under different name)
-    // WRITE_DATA(Bool, Special);
     WRITE_DATA(String, Shell);
     WRITE_DATA(Bool, ClearAliases);
     WRITE_DATA(Bool, UnsetNationalVars);
@@ -2992,7 +2986,6 @@ UnicodeString TSessionData::GetSessionPasswordEncryptionKey() const
     DEBUG_PRINTF("SessionPasswordEncryptionKey: using MasterKey");
     return Key;
   }
-  // DEBUG_PRINTF("SessionPasswordEncryptionKey: using default (UserName+HostName)");
   return UserName() + HostName();
 }
 
@@ -3666,7 +3659,6 @@ UnicodeString TSessionData::GetFSProtocolStr() const
   {
     Result = UnicodeString(FSProtocolNames[GetFSProtocol()]);
   }
-  // DebugAssert(!Result.IsEmpty());
   if (Result.IsEmpty())
     Result = UnicodeString(FSProtocolNames[CONST_DEFAULT_PROTOCOL]);
   return Result;
@@ -4587,8 +4579,6 @@ void TSessionData::SetSshSimple(bool value)
 
 void TSessionData::SetProxyMethod(TProxyMethod value)
 {
-//  TProxyMethod Value = value == pmSystemOld ? pmSystem : value;
-//  nb::used(Value);
   SET_SESSION_PROPERTY(ProxyMethod);
 }
 
@@ -4616,8 +4606,6 @@ void TSessionData::SetProxyPassword(const UnicodeString & AValue)
 TProxyMethod TSessionData::GetSystemProxyMethod() const
 {
   PrepareProxyData();
-//  if ((GetProxyMethod() == pmSystem) && (nullptr != FIEProxyConfig))
-//    return FIEProxyConfig->ProxyMethod;
   return pmNone;
 }
 
@@ -4629,15 +4617,11 @@ TProxyMethod TSessionData::GetActualProxyMethod() const
 UnicodeString TSessionData::GetProxyHost() const
 {
   PrepareProxyData();
-//  if ((GetProxyMethod() == pmSystem) && (nullptr != FIEProxyConfig))
-//    return FIEProxyConfig->ProxyHost;
   return FProxyHost;
 }
 int32_t TSessionData::GetProxyPort() const
 {
   PrepareProxyData();
-//  if ((GetProxyMethod() == pmSystem) && (nullptr != FIEProxyConfig))
-//    return FIEProxyConfig->ProxyPort;
   return FProxyPort;
 }
 
@@ -4751,8 +4735,6 @@ void TSessionData::ParseIEProxyConfig() const
     // case fsSFTP:
     // case fsSFTPonly:
     // case fsFTP:
-    // case fsFTPS:
-    // break;
     case fsWebDAV:
       if ((ProxyScheme == L"http") || (ProxyScheme == L"https"))
       {
@@ -5432,7 +5414,6 @@ TFSProtocol TSessionData::TranslateFSProtocolNumber(int32_t AFSProtocol)
       break;
     }
   }
-  // DebugAssert(Result != -1);
   return Result;
 }
 
@@ -5457,7 +5438,6 @@ TFSProtocol TSessionData::TranslateFSProtocol(const UnicodeString & ProtocolID) 
 TFtps TSessionData::TranslateFtpEncryptionNumber(int32_t FtpEncryption) const
 {
   TFtps Result = GetFtps();
-  // DebugAssert(Result != static_cast<TFtps>(-1));
   return Result;
 }
 
@@ -5491,7 +5471,6 @@ void TStoredSessionList::Load(THierarchicalStorage * Storage,
   try__finally
   {
     DebugAssert(FAutoSort);
-    // FAutoSort = false;
     const bool WasEmpty = (GetCount() == 0);
 
     Storage->GetSubKeyNames(SubKeys.get());
@@ -6600,22 +6579,18 @@ UnicodeString GetExpandedLogFileName(const UnicodeString & LogFileName, const TD
       switch (::LowCase(Result[Index + 1]))
       {
         case L'y':
-          // Replacement = FormatDateTime(L"yyyy", N);
           Replacement = FORMAT("%04d", Y);
           break;
 
         case L'm':
-          // Replacement = FormatDateTime(L"mm", N);
           Replacement = FORMAT("%02d", M);
           break;
 
         case L'd':
-          // Replacement = FormatDateTime(L"dd", N);
           Replacement = FORMAT("%02d", D);
           break;
 
         case L't':
-          // Replacement = FormatDateTime("hhnnss", N);
           Replacement = FORMAT("%02d%02d%02d", H, NN, S);
           break;
 
@@ -6747,8 +6722,6 @@ bool GetCodePageInfo(UINT CodePage, CPINFOEX & CodePageInfoEx)
     CodePageInfoEx.CodePageName[0] = L'\0';
   }
 
-  //if (CodePageInfoEx.MaxCharSize != 1)
-  //  return false;
 
   return true;
 }

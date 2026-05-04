@@ -293,9 +293,7 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
   conf_set_filename(conf, CONF_ssh_gss_custom, GssLibCustomFileName);
   filename_free(GssLibCustomFileName);
 
-  // UnicodeString KeyFile = Data->ResolvePublicKeyFile();
   UnicodeString EffectiveKeyFile = Data->ResolveEffectiveKeyFile();
-  // if (Data->GetUseOpensshCertificate() && !Data->GetOpensshPrivateKeyFile().IsEmpty())
   if (!EffectiveKeyFile.IsEmpty())
   {
     const TKeyType KeyType = GetKeyType(EffectiveKeyFile);
@@ -554,7 +552,6 @@ void TSecureShell::Open()
   {
     if (FNoConnectionResponse && TryFtp())
     {
-      // GetConfiguration()->Usage->Inc("ProtocolSuggestions");
       // HELP_FTP_SUGGESTION won't be used as all errors that set
       // FNoConnectionResponse have already their own help keyword
       FUI->FatalError(&E, LoadStr(FTP_SUGGESTION), HELP_FTP_SUGGESTION);
@@ -1126,7 +1123,6 @@ void TSecureShell::CWrite(const char * Data, size_t Length)
   // We send only whole line at once, so we have to cache incoming data
   FCWriteTemp += DeleteChar(ConvertFromPutty(Data, nb::ToInt32(Length)), L'\r');
 
-  // UnicodeString Line;
   // Do we have at least one complete line in std error cache?
   while (FCWriteTemp.Pos(L"\n") > 0)
   {
@@ -1451,7 +1447,6 @@ UnicodeString TSecureShell::ConvertInput(const RawByteString & Input, uint32_t C
   }
   else
   {
-    // Result = AnsiToString(Input);
     Result = ::MB2W(Input.c_str(), static_cast<UINT>(CodePage)); //TODO: AnsiToString
   }
   return Result;

@@ -499,14 +499,12 @@ static bool scp_get_window_pixel_size(Seat * seat, int * width, int * height)
 static void scp_notify_session_started(Seat * seat)
 {
   TSecureShell * SecureShell = static_cast<ScpSeat *>(seat)->SecureShell;
-  // SecureShell->SetActive(true);
   nb::used(SecureShell);
 }
 
 static void scp_notify_remote_exit(Seat * seat)
 {
   TSecureShell * SecureShell = static_cast<ScpSeat *>(seat)->SecureShell;
-  // SecureShell->SetActive(false);
   nb::used(SecureShell);
 }
 

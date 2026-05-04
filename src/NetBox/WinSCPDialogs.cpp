@@ -248,7 +248,6 @@ void TTabbedDialog::TabButtonClick(TFarButton * Sender, bool & Close)
   const TTabButton * Tab = nb::dyn_cast_or_null<TTabButton>(Sender);
   DebugAssert(Tab != nullptr);
 
-  // HideTabs();
   if (Tab)
     SelectTab(Tab->GetTab());
 
@@ -562,7 +561,6 @@ bool TWinSCPPlugin::LoggingConfigurationDialog()
     {
       GetConfiguration()->SetLogging(LoggingCheck->GetChecked());
       GetConfiguration()->SetLogProtocol(LogProtocolCombo->GetItemIndex());
-      //GetConfiguration()->SetLogToFile(LogToFileCheck->GetChecked());
       if (LogToFileCheck->GetChecked())
       {
         GetConfiguration()->SetLogFileName(LogFileNameEdit->GetText());
@@ -1249,7 +1247,6 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   TFarDialog(AFarPlugin)
 {
   TFarDialog::InitDialog();
-  // UnicodeString ProductName = GetConfiguration()->GetFileInfoString("ProductName");
   const UnicodeString ProductName = LoadStr(WINSCPFAR_NAME);
   const UnicodeString Comments = GetConfiguration()->GetFileInfoString("Comments");
   const UnicodeString LegalCopyright = GetConfiguration()->GetFileInfoString("LegalCopyright");
@@ -1756,7 +1753,6 @@ private:
   void WindowsEnvironmentButtonClick(TFarButton * Sender, bool & Close);
   void UpdateControls();
   void TransferProtocolComboChange();
-  //void LoginTypeComboChange();
   void FillCodePageEdit();
   void CodePageEditAdd(uint32_t Cp);
   void FtpProxyMethodComboAddNewItem(int32_t ProxyTypeId, TProxyMethod ProxyType);
@@ -1808,8 +1804,6 @@ private:
   TFarEdit * UserNameEdit{nullptr};
   TFarText * PasswordLabel{nullptr};
   TFarText * S3SecretAccessKeyLabel{nullptr};
-  // TFarText * S3CACertificateLabel{nullptr};
-  // TFarEdit * S3CACertificateEdit{nullptr};
   TFarEdit * PasswordEdit{nullptr};
   TFarEdit * PrivateKeyEdit{nullptr};
   TFarButton * PrivateKeyBrowseBtn{nullptr};
@@ -1886,12 +1880,9 @@ private:
   TFarCheckBox * AgentFwdCheck{nullptr};
   TFarCheckBox * AuthGSSAPICheck3{nullptr};
   TFarCheckBox * GSSAPIFwdTGTCheck{nullptr};
-  // TFarCheckBox * UseOpensshCertCheck{nullptr};
   TFarText * OpensshCertLabel{nullptr};
   TFarButton * OpensshCertBrowseBtn{nullptr};
   TFarEdit * OpensshCertEdit{nullptr};
-  // TFarText * OpensshKeyLabel{nullptr};
-  // TFarEdit * OpensshKeyEdit{nullptr};
   TFarCheckBox * DeleteToRecycleBinCheck{nullptr};
   TFarCheckBox * OverwrittenToRecycleBinCheck{nullptr};
   TFarEdit * RecycleBinPathEdit{nullptr};
@@ -1931,8 +1922,6 @@ private:
   TFarComboBox * S3UrlStyleCombo{nullptr};
   TFarComboBox * S3DefaultRegionCombo{nullptr};
   TFarCheckBox * S3RequesterPaysCheck{nullptr};
-  // TFarButton * S3CACertificateLoadBtn{nullptr};
-  // TFarButton * S3CACertificateSaveBtn{nullptr};
   TFarComboBox * MinTlsVersionCombo{nullptr};
   TFarComboBox * MaxTlsVersionCombo{nullptr};
   TFarEdit * S3SessionTokenEdit{nullptr};
@@ -1941,17 +1930,11 @@ private:
   TFarEdit * S3RoleArnEdit{nullptr};
   TFarText * S3RoleSessionNameLabel{nullptr};
   TFarEdit * S3RoleSessionNameEdit{nullptr};
-  // TFarCheckBox * S3CredentialsEnvCheck{nullptr};
-  // TFarComboBox * S3ProfileCombo{nullptr};
-  // TFarText * S3ProfileLabel{nullptr};
 
   std::unique_ptr<TObjectList> FTabs{std::make_unique<TObjectList>()};
   int32_t FFirstVisibleTabIndex{0};
 };
 
-//  BUG(Ignore1, NB_LOGIN_BUGS_IGNORE1, );
-//  BUG(PlainPW1, NB_LOGIN_BUGS_PLAIN_PW1, );
-//  BUG(RSA1, NB_LOGIN_BUGS_RSA1, );
 
 #define BUG(BUGID, MSG, PREFIX) \
   TRISTATE(PREFIX ## Bug ## BUGID ## Combo, PREFIX ## Bug(sb ## BUGID), MSG)
@@ -2045,7 +2028,6 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   TRect CRect = GetClientRect();
 
   int32_t Index1 = AddTab(tabSession, GetMsg(NB_LOGIN_TAB_SESSION));
-  // Tab = nb::dyn_cast_or_null<TTabButton>(GetItem(Index));
 
   SetNextItemPosition(ipRight);
 
@@ -2256,7 +2238,6 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   SetNextItemPosition(ipNewLine);
 
-  // UTF_TRISTATE();
   Text = MakeOwnedObject<TFarText>(this);
   Text->SetCaption(GetMsg(NB_LOGIN_CODE_PAGE));
 
@@ -2596,7 +2577,6 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   S3DefaultRegionCombo = MakeOwnedObject<TFarComboBox>(this);
   for (int32_t Index1 = 0; Index1 < _countof(S3Regions); Index1++)
     S3DefaultReqionComboAddNewItem(S3Regions[Index1], Index1);
-  // S3DefaultRegionCombo->SetWidth(20);
 
   // URL style
   SetNextItemPosition(ipNewLine);
@@ -2607,7 +2587,6 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   S3UrlStyleCombo->SetDropDownList(true);
   for (int32_t Index1 = 0; Index1 < _countof(S3URLStyles); Index1++)
     S3UrlStyleCombo->GetItems()->AddObject(S3URLStyles[Index1], ToObj(nb::ToPtr(Index1)));
-  // S3UrlStyleCombo->SetWidth(20);
 
   // Requester pays
   SetNextItemPosition(ipNewLine);
@@ -2616,26 +2595,6 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   // Credentials from AWS environment
   SetNextItemPosition(ipNewLine);
-  // S3CACertificateLabel = MakeOwnedObject<TFarText>(this);
-  // S3CACertificateLabel->SetCaption(GetMsg(NB_LOGIN_S3_CA_CERTIFICATE));
-  // S3CACertificateLabel->SetWidth(20);
-  // S3CACertificateLabel->SetVisible(false);
-  // S3CredentialsEnvCheck = MakeOwnedObject<TFarCheckBox>(this);
-  // S3CredentialsEnvCheck->SetCaption(GetMsg(NB_S3_CREDENTIALS_ENV));
-  // S3CredentialsEnvCheck->SetVisible(false);
-  // S3CredentialsEnvCheck->SetOnAllowChange(nb::bind(&TSessionDialog::S3CredentialsEnvCheckAllowChange, this));
-
-  // Profile dropdown
-  // SetNextItemPosition(ipRight);
-  // S3ProfileLabel = MakeOwnedObject<TFarText>(this);
-  // S3ProfileLabel->SetCaption(GetMsg(NB_S3_PROFILE));
-  // S3ProfileLabel->SetVisible(false);
-
-  // SetNextItemPosition(ipRight);
-  // S3ProfileCombo = MakeOwnedObject<TFarComboBox>(this);
-  // S3ProfileCombo->SetWidth(25);
-  // S3ProfileCombo->SetVisible(false);
-  // S3ProfileCombo->GetItems()->Add(GetMsg(NB_S3_GENERAL_NAME));
 
   // Session Token
   SetNextItemPosition(ipNewLine);
@@ -2785,7 +2744,6 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   FtpProxyMethodComboAddNewItem(NB_LOGIN_PROXY_SOCKS4, pmSocks4);
   FtpProxyMethodComboAddNewItem(NB_LOGIN_PROXY_SOCKS5, pmSocks5);
   FtpProxyMethodComboAddNewItem(NB_LOGIN_PROXY_HTTP, pmHTTP);
-  // FtpProxyMethodComboAddNewItem(NB_LOGIN_PROXY_SYSTEM, pmSystem);
   TProxyMethod FtpProxyMethod = ToProxyMethod(GetLastSupportedFtpProxyMethod());
   FtpProxyMethodComboAddNewItem(NB_LOGIN_PROXY_FTP_SITE, ToProxyMethod(FtpProxyMethod + 1));
   FtpProxyMethodComboAddNewItem(NB_LOGIN_PROXY_FTP_PROXYUSER_USERHOST, ToProxyMethod(FtpProxyMethod + 2));
@@ -2809,7 +2767,6 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   SshProxyMethodComboAddNewItem(NB_LOGIN_PROXY_HTTP, pmHTTP);
   SshProxyMethodComboAddNewItem(NB_LOGIN_PROXY_TELNET, pmTelnet);
   SshProxyMethodComboAddNewItem(NB_LOGIN_PROXY_LOCAL, pmCmd);
-  // SshProxyMethodComboAddNewItem(NB_LOGIN_PROXY_SYSTEM, pmSystem);
 
   SetNextItemPosition(ipNewLine);
 
@@ -2835,7 +2792,6 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   ProxyPortEdit = MakeOwnedObject<TFarEdit>(this);
   ProxyPortEdit->SetFixed(true);
   ProxyPortEdit->SetMask(L"999999");
-  // ProxyPortEdit->SetWidth(12);
   Text->SetEnabledFollow(ProxyPortEdit);
 
   SetNextItemPosition(ipNewLine);
@@ -3219,28 +3175,6 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   SetNextItemPosition(ipNewLine);
 
   // OpenSSH Certificate
-  // Separator = MakeOwnedObject<TFarSeparator>(this);
-  // Separator->SetCaption(GetMsg(NB_LOGIN_AUTH_OPENSSH_CERT_GROUP));
-
-  // UseOpensshCertCheck = MakeOwnedObject<TFarCheckBox>(this);
-  // UseOpensshCertCheck->SetCaption(GetMsg(NB_LOGIN_AUTH_USE_OPENSSH_CERT));
-  // UseOpensshCertCheck->SetOnAllowChange(nb::bind(&TSessionDialog::UseOpensshCertCheckAllowChange, this));
-
-  OpensshCertLabel = MakeOwnedObject<TFarText>(this);
-  OpensshCertLabel->SetCaption(GetMsg(NB_LOGIN_AUTH_OPENSSH_CERT_FILE));
-
-  OpensshCertEdit = MakeOwnedObject<TFarEdit>(this);
-  OpensshCertEdit->SetWidth(30);
-  SetNextItemPosition(ipRight);
-  OpensshCertBrowseBtn = MakeOwnedObject<TFarButton>(this);
-  OpensshCertBrowseBtn->SetCaption(L"\u2026");
-  OpensshCertBrowseBtn->SetOnClick(nb::bind(&TSessionDialog::OpensshCertFileBrowseClick, this));
-
-  // OpensshKeyLabel = MakeOwnedObject<TFarText>(this);
-  // OpensshKeyLabel->SetCaption(GetMsg(NB_LOGIN_AUTH_OPENSSH_KEY_FILE));
-
-  // OpensshKeyEdit = MakeOwnedObject<TFarEdit>(this);
-  // OpensshKeyEdit->SetWidth(30);
   SetNextItemPosition(ipNewLine);
 
   // GSSAPI
@@ -3347,7 +3281,6 @@ void TSessionDialog::S3DefaultReqionComboAddNewItem(const UnicodeString & Region
 
 TSessionDialog::~TSessionDialog() noexcept
 {
-//  SAFE_DESTROY(FTabs);
 }
 
 void TSessionDialog::Change()
@@ -3556,7 +3489,6 @@ void TSessionDialog::UpdateControls()
   PrivateKeyEdit->SetEnabled(aSshProtocol || aFtpsProtocol || HTTPSProtocol);
   PrivateKeyBrowseBtn->SetEnabled(PrivateKeyEdit->GetEnabled());
   PrivateKeyViewBtn->SetEnabled(PrivateKeyEdit->GetEnabled() && !PrivateKeyEdit->GetText().IsEmpty());
-//  HostNameLabel->SetCaption(GetMsg(NB_LOGIN_HOST_NAME));
 
   UserNameEdit->SetEnabled(!LoginAnonymous);
   UserNameEdit->SetVisible(IsMainTab);
@@ -3567,13 +3499,6 @@ void TSessionDialog::UpdateControls()
   S3AccessKeyIDLabel->SetVisible(IsMainTab && aS3Protocol);
   PasswordLabel->SetVisible(IsMainTab && !aS3Protocol);
   S3SecretAccessKeyLabel->SetVisible(IsMainTab && aS3Protocol);
-  // S3CACertificateLabel->SetVisible(IsMainTab && aS3Protocol);
-  // S3CACertificateEdit->SetVisible(IsMainTab && aS3Protocol);
-  // S3CACertificateLoadBtn->SetVisible(IsMainTab && aS3Protocol);
-  // S3CACertificateSaveBtn->SetVisible(IsMainTab && aS3Protocol);
-  // S3CredentialsEnvCheck->SetVisible(IsMainTab && aS3Protocol);
-  // S3ProfileLabel->SetVisible(IsMainTab && aS3Protocol);
-  // S3ProfileCombo->SetVisible(IsMainTab && aS3Protocol);
 
   // Connection sheet
   FtpPasvModeCheck->SetEnabled(aFtpProtocol);
@@ -3606,12 +3531,6 @@ void TSessionDialog::UpdateControls()
   S3UrlStyleCombo->Enabled = aS3Protocol;
   S3DefaultRegionCombo->Enabled = aS3Protocol;
   S3RequesterPaysCheck->Enabled = aS3Protocol;
-  // S3CACertificateEdit->Enabled = aS3Protocol;
-  // S3CACertificateLoadBtn->SetEnabled(aS3Protocol);
-  // S3CACertificateSaveBtn->SetEnabled(aS3Protocol);
-  // const bool autoCred = S3CredentialsEnvCheck->GetChecked();
-  // S3CredentialsEnvCheck->Enabled = aS3Protocol;
-  // S3ProfileCombo->Enabled = aS3Protocol;
 
   S3SessionTokenEdit->Enabled = aS3Protocol && !FSessionData->HasAutoCredentials();
   S3SessionTokenLabel->Enabled = S3SessionTokenEdit->GetEnabled();
@@ -3647,14 +3566,10 @@ void TSessionDialog::UpdateControls()
   AuthGSSAPICheck3->SetEnabled(Authentication);
   GSSAPIFwdTGTCheck->SetEnabled(Authentication);
 
-  // const bool UseOpensshCert = UseOpensshCertCheck->GetChecked();
-  // UseOpensshCertCheck->SetEnabled(aSshProtocol && Authentication);
   const bool UseOpensshCert = !OpensshCertEdit->GetText().IsEmpty();
   OpensshCertLabel->SetEnabled(aSshProtocol && Authentication && UseOpensshCert);
   OpensshCertEdit->SetEnabled(aSshProtocol && Authentication && UseOpensshCert);
   OpensshCertBrowseBtn->SetEnabled(OpensshCertEdit->GetEnabled());
-  // OpensshKeyLabel->SetEnabled(aSshProtocol && Authentication && UseOpensshCert);
-  // OpensshKeyEdit->SetEnabled(aSshProtocol && Authentication && UseOpensshCert);
 
   // Directories tab
   CacheDirectoryChangesCheck->SetEnabled(
@@ -3785,7 +3700,6 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
 
   FTransferProtocolIndex = TransferProtocolCombo->GetItemIndex();
   FFtpEncryptionComboIndex = FtpEncryptionCombo->GetItemIndex();
-  // DEBUG_PRINTF("FFtpEncryptionComboIndex: %d", FFtpEncryptionComboIndex);
 
   // Directories tab
   RemoteDirectoryEdit->SetText(SessionData->GetRemoteDirectory());
@@ -3925,29 +3839,11 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     S3UrlStyleCombo->ItemIndex = 0;
   }
   S3RequesterPaysCheck->Checked = FSessionData->S3RequesterPays;
-  // S3CACertificateEdit->SetText(FSessionData->S3CACertificate);
   MinTlsVersionCombo->ItemIndex = TlsVersionToIndex(FSessionData->MinTlsVersion);
   MaxTlsVersionCombo->ItemIndex = TlsVersionToIndex(FSessionData->MaxTlsVersion);
-  // S3CredentialsEnvCheck->SetChecked(FSessionData->S3CredentialsEnv);
   UnicodeString S3ProfileValue = FSessionData->S3Profile;
   // Populate profile combo from AWS config files
   // "General S3" already added as item 0 during creation
-  // {
-  //   S3ProfileCombo->GetItems()->BeginUpdate();
-  //   SCOPE_EXIT
-  //   {
-  //     S3ProfileCombo->GetItems()->EndUpdate();
-  //   };
-  //   std::unique_ptr<TStrings> Profiles(GetS3Profiles());
-  //   for (int32_t Idx = 0; Idx < Profiles->GetCount(); ++Idx)
-  //   {
-  //     UnicodeString Prof = Profiles->GetString(Idx);
-  //     if (S3ProfileCombo->GetItems()->IndexOf(Prof) < 0)
-  //       S3ProfileCombo->GetItems()->Add(Prof);
-  //   }
-  // }
-  // S3ProfileCombo->SetText(S3ProfileValue.IsEmpty() ? GetMsg(NB_S3_GENERAL_NAME) : S3ProfileValue);
-  // S3ProfileCombo->Enabled = FSessionData->S3CredentialsEnv;
   S3SessionTokenEdit->SetText(FSessionData->S3SessionToken);
   S3RoleArnEdit->SetText(FSessionData->S3RoleArn);
   S3RoleSessionNameEdit->SetText(FSessionData->S3RoleSessionName);
@@ -3997,7 +3893,6 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
   TFarComboBox * ProxyMethodCombo = GetProxyMethodCombo();
   FProxyComboIndex = ProxyMethodToIndex(SessionData->GetProxyMethod(), ProxyMethodCombo->GetItems());
   ProxyMethodCombo->SetItemIndex(FProxyComboIndex);
-  // if (SessionData->GetProxyMethod() != pmSystem)
   {
     ProxyHostEdit->SetText(SessionData->GetProxyHost());
     ProxyPortEdit->SetAsInteger(SessionData->GetProxyPort());
@@ -4095,9 +3990,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
   AuthGSSAPICheck3->SetChecked(SessionData->GetAuthGSSAPI());
   GSSAPIFwdTGTCheck->SetChecked(SessionData->GetGSSAPIFwdTGT());
 
-  // UseOpensshCertCheck->SetChecked(SessionData->GetUseOpensshCertificate());
   OpensshCertEdit->SetText(SessionData->DetachedCertificate);
-  // OpensshKeyEdit->SetText(SessionData->GetOpensshPrivateKeyFile());
 
   // Bugs tab
 
@@ -4221,7 +4114,6 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
 
 #define TRISTATE(COMBO, PROP, MSG) \
       SessionData->Set##PROP(sb##PROP, static_cast<TAutoSwitch>(2 - (COMBO)->GetItemIndex()));
-    // SFTP_BUGS();
     SessionData->SetSFTPBug(sbSymlink, static_cast<TAutoSwitch>(2 - SFTPBugSymlinkCombo->GetItemIndex()));
     SessionData->SetSFTPBug(sbSignedTS, static_cast<TAutoSwitch>(2 - SFTPBugSignedTSCombo->GetItemIndex()));
 
@@ -4468,9 +4360,6 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
       SessionData->SetTlsCertificateFile(WebDAVTlsCertificateFileEdit->GetText());
 
 #undef TRISTATE
-    //SessionData->SetBug(sbIgnore1, static_cast<TAutoSwitch>(2 - BugIgnore1Combo->GetItemIndex()));
-    //SessionData->SetBug(sbPlainPW1, static_cast<TAutoSwitch>(2 - BugPlainPW1Combo->GetItemIndex()));
-    // SessionData->SetBug(sbRSA1, static_cast<TAutoSwitch>(2 - BugRSA1Combo->GetItemIndex()));
     SessionData->SetBug(sbHMAC2, static_cast<TAutoSwitch>(2 - BugHMAC2Combo->GetItemIndex()));
     SessionData->SetBug(sbDeriveKey2, static_cast<TAutoSwitch>(2 - BugDeriveKey2Combo->GetItemIndex()));
     SessionData->SetBug(sbRSAPad2, static_cast<TAutoSwitch>(2 - BugRSAPad2Combo->GetItemIndex()));
@@ -4688,9 +4577,6 @@ TFtps TSessionDialog::IndexToFtps(int32_t Index) const
 
 TFtps TSessionDialog::GetFtps() const
 {
-  // TFSProtocol AFSProtocol = GetFSProtocol();
-  // const int32_t Index = (((AFSProtocol == fsWebDAV) || (AFSProtocol == fsS3)) ? 1 : FtpEncryptionCombo->GetItemIndex());
-  // DEBUG_PRINTF("FFtpEncryptionComboIndex: %d", FFtpEncryptionComboIndex);
   const int32_t Index = FFtpEncryptionComboIndex;
   TFtps Ftps;
   switch (Index)
@@ -4710,7 +4596,6 @@ TFtps TSessionDialog::GetFtps() const
       Ftps = IndexToFtps(FFtpEncryptionComboIndex);
       break;
   }
-  // return static_cast<TFtps>(IndexToFtps(FtpEncryptionCombo->GetItemIndex()));
   return Ftps;
 }
 
@@ -4817,7 +4702,6 @@ bool TSessionDialog::CloseQuery()
       VerifyKey(PrivateKeyEdit->GetText(), false) &&
       // for tunnel key do not check SSH version as it is not configurable
       VerifyKey(TunnelPrivateKeyEdit->GetText(), true);*/
-    // DEBUG_PRINTF("CanClose2: %d", CanClose);
   }
 
   if (CanClose && !PasswordEdit->GetText().IsEmpty() &&
@@ -5057,7 +4941,6 @@ void TSessionDialog::S3CACertificateLoadClick(TFarButton * /*Sender*/, bool & Cl
         WinSCPPlugin->MoreMessageDialog(GetMsg(MSG_TITLE_WARNING),
           nullptr, qtWarning, qaOK);
       }
-      // S3CACertificateEdit->SetText(Content);
     }
     catch(Exception & E)
     {
@@ -5086,7 +4969,6 @@ void TSessionDialog::S3CACertificateSaveClick(TFarButton * /*Sender*/, bool & Cl
   {
     try
     {
-      // TFile::WriteAllText(FileName, S3CACertificateEdit->GetText());
     }
     catch(Exception & E)
     {
@@ -5174,7 +5056,6 @@ void TSessionDialog::OpensshCertFileBrowseClick(TFarButton * /*Sender*/, bool & 
 
 void TSessionDialog::FillCodePageEdit()
 {
-  // CodePageEditAdd(CP_UTF8);
   CodePageEdit->GetItems()->AddObject(L"65001 (UTF-8)",
     ToObj(nb::ToUIntPtr(65001)));
   CodePageEditAdd(CP_ACP);
@@ -5200,7 +5081,6 @@ int32_t TSessionDialog::AddTab(int32_t TabID, const UnicodeString & TabCaption)
   Tab->SetTabName(TabCaption);
   Tab->SetTab(TabID);
   Tab->SetBrackets(TabBrackets);
-  // SetTabCount(GetTabCount() + 1);
   Tab->SetCenterGroup(false);
   FTabs->Add(Tab);
   return GetItemIdx(Tab);
@@ -7384,7 +7264,6 @@ bool TFileSystemInfoDialog::Key(TFarDialogItem * Item, intptr_t KeyCode)
 {
   bool Result;
   const WORD Key = KeyCode & 0xFFFF;
-  // WORD ControlState = KeyCode >> 16;
   if ((Item == SpaceAvailablePathEdit) && (Key == VK_RETURN))
   {
     CheckSpaceAvailable();
@@ -9270,7 +9149,6 @@ bool TSynchronizeDialog::Key(TFarDialogItem * /*Item*/, intptr_t KeyCode)
 {
   bool Result = false;
   const WORD Key = KeyCode & 0xFFFF;
-  // const WORD ControlState = KeyCode >> 16;
   if ((Key == VK_ESCAPE) && FSynchronizing)
   {
     Stop();
@@ -9392,7 +9270,6 @@ TQueueDialog::TQueueDialog(gsl::not_null<TCustomFarPlugin *> AFarPlugin,
 {
   TFarDialog::InitDialog();
   SetSize(TPoint(80, 23)); // TODO: check actual configuration
-  // TRect CRect = GetClientRect();
   const int32_t ListHeight = GetClientSize().y - 4;
 
   SetCaption(GetMsg(NB_QUEUE_TITLE));
@@ -9496,7 +9373,6 @@ void TQueueDialog::OperationButtonClick(TFarButton * Sender,
 
 void TQueueDialog::OnIdle(TObject *, void *)
 {
-  // DEBUG_PRINTF("FarThreadId: %d, GetCurrentThreadId: %d", FarPlugin->GetFarThreadId(), GetCurrentThreadId());
   if (UpdateQueue())
   {
     LoadQueue();
