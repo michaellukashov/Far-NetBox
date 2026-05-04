@@ -48,7 +48,7 @@
 - [x] Review and improve static RTTI usage — **COMPLETE** (2026-04)
 - [x] Clean up OpenSSL sync scripts — **COMPLETE** (2026-04-17)
 - [ ] Add comprehensive documentation for all new features
-- [ ] Refactor monolithic CMakeLists.txt (see `REFACTORING_PLAN.md`)
+[x] Refactor monolithic CMakeLists.txt (see `REFACTORING_PLAN.md`) — **COMPLETE** (2026-05-04)
 
 ## Process
 
