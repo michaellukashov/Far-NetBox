@@ -152,3 +152,4 @@ cmake -S . -B build-RelWithDebugInfo -DOPT_USE_UNITY_BUILD=OFF
 
 - [User Guide](user-guide.md) — Protocol reference and internationalization
 - [Architecture](architecture.md) — Layered plugin architecture
+

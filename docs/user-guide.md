@@ -232,3 +232,4 @@ Far-NetBox is distributed in the hope that it will be useful, but without any wa
 
 - [Getting Started](getting-started.md) — Installation and first run
 - [Architecture](architecture.md) — Project structure and build system
+
