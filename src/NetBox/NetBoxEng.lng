@@ -1363,3 +1363,6 @@
 "General S3"
 "TLS/SSL"
 "TLS options"
+"&Tolerate non-encoded special characters in filenames"
+"&Canonicalize paths on the server"
+"&Use POSIX rename"

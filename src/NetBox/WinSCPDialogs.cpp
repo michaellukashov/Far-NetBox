@@ -1895,6 +1895,8 @@ private:
   TFarCheckBox * AuthGSSAPIKEXCheck{nullptr};
   TFarEdit * SFTPMinPacketSizeEdit{nullptr};
   TFarEdit * SFTPMaxPacketSizeEdit{nullptr};
+  TFarComboBox * SFTPRealPathCombo{nullptr};
+  TFarCheckBox * UsePosixRenameCheck{nullptr};
   TFarEdit * RekeyTimeEdit{nullptr};
   TFarEdit * RekeyDataEdit{nullptr};
   TFarRadioButton * IPAutoButton{nullptr};
@@ -1918,6 +1920,7 @@ private:
 
   TFarCheckBox * WebDAVCompressionCheck{nullptr};
 
+  TFarCheckBox * WebDavLiberalEscapingCheck{nullptr};
   TFarComboBox * S3UrlStyleCombo{nullptr};
   TFarComboBox * S3DefaultRegionCombo{nullptr};
   TFarCheckBox * S3RequesterPaysCheck{nullptr};
@@ -2476,6 +2479,19 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   }
   Text->SetEnabledFollow(SFTPMaxVersionCombo);
 
+  // SFTP RealPath and POSIX rename
+  Text = MakeOwnedObject<TFarText>(this);
+  Text->SetCaption(GetMsg(NB_LOGIN_SFTP_REAL_PATH));
+  SetNextItemPosition(ipRight);
+  SFTPRealPathCombo = MakeOwnedObject<TFarComboBox>(this);
+  SFTPRealPathCombo->SetDropDownList(true);
+  SFTPRealPathCombo->GetItems()->Add(GetMsg(NB_LOGIN_BUGS_AUTO));
+  SFTPRealPathCombo->GetItems()->Add(GetMsg(NB_LOGIN_BUGS_OFF));
+  SFTPRealPathCombo->GetItems()->Add(GetMsg(NB_LOGIN_BUGS_ON));
+  Text->SetEnabledFollow(SFTPRealPathCombo);
+
+  UsePosixRenameCheck = MakeOwnedObject<TFarCheckBox>(this);
+  UsePosixRenameCheck->SetCaption(GetMsg(NB_LOGIN_SFTP_POSIX_RENAME));
   SetNextItemPosition(ipNewLine);
 
   Separator = MakeOwnedObject<TFarSeparator>(this);
@@ -3234,6 +3250,8 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   WebDAVCompressionCheck = MakeOwnedObject<TFarCheckBox>(this);
   WebDAVCompressionCheck->SetCaption(GetMsg(NB_LOGIN_COMPRESSION));
 
+  WebDavLiberalEscapingCheck = MakeOwnedObject<TFarCheckBox>(this);
+  WebDavLiberalEscapingCheck->SetCaption(GetMsg(NB_LOGIN_WEBDAV_LIBERAL_ESC));
 
   // TLS client certificate
   SetNextItemPosition(ipNewLine);
@@ -3537,6 +3555,8 @@ void TSessionDialog::UpdateControls()
 
   // SFTP tab
   SftpTab->SetEnabled(aSftpProtocol);
+  SFTPRealPathCombo->SetEnabled(aSftpProtocol);
+  UsePosixRenameCheck->SetEnabled(aSftpProtocol);
 
   // FTP tab
   FtpTab->SetEnabled(aFtpProtocol || aFtpsProtocol);
@@ -3626,6 +3646,7 @@ void TSessionDialog::UpdateControls()
   // WebDAV tab
   WebDAVTab->SetEnabled(InternalWebDAVProtocol);
 
+  WebDavLiberalEscapingCheck->SetEnabled(InternalWebDAVProtocol);
   WebDAVTlsCertificateFileLabel->SetEnabled(InternalWebDAVProtocol);
   WebDAVTlsCertificateFileEdit->SetEnabled(InternalWebDAVProtocol);
   WebDAVTlsCertificateFileBrowseBtn->SetEnabled(InternalWebDAVProtocol);
@@ -3811,6 +3832,8 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
   SFTPMaxVersionCombo->SetItemIndex(nb::ToInt32(SessionData->GetSFTPMaxVersion()));
   SFTPMinPacketSizeEdit->SetAsInteger(SessionData->GetSFTPMinPacketSize());
   SFTPMaxPacketSizeEdit->SetAsInteger(SessionData->GetSFTPMaxPacketSize());
+  SFTPRealPathCombo->SetItemIndex(nb::ToInt32(2 - SessionData->SFTPRealPath));
+  UsePosixRenameCheck->SetChecked(SessionData->UsePosixRename);
 
   // FTP tab
   FtpUseMlsdCombo->SetItemIndex(nb::ToInt32(2 - SessionData->GetFtpUseMlsd()));
@@ -4031,6 +4054,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
   // WebDAV tab
   WebDAVCompressionCheck->SetChecked(SessionData->GetCompression());
   WebDAVTlsCertificateFileEdit->SetText(SessionData->GetTlsCertificateFile());
+  WebDavLiberalEscapingCheck->SetChecked(SessionData->WebDavLiberalEscaping);
 
 #undef TRISTATE
 
@@ -4153,6 +4177,8 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
       (SftpServerEdit->GetText() == SftpServerEdit->GetItems()->GetString(0)) ?
       UnicodeString() : SftpServerEdit->GetText());
     SessionData->SetSFTPMaxVersion(SFTPMaxVersionCombo->GetItemIndex());
+    SessionData->SetSFTPRealPath(static_cast<TAutoSwitch>(2 - SFTPRealPathCombo->GetItemIndex()));
+    SessionData->SetUsePosixRename(UsePosixRenameCheck->GetChecked());
     SessionData->SetSFTPMinPacketSize(SFTPMinPacketSizeEdit->GetAsInteger());
     SessionData->SetSFTPMaxPacketSize(SFTPMaxPacketSizeEdit->GetAsInteger());
 
@@ -4381,6 +4407,8 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     // WebDAV tab
     if (GetFSProtocol() == fsWebDAV)
       SessionData->SetCompression(WebDAVCompressionCheck->GetChecked());
+    if (GetFSProtocol() == fsWebDAV)
+      SessionData->SetWebDavLiberalEscaping(WebDavLiberalEscapingCheck->GetChecked());
     if (GetFSProtocol() == fsWebDAV)
       SessionData->SetTlsCertificateFile(WebDAVTlsCertificateFileEdit->GetText());
 

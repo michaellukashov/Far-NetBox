@@ -818,6 +818,7 @@ public:
   __property int32_t SFTPMaxVersion = { read = FSFTPMaxVersion, write = SetSFTPMaxVersion };
   __property uint32_t SFTPMaxPacketSize = { read = FSFTPMaxPacketSize, write = SetSFTPMaxPacketSize };
   __property TAutoSwitch SFTPRealPath = { read = FSFTPRealPath, write = SetSFTPRealPath };
+  RWPropertySimple<TAutoSwitch> SFTPRealPath{&FSFTPRealPath, nb::bind(&TSessionData::SetSFTPRealPath, this)};
   __property bool UsePosixRename = { read = FUsePosixRename, write = SetUsePosixRename };
   RWPropertySimple<bool> UsePosixRename{&FUsePosixRename, nb::bind(&TSessionData::SetUsePosixRename, this)};
 #if defined(__BORLANDC__)
