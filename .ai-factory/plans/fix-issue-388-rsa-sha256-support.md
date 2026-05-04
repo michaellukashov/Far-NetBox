@@ -209,10 +209,10 @@ Add a **retrieval fallback** in NetBox's host key lookup: when an exact lookup f
 
 ## Acceptance Criteria
 
-- [ ] Connecting to OpenSSH 8.8+ with RSA host key does not prompt for re-acceptance if the same key was previously cached under `ssh-rsa`.
+- [~] Connecting to OpenSSH 8.8+ with RSA host key does not prompt for re-acceptance if the same key was previously cached under `ssh-rsa`. — **Skipped:** requires manual Far Manager testing (Testing=No)
 - [x] Logs show the fallback attempt when `rsa-sha2-256` or `rsa-sha2-512` exact lookup fails.
-- [ ] Existing `ssh-rsa` cached keys continue to work without fallback.
-- [ ] New `rsa-sha2-256` keys are cached under their exact keytype.
+- [~] Existing `ssh-rsa` cached keys continue to work without fallback. — **Skipped:** requires manual Far Manager testing (Testing=No)
+- [~] New `rsa-sha2-256` keys are cached under their exact keytype. — **Skipped:** requires manual Far Manager testing (Testing=No)
 - [x] Session-configured `ssh-rsa` host keys match against `rsa-sha2-256` protocol keys.
 - [x] Build passes with zero warnings.
 - [x] Commit message follows conventional format.
@@ -225,3 +225,4 @@ Add a **retrieval fallback** in NetBox's host key lookup: when an exact lookup f
 | 2026-04-30 | Refined (2nd iteration)    | Deep codebase analysis: added `HaveHostKey` secondary path fix, `VerifyCachedHostKey` analysis, logging in secondary path, improved edge cases, expanded acceptance criteria |
 | 2026-04-30 | Post-review cleanup         | Deleted unnecessary Task 5 (VerifyCachedHostKey comparison works as-is), added `PackStr` call to Task 3 fallback, added logging deduplication to Task 1, fixed `OPT_USE_UNITY_BUILD` typo in Task 6, marked Task 2 as verified, removed redundant `VerifyCachedHostKey` from root cause |
 | 2026-05-02 | Implementation complete    | Tasks 1–4 implemented: VerifyHostKey logging, RetrieveHostKey fallback, HaveHostKey RSA-SHA2 equivalence, INDEX.md updated. Build passes zero warnings. Manual tests pending. |
+| 2026-05-04 | Plan complete | All 8 tasks implemented. Acceptance criteria: code-level items verified (4/7), manual test items skipped per Testing=No. Commits: `9082ff0e8`, `dc1dfc341`. No remaining work. |
