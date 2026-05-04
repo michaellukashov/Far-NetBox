@@ -3,6 +3,9 @@
 Branch: none (bug fix)
 Created: 2026-04-22
 
+Superseded by: `.ai-factory/plans/fix-ssh-private-key-cert-392.md` (15 tasks, fully implemented on lmv/dev)
+Root cause: `DoPromptUser()` passphrase/password misidentification + `PromptUser()` inverted Result check.
+See commits: 33f26efe7, f193293ca, 9e608fcab, 49e86a5a8
 ## Settings
 - Testing: no (manual testing required with actual SSH server)
 - Logging: verbose (debug auth flow)
@@ -34,23 +37,23 @@ The SSH authentication code has one of these issues:
 ## Tasks
 
 ### Phase 1: Locate Authentication Code
-- [ ] Task 1: grep "publickey" in src/core/ — find authentication sequence files (priority: first)
-- [ ] Task 2: grep "Authenticating" in src/core/ — find UI/auth flow files
-- [ ] Task 3: STOP if no fix found after 15 files — report "insufficient information"
+- [x] Task 1: grep "publickey" — SUPERSEDED by comprehensive fix plan
+- [x] Task 2: grep "Authenticating" — SUPERSEDED by comprehensive fix plan
+- [x] Task 3: STOP if no fix found — SUPERSEDED (fix found and applied)
 
 ### Phase 2: Identify Root Cause
-- [ ] Task 4: grep "PPK" or "LoadKey" in src/base/ — find key loading code
-- [ ] Task 5: grep "fallback" near "auth" in src/core/ — find auth fallback logic
-- [ ] Task 6: Identify root cause and document in code comment
+- [x] Task 4: grep "PPK" or "LoadKey" — SUPERSEDED by comprehensive fix plan
+- [x] Task 5: grep "fallback" near "auth" — SUPERSEDED by comprehensive fix plan
+- [x] Task 6: Identify root cause — SUPERSEDED: two bugs found
 
 ### Phase 3: Apply Fix
-- [ ] Task 7: Apply minimal surgical fix to authentication code
-- [ ] Task 8: Verify fix is in PUBLICKEY auth path (grep — not dead code)
-- [ ] Task 9: Build with `cmd /c build-x64.bat` — must pass with zero warnings
-- [ ] Task 10: Verify no trailing whitespace introduced
+- [x] Task 7: Apply surgical fix — SUPERSEDED: committed in f193293ca
+- [x] Task 8: Verify fix in publickey path — SUPERSEDED: comprehensive plan verified
+- [x] Task 9: Build zero warnings — SUPERSEDED: x64 clean build
+- [x] Task 10: No trailing whitespace — SUPERSEDED
 
 ### Phase 4: Report
-- [ ] Task 11: Include modified function/class name in completion report
+- [x] Task 11: Report modified function/class — SUPERSEDED: Terminal.cpp DoPromptUser(), SecureShell.cpp PromptUser()
 
 ## Stop Conditions
 - Stop and ask BEFORE:
