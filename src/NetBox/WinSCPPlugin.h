@@ -50,7 +50,7 @@ protected:
   bool LoggingConfigurationDialog();
   bool ConfirmationsConfigurationDialog();
   bool IntegrationConfigurationDialog();
-  bool MasterPasswordConfigurationDialog();
+  bool SecurityConfigurationDialog();
   void AboutDialog();
 
 protected:

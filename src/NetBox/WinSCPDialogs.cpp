@@ -772,8 +772,6 @@ bool TWinSCPPlugin::QueueConfigurationDialog()
   TFarCheckBox * QueueAutoPopupCheck = MakeOwnedObject<TFarCheckBox>(Dialog);
   QueueAutoPopupCheck->SetCaption(GetMsg(NB_TRANSFER_AUTO_POPUP));
 
-  TFarCheckBox * RememberPasswordCheck = MakeOwnedObject<TFarCheckBox>(Dialog);
-  RememberPasswordCheck->SetCaption(GetMsg(NB_TRANSFER_REMEMBER_PASSWORD));
 
   TFarCheckBox * QueueBeepCheck = MakeOwnedObject<TFarCheckBox>(Dialog);
   QueueBeepCheck->SetCaption(GetMsg(NB_TRANSFER_QUEUE_BEEP));
@@ -784,7 +782,6 @@ bool TWinSCPPlugin::QueueConfigurationDialog()
   QueueTransferLimitEdit->SetAsInteger(FarConfiguration->QueueTransfersLimit());
   QueueCheck->SetChecked(FarConfiguration->GetDefaultCopyParam().GetQueue());
   QueueAutoPopupCheck->SetChecked(FarConfiguration->GetQueueAutoPopup());
-  RememberPasswordCheck->SetChecked(GetGUIConfiguration()->GetSessionRememberPassword());
   QueueBeepCheck->SetChecked(FarConfiguration->GetQueueBeep());
 
   const bool Result = (Dialog->ShowModal() == brOK);
@@ -799,7 +796,6 @@ bool TWinSCPPlugin::QueueConfigurationDialog()
       FarConfiguration->SetQueueTransfersLimit(QueueTransferLimitEdit->GetAsInteger());
       CopyParam.SetQueue(QueueCheck->GetChecked());
       FarConfiguration->SetQueueAutoPopup(QueueAutoPopupCheck->GetChecked());
-      GetGUIConfiguration()->SetSessionRememberPassword(RememberPasswordCheck->GetChecked());
       FarConfiguration->SetQueueBeep(QueueBeepCheck->GetChecked());
 
       GetGUIConfiguration()->SetDefaultCopyParam(CopyParam);
@@ -1295,12 +1291,138 @@ bool TMasterPasswordDialog::Execute()
   return false;
 }
 
-bool TWinSCPPlugin::MasterPasswordConfigurationDialog()
+
+bool TWinSCPPlugin::SecurityConfigurationDialog()
 {
+  AppLogFmt(L"SecurityConfigurationDialog: opening");
+
+  if (WinConfiguration->GetUseMasterPassword())
+  {
+    AppLogFmt(L"WARNING: RecryptPasswords MSVC stub — stored passwords will not be recrypted on master password change");
+  }
+
+  std::unique_ptr<TWinSCPDialog> Dialog(std::make_unique<TWinSCPDialog>(this));
+  Dialog->SetSize(TPoint(74, 22));
+  Dialog->SetCaption(FORMAT("%s - %s",
+    GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_SECURITY))));
+  Dialog->SetDialogGuid(&SecurityConfigurationDialogGuid);
+
+  // Master Password
+  MakeOwnedObject<TFarSeparator>(Dialog.get())->SetCaption(GetMsg(NB_SECURITY_MASTER_PASSWORD_GROUP));
+
+  TFarCheckBox * UseMpCheck = MakeOwnedObject<TFarCheckBox>(Dialog.get());
+  UseMpCheck->SetCaption(GetMsg(NB_SECURITY_USE_MASTER_PASSWORD));
+
+  TFarButton * ChangeMpBtn = MakeOwnedObject<TFarButton>(Dialog.get());
+  ChangeMpBtn->SetCaption(GetMsg(NB_SECURITY_CHANGE_MASTER_PASSWORD));
+
+  // Session Password
+  MakeOwnedObject<TFarSeparator>(Dialog.get())->SetCaption(GetMsg(NB_SECURITY_SESSION_PASSWORD_GROUP));
+
+  TFarCheckBox * RememberPwdCheck = MakeOwnedObject<TFarCheckBox>(Dialog.get());
+  RememberPwdCheck->SetCaption(GetMsg(NB_SECURITY_REMEMBER_PASSWORD));
+
+  // Trusted Host CA
+  MakeOwnedObject<TFarSeparator>(Dialog.get())->SetCaption(GetMsg(NB_SECURITY_SSH_HOST_CA_GROUP));
+
+  TFarCheckBox * FromPuTTYCheck = MakeOwnedObject<TFarCheckBox>(Dialog.get());
+  FromPuTTYCheck->SetCaption(GetMsg(NB_SECURITY_SSH_HOST_CA_FROM_PUTTY));
+
+  TFarListBox * CaListBox = MakeOwnedObject<TFarListBox>(Dialog.get());
+  CaListBox->SetNoBox(true);
+  CaListBox->SetHeight(6);
+
+  TFarButton * AddBtn = MakeOwnedObject<TFarButton>(Dialog.get());
+  AddBtn->SetCaption(GetMsg(NB_SECURITY_SSH_HOST_CA_ADD_BTN));
+
+  TFarButton * EditBtn = MakeOwnedObject<TFarButton>(Dialog.get());
+  EditBtn->SetCaption(GetMsg(NB_SECURITY_SSH_HOST_CA_EDIT_BTN));
+
+  TFarButton * RemoveBtn = MakeOwnedObject<TFarButton>(Dialog.get());
+  RemoveBtn->SetCaption(GetMsg(NB_SECURITY_SSH_HOST_CA_REMOVE_BTN));
+
+  Dialog->AddStandardButtons();
+
+  // Initial values
   const bool UseMP = WinConfiguration->GetUseMasterPassword();
-  std::unique_ptr<TMasterPasswordDialog> Dialog(std::make_unique<TMasterPasswordDialog>(this, UseMP));
-  return Dialog->Execute();
+  UseMpCheck->SetChecked(UseMP);
+  ChangeMpBtn->SetEnabled(UseMP);
+  RememberPwdCheck->SetChecked(GetGUIConfiguration()->GetSessionRememberPassword());
+  const bool FromPuTTY = GetConfiguration()->SshHostCAsFromPuTTY;
+  FromPuTTYCheck->SetChecked(FromPuTTY);
+
+  // Copy CA list for editing
+  TSshHostCA::TList LocalCaList;
+  const TSshHostCAList * SrcList = GetConfiguration()->GetActiveSshHostCAList();
+  if (SrcList)
+  {
+    for (int32_t i = 0; i < SrcList->GetCount(); ++i)
+    {
+      LocalCaList.push_back(*SrcList->Get(i));
+    }
+  }
+
+  auto PopulateCaList = [&]() {
+    CaListBox->GetItems()->Clear();
+    for (const auto & Ca : LocalCaList)
+    {
+      UnicodeString Display = Ca.Name;
+      if (!Ca.ValidityExpression.IsEmpty())
+      {
+        Display += L"  (" + Ca.ValidityExpression + L")";
+      }
+      CaListBox->GetItems()->AddObject(Display, nullptr);
+    }
+  };
+  PopulateCaList();
+
+  CaListBox->SetEnabled(!FromPuTTY);
+  AddBtn->SetEnabled(!FromPuTTY);
+  EditBtn->SetEnabled(!FromPuTTY && CaListBox->GetItems()->GetCount() > 0);
+  RemoveBtn->SetEnabled(!FromPuTTY && CaListBox->GetItems()->GetCount() > 0);
+
+  if (Dialog->ShowModal() != brOK)
+  {
+    AppLogFmt(L"SecurityConfigurationDialog: cancelled");
+    return false;
+  }
+
+  bool Changed = false;
+
+  if (RememberPwdCheck->GetChecked() != GetGUIConfiguration()->GetSessionRememberPassword())
+  {
+    GetGUIConfiguration()->SetSessionRememberPassword(RememberPwdCheck->GetChecked());
+    AppLogFmt(L"SecurityConfigurationDialog: SessionRememberPassword=%d", RememberPwdCheck->GetChecked() ? 1 : 0);
+    Changed = true;
+  }
+
+
+  if (FromPuTTYCheck->GetChecked() != GetConfiguration()->SshHostCAsFromPuTTY)
+  {
+    GetConfiguration()->SshHostCAsFromPuTTY = FromPuTTYCheck->GetChecked();
+    AppLogFmt(L"SecurityConfigurationDialog: SshHostCAsFromPuTTY=%d", FromPuTTYCheck->GetChecked() ? 1 : 0);
+    Changed = true;
+  }
+
+
+  if (!FromPuTTYCheck->GetChecked())
+  {
+    std::unique_ptr<TSshHostCAList> NewCaList(std::make_unique<TSshHostCAList>(LocalCaList));
+    GetConfiguration()->SetSshHostCAList(NewCaList.get());
+    AppLogFmt(L"SecurityConfigurationDialog: CA list saved (%d entries)", static_cast<int>(LocalCaList.size()));
+    Changed = true;
+  }
+
+  if (Changed)
+  {
+    GetConfiguration()->DoSave(false, false);
+    AppLogFmt(L"SecurityConfigurationDialog: settings saved");
+  }
+
+  AppLogFmt(L"SecurityConfigurationDialog: OK, changed=%d", Changed ? 1 : 0);
+  return Changed;
 }
+
 class TAboutDialog final : public TFarDialog
 {
 public:

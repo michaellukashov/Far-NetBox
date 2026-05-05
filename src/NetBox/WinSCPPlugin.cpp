@@ -152,7 +152,7 @@ bool TWinSCPPlugin::ConfigureEx(const GUID * /* Item */)
   const int32_t MTransferEditor = MenuItems->AddString(GetMsg(NB_CONFIG_TRANSFER_EDITOR));
   const int32_t MLogging = MenuItems->AddString(GetMsg(NB_CONFIG_LOGGING));
   const int32_t MIntegration = MenuItems->AddString(GetMsg(NB_CONFIG_INTEGRATION));
-  const int32_t MMasterPassword = MenuItems->AddString(GetMsg(NB_MASTER_PASSWORD_CAPTION));
+  const int32_t MSecurity = MenuItems->AddString(GetMsg(NB_CONFIG_SECURITY));
   MenuItems->AddSeparator();
   const int32_t MAbout = MenuItems->AddString(GetMsg(NB_CONFIG_ABOUT));
 
@@ -227,13 +227,13 @@ bool TWinSCPPlugin::ConfigureEx(const GUID * /* Item */)
           Change = true;
         }
       }
-  else if (Result == MMasterPassword)
-  {
-    if (MasterPasswordConfigurationDialog())
-    {
-      Change = true;
-    }
-  }
+      else if (Result == MSecurity)
+      {
+        if (SecurityConfigurationDialog())
+        {
+          Change = true;
+        }
+      }
       else if (Result == MAbout)
       {
         AboutDialog();

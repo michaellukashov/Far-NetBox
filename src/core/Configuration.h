@@ -477,6 +477,7 @@ public:
   __property TSshHostCAList * ActiveSshHostCAList = { read = GetActiveSshHostCAList };
 //  const ROProperty<TSshHostCAList *> ActiveSshHostCAList{nb::bind(&TConfiguration::GetActiveSshHostCAList, this)};
   __property bool SshHostCAsFromPuTTY = { read = FSshHostCAsFromPuTTY, write = FSshHostCAsFromPuTTY };
+  bool& SshHostCAsFromPuTTY{FSshHostCAsFromPuTTY};
   __property int32_t HttpsCertificateValidation = { read = FHttpsCertificateValidation, write = FHttpsCertificateValidation };
   int32_t& HttpsCertificateValidation{FHttpsCertificateValidation};
   __property bool HttpsSecureChannel = { read = FHttpsSecureChannel, write = FHttpsSecureChannel };
