@@ -89,19 +89,19 @@ These are GUI-specific and cannot be replicated in a Far Manager text-mode plugi
 
 ## Phased Implementation Plan
 
-### Phase 1: Dialog UX & WinSCP Bug Fix Alignment (Foundation)
+### Phase 1: Dialog UX & Upstream Fix Port (Foundation)
 
-**Goal:** Close the most impactful gap — dialog behavior and upstream bug fixes. Low risk, high user value.
+fc|**Goal:** Complete dialog UX alignment with WinSCP patterns and proactively port upstream bug fixes. Previously blocking crash bugs (#497 stack overflow, #391 DST, #392 auth, #508 second-file-open) are **already fixed** — see RESEARCH.md audit session 2026-05-04. Phase 1 is now low-risk UX polish + proactive maintenance, not urgent fire-fighting.
 
-**Affected files:** `src/NetBox/WinSCPDialogs.cpp`, `src/NetBox/WinSCPFileSystem.cpp`, `src/core/Terminal.cpp`, `src/core/SecureShell.cpp`
+er|**Affected files:** `src/NetBox/WinSCPDialogs.cpp`, `src/NetBox/WinSCPFileSystem.cpp`, `src/core/Terminal.cpp`, `src/core/SecureShell.cpp`
 
-- [ ] **Task 1.1: Port WinSCP upstream bug fixes**
-  - Audit WinSCP 6.5.6 `core/Terminal.cpp` and `core/SecureShell.cpp` for fixes not in NetBox
-  - Focus on: timestamp handling, transfer retry logic, SCP cancellation, auth flow
-  - Cross-reference with NetBox's existing fix history (Issues #391, #392, #511, etc.)
-  - Files: `src/core/Terminal.cpp`, `src/core/SecureShell.cpp`
-  - LOG: `FTerminal->LogEvent(L"WinSCP upstream fix port: <description>")`
-  - Blocked by: none
+ql|- [ ] **Task 1.1: Proactively port WinSCP upstream bug fixes**
+sv|  - Audit WinSCP 6.5.6 `core/Terminal.cpp` and `core/SecureShell.cpp` for fixes not yet in NetBox
+br|  - Focus on: transfer retry logic, edge-case auth flows, protocol handshake robustness
+ic|  - Cross-reference with NetBox's existing fix history; skip already-ported fixes (#391, #392, #511, etc.)
+fu|  - Files: `src/core/Terminal.cpp`, `src/core/SecureShell.cpp`
+mq|  - LOG: `FTerminal->LogEvent(L"WinSCP upstream fix port: <description>")`
+dd|  - Blocked by: none
 
 - [ ] **Task 1.2: Complete dialog control alignment**
   - Finish `winscp-dialog-alignment.md` plan items (S3 tab, TLS tab, auth enablement)
@@ -400,4 +400,5 @@ After each phase:
 - 2026-05-04: Initial roadmap created based on comprehensive WinSCP vs NetBox gap analysis
 - 2026-05-04: Discovered NetBox already has sync, queue, custom commands, editor, bookmarks, import/export — removed from plan
 - 2026-05-04: Scoped 12 genuine gaps across 5 phases + deferred scripting to v2.0
+- 2026-05-04: Post-creation audit discovered 4 crash/data-integrity bugs (#497, #391, #392, #508) already fixed in commits Apr 26–May 03. Reframed Phase 1 from "urgent bug fixes" to "proactive upstream porting + UX polish". Only silent mode remains genuinely open.
 - 2026-05-04: Integrated with existing ROADMAP.md milestones (v1.2 complete, v1.3 orthogonal, v2.0 deferred)
