@@ -4,6 +4,9 @@
 
 #include <Common.h>
 
+#undef min
+#undef max
+#include <algorithm>
 #include "FileOperationProgress.h"
 #include "Interface.h"
 
@@ -14,6 +17,83 @@ TFileOperationStatistics::TFileOperationStatistics() noexcept
 #if defined(__BORLANDC__)
   memset(this, 0, sizeof(*this));
 #endif // defined(__BORLANDC__)
+}
+
+TFileOperationError::TFileOperationError(
+  const UnicodeString & AFileName,
+  const UnicodeString & AErrorMessage,
+  TOperationSide ASide,
+  TFileOperationErrorCategory ACategory) :
+  FileName(AFileName),
+  ErrorMessage(AErrorMessage),
+  Timestamp(Now()),
+  Side(ASide),
+  Category(ACategory)
+{
+}
+
+void TFileOperationErrorLog::AddError(
+  const UnicodeString & FileName,
+  const UnicodeString & ErrorMessage,
+  TOperationSide Side,
+  TFileOperationErrorCategory Category)
+{
+  std::lock_guard<std::mutex> lock(FMutex);
+  FErrors.emplace_back(FileName, ErrorMessage, Side, Category);
+}
+
+void TFileOperationErrorLog::Clear()
+{
+  std::lock_guard<std::mutex> lock(FMutex);
+  FErrors.clear();
+}
+
+bool TFileOperationErrorLog::HasErrors() const
+{
+  std::lock_guard<std::mutex> lock(FMutex);
+  return !FErrors.empty();
+}
+
+size_t TFileOperationErrorLog::GetErrorCount() const
+{
+  std::lock_guard<std::mutex> lock(FMutex);
+  return FErrors.size();
+}
+
+const std::vector<TFileOperationError> & TFileOperationErrorLog::GetErrors() const
+{
+  std::lock_guard<std::mutex> lock(FMutex);
+  return FErrors;
+}
+
+UnicodeString TFileOperationErrorLog::GenerateReport() const
+{
+  std::lock_guard<std::mutex> lock(FMutex);
+
+  if (FErrors.empty())
+    return L"No errors occurred.";
+
+  const size_t MaxDetailedErrors = 100;
+  UnicodeString Report = FORMAT(L"File Operation Errors: %d total\n\n", FErrors.size());
+
+  const size_t DetailCount = (std::min)(FErrors.size(), MaxDetailedErrors);
+  for (size_t i = 0; i < DetailCount; ++i)
+  {
+    const auto & Error = FErrors[i];
+    Report += FORMAT(L"[%s] %s (%s)\n  %s\n\n",
+      FormatDateTime(L"yyyy-mm-dd hh:nn:ss", Error.Timestamp),
+      Error.FileName,
+      Error.Side == osLocal ? L"Local" : L"Remote",
+      Error.ErrorMessage);
+  }
+
+  if (FErrors.size() > MaxDetailedErrors)
+  {
+    Report += FORMAT(L"\n... and %d more errors (truncated for readability)\n",
+      FErrors.size() - MaxDetailedErrors);
+  }
+
+  return Report;
 }
 
 
@@ -161,6 +241,7 @@ void TFileOperationProgressType::DoClear(bool Batch, bool Speed)
   FSuspended = false;
 
   ClearTransfer();
+  FErrorLog.Clear();
 }
 
 void TFileOperationProgressType::Clear()

@@ -7,8 +7,13 @@
 #include "Configuration.h"
 #include "CopyParam.h"
 #include "Exceptions.h"
-#if defined(__BORLANDC__)
+#include "Exceptions.h"
+
 #include <vector>
+#include <mutex>
+
+#if defined(__BORLANDC__)
+// already included unconditionally above
 #endif // defined(__BORLANDC__)
 
 class TFileOperationProgressType;
@@ -31,6 +36,55 @@ using TFileOperationFinishedEvent = nb::FastDelegate7<void,
   TFileOperation /*Operation*/, TOperationSide /*Side*/, bool /*Temp*/,
   const UnicodeString & /*FileName*/, bool /*Success*/, bool /*NotCancelled*/, TOnceDoneOperation & /*OnceDoneOperation*/>;
 
+
+enum class TFileOperationErrorCategory
+{
+  NetworkError,
+  PermissionDenied,
+  ResourceError,
+  FileNotFound,
+  Other
+};
+
+struct TFileOperationError
+{
+  UnicodeString FileName;
+  UnicodeString ErrorMessage;
+  TDateTime Timestamp;
+  TOperationSide Side;
+  TFileOperationErrorCategory Category;
+
+  TFileOperationError() = default;
+  TFileOperationError(
+    const UnicodeString & AFileName,
+    const UnicodeString & AErrorMessage,
+    TOperationSide ASide,
+    TFileOperationErrorCategory ACategory = TFileOperationErrorCategory::Other);
+};
+
+class TFileOperationErrorLog
+{
+public:
+  TFileOperationErrorLog() = default;
+  ~TFileOperationErrorLog() = default;
+
+  void AddError(
+    const UnicodeString & FileName,
+    const UnicodeString & ErrorMessage,
+    TOperationSide Side,
+    TFileOperationErrorCategory Category = TFileOperationErrorCategory::Other);
+
+  void Clear();
+  bool HasErrors() const;
+  size_t GetErrorCount() const;
+  const std::vector<TFileOperationError> & GetErrors() const;
+
+  UnicodeString GenerateReport() const;
+
+private:
+  std::vector<TFileOperationError> FErrors;
+  mutable std::mutex FMutex;
+};
 class TFileOperationStatistics final : public TObject
 {
 public:
@@ -122,6 +176,7 @@ private:
   TPersistence FPersistence{};
   TCriticalSection FSection;
   TCriticalSection FUserSelectionsSection;
+  TFileOperationErrorLog FErrorLog;
   // Lock ordering: When acquiring both FSection and Other.FSection,
   // there is no established address-based ordering. Assign() is the only
   // dual-acquisition site; TCriticalSection is recursive, preventing
@@ -289,6 +344,16 @@ public:
   void Restore(const TPersistence & Persistence);
   bool IsIndeterminate() const;
   bool IsTransfer() const;
+
+  TFileOperationErrorLog & GetErrorLog() { return FErrorLog; }
+  void AddOperationError(
+    const UnicodeString & FileName,
+    const UnicodeString & ErrorMessage,
+    TOperationSide Side,
+    TFileOperationErrorCategory Category = TFileOperationErrorCategory::Other)
+  {
+    FErrorLog.AddError(FileName, ErrorMessage, Side, Category);
+  }
 
   static bool IsIndeterminateOperation(TFileOperation Operation);
   static bool IsTransferOperation(TFileOperation Operation);
