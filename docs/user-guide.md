@@ -207,6 +207,35 @@ The `ISO8601ToDate` function parses ISO 8601 formatted timestamps commonly used 
 
 This enables accurate timestamp comparison and synchronization across protocols.
 
+
+## Silent Mode
+
+NetBox supports a silent mode for file operations that eliminates blocking confirmation dialogs and enables continue-on-error behavior with detailed error reporting.
+
+### When to Use Silent Mode
+
+- **Automation and scripting**: Run file operations without user intervention
+- **Batch operations**: Transfer large numbers of files without per-file prompts
+- **Deadlock prevention**: Avoid UI deadlocks when the Far Manager window cannot respond
+
+### Configuration
+
+Silent mode is controlled by the `SilentMode` configuration flag. When enabled:
+- No confirmation dialogs appear during file transfers
+- File operations always overwrite existing files
+- Errors are collected instead of aborting the operation
+- A detailed error report is generated after operations complete
+
+The setting is global (applies to all sessions) and persists across application restarts. Default is `false` (interactive mode).
+
+### Error Reporting
+
+When silent mode is active and errors occur:
+1. Errors are collected with file path, error message, operation side, and timestamp
+2. After operations complete, an error report is logged and displayed
+3. Reports are truncated after 100 detailed errors for readability
+
+See [Silent Mode Documentation](silent-mode.md) for complete details.
 ## Links
 
 - Project main page: [https://github.com/michaellukashov/Far-NetBox](https://github.com/michaellukashov/Far-NetBox)
