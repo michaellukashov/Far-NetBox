@@ -285,34 +285,33 @@ Add error log instance to progress tracking so file operations can collect error
 ---
 
 ### Phase 3: Silent Mode Logic Integration
+me|#### Task 7: Modify EffectiveBatchOverwrite for silent mode
+ft|**Files:**
+tp|- `src/core/Terminal.cpp` (line ~3285: `EffectiveBatchOverwrite()`)
 
-#### Task 7: Modify EffectiveBatchOverwrite for silent mode
-**Files:**
-- `src/core/Terminal.cpp` (lines 3222-3260)
+cx|**Description:**
+lw|Update `TTerminal::EffectiveBatchOverwrite()` to return `boAll` (overwrite all) when silent mode is active, bypassing all user prompts. This is the first line of defense -- it prevents confirmation dialogs before they are reached.
 
-**Description:**
-Update `TTerminal::EffectiveBatchOverwrite()` to return `boAll` (overwrite all) when silent mode is active, bypassing all user prompts.
+qt|**Implementation:**
+lt|- Add check at the beginning of `EffectiveBatchOverwrite()`:
+nn|  ```cpp
+ta|  TBatchOverwrite TTerminal::EffectiveBatchOverwrite(
+sy|    const UnicodeString & ASourceFullFileName,
+rm|    const TCopyParamType * CopyParam,
+ed|    int32_t Params,
+ie|    TFileOperationProgressType * AOperationProgress,
+vl|    bool Special) const
+rz|  {
+dn|    // Silent mode: never prompt, always overwrite
+ea|    if (FConfiguration->GetSilentMode())
+cb|    {
+ue|      LogEvent(1, L"Silent mode active: auto-overwrite enabled");
+dj|      return boAll;
+du|    }
 
-**Implementation:**
-- Add check at the beginning of `EffectiveBatchOverwrite()`:
-  ```cpp
-  TBatchOverwrite TTerminal::EffectiveBatchOverwrite(
-    const UnicodeString & ASourceFullFileName,
-    const TCopyParamType * CopyParam,
-    int32_t Params,
-    TFileOperationProgressType * AOperationProgress,
-    bool Special) const
-  {
-    // Silent mode: never prompt, always overwrite
-    if (FConfiguration->GetSilentMode())
-    {
-      LogEvent(1, L"Silent mode active: auto-overwrite enabled");
-      return boAll;
-    }
-    
-    // ... existing logic
-  }
-  ```
+uw|    // ... existing logic
+ct|  }
+xa|  ```
 
 **Logging:**
 - `DEBUG: Silent mode active: auto-overwrite enabled` (level 2 = DEBUG)
@@ -400,107 +399,59 @@ Key locations:
 
 ### Phase 4: Continue-on-Error Implementation
 
-#### Task 10: Wrap file operation loops with error collection
-**Files:**
-- `src/core/Terminal.cpp` (file operation methods)
+zs|#### Task 10: Modify FileOperationLoopQuery for silent mode continue-on-error
+ft|**Files:**
+hp|- `src/core/Terminal.cpp` (line ~2657: `FileOperationLoopQuery()`)
 
-**Description:**
-Modify file operation loops to catch exceptions, log errors to error log, and continue processing remaining files when silent mode is active.
+cx|**Description:**
+wy|Modify `FileOperationLoopQuery()` -- the single chokepoint where all file operation exceptions trigger interactive prompts -- to support silent mode. When silent mode is active, instead of calling `QueryUserException()` (which blocks for user input), collect the error and skip the file.
 
-**Implementation:**
-Wrap individual file operations in try-catch blocks:
-```cpp
-for (int32_t Index = 0; Index < FileList->GetCount(); ++Index)
-{
-  const UnicodeString FileName = FileList->GetString(Index);
-  try
-  {
-    // ... existing file operation code
-  }
-  catch (Exception & E)
-  {
-    if (FConfiguration->GetSilentMode())
-    {
-      // Silent mode: log error and continue
-      const UnicodeString ErrorMsg = TranslateExceptionMessage(&E);
-      OperationProgress->AddOperationError(
-        FileName, ErrorMsg, OperationProgress->GetSide(), GetCurrentProtocolName());
-      LogEvent(0, FORMAT(L"Silent mode: File operation failed for [%s]: %s",
-        FileName, ErrorMsg));
-      // Continue to next file
-    }
-    else
-    {
-      // Interactive mode: re-throw for user handling
-      throw;
-    }
-  }
-}
-```
+qt|**Implementation:**
+tm|Add silent mode check at the top of `FileOperationLoopQuery()`, before the prompt logic:
+pb|```cpp
+rh|bool TTerminal::FileOperationLoopQuery(
+lu|  Exception & E, TFileOperationProgressType * AOperationProgress,
+ct|  const UnicodeString & Message, uint32_t AFlags,
+ec|  const UnicodeString & /*SpecialRetry*/, const UnicodeString & /*HelpKeyword*/)
+ec|{
+ym|  bool Result{false};
+jd|  Log->AddException(&E);
+yd|
+jw|  // Silent mode: collect error, skip file, continue
+kv|  if (FConfiguration->GetSilentMode())
+ur|  {
+gl|    const UnicodeString ErrorMsg = TranslateExceptionMessage(&E);
+ak|    OperationProgress->AddOperationError(
+fe|      /*FileName extracted from Message or context*/,
+hl|      ErrorMsg, OperationProgress->GetSide(), L"");
+td|    LogEvent(0, L"Silent mode: Skipping file after error: " + ErrorMsg);
+aa|    throw ESkipFile(&E, Message);
+kg|  }
+ed|
+wm|  // ... existing interactive prompt logic
+ib|}
+rq|```
 
-Apply to:
-- `TTerminal::CopyToLocal()` file loop
-- `TTerminal::CopyToRemote()` file loop
-- `TTerminal::DeleteFiles()` file loop
-- `TTerminal::MoveFile()` operations
+gs|**Key Design Points:**
+zb|- Single point of modification -- all 20+ `FILE_OPERATION_LOOP_END` macro call sites benefit
+al|- Uses existing `ESkipFile` exception to continue to next file (standard NetBox/WinSCP pattern)
+hj|- Error collected via `OperationProgress->AddOperationError()` (Task 6 integration)
+sr|- No changes to `FILE_OPERATION_LOOP_END` macro itself -- preserves existing interactive behavior
 
-**Logging:**
-- `WARN: Silent mode: File operation failed for [FileName]: [ErrorMessage]` (level 0 = WARN)
-- `DEBUG: Silent mode: Continuing to next file after error` (level 2 = DEBUG)
-- `INFO: Silent mode: Completed operation with [N] errors out of [M] files` (level 1 = INFO)
+gs|**Logging:**
+zb|- `WARN: Silent mode: Skipping file after error: [ErrorMessage]` (level 0 = WARN)
+al|- `DEBUG: Silent mode: Error collected for [FileName]` (level 2 = DEBUG)
+hj|- `INFO: Silent mode: [N] errors collected so far` (level 1 = INFO)
 
-**Acceptance:**
-- Exceptions caught and logged during silent mode
-- Operations continue to next file after error
-- Interactive mode behavior unchanged (exceptions re-thrown)
-- Error count tracked in progress
-
-**Blocked by:** Task 6, Task 8
-
+fk|**Acceptance:**
+kh|- When `SilentMode` is `true`, file operation errors do NOT prompt user
+yv|- Errors are collected and operation continues to next file
+pm|- Interactive mode behavior unchanged when `SilentMode` is `false`
+df|- `ESkipFile` propagates correctly to skip the current file
+ng|
+fw|**Blocked by:** Task 6, Task 8
 ---
 
-#### Task 11: Add protocol name tracking
-**Files:**
-- `src/core/Terminal.h`
-- `src/core/Terminal.cpp`
-
-**Description:**
-Add method to retrieve current protocol name for error reporting.
-
-**Implementation:**
-```cpp
-// In Terminal.h
-UnicodeString GetCurrentProtocolName() const;
-
-// In Terminal.cpp
-UnicodeString TTerminal::GetCurrentProtocolName() const
-{
-  if (!FFileSystem)
-    return L"Unknown";
-  
-  switch (FSessionData->GetFSProtocol())
-  {
-    case fsSFTP: return L"SFTP";
-    case fsSCP: return L"SCP";
-    case fsFTP: return L"FTP";
-    case fsWebDAV: return L"WebDAV";
-    case fsS3: return L"S3";
-    default: return L"Unknown";
-  }
-}
-```
-
-**Logging:**
-- `DEBUG: Current protocol: [ProtocolName]`
-
-**Acceptance:**
-- Method returns human-readable protocol name
-- Handles null `FFileSystem` gracefully
-- Used in error reporting
-
-**Blocked by:** Task 4
-
----
 
 ### Phase 5: Error Reporting
 
@@ -727,22 +678,15 @@ feat(core): integrate silent mode logic
 - Auto-set spNoConfirmation in silent mode
 ```
 
-**Checkpoint 4a** (after Task 10):
-```
-feat(core): wrap file operations with error collection
+pq|**Checkpoint 4** (after Task 10):
+sx|```
+hm|feat(core): add silent mode continue-on-error to FileOperationLoopQuery
 
-- Catch exceptions in file operation loops
-- Continue processing after individual file failures
-- Log errors to error log during silent mode
-```
-
-**Checkpoint 4b** (after Task 11):
-```
-feat(core): add protocol name tracking
-
-- Add GetCurrentProtocolName() method
-- Include protocol in error reports
-```
+nt|- Modify FileOperationLoopQuery() to skip file and collect error when SilentMode active
+op|- Single-point modification benefits all 20+ FILE_OPERATION_LOOP_END call sites
+vr|- Uses existing ESkipFile pattern for continue-to-next-file behavior
+hn|- Preserves existing interactive prompt behavior when SilentMode is false
+zt|```
 
 **Checkpoint 5** (after Task 13):
 ```
@@ -778,3 +722,16 @@ docs: document silent mode feature
 - All protocols (SFTP, FTP, SCP, WebDAV, S3) supported
 - No modifications to third-party code in `libs/`
 - Verbose logging throughout for debugging and audit trail
+
+---
+
+## Changelog
+
+| Date | Change |
+|------|--------|
+| 2026-04-22 | Initial plan created |
+| 2026-05-04 | **Revised for implementation readiness:** |
+| | - Updated stale line numbers: `EffectiveBatchOverwrite` (3285), `ConfirmFileOverwrite` (3341), `FileOperationLoopQuery` (2657), macro definitions (Terminal.h:148-161) |
+| | - **Simplified Task 10:** Replaced "wrap 20+ individual file operation loops" with single-point modification of `FileOperationLoopQuery()` -- all `FILE_OPERATION_LOOP_END` macro call sites benefit without macro changes |
+| | - **Removed Task 11** (protocol name tracking) -- unnecessary complexity; error `Message` already provides sufficient context |
+| | - Merged Checkpoint 4a/4b into single Checkpoint 4 reflecting simplified approach |
