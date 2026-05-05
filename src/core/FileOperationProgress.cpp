@@ -60,11 +60,6 @@ size_t TFileOperationErrorLog::GetErrorCount() const
   return FErrors.size();
 }
 
-const std::vector<TFileOperationError> & TFileOperationErrorLog::GetErrors() const
-{
-  std::lock_guard<std::mutex> lock(FMutex);
-  return FErrors;
-}
 
 UnicodeString TFileOperationErrorLog::GenerateReport() const
 {
@@ -74,7 +69,7 @@ UnicodeString TFileOperationErrorLog::GenerateReport() const
     return L"No errors occurred.";
 
   const size_t MaxDetailedErrors = 100;
-  UnicodeString Report = FORMAT(L"File Operation Errors: %d total\n\n", FErrors.size());
+  UnicodeString Report = FORMAT(L"File Operation Errors: %d total\n\n", nb::ToInt32(FErrors.size()));
 
   const size_t DetailCount = (std::min)(FErrors.size(), MaxDetailedErrors);
   for (size_t i = 0; i < DetailCount; ++i)
@@ -90,7 +85,7 @@ UnicodeString TFileOperationErrorLog::GenerateReport() const
   if (FErrors.size() > MaxDetailedErrors)
   {
     Report += FORMAT(L"\n... and %d more errors (truncated for readability)\n",
-      FErrors.size() - MaxDetailedErrors);
+      nb::ToInt32(FErrors.size() - MaxDetailedErrors));
   }
 
   return Report;
@@ -1180,6 +1175,9 @@ TFileOperationProgressType & TFileOperationProgressType::operator =(const TFileO
   FSuspended = rhs.FSuspended;
 
   FTransferringFile = rhs.FTransferringFile;
+
+  // FErrorLog intentionally not copied: errors belong to the original operation
+  // (std::mutex member prevents copy anyway)
   FLastSecond = rhs.FLastSecond;
 
   return *this;

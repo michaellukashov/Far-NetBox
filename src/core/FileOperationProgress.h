@@ -77,7 +77,6 @@ public:
   void Clear();
   bool HasErrors() const;
   size_t GetErrorCount() const;
-  const std::vector<TFileOperationError> & GetErrors() const;
 
   UnicodeString GenerateReport() const;
 

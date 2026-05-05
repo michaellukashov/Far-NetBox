@@ -2660,6 +2660,20 @@ bool TTerminal::FileOperationLoopQuery(Exception & E,
 {
   bool Result{false};
   Log->AddException(&E);
+
+  // Silent mode: collect error, skip file, continue
+  if (FConfiguration->GetSilentMode())
+  {
+    const UnicodeString ErrorMsg = TranslateExceptionMessage(&E);
+    if (AOperationProgress != nullptr)
+    {
+      const UnicodeString FileName = AOperationProgress->GetFileName().IsEmpty() ? Message : AOperationProgress->GetFileName();
+      AOperationProgress->AddOperationError(
+        FileName, ErrorMsg, AOperationProgress->GetSide());
+    }
+    LogEvent(0, L"Silent mode: Skipping file after error: " + ErrorMsg);
+    throw ESkipFile(&E, Message);
+  }
   uint32_t Answer{0};
   const bool AllowSkip = FLAGSET(AFlags, folAllowSkip);
   const bool SkipToAllPossible = AllowSkip && (AOperationProgress != nullptr);
@@ -3285,6 +3299,12 @@ void TTerminal::CloseOnCompletion(
 TBatchOverwrite TTerminal::EffectiveBatchOverwrite(
   const UnicodeString & ASourceFullFileName, const TCopyParamType * CopyParam, int32_t Params, TFileOperationProgressType * AOperationProgress, bool Special) const
 {
+  // Silent mode: never prompt, always overwrite
+  if (FConfiguration->GetSilentMode())
+  {
+    return boAll;
+  }
+
   TBatchOverwrite Result;
   if (Special &&
       (FLAGSET(Params, cpResume) || CopyParam->ResumeTransfer(ASourceFullFileName)) &&
@@ -6398,6 +6418,12 @@ TSynchronizeChecklist * TTerminal::SynchronizeCollect(const UnicodeString & Loca
   TSynchronizeDirectoryEvent && OnSynchronizeDirectory,
   TSynchronizeOptions * Options)
 {
+
+  if (FConfiguration->GetSilentMode())
+  {
+    Params |= spNoConfirmation;
+    LogEvent(1, L"Silent mode: spNoConfirmation flag added");
+  }
   TValueRestorer<bool> UseBusyCursorRestorer(FUseBusyCursor, false);
   FUseBusyCursor = false;
 
@@ -7091,6 +7117,12 @@ void TTerminal::SynchronizeApply(
   TUpdatedSynchronizationChecklistItems && OnUpdatedSynchronizationChecklistItems, void * Token,
   TFileOperationStatistics * Statistics)
 {
+
+  if (FConfiguration->GetSilentMode())
+  {
+    Params |= spNoConfirmation;
+    LogEvent(1, L"Silent mode: spNoConfirmation flag added");
+  }
   TSynchronizeData Data;
 
   Data.OnSynchronizeDirectory = OnSynchronizeDirectory;
@@ -7852,6 +7884,12 @@ bool TTerminal::CopyToRemote(
   TStrings * AFilesToCopy, const UnicodeString & ATargetDir, const TCopyParamType * CopyParam, int32_t AParams,
   TParallelOperation * ParallelOperation)
 {
+
+  if (FConfiguration->GetSilentMode())
+  {
+    AParams |= cpNoConfirmation;
+    LogEvent(1, L"Silent mode: cpNoConfirmation flag added");
+  }
   DebugAssert(FFileSystem);
   DebugAssert(AFilesToCopy);
 
@@ -7978,6 +8016,13 @@ bool TTerminal::CopyToRemote(
     CloseOnCompletion(OnceDoneOperation);
   }
 
+
+  if (FConfiguration->GetSilentMode() && OperationProgress.GetErrorLog().HasErrors())
+  {
+    const UnicodeString Report = OperationProgress.GetErrorLog().GenerateReport();
+    LogEvent(1, L"Silent mode error report:\n" + Report);
+    DoInformation(Report, 0, L"");
+  }
   return Result;
 }
 
@@ -8424,6 +8469,12 @@ bool TTerminal::CopyToLocal(
   TStrings * AFilesToCopy, const UnicodeString & ATargetDir, const TCopyParamType * CopyParam, int32_t AParams,
   TParallelOperation * ParallelOperation)
 {
+
+  if (FConfiguration->GetSilentMode())
+  {
+    AParams |= cpNoConfirmation;
+    LogEvent(1, L"Silent mode: cpNoConfirmation flag added");
+  }
   DebugAssert(FFileSystem);
 
   // see scp.c: sink(), tolocal()
@@ -8567,6 +8618,13 @@ bool TTerminal::CopyToLocal(
       if (OperationProgress.GetCancel() == csContinue)
       {
         Result = true;
+      }
+
+      if (FConfiguration->GetSilentMode() && OperationProgress.GetErrorLog().HasErrors())
+      {
+        const UnicodeString Report = OperationProgress.GetErrorLog().GenerateReport();
+        LogEvent(1, L"Silent mode error report:\n" + Report);
+        DoInformation(Report, 0, L"");
       }
     }
     __finally
