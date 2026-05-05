@@ -27,20 +27,20 @@ Decisions:
 - CMake: 97% reduction in main CMakeLists.txt via modular orchestrator pattern.
 - OpenSSH certificate auth (WinSCP-aligned): Silent pre-connect conversion inside StoreToConfig(). Effective key file resolved before CONF_keyfile. Passphrase encryption uses effective key file path. Temp PPK cleaned in TSecureShell destructor. No interactive dialogs (Far plugin context).
 Open questions:
-cr|- Silent mode file operations: Error collection mechanism designed but not implemented.
-bw|- ~~Stack overflow (#497): Symlink cycle detection needed in CalculateFilesSize (mirrors FilesFind pattern).~~ **FIXED** (commit `2689164e6`, 2026-05-03).
-qa|- ~~DST timestamp (#391): Remove erroneous DST subtraction in ConvertTimestampToUnix for dstmWin on Win7+.~~ **FIXED** (commit `17a50dfdc`, 2026-05-02).
-iz|- ~~Private key auth (#392): Passphrase prompt misclassification or path encoding issue suspected; needs diagnostic logging.~~ **FIXED** (commit `e41274cd7`, 2026-05-02).
-xm|- ~~Second file open crash: Dangling TRemoteFile pointers after directory refresh; Duplicate(false) recommended in CreateFileList.~~ **FIXED** (commits `311e2c8fc` + `8539f9963`, 2026-04-26).
-na|Success signals:
-lu|- Zero build warnings under /W4
-cq|- Plugin DLL in Far3_<platform>/Plugins/NetBox/
-pv|- Manual test protocol: connect, transfer, cancel, navigate for each protocol
-fo|- No crashes in 48hr stress test
-zb|
-ho|Next step:
-ma|- Prioritize remaining open question: silent mode file operations (designed, not implemented).
-cq|- Resume WinSCP feature alignment roadmap: Phase 1 dialog UX refinements + upstream bug fix porting (no longer blocked by crash bugs).
+- Silent mode file operations: Error collection mechanism designed but not implemented.
+- ~~Stack overflow (#497): Symlink cycle detection needed in CalculateFilesSize (mirrors FilesFind pattern).~~ **FIXED** (commit `2689164e6`, 2026-05-03).
+- ~~DST timestamp (#391): Remove erroneous DST subtraction in ConvertTimestampToUnix for dstmWin on Win7+.~~ **FIXED** (commit `17a50dfdc`, 2026-05-02).
+- ~~Private key auth (#392): Passphrase prompt misclassification or path encoding issue suspected; needs diagnostic logging.~~ **FIXED** (commit `e41274cd7`, 2026-05-02).
+- ~~Second file open crash: Dangling TRemoteFile pointers after directory refresh; Duplicate(false) recommended in CreateFileList.~~ **FIXED** (commits `311e2c8fc` + `8539f9963`, 2026-04-26).
+Success signals:
+- Zero build warnings under /W4
+- Plugin DLL in Far3_<platform>/Plugins/NetBox/
+- Manual test protocol: connect, transfer, cancel, navigate for each protocol
+- No crashes in 48hr stress test
+
+Next step:
+- Prioritize remaining open question: silent mode file operations (designed, not implemented).
+- Resume WinSCP feature alignment roadmap: Phase 1 dialog UX refinements + upstream bug fix porting (no longer blocked by crash bugs).
 
 ## Sessions
 
@@ -318,48 +318,48 @@ Links (paths):
 
 ### 2026-05-04 — Open Bug Audit: RESEARCH.md Stale Status
 
-kx|What changed:
-id|- Audited RESEARCH.md "Open questions" against actual git commit history (2026-04-01 to 2026-05-04)
-gs|- Discovered 4 of 5 listed bugs were already fixed; only silent mode remains genuinely open
-ru|- Cross-referenced with Github-Issues.md tracker which correctly marked all four as FIXED
-an|
-gb|Key findings:
-it|- #497: Fixed by `2689164e6` (2026-05-03) — symlink cycle detection + parent-dir defense in CalculateFilesSize
-it|- #391: Fixed by `17a50dfdc` (2026-05-02) — removed DST subtraction in ConvertTimestampToUnix for Win7+
-it|- #392: Fixed by `e41274cd7` (2026-05-02) — FRememberedPasswordKind guard + inverted Result check in PromptUser
-it|- #508: Fixed by `311e2c8fc` + `8539f9963` (2026-04-26) — Duplicate(false) in CreateFileList + FFileList.reset()
-it|- Silent mode: Still open — no commits; TFileOperationErrorLog designed but not implemented
-it|
-it|Action taken:
-it|- Updated RESEARCH.md Active Summary: closed 4 bugs with commit references, updated Next step
-it|- Reframes WinSCP feature alignment roadmap Phase 1 from "urgent bug fixes" to "proactive upstream porting + UX polish"
-it|
-zp|Links (paths):
-vz|- .ai-factory/Github-Issues.md (correct tracker)
-ub|- .ai-factory/plans/winscp-feature-alignment-roadmap.md (roadmap to resume)
-up|- git log --since="2026-04-01" --until="2026-05-05"
+What changed:
+- Audited RESEARCH.md "Open questions" against actual git commit history (2026-04-01 to 2026-05-04)
+- Discovered 4 of 5 listed bugs were already fixed; only silent mode remains genuinely open
+- Cross-referenced with Github-Issues.md tracker which correctly marked all four as FIXED
+
+Key findings:
+- #497: Fixed by `2689164e6` (2026-05-03) — symlink cycle detection + parent-dir defense in CalculateFilesSize
+- #391: Fixed by `17a50dfdc` (2026-05-02) — removed DST subtraction in ConvertTimestampToUnix for Win7+
+- #392: Fixed by `e41274cd7` (2026-05-02) — FRememberedPasswordKind guard + inverted Result check in PromptUser
+- #508: Fixed by `311e2c8fc` + `8539f9963` (2026-04-26) — Duplicate(false) in CreateFileList + FFileList.reset()
+- Silent mode: Still open — no commits; TFileOperationErrorLog designed but not implemented
+
+Action taken:
+- Updated RESEARCH.md Active Summary: closed 4 bugs with commit references, updated Next step
+- Reframes WinSCP feature alignment roadmap Phase 1 from "urgent bug fixes" to "proactive upstream porting + UX polish"
+
+Links (paths):
+- .ai-factory/Github-Issues.md (correct tracker)
+- .ai-factory/plans/winscp-feature-alignment-roadmap.md (roadmap to resume)
+- git log --since="2026-04-01" --until="2026-05-05"
 
 ### 2026-05-04 — WinSCP Upstream Contribution Audit
 
-kx|What changed:
-id|- Audited 4 NetBox fixes for upstream contribution potential to WinSCP 6.5.6 master
-gs|- Examined WinSCP source at `D:\Projects\WinSCP-work\winscp-master\source` for each fix's current state
-ru|- Ranked candidates by effort, WinSCP user value, and adaptation complexity
-an|
-gb|Key findings:
-ke|it|- #391 DST timestamp (ConvertTimestampToUnix): WinSCP STILL HAS THE BUG. `!UsesDaylightHack()` branch subtracts DaylightDifferenceSec for dstmWin on Win7+ where FILETIME is pure UTC. HIGH upstream value — affects all SCP uploads during DST.
-np|it|- #497 Symlink cycle detection: WinSCP ALREADY FIXED. Has TLoopDetector in TCalculateSizeParams and uses it in CalculateFileSize callback. NetBox fix was porting WinSCP's pattern — nothing to upstream.
-qh|it|- #501 SSH/SCP buffer corruption: WinSCP has same dynamic send buffer code but this is a workaround (disable by default), not root cause fix. Better as issue report than upstream PR.
-pl|it|- CWE-134 FMTLOAD escaping: WinSCP has same vulnerable call sites (FTP_RESPONSE_ERROR, REQUEST_REDIRECTED, INVALID_OUTPUT_ERROR). NO EscapeFmtChars() utility exists. Security hardening contribution — medium effort.
-fy|it|
-sf|it|Upstream candidate ranking:
-it|it|1. #391 DST timestamp — small effort, high value, clean adaptation (same file `core/Common.cpp`)
-it|it|2. CWE-134 FMTLOAD escaping — medium effort, security value, requires new utility function + 5 call sites
-it|it|3. #501 buffer corruption — large effort (needs root cause), better as issue than PR
-it|
-xs|zp|Links (paths):
-mw|vz|- `D:\Projects\WinSCP-work\winscp-master\source\core\Common.cpp` (ConvertTimestampToUnix:2218-2228)
-vo|ub|- `D:\Projects\WinSCP-work\winscp-master\source\core\Terminal.cpp` (TLoopDetector, CalculateFileSize)
-cq|up|- `D:\Projects\WinSCP-work\winscp-master\source\core\SecureShell.cpp` (SendBuffer, SIO_IDEAL_SEND_BACKLOG_QUERY)
-sr|it|- `D:\Projects\WinSCP-work\winscp-master\source\core\FtpFileSystem.cpp`, `NeonIntf.cpp`, `ScpFileSystem.cpp` (FMTLOAD vulnerable sites)
-it|- NetBox fix: `git show 17a50dfdc` (src/base/Common.cpp)
+What changed:
+- Audited 4 NetBox fixes for upstream contribution potential to WinSCP 6.5.6 master
+- Examined WinSCP source at `D:\Projects\WinSCP-work\winscp-master\source` for each fix's current state
+- Ranked candidates by effort, WinSCP user value, and adaptation complexity
+
+Key findings:
+- #391 DST timestamp (ConvertTimestampToUnix): WinSCP STILL HAS THE BUG. `!UsesDaylightHack()` branch subtracts DaylightDifferenceSec for dstmWin on Win7+ where FILETIME is pure UTC. HIGH upstream value — affects all SCP uploads during DST.
+- #497 Symlink cycle detection: WinSCP ALREADY FIXED. Has TLoopDetector in TCalculateSizeParams and uses it in CalculateFileSize callback. NetBox fix was porting WinSCP's pattern — nothing to upstream.
+- #501 SSH/SCP buffer corruption: WinSCP has same dynamic send buffer code but this is a workaround (disable by default), not root cause fix. Better as issue report than upstream PR.
+- CWE-134 FMTLOAD escaping: WinSCP has same vulnerable call sites (FTP_RESPONSE_ERROR, REQUEST_REDIRECTED, INVALID_OUTPUT_ERROR). NO EscapeFmtChars() utility exists. Security hardening contribution — medium effort.
+
+Upstream candidate ranking:
+1. #391 DST timestamp — small effort, high value, clean adaptation (same file `core/Common.cpp`)
+2. CWE-134 FMTLOAD escaping — medium effort, security value, requires new utility function + 5 call sites
+3. #501 buffer corruption — large effort (needs root cause), better as issue than PR
+
+Links (paths):
+- `D:\Projects\WinSCP-work\winscp-master\source\core\Common.cpp` (ConvertTimestampToUnix:2218-2228)
+- `D:\Projects\WinSCP-work\winscp-master\source\core\Terminal.cpp` (TLoopDetector, CalculateFileSize)
+- `D:\Projects\WinSCP-work\winscp-master\source\core\SecureShell.cpp` (SendBuffer, SIO_IDEAL_SEND_BACKLOG_QUERY)
+- `D:\Projects\WinSCP-work\winscp-master\source\core\FtpFileSystem.cpp`, `NeonIntf.cpp`, `ScpFileSystem.cpp` (FMTLOAD vulnerable sites)
+- NetBox fix: `git show 17a50dfdc` (src/base/Common.cpp)

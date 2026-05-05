@@ -91,17 +91,17 @@ These are GUI-specific and cannot be replicated in a Far Manager text-mode plugi
 
 ### Phase 1: Dialog UX & Upstream Fix Port (Foundation)
 
-fc|**Goal:** Complete dialog UX alignment with WinSCP patterns and proactively port upstream bug fixes. Previously blocking crash bugs (#497 stack overflow, #391 DST, #392 auth, #508 second-file-open) are **already fixed** — see RESEARCH.md audit session 2026-05-04. Phase 1 is now low-risk UX polish + proactive maintenance, not urgent fire-fighting.
+**Goal:** Complete dialog UX alignment with WinSCP patterns and proactively port upstream bug fixes. Previously blocking crash bugs (#497 stack overflow, #391 DST, #392 auth, #508 second-file-open) are **already fixed** — see RESEARCH.md audit session 2026-05-04. Phase 1 is now low-risk UX polish + proactive maintenance, not urgent fire-fighting.
 
-er|**Affected files:** `src/NetBox/WinSCPDialogs.cpp`, `src/NetBox/WinSCPFileSystem.cpp`, `src/core/Terminal.cpp`, `src/core/SecureShell.cpp`
+**Affected files:** `src/NetBox/WinSCPDialogs.cpp`, `src/NetBox/WinSCPFileSystem.cpp`, `src/core/Terminal.cpp`, `src/core/SecureShell.cpp`
 
-ql|- [ ] **Task 1.1: Proactively port WinSCP upstream bug fixes**
-sv|  - Audit WinSCP 6.5.6 `core/Terminal.cpp` and `core/SecureShell.cpp` for fixes not yet in NetBox
-br|  - Focus on: transfer retry logic, edge-case auth flows, protocol handshake robustness
-ic|  - Cross-reference with NetBox's existing fix history; skip already-ported fixes (#391, #392, #511, etc.)
-fu|  - Files: `src/core/Terminal.cpp`, `src/core/SecureShell.cpp`
-mq|  - LOG: `FTerminal->LogEvent(L"WinSCP upstream fix port: <description>")`
-dd|  - Blocked by: none
+- [ ] **Task 1.1: Proactively port WinSCP upstream bug fixes**
+  - Audit WinSCP 6.5.6 `core/Terminal.cpp` and `core/SecureShell.cpp` for fixes not yet in NetBox
+  - Focus on: transfer retry logic, edge-case auth flows, protocol handshake robustness
+  - Cross-reference with NetBox's existing fix history; skip already-ported fixes (#391, #392, #511, etc.)
+  - Files: `src/core/Terminal.cpp`, `src/core/SecureShell.cpp`
+  - LOG: `FTerminal->LogEvent(L"WinSCP upstream fix port: <description>")`
+  - Blocked by: none
 
 - [ ] **Task 1.2: Complete dialog control alignment**
   - Finish `winscp-dialog-alignment.md` plan items (S3 tab, TLS tab, auth enablement)
