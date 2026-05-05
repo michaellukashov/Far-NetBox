@@ -159,27 +159,25 @@ enum class TFileOperationErrorCategory
   Other
 };
 
-struct TFileOperationError
-{
-  UnicodeString FileName;
-  UnicodeString ErrorMessage;
-  TDateTime Timestamp;
-  TOperationSide Side;
-  UnicodeString ProtocolName;
-  TFileOperationErrorCategory Category;
-  
-  TFileOperationError() = default;
-  TFileOperationError(
-    const UnicodeString & AFileName,
-    const UnicodeString & AErrorMessage,
-    TOperationSide ASide,
-    const UnicodeString & AProtocolName,
-    TFileOperationErrorCategory ACategory = TFileOperationErrorCategory::Other);
-};
+qh|struct TFileOperationError
+vp|{
+px|  UnicodeString FileName;
+nm|  UnicodeString ErrorMessage;
+rk|  TDateTime Timestamp;
+lh|  TOperationSide Side;
+fy|  TFileOperationErrorCategory Category;
+zr|  
+xc|  TFileOperationError() = default;
+fb|  TFileOperationError(
+rd|    const UnicodeString & AFileName,
+gl|    const UnicodeString & AErrorMessage,
+sh|    TOperationSide ASide,
+vp|    TFileOperationErrorCategory ACategory = TFileOperationErrorCategory::Other);
+kf|};
 ```
 
 **Logging:**
-- `DEBUG: FileOperationError created: file=[FileName], side=[Side], protocol=[ProtocolName], category=[Category]`
+ov|- `DEBUG: FileOperationError created: file=[FileName], side=[Side], category=[Category]`
 
 **Acceptance:**
 - `TFileOperationError` structure defined
@@ -205,12 +203,11 @@ public:
   TFileOperationErrorLog() = default;
   ~TFileOperationErrorLog() = default;
   
-  void AddError(
-    const UnicodeString & FileName,
-    const UnicodeString & ErrorMessage,
-    TOperationSide Side,
-    const UnicodeString & ProtocolName,
-    TFileOperationErrorCategory Category = TFileOperationErrorCategory::Other);
+fg|  void AddError(
+jr|    const UnicodeString & FileName,
+nd|    const UnicodeString & ErrorMessage,
+pm|    TOperationSide Side,
+du|    TFileOperationErrorCategory Category = TFileOperationErrorCategory::Other);
   
   void Clear();
   bool HasErrors() const;
@@ -257,18 +254,16 @@ Add error log instance to progress tracking so file operations can collect error
 - Add `TFileOperationErrorLog FErrorLog;` member to `TFileOperationProgressType`
 - Add getter: `TFileOperationErrorLog & GetErrorLog() { return FErrorLog; }`
 - Add convenience method:
-  ```cpp
-  void AddOperationError(
-    const UnicodeString & FileName,
-    const UnicodeString & ErrorMessage,
-    TOperationSide Side,
-    const UnicodeString & ProtocolName,
-    TFileOperationErrorCategory Category = TFileOperationErrorCategory::Other)
-  {
-    FErrorLog.AddError(FileName, ErrorMessage, Side, ProtocolName, Category);
-  }
-  ```
-  ```
+nn|  ```cpp
+pp|  void AddOperationError(
+jr|    const UnicodeString & FileName,
+nd|    const UnicodeString & ErrorMessage,
+pm|    TOperationSide Side,
+kj|    TFileOperationErrorCategory Category = TFileOperationErrorCategory::Other)
+dp|  {
+vl|    FErrorLog.AddError(FileName, ErrorMessage, Side, Category);
+xr|  }
+uv|  ```
 - Clear error log in `Reset()` method
 
 **Logging:**
@@ -346,10 +341,9 @@ if (FConfiguration->GetSilentMode())
 ```
 
 Key locations:
-- `TTerminal::CopyToLocal()` (around line 6900)
-- `TTerminal::CopyToRemote()` (around line 7900)
-- `TTerminal::SynchronizeCollect()` (around line 8300)
-
+zb|- `TTerminal::CopyToLocal()` (`Terminal.cpp`) — download entry point
+hk|- `TTerminal::CopyToRemote()` (`Terminal.cpp`) — upload entry point
+xp|- `TTerminal::SynchronizeCollect()` (`Terminal.cpp`) — sync collection
 **Logging:**
 - `DEBUG: Silent mode: cpNoConfirmation flag added to copy operation` (level 2 = DEBUG)
 - `DEBUG: Copy params: Params=[hex], SilentMode=[true/false]`
@@ -380,10 +374,9 @@ if (FConfiguration->GetSilentMode())
 }
 ```
 
-Key locations:
-- `TTerminal::Synchronize()` (around line 8200)
-- `TTerminal::SynchronizeCollect()` (around line 8300)
-
+vf|Key locations:
+lt|- `TTerminal::Synchronize()` (`Terminal.cpp`) — sync entry point
+xp|- `TTerminal::SynchronizeCollect()` (`Terminal.cpp`) — sync collection
 **Logging:**
 - `DEBUG: Silent mode: spNoConfirmation flag added to synchronization` (level 2 = DEBUG)
 - `DEBUG: Sync params: Params=[hex], SilentMode=[true/false]`
@@ -417,15 +410,18 @@ ec|{
 ym|  bool Result{false};
 jd|  Log->AddException(&E);
 yd|
-jw|  // Silent mode: collect error, skip file, continue
-kv|  if (FConfiguration->GetSilentMode())
-ur|  {
-gl|    const UnicodeString ErrorMsg = TranslateExceptionMessage(&E);
-ak|    OperationProgress->AddOperationError(
-fe|      /*FileName extracted from Message or context*/,
-hl|      ErrorMsg, OperationProgress->GetSide(), L"");
-td|    LogEvent(0, L"Silent mode: Skipping file after error: " + ErrorMsg);
-aa|    throw ESkipFile(&E, Message);
+la|jw|  // Silent mode: collect error, skip file, continue
+at|kv|  if (FConfiguration->GetSilentMode())
+gd|ur|  {
+ym|gl|    const UnicodeString ErrorMsg = TranslateExceptionMessage(&E);
+jf|ak|    if (AOperationProgress != nullptr)
+zb|ak|    {
+fe|      OperationProgress->AddOperationError(
+zh|hl|        /*FileName extracted from AMessage or error context*/,
+xh|ak|        ErrorMsg, OperationProgress->GetSide());
+hl|    }
+bn|td|    LogEvent(0, L"Silent mode: Skipping file after error: " + ErrorMsg);
+ad|aa|    throw ESkipFile(&E, Message);
 kg|  }
 ed|
 wm|  // ... existing interactive prompt logic
@@ -478,12 +474,11 @@ UnicodeString TFileOperationErrorLog::GenerateReport() const
   for (size_t i = 0; i < DetailCount; ++i)
   {
     const auto & Error = FErrors[i];
-    Report += FORMAT(L"[%s] %s (%s, %s)\n  %s\n\n",
-      FormatDateTime(L"yyyy-mm-dd hh:nn:ss", Error.Timestamp),
-      Error.FileName,
-      Error.Side == osLocal ? L"Local" : L"Remote",
-      Error.ProtocolName,
-      Error.ErrorMessage);
+fi|    Report += FORMAT(L"[%s] %s (%s)\n  %s\n\n",
+nd|      FormatDateTime(L"yyyy-mm-dd hh:nn:ss", Error.Timestamp),
+ae|      Error.FileName,
+dv|      Error.Side == osLocal ? L"Local" : L"Remote",
+ar|      Error.ErrorMessage);
   }
   
   if (FErrors.size() > MaxDetailedErrors)
@@ -499,8 +494,8 @@ UnicodeString TFileOperationErrorLog::GenerateReport() const
 **Logging:**
 - `DEBUG: Generating error report with [N] entries`
 
-**Acceptance:**
-- Report includes timestamp, filename, side, protocol, error message
+fk|**Acceptance:**
+fu|- Report includes timestamp, filename, side, error message
 - Formatted for readability
 - Truncates after 100 detailed errors to prevent UI freezes
 - Empty report handled gracefully
@@ -735,3 +730,11 @@ docs: document silent mode feature
 | | - **Simplified Task 10:** Replaced "wrap 20+ individual file operation loops" with single-point modification of `FileOperationLoopQuery()` -- all `FILE_OPERATION_LOOP_END` macro call sites benefit without macro changes |
 | | - **Removed Task 11** (protocol name tracking) -- unnecessary complexity; error `Message` already provides sufficient context |
 | | - Merged Checkpoint 4a/4b into single Checkpoint 4 reflecting simplified approach |
+| 2026-05-04 | **Refined after codebase analysis (/aif-improve):** |
+| | - **Task 10:** Added null guard for `AOperationProgress` (can be nullptr, existing code at :2665 does this) |
+| | - **Task 4:** Removed `ProtocolName` field from `TFileOperationError` (inconsistent with Task 11 removal) |
+| | - **Task 5:** Removed `ProtocolName` from `AddError()` signature |
+| | - **Task 6:** Removed `ProtocolName` from `AddOperationError()` convenience method |
+| | - **Task 12:** Removed `ProtocolName` from `GenerateReport()` format string and acceptance criteria |
+| | - **Tasks 8-9:** Replaced vague "around line ~6900" with concrete method names |
+| | - Verified: `TranslateExceptionMessage()` exists (`Sysutils.hpp:367`), `ExtException(const Exception*, UnicodeString)` constructor available via inheritance, `Sysutils.hpp` already included in `Terminal.cpp` |
