@@ -80,6 +80,8 @@ public:
   void SetPageantPath(const UnicodeString & Value) { FPageantPath = Value; }
   UnicodeString GetPuttygenPath() const { return FPuttygenPath; }
   void SetPuttygenPath(const UnicodeString & Value) { FPuttygenPath = Value; }
+  bool GetSilentMode() const { return TConfiguration::GetSilentMode(); }
+  void SetSilentMode(bool Value) { TConfiguration::SetSilentMode(Value); }
   TBookmarkList * GetBookmarks(const UnicodeString & Key);
   void SetBookmarks(const UnicodeString & Key, const TBookmarkList * Value);
 

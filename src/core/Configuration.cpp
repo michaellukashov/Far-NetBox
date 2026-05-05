@@ -240,6 +240,7 @@ void TConfiguration::Default()
   SetPuttyRegistryStorageKey(OriginalPuttyRegistryStorageKey);
   FConfirmOverwriting = true;
   FConfirmResume = true;
+  FSilentMode = false;
   FAutoReadDirectoryAfterOp = true;
   FSessionReopenAuto = 5000;
   FSessionReopenBackground = 2000;
@@ -425,6 +426,7 @@ UnicodeString TConfiguration::PropertyToKey(const UnicodeString & Property)
     KEY(String,   PuttyRegistryStorageKey); \
     KEY(Bool,     ConfirmOverwriting); \
     KEY(Bool,     ConfirmResume); \
+    KEY(Bool,     SilentMode); \
     KEY(Bool,     AutoReadDirectoryAfterOp); \
     KEY3(Integer,  SessionReopenAuto); \
     KEY3(Integer,  SessionReopenBackground); \

@@ -391,6 +391,8 @@ public:
   int32_t GetSessionReopenAutoIdle() const { return FSessionReopenAutoIdle; }
   void SetSessionReopenAutoIdle(int32_t Value) { FSessionReopenAutoIdle = Value; }
   LCID GetAppliedLocale() const { return FAppliedLocale; }
+  bool GetSilentMode() const { return TConfiguration::GetSilentMode(); }
+  void SetSilentMode(bool Value) { TConfiguration::SetSilentMode(Value); }
 };
 
 NB_CORE_EXPORT TGUIConfiguration * GetGUIConfiguration();

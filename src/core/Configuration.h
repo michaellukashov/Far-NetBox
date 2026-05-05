@@ -122,6 +122,7 @@ private:
   UnicodeString FPermanentActionsLogFileName;
   bool FConfirmOverwriting{false};
   bool FConfirmResume{false};
+  bool FSilentMode{false};
   bool FAutoReadDirectoryAfterOp{false};
   int32_t FSessionReopenAuto{0};
   int32_t FSessionReopenBackground{0};
@@ -280,6 +281,8 @@ public:
   virtual void SetConfirmOverwriting(bool Value);
   bool GetConfirmResume() const;
   void SetConfirmResume(bool Value);
+  bool GetSilentMode() const { return FSilentMode; }
+  void SetSilentMode(bool Value) { FSilentMode = Value; }
   bool GetAutoReadDirectoryAfterOp() const;
   void SetAutoReadDirectoryAfterOp(bool Value);
   virtual bool GetRememberPassword() const;
@@ -438,6 +441,7 @@ public:
   __property bool ConfirmOverwriting = { read = GetConfirmOverwriting, write = SetConfirmOverwriting};
   __property bool ConfirmResume = { read = GetConfirmResume, write = SetConfirmResume};
   __property bool AutoReadDirectoryAfterOp = { read = GetAutoReadDirectoryAfterOp, write = SetAutoReadDirectoryAfterOp};
+  __property bool SilentMode = { read = GetSilentMode, write = SetSilentMode };
   __property bool RememberPassword = { read = GetRememberPassword };
   __property int32_t SessionReopenAuto = { read = FSessionReopenAuto, write = SetSessionReopenAuto };
   __property int32_t SessionReopenBackground = { read = FSessionReopenBackground, write = SetSessionReopenBackground };
