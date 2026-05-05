@@ -32,7 +32,10 @@
 
 ---
 
+**Reference:** [master-password-infrastructure-research](../references/master-password-infrastructure-research.md) — Full WinSCP-to-NetBox comparison, dependency graph, and file map
+
 ## Overview
+
 
 The master password infrastructure in NetBox has critical gaps:
 1. **Data Loss Risk**: `RecryptPasswords()` is a stub on MSVC — changing/clearing master password may silently fail to recrypt stored passwords
@@ -57,40 +60,24 @@ Implement the `RecryptPasswords()` method that iterates all stored sessions and 
 ```cpp
 void TWinConfiguration::RecryptPasswords(TStrings * RecryptPasswordErrors)
 {
+  TCustomWinConfiguration::RecryptPasswords(RecryptPasswordErrors);
+
   try
   {
-    // Recrypt all stored session passwords
-    const TStoredSessionList * Sessions = GetStoredSessions();
-    for (int32_t Index = 0; Index < Sessions->Count; ++Index)
+    TTerminalManager * Manager = TTerminalManager::Instance(false);
+    DebugAssert(Manager != nullptr);
+    if (Manager != nullptr)
     {
-      TSessionData * SessionData = Sessions->Sessions[Index];
-      if (SessionData->HasAnyPassword())
-      {
-        try
-        {
-          SessionData->RecryptPasswords();
-        }
-        catch (Exception & E)
-        {
-          if (RecryptPasswordErrors != nullptr)
-          {
-            RecryptPasswordErrors->Add(
-              FORMAT(L"%s: %s", SessionData->SessionName, E.Message));
-          }
-        }
-      }
+      Manager->RecryptPasswords();
     }
-    
-    // Recrypt any other encrypted data (bookmarks, etc.)
-    // TODO: Extend as needed for other encrypted fields
   }
   catch (Exception & E)
   {
-    if (RecryptPasswordErrors != nullptr)
+    UnicodeString Message;
+    if (ExceptionMessage(&E, Message))
     {
-      RecryptPasswordErrors->Add(E.Message);
+      RecryptPasswordErrors->Add(Message);
     }
-    throw;
   }
 }
 ```
@@ -100,6 +87,47 @@ void TWinConfiguration::RecryptPasswords(TStrings * RecryptPasswordErrors)
 - Handles errors gracefully, collecting them in `RecryptPasswordErrors`
 - Iterates all stored sessions
 - Does not lose passwords on recryption failure
+  - Mirrors existing BorlandC implementation; no manual session iteration needed
+
+---
+
+### Task 1.5: Fix ChangeMasterPassword/ClearMasterPassword exception safety
+
+**Files:**
+- `src/windows/MasterPassword.cpp`
+
+**Description:**
+`ChangeMasterPassword()` sets `FPlainMasterPasswordEncrypt = value` before calling `RecryptPasswords()`, but only sets `FPlainMasterPasswordDecrypt = value` AFTER. If recryption throws, decrypt key remains the old password. Same pattern in `ClearMasterPassword()` — `Shred(FPlainMasterPasswordDecrypt)` skipped if recrypt throws. WinSCP uses `try/__finally` for both; MSVC needs a scope-guard RAII helper.
+
+**Implementation:**
+```cpp
+void TWinConfiguration::ChangeMasterPassword(
+    UnicodeString value, TStrings * RecryptPasswordErrors) {
+  RawByteString Verifier;
+  AES256CreateVerifier(value, Verifier);
+  FMasterPasswordVerifier = BytesToHex(Verifier);
+  FPlainMasterPasswordEncrypt = value;
+  FUseMasterPassword = true;
+  {
+    auto Guard = finally([&]() { FPlainMasterPasswordDecrypt = value; });
+    MasterPasswordRecryptPasswords(this, RecryptPasswordErrors);
+  }
+}
+
+void TWinConfiguration::ClearMasterPassword(TStrings * RecryptPasswordErrors) {
+  FMasterPasswordVerifier = L"";
+  FUseMasterPassword = false;
+  Shred(FPlainMasterPasswordEncrypt);
+  {
+    auto Guard = finally([&]() { Shred(FPlainMasterPasswordDecrypt); });
+    MasterPasswordRecryptPasswords(this, RecryptPasswordErrors);
+  }
+}
+```
+
+**Acceptance:**
+- If `RecryptPasswords()` throws, `FPlainMasterPasswordDecrypt` is still updated/shredded
+- No regression in password change/clear functionality
 
 ---
 
@@ -110,9 +138,11 @@ void TWinConfiguration::RecryptPasswords(TStrings * RecryptPasswordErrors)
 **Files:**
 - `src/base/SecureString.h` (create)
 - `src/base/SecureString.cpp` (create)
+- `src/CMakeLists.txt` (update: add to plugin sources)
 
 **Description:**
 Create a secure string class that stores data in a locked heap buffer (VirtualLock on Windows) and securely wipes on destruction.
+  **Prior art:** `pass_ptrW`/`pass_ptrA` in `src/include/nbsystem_cpp.h` already use `SecureZeroMemory`. `VirtualLock` requires `SE_LOCK_MEMORY_NAME` privilege; implementation must fallback gracefully if unavailable.
 
 **Implementation:**
 ```cpp
@@ -153,7 +183,22 @@ private:
 - SecureZeroMemory on buffer before free
 - Non-copyable (move-only)
 - RAII destruction guarantees wipe
+  - Source files registered in `src/CMakeLists.txt`
 
+
+---
+
+### Task 2.5: Register TSecureString in CMake build
+
+**Files:**
+- `src/CMakeLists.txt`
+
+**Description:**
+Add `src/base/SecureString.cpp` to the NetBox plugin target sources so it compiles and links.
+
+**Acceptance:**
+- `SecureString.cpp` appears in the plugin source list
+- Build passes with zero warnings
 ---
 
 ### Task 3: Replace UnicodeString with TSecureString in TWinConfiguration
@@ -165,6 +210,7 @@ private:
 
 **Description:**
 Replace `FPlainMasterPasswordEncrypt` and `FPlainMasterPasswordDecrypt` with `TSecureString`.
+  **Depends on:** Task 1 (RecryptPasswords must be functional before integration can be tested end-to-end)
 
 **Implementation:**
 ```cpp
@@ -175,7 +221,8 @@ TSecureString FPlainMasterPasswordDecrypt;
 
 **Changes needed:**
 - `SetMasterPassword()`: Store in TSecureString
-- `ChangeMasterPassword()`: Use TSecureString for new password
+  - `ChangeMasterPassword()`: Use TSecureString for new password; add RAII guard so FPlainMasterPasswordDecrypt is always set even if RecryptPasswords() throws
+  - `ClearMasterPassword()`: Add RAII guard so Shred(FPlainMasterPasswordDecrypt) runs even if RecryptPasswords() throws
 - `GetMasterKey()`: Return UnicodeString from TSecureString (transient, caller responsible)
 - `ClearMasterPassword()`: TSecureString auto-wipes on clear
 - All AES encrypt/decrypt call sites: Convert to/from TSecureString
@@ -201,19 +248,34 @@ Replace `int32_t FMasterPasswordSession` with `std::atomic<int32_t>`.
 **Implementation:**
 ```cpp
 // In WinConfiguration.h
+#include <atomic>
 std::atomic<int32_t> FMasterPasswordSession{0};
-```
 
 **Changes needed:**
 - `BeginMasterPasswordSession()`: Use `fetch_add(1)`
 - `EndMasterPasswordSession()`: Use `fetch_sub(1)`
 - `AskForMasterPassword()`: Compare `load() > 0`
+  - Also audit `FMasterPasswordSessionAsked` for concurrent access; protect with `std::atomic<bool>` if needed
 
 **Acceptance:**
 - No data races on session counter
 - Parallel transfers work correctly
 - Atomic operations are lock-free on x86/x64
 
+
+---
+
+### Task 4.5: Add atomic header and verify lock-free guarantee
+
+**Files:**
+- `src/windows/WinConfiguration.h`
+
+**Description:**
+Add `#include <atomic>` to `WinConfiguration.h`. Verify `std::atomic<int32_t>::is_lock_free()` is true on MSVC x86/x64 at compile time or runtime assertion.
+
+**Acceptance:**
+- `<atomic>` header included where `std::atomic` members are declared
+- Runtime assertion confirms lock-free operations on target platforms
 ---
 
 ## Phase 4: Rate Limiting (P3)
@@ -233,7 +295,7 @@ Add rate limiting to `ValidateMasterPassword()` to prevent brute force.
 struct TValidationAttemptTracker
 {
   std::atomic<uint32_t> ConsecutiveFailures{0};
-  std::atomic<uint64_t> LastAttemptTime{0};
+  std::atomic<uint32_t> LastAttemptTime{0};
   static constexpr uint32_t MaxAttempts = 5;
   static constexpr uint32_t LockoutSeconds = 30;
 };
@@ -243,38 +305,42 @@ TValidationAttemptTracker FValidationTracker;
 
 **Changes in ValidateMasterPassword():**
 ```cpp
-bool TWinConfiguration::ValidateMasterPassword(UnicodeString value)
+bool TWinConfiguration::ValidateMasterPassword(UnicodeString value,
+    bool CountAttempt = true)
 {
   DebugAssert(GetUseMasterPassword());
   DebugAssert(!FMasterPasswordVerifier.IsEmpty());
   
-  // Rate limiting check
-  const uint32_t Failures = FValidationTracker.ConsecutiveFailures.load();
-  if (Failures >= TValidationAttemptTracker::MaxAttempts)
+  // Rate limiting check (skipped for inline dialog validation)
+  if (CountAttempt)
   {
-    const uint64_t Now = GetTickCount64();
-    const uint64_t Last = FValidationTracker.LastAttemptTime.load();
-    const uint64_t Elapsed = (Now - Last) / 1000;
-    if (Elapsed < TValidationAttemptTracker::LockoutSeconds)
+    const uint32_t Failures = FValidationTracker.ConsecutiveFailures.load();
+    if (Failures >= TValidationAttemptTracker::MaxAttempts)
     {
-      throw Exception(FORMAT(
-        L"Too many failed attempts. Please wait %d seconds.",
-        TValidationAttemptTracker::LockoutSeconds - Elapsed));
+      const uint32_t Now = GetTickCount();
+      const uint32_t Last = FValidationTracker.LastAttemptTime.load();
+      const uint32_t Elapsed = (Now - Last) / 1000;
+      if (Elapsed < TValidationAttemptTracker::LockoutSeconds)
+      {
+        throw Exception(FORMAT(
+          L"Too many failed attempts. Please wait %d seconds.",
+          TValidationAttemptTracker::LockoutSeconds - Elapsed));
+      }
+      FValidationTracker.ConsecutiveFailures.store(0);
     }
-    // Reset after lockout period
-    FValidationTracker.ConsecutiveFailures.store(0);
   }
   
   bool Result = AES256Verify(value, HexToBytes(FMasterPasswordVerifier));
   
-  if (Result)
+  if (CountAttempt)
   {
-    FValidationTracker.ConsecutiveFailures.store(0);
-  }
-  else
-  {
-    FValidationTracker.ConsecutiveFailures.fetch_add(1);
-    FValidationTracker.LastAttemptTime.store(GetTickCount64());
+    if (Result)
+      FValidationTracker.ConsecutiveFailures.store(0);
+    else
+    {
+      FValidationTracker.ConsecutiveFailures.fetch_add(1);
+      FValidationTracker.LastAttemptTime.store(GetTickCount());
+    }
   }
   
   return Result;
@@ -284,9 +350,9 @@ bool TWinConfiguration::ValidateMasterPassword(UnicodeString value)
 **Acceptance:**
 - 5 consecutive failures trigger 30-second lockout
 - Successful validation resets counter
-- Lockout uses existing `GetTickCount64()` (Windows API)
+- Lockout uses `GetTickCount()` for Windows XP compatibility
 - Thread-safe with std::atomic
-
+- Dialog inline validation passes `CountAttempt=false` to avoid lockout during typing
 ---
 
 ## Phase 5: i18n Cleanup (P4)
@@ -296,44 +362,78 @@ bool TWinConfiguration::ValidateMasterPassword(UnicodeString value)
 **Files:**
 - `src/NetBox/WinSCPDialogs.cpp`
 - `src/windows/UserInterface.cpp` (TMasterPasswordDialog)
+- `src/NetBox/FarPluginStrings.cpp` (add mapping entries)
 
 **Description:**
 Replace hardcoded literal strings with `LoadStr()` lookups.
 
 **Current hardcoded strings found:**
 ```cpp
+// WinSCPDialogs.cpp:1134
+MessageDialog(L"New password cannot be empty.", qtError, qaOK);
+
 // WinSCPDialogs.cpp:1170
 MessageDialog(L"Please enter a new master password.", qtError, qaOK);
 
 // WinSCPDialogs.cpp:1204
 MessageDialog(L"Please enter current master password.", qtError, qaOK);
-```
 
 **Implementation:**
 Add new MsgIDs:
 ```cpp
+NB_MASTER_PASSWORD_EMPTY,
 NB_MASTER_PASSWORD_ENTER_NEW,
 NB_MASTER_PASSWORD_ENTER_CURRENT,
 ```
 
 Add to all .lng files:
 ```
+"New password cannot be empty."
 "Please enter a new master password."
 "Please enter current master password."
-```
 
 Replace literals with:
 ```cpp
+MessageDialog(LoadStr(NB_MASTER_PASSWORD_EMPTY), qtError, qaOK);
 MessageDialog(LoadStr(NB_MASTER_PASSWORD_ENTER_NEW), qtError, qaOK);
 MessageDialog(LoadStr(NB_MASTER_PASSWORD_ENTER_CURRENT), qtError, qaOK);
-```
 
 **Acceptance:**
 - All hardcoded master password dialog messages use LoadStr()
 - New strings added to all 5 .lng files
 - MsgIDs.h updated
 - No missing translations
+  - Mapping entries added to `FarPluginStrings.cpp`
 
+---
+
+### Task 6.6: Surface recryption errors in master password dialog
+
+**Files:**
+- `src/NetBox/WinSCPDialogs.cpp`
+
+**Description:**
+`MasterPasswordConfigurationDialog()` calls `ChangeMasterPassword(NewPwd, nullptr)` and `ClearMasterPassword(nullptr)`, discarding recryption errors. WinSCP collects errors in a `TStringList` and displays them with `MoreMessageDialog`. NetBox must do the same so users know when session passwords failed to recrypt.
+
+**Acceptance:**
+- `ChangeMasterPassword`/`ClearMasterPassword` called with a `TStrings *` for error collection
+- Errors displayed to user via `MoreMessageDialog` or equivalent
+
+
+---
+
+### Task 6.5: Add FarPluginStrings mappings for new MsgIDs
+
+**Files:**
+- `src/NetBox/FarPluginStrings.cpp`
+- `src/base/MsgIDs.h`
+
+**Description:**
+Add mapping entries in `FarPluginStrings.cpp` so `GetMsg()` can resolve `NB_MASTER_PASSWORD_ENTER_NEW` and `NB_MASTER_PASSWORD_ENTER_CURRENT`.
+
+**Acceptance:**
+- Mapping entries present in the translation table
+- Dialogs display correct text at runtime
 ---
 
 ## Phase 6: Testing
@@ -365,6 +465,20 @@ MessageDialog(LoadStr(NB_MASTER_PASSWORD_ENTER_CURRENT), qtError, qaOK);
 - Rate limiting after 5 failures
 - Thread-safe session counter with concurrent access
 
+
+---
+
+### Task 8.5: Register test targets in CMake
+
+**Files:**
+- `src/CMakeLists.txt`
+
+**Description:**
+Add `add_executable` and `add_test` definitions for `test_secure_string` and `test_master_password` in the `OPT_CREATE_TESTS` block.
+
+**Acceptance:**
+- Tests build when `OPT_CREATE_TESTS=ON`
+- `ctest` discovers the new tests
 ---
 
 ## Phase 7: Documentation
@@ -401,6 +515,7 @@ feat(base): add TSecureString and use for master password storage
 - Create TSecureString with VirtualLock and secure wiping
 - Replace FPlainMasterPasswordEncrypt/Decrypt in TWinConfiguration
 - Update all encrypt/decrypt call sites
+- Register SecureString.cpp in src/CMakeLists.txt
 ```
 
 **Checkpoint 3** (after Task 4):
@@ -451,9 +566,10 @@ docs: document master password architecture and security
 
 - **RecryptPasswords** is the highest priority — current stub risks password loss
 - **TSecureString** should be in `src/base/` for potential reuse by other components
-- **Rate limiting** uses `GetTickCount64()` which requires Windows Vista+ (NetBox already requires this)
+  - **Rate limiting** uses `GetTickCount()` to preserve Windows XP compatibility; 49.7-day wrap-around is safe for 30-second lockout intervals
 - **Thread safety** for session counter is critical for parallel file transfers with encrypted passwords
 - All changes must pass build with zero warnings (MSVC /W4)
+  - **Exception safety** for ChangeMasterPassword/ClearMasterPassword matches WinSCP try/__finally semantics via RAII guards
 
 ---
 
@@ -462,3 +578,5 @@ docs: document master password architecture and security
 | Date | Change |
 |------|--------|
 | 2026-05-05 | Initial plan created based on code exploration |
+| 2026-05-05 | Refined: ported RecryptPasswords to match BorlandC pattern, added WinXP compatibility, CMake registration, FarPluginStrings mappings, atomic header requirements |
+| 2026-05-05 | Second pass (WinSCP UX/backend): added exception-safety fix for Change/ClearMasterPassword, third hardcoded string, dialog error surfacing, rate limiting bypass for inline validation |
