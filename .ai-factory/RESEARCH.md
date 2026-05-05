@@ -1,11 +1,11 @@
 # Research
 
-Updated: 2026-05-04 14:30
+Updated: 2026-05-04 15:45
 Status: active
 
 ## Active Summary (input for /aif-plan)
 
-Topic: Far-NetBox plugin stability, protocol correctness, and modernization — consolidated findings from reference explorations
+Updated: 2026-05-04 15:45
 
 Goal: Capture institutional knowledge from deep codebase investigations to inform future planning and prevent regression
 
@@ -338,3 +338,28 @@ zp|Links (paths):
 vz|- .ai-factory/Github-Issues.md (correct tracker)
 ub|- .ai-factory/plans/winscp-feature-alignment-roadmap.md (roadmap to resume)
 up|- git log --since="2026-04-01" --until="2026-05-05"
+
+### 2026-05-04 — WinSCP Upstream Contribution Audit
+
+kx|What changed:
+id|- Audited 4 NetBox fixes for upstream contribution potential to WinSCP 6.5.6 master
+gs|- Examined WinSCP source at `D:\Projects\WinSCP-work\winscp-master\source` for each fix's current state
+ru|- Ranked candidates by effort, WinSCP user value, and adaptation complexity
+an|
+gb|Key findings:
+ke|it|- #391 DST timestamp (ConvertTimestampToUnix): WinSCP STILL HAS THE BUG. `!UsesDaylightHack()` branch subtracts DaylightDifferenceSec for dstmWin on Win7+ where FILETIME is pure UTC. HIGH upstream value — affects all SCP uploads during DST.
+np|it|- #497 Symlink cycle detection: WinSCP ALREADY FIXED. Has TLoopDetector in TCalculateSizeParams and uses it in CalculateFileSize callback. NetBox fix was porting WinSCP's pattern — nothing to upstream.
+qh|it|- #501 SSH/SCP buffer corruption: WinSCP has same dynamic send buffer code but this is a workaround (disable by default), not root cause fix. Better as issue report than upstream PR.
+pl|it|- CWE-134 FMTLOAD escaping: WinSCP has same vulnerable call sites (FTP_RESPONSE_ERROR, REQUEST_REDIRECTED, INVALID_OUTPUT_ERROR). NO EscapeFmtChars() utility exists. Security hardening contribution — medium effort.
+fy|it|
+sf|it|Upstream candidate ranking:
+it|it|1. #391 DST timestamp — small effort, high value, clean adaptation (same file `core/Common.cpp`)
+it|it|2. CWE-134 FMTLOAD escaping — medium effort, security value, requires new utility function + 5 call sites
+it|it|3. #501 buffer corruption — large effort (needs root cause), better as issue than PR
+it|
+xs|zp|Links (paths):
+mw|vz|- `D:\Projects\WinSCP-work\winscp-master\source\core\Common.cpp` (ConvertTimestampToUnix:2218-2228)
+vo|ub|- `D:\Projects\WinSCP-work\winscp-master\source\core\Terminal.cpp` (TLoopDetector, CalculateFileSize)
+cq|up|- `D:\Projects\WinSCP-work\winscp-master\source\core\SecureShell.cpp` (SendBuffer, SIO_IDEAL_SEND_BACKLOG_QUERY)
+sr|it|- `D:\Projects\WinSCP-work\winscp-master\source\core\FtpFileSystem.cpp`, `NeonIntf.cpp`, `ScpFileSystem.cpp` (FMTLOAD vulnerable sites)
+it|- NetBox fix: `git show 17a50dfdc` (src/base/Common.cpp)

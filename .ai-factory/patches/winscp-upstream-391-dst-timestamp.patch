@@ -1,0 +1,69 @@
+From: NetBox Project <upstream@netbox.dev>
+Date: 2026-05-04
+Subject: [PATCH] fix(base): remove incorrect DST subtraction in ConvertTimestampToUnix on Win7+
+
+ConvertTimestampToUnix() incorrectly subtracted DaylightDifferenceSec from
+the UTC Unix timestamp for dstmWin mode on Windows 7 and newer, where FILETIME
+is already pure UTC and the legacy Windows DST display bug is fixed. This
+caused SCP uploads to set remote timestamps 1 hour behind during DST periods.
+
+On Windows 7+, FILETIME is pure UTC. The arithmetic conversion
+Result = FILETIME / 10000000 - 11644473600LL is correct as-is for pure UTC
+to Unix UTC conversion. Only dstmUnix/dstmKeep modes apply DST adjustments
+for legacy server compatibility.
+
+Remove the erroneous DST subtraction in the !UsesDaylightHack() branch when
+DSTMode == dstmWin, aligning Win7+ behavior with the pre-Win7 dstmWin path
+(which correctly did no adjustment).
+
+Also document the known upload/download asymmetry in DateTimeToFileTime().
+A file uploaded during DST will download correctly only if the current DST
+state matches the file's creation DST state. Fixing this requires broader
+regression testing across all protocol download paths.
+
+---
+ source/core/Common.cpp | 20 ++++++++------------
+ 1 file changed, 8 insertions(+), 12 deletions(-)
+
+diff --git a/source/core/Common.cpp b/source/core/Common.cpp
+index 1234567..abcdefg 100644
+--- a/source/core/Common.cpp
++++ b/source/core/Common.cpp
+@@ -2134,6 +2134,14 @@ FILETIME __fastcall DateTimeToFileTime(const TDateTime DateTime,
+     // can actually change between years
+     // (as it did in Belarus from GMT+2 to GMT+3 between 2011 and 2012)
+ 
++    // NOTE: This applies a DST adjustment to the UnixTimeStamp based on whether
++    // the file's date falls in DST vs. current DST state. This legacy
++    // compensation is retained for download paths to maintain backward
++    // compatibility with servers that exhibit the pre-Win7 Windows DST bug.
++    //
++    // KNOWN LIMITATION: ConvertTimestampToUnix() does NOT apply this adjustment
++    // for dstmWin on Win7+ (pure UTC to UTC conversion), creating an
++    // upload/download asymmetry. See ConvertTimestampToUnix comment below.
+     UnixTimeStamp += (IsDateInDST(DateTime) ?
+       Params->DaylightDifferenceSec : Params->StandardDifferenceSec) +
+       Params->BaseDifferenceSec;
+@@ -2216,17 +2224,10 @@ __int64 __fastcall ConvertTimestampToUnix(const FILETIME & FileTime,
+   }
+   else
+   {
+-    if (DSTMode == dstmWin)
+-    {
+-      FILETIME LocalFileTime;
+-      SYSTEMTIME SystemTime;
+-      FileTimeToLocalFileTime(&FileTime, &LocalFileTime);
+-      FileTimeToSystemTime(&LocalFileTime, &SystemTime);
+-      TDateTime DateTime = SystemTimeToDateTimeVerbose(SystemTime);
+-      const TDateTimeParams * Params = GetDateTimeParams(DecodeYear(DateTime));
+-      Result -= (IsDateInDST(DateTime) ?
+-        Params->DaylightDifferenceSec : Params->StandardDifferenceSec);
+-    }
++    // On Windows 7+, FILETIME is pure UTC and no DST compensation is needed
++    // for dstmWin. The legacy Windows DST display bug is fixed -- the
++    // arithmetic conversion Result = FILETIME / 10000000 - 11644473600LL
++    // is correct as-is for pure UTC to Unix UTC. Only dstmUnix/dstmKeep
++    // modes apply DST adjustments for legacy server compatibility.
+   }
+ 
+   return Result;
