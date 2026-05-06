@@ -4070,11 +4070,12 @@ void TCustomCommandList::ShortCuts(TShortCuts & ShortCuts) const
 // Global WinConfiguration instance for MSVC builds
 TWinConfiguration * WinConfiguration = nullptr;
 
-// Stub implementation for NetBox/MSVC - minimal functionality
-void TWinConfiguration::RecryptPasswords(TStrings * /*RecryptPasswordErrors*/)
+// MSVC implementation: recrypt stored sessions directly.
+// Note: TTerminalManager is not available in NetBox (WinSCP GUI-only),
+// so active terminal recryption is skipped.
+void TWinConfiguration::RecryptPasswords(TStrings * RecryptPasswordErrors)
 {
-  // Stub implementation - master password functionality not fully ported to MSVC yet
-  // TODO: Implement full RecryptPasswords for MSVC build
+  GetStoredSessions()->RecryptPasswords(RecryptPasswordErrors);
 }
 
 #endif // __BORLANDC__

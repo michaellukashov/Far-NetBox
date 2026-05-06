@@ -2,6 +2,7 @@
 
 #include "WinConfiguration.h"
 #include "Cryptography.h"
+#include <Sysutils.hpp>
 
 // Minimal inline RecryptPasswords that only calls the base class.
 // This avoids the VCL-dependent TTerminalManager inclusion from TerminalManager.h.
@@ -22,8 +23,14 @@ void TWinConfiguration::ChangeMasterPassword(
   FMasterPasswordVerifier = BytesToHex(Verifier);
   FPlainMasterPasswordEncrypt = value;
   FUseMasterPassword = true;
-  MasterPasswordRecryptPasswords(this, RecryptPasswordErrors);
-  FPlainMasterPasswordDecrypt = value;
+  try__finally
+  {
+    MasterPasswordRecryptPasswords(this, RecryptPasswordErrors);
+  }
+  __finally
+  {
+    FPlainMasterPasswordDecrypt = value;
+  } end_try__finally
 }
 
 bool TWinConfiguration::ValidateMasterPassword(UnicodeString value) {
@@ -37,6 +44,12 @@ void TWinConfiguration::ClearMasterPassword(TStrings * RecryptPasswordErrors) {
   FMasterPasswordVerifier = L"";
   FUseMasterPassword = false;
   Shred(FPlainMasterPasswordEncrypt);
-  MasterPasswordRecryptPasswords(this, RecryptPasswordErrors);
-  Shred(FPlainMasterPasswordDecrypt);
+  try__finally
+  {
+    MasterPasswordRecryptPasswords(this, RecryptPasswordErrors);
+  }
+  __finally
+  {
+    Shred(FPlainMasterPasswordDecrypt);
+  } end_try__finally
 }

@@ -1214,7 +1214,13 @@ bool TMasterPasswordDialog::Execute()
       try
       {
         AppLogFmt(L"MasterPassword: applying password change");
-        WinConfiguration->ChangeMasterPassword(NewPwd, nullptr);
+        std::unique_ptr<TStringList> RecryptErrors(std::make_unique<TStringList>());
+        WinConfiguration->ChangeMasterPassword(NewPwd, RecryptErrors.get());
+        if (RecryptErrors->GetCount() > 0)
+        {
+          AppLogFmt(L"MasterPassword: recryption completed with %d errors", RecryptErrors->GetCount());
+          MessageDialog(FORMAT(L"Password changed, but %d session(s) could not be recrypted.", RecryptErrors->GetCount()), qtWarning, qaOK);
+        }
         GetConfiguration()->DoSave(false, false);
         MessageDialog(GetMsg(NB_MASTER_PASSWORD_CHANGED), qtInformation, qaOK);
         return true;
@@ -1247,7 +1253,13 @@ bool TMasterPasswordDialog::Execute()
       try
       {
         AppLogFmt(L"MasterPassword: applying password set");
-        WinConfiguration->ChangeMasterPassword(NewPwd, nullptr);
+        std::unique_ptr<TStringList> RecryptErrors(std::make_unique<TStringList>());
+        WinConfiguration->ChangeMasterPassword(NewPwd, RecryptErrors.get());
+        if (RecryptErrors->GetCount() > 0)
+        {
+          AppLogFmt(L"MasterPassword: recryption completed with %d errors", RecryptErrors->GetCount());
+          MessageDialog(FORMAT(L"Password set, but %d session(s) could not be recrypted.", RecryptErrors->GetCount()), qtWarning, qaOK);
+        }
         GetConfiguration()->DoSave(false, false);
         MessageDialog(GetMsg(NB_MASTER_PASSWORD_SET2), qtInformation, qaOK);
         return true;
@@ -1275,7 +1287,13 @@ bool TMasterPasswordDialog::Execute()
       try
       {
         AppLogFmt(L"MasterPassword: clearing master password");
-        WinConfiguration->ClearMasterPassword(nullptr);
+        std::unique_ptr<TStringList> RecryptErrors(std::make_unique<TStringList>());
+        WinConfiguration->ClearMasterPassword(RecryptErrors.get());
+        if (RecryptErrors->GetCount() > 0)
+        {
+          AppLogFmt(L"MasterPassword: recryption completed with %d errors", RecryptErrors->GetCount());
+          MessageDialog(FORMAT(L"Password cleared, but %d session(s) could not be recrypted.", RecryptErrors->GetCount()), qtWarning, qaOK);
+        }
         GetConfiguration()->DoSave(false, false);
         MessageDialog(GetMsg(NB_MASTER_PASSWORD_CLEARED2), qtInformation, qaOK);
         return true;
