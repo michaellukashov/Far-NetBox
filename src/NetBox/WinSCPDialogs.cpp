@@ -1323,11 +1323,13 @@ protected:
 
 private:
   void UpdateOkButton();
+  void BrowseBtnClick(TFarButton * Sender, bool & Close);
 
   bool FAdd;
   TSshHostCA & FSshHostCA;
   TFarEdit * FNameEdit{nullptr};
   TFarEdit * FPublicKeyEdit{nullptr};
+  TFarButton * FBrowseBtn{nullptr};
   TFarEdit * FHostsEdit{nullptr};
 };
 
@@ -1381,6 +1383,12 @@ TSshHostCADialog::TSshHostCADialog(TCustomFarPlugin * AFarPlugin, bool Add, TSsh
   FPublicKeyEdit = MakeOwnedObject<TFarEdit>(this);
   FPublicKeyEdit->SetWidth(60);
 
+  SetNextItemPosition(ipRight);
+  FBrowseBtn = MakeOwnedObject<TFarButton>(this);
+  FBrowseBtn->SetCaption(GetMsg(NB_SSH_HOST_CA_BROWSE));
+  FBrowseBtn->SetOnClick(nb::bind(&TSshHostCADialog::BrowseBtnClick, this));
+  SetNextItemPosition(ipNewLine);
+
   Label = MakeOwnedObject<TFarText>(this);
   Label->SetCaption(GetMsg(NB_SSH_HOST_CA_PUBLIC_HOSTS));
   FHostsEdit = MakeOwnedObject<TFarEdit>(this);
@@ -1403,6 +1411,24 @@ bool TSshHostCADialog::Execute()
   FSshHostCA.PublicKey = DecodeBase64ToStr(FPublicKeyEdit->GetText());
   FSshHostCA.ValidityExpression = FHostsEdit->GetText();
 
+  if (FSshHostCA.PublicKey.IsEmpty())
+  {
+    MessageDialog(GetMsg(NB_SSH_HOST_CA_NO_KEY), qtError, qaOK);
+    return false;
+  }
+
+  if (!FSshHostCA.ValidityExpression.IsEmpty())
+  {
+    UnicodeString Error;
+    int32_t ErrorStart = 0;
+    int32_t ErrorLen = 0;
+    if (!IsCertificateValidityExpressionValid(FSshHostCA.ValidityExpression, Error, ErrorStart, ErrorLen))
+    {
+      MessageDialog(GetMsg(NB_SSH_HOST_CA_HOSTS_INVALID), qtError, qaOK);
+      return false;
+    }
+  }
+
   return true;
 }
 
@@ -1420,6 +1446,39 @@ void TSshHostCADialog::UpdateOkButton()
   OkButton->SetEnabled(!FNameEdit->GetText().IsEmpty() && !FPublicKeyEdit->GetText().IsEmpty());
 }
 
+
+void TSshHostCADialog::BrowseBtnClick(TFarButton * /*Sender*/, bool & Close)
+{
+  wchar_t FileName[MAX_PATH] = { 0 };
+  OPENFILENAMEW ofn = { 0 };
+  ofn.lStructSize = sizeof(ofn);
+  ofn.hwndOwner = GetConsoleWindow();
+  ofn.lpstrFile = FileName;
+  ofn.nMaxFile = MAX_PATH;
+  ofn.lpstrFilter = L"Public key files (*.pub)\0*.pub\0All Files (*.*)\0*.*\0";
+  ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
+
+  if (GetOpenFileNameW(&ofn))
+  {
+    UnicodeString Algorithm;
+    UnicodeString Comment;
+    bool HasCertificate = false;
+    try
+    {
+      const RawByteString PublicKey = LoadPublicKey(FileName, Algorithm, Comment, HasCertificate);
+      UnicodeString PublicKeyBase64 = EncodeBase64(PublicKey.c_str(), PublicKey.Length());
+      PublicKeyBase64 = ReplaceStr(PublicKeyBase64, L"\r", L"");
+      PublicKeyBase64 = ReplaceStr(PublicKeyBase64, L"\n", L"");
+      FPublicKeyEdit->SetText(PublicKeyBase64);
+      UpdateOkButton();
+    }
+    catch (Exception & E)
+    {
+      MessageDialog(E.Message, qtError, qaOK);
+    }
+  }
+  Close = false;
+}
 TSecurityConfigurationDialog::TSecurityConfigurationDialog(TCustomFarPlugin * AFarPlugin) :
   TWinSCPDialog(AFarPlugin)
 {
@@ -1481,6 +1540,8 @@ bool TSecurityConfigurationDialog::Execute()
 
   const bool FromPuTTY = GetConfiguration()->SshHostCAsFromPuTTY;
   FFromPuTTYCheck->SetChecked(FromPuTTY);
+  FAddCaBtn->SetEnabled(!FromPuTTY);
+  FCaListBox->SetEnabled(!FromPuTTY);
 
   FLocalCaList.clear();
   const TSshHostCAList * SrcList = GetConfiguration()->GetActiveSshHostCAList();
@@ -1541,6 +1602,8 @@ void TSecurityConfigurationDialog::Change()
   {
     const bool FromPuTTY = FFromPuTTYCheck->GetChecked();
     const bool HasItems = FCaListBox->GetItems()->GetCount() > 0;
+    FAddCaBtn->SetEnabled(!FromPuTTY);
+    FCaListBox->SetEnabled(!FromPuTTY);
     FEditCaBtn->SetEnabled(!FromPuTTY && HasItems);
     FRemoveCaBtn->SetEnabled(!FromPuTTY && HasItems);
   }
