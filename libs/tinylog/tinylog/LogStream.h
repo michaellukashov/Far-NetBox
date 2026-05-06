@@ -24,6 +24,7 @@ public:
 
   void SwapBuffer();
   void WriteBuffer();
+  bool EmergencyFlush();
   void SetFile(FILE * file);
   void SetPrefix(const char * file_name, int32_t line, const char * func_name, Utils::LogLevel log_level);
   size_t GetDroppedCount() const;

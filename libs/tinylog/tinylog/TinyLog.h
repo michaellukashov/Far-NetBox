@@ -38,6 +38,12 @@ public:
   size_t Write(const char * data, size_t ToWrite);
   void Close();
 
+  bool EmergencyFlush(uint32_t TimeoutMs);
+
+  static void Register(TinyLog * logger);
+  static void Unregister(TinyLog * logger);
+  static bool EmergencyFlushAll(uint32_t TimeoutMs);
+
   // TODO: group / groupEnd
 
 private:

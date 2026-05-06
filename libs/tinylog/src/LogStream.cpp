@@ -124,6 +124,44 @@ void LogStream::WriteBuffer()
   }*/
 }
 
+bool LogStream::EmergencyFlush()
+{
+  if (!pthread_mutex_tryenter(&mutex_))
+  {
+    OutputDebugStringA("tinylog: EmergencyFlush skipped (mutex busy)\n");
+    return false;
+  }
+
+  size_t bytes_flushed = 0;
+
+  if (file_ && front_buff_)
+  {
+    front_buff_->Flush(file_);
+    bytes_flushed += front_buff_->Size();
+    front_buff_->Clear();
+  }
+
+  if (drain_buffer_.load(std::memory_order_acquire))
+  {
+    SwapBuffer();
+    if (file_ && front_buff_)
+    {
+      front_buff_->Flush(file_);
+      bytes_flushed += front_buff_->Size();
+      front_buff_->Clear();
+    }
+    drain_buffer_.store(false, std::memory_order_release);
+  }
+
+  pthread_mutex_unlock(&mutex_);
+
+  char msg[256];
+  _snprintf_s(msg, sizeof(msg), _TRUNCATE,
+    "tinylog: EmergencyFlush complete (%zu bytes)\n", bytes_flushed);
+  OutputDebugStringA(msg);
+  return true;
+}
+
 void LogStream::SetFile(FILE * file)
 {
   assert(file_ == nullptr);
