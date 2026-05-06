@@ -3,6 +3,19 @@
 
 ## [Unreleased]
 
+### Added
+ * Add Generate Key button to Session dialog Auth tab (WinSCP UX parity)
+   — launches PuTTYgen from configured path to create SSH key pairs
+ * Add Cleanup Configuration dialog to Commands menu (WinSCP UX parity)
+   — selective cleanup of configuration, sessions, caches, INI file, random seed
+ * Add Generate URL dialog to Commands menu (WinSCP UX parity)
+   — generate session URLs and script snippets (Batch/CmdLine/PowerShell)
+   — uses netbox.com executable name derived from product version
+ * Add Location Profiles dialog to Commands menu (WinSCP UX parity)
+   — manage session and shared bookmark profiles with Add/Remove/Rename/Open
+ * Add "Custom" option to copy dialog preset combo (WinSCP UX parity)
+   — selecting Custom opens the transfer settings dialog for fine-tuning
+
 ### Fixes
  * Fix version string mismatch in NetBox.rc resource file (#502) https://github.com/michaellukashov/Far-NetBox/pull/502
    — replace hardcoded "24.12.2.608" literals with PLUGIN_VERSION_STR macro so

@@ -612,6 +612,7 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
   MenuItems->AddSeparator(FSConnected || FSVisible);
   const int32_t MAddBookmark = MenuItems->AddString(GetMsg(NB_MENU_COMMANDS_ADD_BOOKMARK), FSVisible);
   const int32_t MOpenDirectory = MenuItems->AddString(GetMsg(NB_MENU_COMMANDS_OPEN_DIRECTORY), FSVisible);
+  const int32_t MLocationProfiles = MenuItems->AddString(GetMsg(NB_MENU_COMMANDS_LOCATION_PROFILES), FSVisible);
   const int32_t MHomeDirectory = MenuItems->AddString(GetMsg(NB_MENU_COMMANDS_HOME_DIRECTORY), FSVisible);
   const int32_t MSynchronizeBrowsing = MenuItems->AddString(GetMsg(NB_MENU_COMMANDS_SYNCHRONIZE_BROWSING), FSVisible);
   MenuItems->AddSeparator(FSVisible);
@@ -619,6 +620,8 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
   const int32_t MPuttygen = MenuItems->AddString(GetMsg(NB_MENU_COMMANDS_PUTTYGEN), FromFileSystem);
   MenuItems->AddSeparator(FromFileSystem);
   const int32_t MConfigure = MenuItems->AddString(GetMsg(NB_MENU_COMMANDS_CONFIGURE));
+  const int32_t MGenerateUrl = MenuItems->AddString(GetMsg(NB_MENU_COMMANDS_GENERATE_URL));
+  const int32_t MCleanup = MenuItems->AddString(GetMsg(NB_MENU_COMMANDS_CLEANUP));
   const int32_t MAbout = MenuItems->AddString(GetMsg(NB_CONFIG_ABOUT));
 
   MenuItems->SetDisabled(MLog, !FSVisible || (WinSCPFileSystem && !WinSCPFileSystem->IsLogging()));
@@ -689,6 +692,11 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
       DebugAssert(WinSCPFileSystem);
       WinSCPFileSystem->OpenDirectory(Result == MAddBookmark);
     }
+    else if ((Result == MLocationProfiles) && WinSCPFileSystem)
+    {
+      DebugAssert(WinSCPFileSystem);
+      LocationProfilesDialog(WinSCPFileSystem);
+    }
     else if (Result == MHomeDirectory && WinSCPFileSystem)
     {
       WinSCPFileSystem->HomeDirectory();
@@ -700,6 +708,15 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
     else if (Result == MAbout)
     {
       AboutDialog();
+    }
+    else if (Result == MCleanup)
+    {
+      CleanupDialog();
+    }
+    else if ((Result == MGenerateUrl) && WinSCPFileSystem)
+    {
+      DebugAssert(WinSCPFileSystem);
+      GenerateUrlDialog(WinSCPFileSystem->GetSessionData());
     }
     else if ((Result == MPutty) && WinSCPFileSystem)
     {

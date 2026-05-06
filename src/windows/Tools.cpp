@@ -11,6 +11,7 @@
 #include <powrprof.h>
 
 #include <Common.h>
+#include <MsgIDs.h>
 #include <TextsWin.h>
 #include <TextsCore.h>
 #include <HelpWin.h>

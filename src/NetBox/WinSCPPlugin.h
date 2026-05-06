@@ -52,7 +52,9 @@ protected:
   bool IntegrationConfigurationDialog();
   bool SecurityConfigurationDialog();
   void AboutDialog();
-
+  void CleanupDialog();
+  void GenerateUrlDialog(TSessionData * SessionData);
+  void LocationProfilesDialog(TWinSCPFileSystem * FileSystem);
 protected:
   const NetBoxPrivateInfo * GetSystemFunctions() const { return static_cast<const NetBoxPrivateInfo *>(FStartupInfo.Private); }
   void DeleteLocalFile(const UnicodeString & LocalFileName);

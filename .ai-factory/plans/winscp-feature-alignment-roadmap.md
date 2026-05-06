@@ -135,54 +135,54 @@ feat(ui): align dialogs with WinSCP and port upstream fixes
 
 ---
 
-### Phase 2: Productivity Features (Generate URL, KeyGen, Cleanup)
+### Phase 2: Structural UX Parity (Generate URL, KeyGen, Cleanup, LocationProfiles, CopyParamCustom)
 
-**Goal:** Add user-facing productivity features that are straightforward to implement in Far's dialog system.
+**Goal:** Achieve complete structural UX parity with WinSCP — all dialogs that exist in WinSCP must exist in NetBox. Detailed plan: `.ai-factory/plans/winscp-structural-ux-parity.md`
 
-**Affected files:** `src/NetBox/WinSCPDialogs.cpp`, `src/NetBox/WinSCPFileSystem.cpp`, `src/windows/GUITools.cpp`
+**Affected files:** `src/NetBox/WinSCPDialogs.cpp`, `src/NetBox/WinSCPFileSystem.cpp`, `src/NetBox/WinSCPPlugin.cpp`, `src/core/SessionData.cpp`, `src/base/MsgIDs.h`, `.lng` files
 
-- [ ] **Task 2.1: Generate URL / Code dialog**
-  - Add menu item "Generate URL/Code" to session/commands menu
-  - Dialog options: URL format, Script format (.NET assembly, PowerShell, batch), include password
-  - Reference: WinSCP `forms/GenerateUrl.cpp` — adapt to Far dialog (`TWinSCPDialog`)
-  - Files: `src/NetBox/WinSCPDialogs.cpp` (new `TGenerateUrlDialog`), `src/NetBox/WinSCPFileSystem.cpp` (menu wiring)
-  - LOG: `FTerminal->LogEvent(L"Generate URL: format=%s, session=%s", ...)`
-  - Blocked by: Phase 1 completion
+- [x] **Task 2.1: Generate URL / Script dialog**
+  - Two-tab dialog: URL (checkboxes for user/pass/hostkey/remote-dir) + Script (batch/PS/cmd-line format)
+  - Omit .NET Assembly tab (NetBox has no .NET assembly)
+  - Use `netbox.com` not `winscp.com` in script output
+  - Core `TSessionData::GenerateSessionUrl()` already exists
+  - Files: `src/NetBox/WinSCPDialogs.cpp` (new `TGenerateUrlDialog`), `src/NetBox/WinSCPPlugin.cpp` (menu wiring)
+  - LOG: `AppLogFmt(L"GenerateUrl: ...")`
 
-- [ ] **Task 2.2: SSH key generation UI**
-  - Add "Generate Key" button to Authentication tab (when `PuttygenPath` is configured)
-  - Launch `puttygen.exe` with session parameters, capture output path
-  - Files: `src/NetBox/WinSCPDialogs.cpp` (button + handler), `src/windows/GUITools.cpp` (launch helper)
-  - LOG: `FTerminal->LogEvent(L"KeyGen: launched puttygen.exe, path=%s", PuttygenPath)`
-  - Blocked by: Phase 1 completion
+- [x] **Task 2.2: SSH key generation button**
+  - Add "Generate Key" TFarButton on Authentication tab next to PrivateKeyBrowseBtn
+  - Launch puttygen.exe when PuttygenPath is configured and file exists
+  - Files: `src/NetBox/WinSCPDialogs.cpp` (button + handler)
+  - LOG: `AppLogFmt(L"GenerateKey: ...")`
 
-- [ ] **Task 2.3: Configuration cleanup dialog**
-  - Add "Cleanup Configuration" to plugin configuration menu
-  - List orphaned session configs, temporary files, cached host keys
-  - Allow selective deletion with checkboxes
-  - Reference: WinSCP `forms/Cleanup.cpp` — simplified for Far text mode
+- [x] **Task 2.3: Configuration cleanup dialog**
+  - TFarListBox with checkmark items for cleanup categories (config, sessions, caches, INI, seed)
+  - Temporary folders skipped (VCL-only method)
   - Files: `src/NetBox/WinSCPDialogs.cpp` (new `TCleanupDialog`), `src/NetBox/WinSCPPlugin.cpp` (menu)
-  - LOG: `FTerminal->LogEvent(L"Cleanup: removed %d orphaned items", Count)`
-  - Blocked by: Phase 1 completion
 
-- [ ] **Task 2.4: Advanced session info dialog**
-  - Add "File System Info" menu item to show remote capabilities
-  - Display: protocol version, supported extensions, charset, server software
-  - Reference: WinSCP `forms/FileSystemInfo.cpp`
-  - Files: `src/NetBox/WinSCPDialogs.cpp` (new `TFileSystemInfoDialog`), `src/core/Terminal.cpp` (capability query)
-  - LOG: `FTerminal->LogEvent(L"FS Info: protocol=%s, extensions=%d", ...)`
-  - Blocked by: Phase 1 completion
+- [x] **Task 2.4: Location profiles dialog**
+  - TTabbedDialog with Session/Shared tabs, TFarListBox for bookmarks
+  - CRUD: add/remove/rename bookmarks (local+remote directory pairs)
+  - Reuses existing `TBookmarkList`/`TBookmarks` data model
+  - Files: `src/NetBox/WinSCPDialogs.cpp` (new `TLocationProfilesDialog`), `src/NetBox/WinSCPPlugin.cpp` (menu)
+
+- [x] **Task 2.5: CopyParamCustom — custom copy param option**
+  - Added "Custom" option to copy dialog preset combo
+  - Selecting "Custom" opens the existing copy-param editor dialog
+  - Files: `src/NetBox/WinSCPDialogs.cpp` (combo option + handler)
+
+- [x] ~~Task 2.4 (old): Advanced session info dialog~~ — **Already exists** as `TFileSystemInfoDialog` in WinSCPDialogs.cpp.
 
 **Commit checkpoint:**
 ```
-feat(ui): add productivity dialogs (URL generator, keygen, cleanup, fs info)
+feat(ui): achieve WinSCP structural UX parity
 
-- Generate URL/Code dialog with script/assembly output
-- Puttygen launcher integration on auth tab
-- Configuration cleanup for orphaned data
-- Remote filesystem capabilities info dialog
-```
-
+- Generate URL/Script dialog (URL + batch/PS/cmd-line output)
+- Puttygen launcher button on auth tab
+- Configuration cleanup dialog for orphaned data
+- Location profiles dialog with CRUD for session/shared bookmarks
+- Per-session custom copy parameter override
+-```
 ---
 
 ### Phase 3: Workspace & Session Management

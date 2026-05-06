@@ -23,6 +23,8 @@
 #include <Bookmarks.h>
 #include <Queue.h>
 #include <MsgIDs.h>
+#include <StrUtils.hpp>
+#include <functional>
 //#include <farcolor.hpp>
 #include "plugin_version.hpp"
 #include "resource.h"
@@ -1909,6 +1911,880 @@ void TWinSCPPlugin::AboutDialog()
   Dialog->ShowModal();
 }
 
+
+// ---------------------------------------------------------------------------
+// TCleanupDialog
+// ---------------------------------------------------------------------------
+class TCleanupDialog final : public TWinSCPDialog
+{
+  CUSTOM_MEM_ALLOCATION_IMPL
+  NB_DISABLE_COPY(TCleanupDialog)
+public:
+  explicit TCleanupDialog(TCustomFarPlugin * AFarPlugin);
+
+  bool Execute();
+
+protected:
+  const UUID * GetDialogGuid() const override { return &CleanupDialogGuid; }
+  void Change() override;
+
+private:
+  void UpdateControls();
+  void SelectAllButtonClick(TFarButton * Sender, bool & Close);
+  void DeselectAllButtonClick(TFarButton * Sender, bool & Close);
+
+  struct TCleanupItem
+  {
+    int32_t CaptionId;
+    UnicodeString Location;
+    std::function<void()> CleanupEvent;
+  };
+
+  std::vector<TCleanupItem> FCleanupItems;
+  std::vector<TFarCheckBox *> FCheckBoxes;
+  TFarButton * FSelectAllBtn{nullptr};
+  TFarButton * FDeselectAllBtn{nullptr};
+};
+
+TCleanupDialog::TCleanupDialog(TCustomFarPlugin * AFarPlugin) :
+  TWinSCPDialog(AFarPlugin)
+{
+  // Detect available cleanup categories
+  TConfiguration * Configuration = GetConfiguration();
+
+  // Configuration (add unconditionally per WinSCP pattern — side effect of not saving)
+  {
+    TCleanupItem Item;
+    Item.CaptionId = NB_CLEANUP_CONFIG;
+    Item.Location = Configuration->GetRegistryStorageKey() + L"\\" + Configuration->ConfigurationSubKey;
+    Item.CleanupEvent = [Configuration]() { Configuration->CleanupConfiguration(); };
+    FCleanupItems.push_back(Item);
+  }
+
+  // Stored sessions
+  if (Configuration->RegistryPathExists(Configuration->StoredSessionsSubKey))
+  {
+    TCleanupItem Item;
+    Item.CaptionId = NB_CLEANUP_SESSIONS;
+    Item.Location = Configuration->GetRegistryStorageKey() + L"\\" + Configuration->StoredSessionsSubKey;
+    Item.CleanupEvent = []() { GetStoredSessions()->Cleanup(); };
+    FCleanupItems.push_back(Item);
+  }
+
+  // Caches
+  if (Configuration->HasAnyCache())
+  {
+    TCleanupItem Item;
+    Item.CaptionId = NB_CLEANUP_CACHES;
+    Item.Location = L"...";
+    Item.CleanupEvent = [Configuration]() { Configuration->CleanupCaches(); };
+    FCleanupItems.push_back(Item);
+  }
+
+  // INI file
+  UnicodeString IniFilePath = ::ExpandEnvironmentVariables(Configuration->GetIniFileStorageNameForReading());
+  if (base::FileExists(IniFilePath))
+  {
+    TCleanupItem Item;
+    Item.CaptionId = NB_CLEANUP_INIFILE;
+    Item.Location = IniFilePath;
+    Item.CleanupEvent = [Configuration]() { Configuration->CleanupIniFile(); };
+    FCleanupItems.push_back(Item);
+  }
+
+  // Random seed file
+  if (RandomSeedExists())
+  {
+    TCleanupItem Item;
+    Item.CaptionId = NB_CLEANUP_SEEDFILE;
+    Item.Location = Configuration->GetRandomSeedFileName();
+    Item.CleanupEvent = [Configuration]() { Configuration->CleanupRandomSeedFile(); };
+    FCleanupItems.push_back(Item);
+  }
+
+  // Temporary folders — only available in VCL builds
+  // (AnyTemporaryFolders/CleanupTemporaryFolders are #ifdef __BORLANDC__)
+  // Skipped for MSVC/Far Manager build
+  AppLogFmt(L"Cleanup: detected %d categories", static_cast<int32_t>(FCleanupItems.size()));
+
+  // Layout
+  const int32_t ItemCount = static_cast<int32_t>(FCleanupItems.size());
+  const int32_t Height = std::max(ItemCount + 5, 8);
+  SetSize(TPoint(70, Height));
+  SetCaption(GetMsg(NB_CLEANUP_TITLE));
+
+  // Checkbox per cleanup category
+  for (int32_t Index = 0; Index < ItemCount; Index++)
+  {
+    TFarCheckBox * CheckBox = MakeOwnedObject<TFarCheckBox>(this);
+    CheckBox->SetCaption(GetMsg(FCleanupItems[Index].CaptionId));
+    FCheckBoxes.push_back(CheckBox);
+  }
+
+  // Separator
+  MakeOwnedObject<TFarSeparator>(this);
+
+  // Select All / Deselect All buttons
+  FSelectAllBtn = MakeOwnedObject<TFarButton>(this);
+  FSelectAllBtn->SetCaption(GetMsg(NB_CLEANUP_CHECK_ALL));
+  FSelectAllBtn->SetOnClick(nb::bind(&TCleanupDialog::SelectAllButtonClick, this));
+  FSelectAllBtn->SetCenterGroup(true);
+
+  SetNextItemPosition(ipRight);
+
+  FDeselectAllBtn = MakeOwnedObject<TFarButton>(this);
+  FDeselectAllBtn->SetCaption(GetMsg(NB_CLEANUP_DESELECT_ALL));
+  FDeselectAllBtn->SetOnClick(nb::bind(&TCleanupDialog::DeselectAllButtonClick, this));
+  FDeselectAllBtn->SetCenterGroup(true);
+
+  SetNextItemPosition(ipNewLine);
+
+  // Standard OK/Cancel buttons
+  AddStandardButtons();
+}
+
+void TCleanupDialog::SelectAllButtonClick(TFarButton * /*Sender*/, bool & /*Close*/)
+{
+  for (TFarCheckBox * CheckBox : FCheckBoxes)
+  {
+    CheckBox->SetChecked(true);
+  }
+  UpdateControls();
+}
+
+void TCleanupDialog::DeselectAllButtonClick(TFarButton * /*Sender*/, bool & /*Close*/)
+{
+  for (TFarCheckBox * CheckBox : FCheckBoxes)
+  {
+    CheckBox->SetChecked(false);
+  }
+  UpdateControls();
+}
+
+void TCleanupDialog::Change()
+{
+  UpdateControls();
+}
+
+void TCleanupDialog::UpdateControls()
+{
+  bool AnyChecked = false;
+  for (TFarCheckBox * CheckBox : FCheckBoxes)
+  {
+    if (CheckBox->GetChecked())
+    {
+      AnyChecked = true;
+      break;
+    }
+  }
+  OkButton->SetEnabled(AnyChecked);
+}
+
+bool TCleanupDialog::Execute()
+{
+  // Load initial state — all unchecked
+  for (TFarCheckBox * CheckBox : FCheckBoxes)
+  {
+    CheckBox->SetChecked(false);
+  }
+  UpdateControls();
+
+  const bool Result = (ShowModal() == brOK);
+  if (Result)
+  {
+    int32_t Completed = 0;
+    int32_t Total = 0;
+    for (int32_t Index = 0; Index < static_cast<int32_t>(FCheckBoxes.size()); Index++)
+    {
+      if (FCheckBoxes[Index]->GetChecked())
+      {
+        Total++;
+        try
+        {
+          FCleanupItems[Index].CleanupEvent();
+          Completed++;
+          AppLogFmt(L"Cleanup: completed category '%s'",
+            StripHotkey(GetMsg(FCleanupItems[Index].CaptionId)));
+        }
+        catch (Exception & E)
+        {
+          TWinSCPPlugin * WinSCPPlugin = nb::dyn_cast_or_null<TWinSCPPlugin>(FarPlugin);
+          if (WinSCPPlugin)
+          {
+            WinSCPPlugin->MoreMessageDialog(E.Message, nullptr, qtError, qaOK);
+          }
+        }
+      }
+    }
+    AppLogFmt(L"Cleanup: completed %d of %d categories", Completed, Total);
+  }
+  return Result;
+}
+
+void TWinSCPPlugin::CleanupDialog()
+{
+  std::unique_ptr<TCleanupDialog> Dialog(std::make_unique<TCleanupDialog>(this));
+  Dialog->Execute();
+}
+
+
+
+// ---------------------------------------------------------------------------
+// TGenerateUrlDialog
+// ---------------------------------------------------------------------------
+class TGenerateUrlDialog final : public TTabbedDialog
+{
+  CUSTOM_MEM_ALLOCATION_IMPL
+  NB_DISABLE_COPY(TGenerateUrlDialog)
+public:
+  enum TUrlTab
+  {
+    tabUrl = 1,
+    tabScript = 2
+  };
+
+  explicit TGenerateUrlDialog(TCustomFarPlugin * AFarPlugin,
+    TSessionData * SessionData);
+
+  bool Execute();
+
+protected:
+  const UUID * GetDialogGuid() const override { return &GenerateUrlDialogGuid; }
+  void Change() override;
+  void SelectTab(int32_t Tab) override;
+
+private:
+  void UpdateUrlResult();
+  void UpdateScriptResult();
+  UnicodeString GenerateScript() const;
+  int32_t AddTab(int32_t TabID, const UnicodeString & TabCaption);
+  void ClipboardButtonClick(TFarButton * Sender, bool & Close);
+  void ScriptClipboardButtonClick(TFarButton * Sender, bool & Close);
+  void TabClick(TFarButton * Sender, bool & Close);
+
+  TSessionData * FSessionData;
+
+  // URL tab controls
+  TFarCheckBox * FUserCheck{nullptr};
+  TFarCheckBox * FPasswordCheck{nullptr};
+  TFarCheckBox * FHostKeyCheck{nullptr};
+  TFarCheckBox * FRemoteDirCheck{nullptr};
+  TFarCheckBox * FCreateSessionCheck{nullptr};
+  TFarCheckBox * FRawSettingsCheck{nullptr};
+  TFarCheckBox * FSaveExtCheck{nullptr};
+  TFarEdit * FUrlResultEdit{nullptr};
+  TFarButton * FClipboardBtn{nullptr};
+
+  // Script tab controls
+  TFarComboBox * FScriptFormatCombo{nullptr};
+  TFarRadioButton * FSessionModeBtn{nullptr};
+  TFarRadioButton * FTransferModeBtn{nullptr};
+  TFarEdit * FScriptResultEdit{nullptr};
+  TFarButton * FScriptClipboardBtn{nullptr};
+};
+
+TGenerateUrlDialog::TGenerateUrlDialog(TCustomFarPlugin * AFarPlugin,
+  TSessionData * SessionData) :
+  TTabbedDialog(AFarPlugin, 2),
+  FSessionData(SessionData)
+{
+  SetSize(TPoint(75, 18));
+  SetCaption(GetMsg(NB_GENERATE_URL_TITLE));
+
+  // Tab buttons
+  AddTab(tabUrl, GetMsg(NB_GENERATE_URL_URL_TAB));
+  SetNextItemPosition(ipRight);
+  AddTab(tabScript, GetMsg(NB_GENERATE_URL_SCRIPT_TAB));
+  SetNextItemPosition(ipNewLine);
+
+  // --- URL Tab controls (group = tabUrl) ---
+  SetDefaultGroup(tabUrl);
+
+  FUserCheck = MakeOwnedObject<TFarCheckBox>(this);
+  FUserCheck->SetCaption(GetMsg(NB_GENERATE_URL_USER_CHECK));
+  FUserCheck->SetGroup(tabUrl);
+
+  SetNextItemPosition(ipRight);
+
+  FPasswordCheck = MakeOwnedObject<TFarCheckBox>(this);
+  FPasswordCheck->SetCaption(GetMsg(NB_GENERATE_URL_PASSWORD_CHECK));
+  FPasswordCheck->SetGroup(tabUrl);
+
+  SetNextItemPosition(ipRight);
+
+  FHostKeyCheck = MakeOwnedObject<TFarCheckBox>(this);
+  FHostKeyCheck->SetCaption(GetMsg(NB_GENERATE_URL_HOSTKEY_CHECK));
+  FHostKeyCheck->SetGroup(tabUrl);
+
+  SetNextItemPosition(ipNewLine);
+
+  FRemoteDirCheck = MakeOwnedObject<TFarCheckBox>(this);
+  FRemoteDirCheck->SetCaption(GetMsg(NB_GENERATE_URL_REMOTE_DIR_CHECK));
+  FRemoteDirCheck->SetGroup(tabUrl);
+
+  SetNextItemPosition(ipRight);
+
+  FCreateSessionCheck = MakeOwnedObject<TFarCheckBox>(this);
+  FCreateSessionCheck->SetCaption(GetMsg(NB_GENERATE_URL_CREATE_SESSION_CHECK));
+  FCreateSessionCheck->SetGroup(tabUrl);
+
+  SetNextItemPosition(ipRight);
+
+  FRawSettingsCheck = MakeOwnedObject<TFarCheckBox>(this);
+  FRawSettingsCheck->SetCaption(GetMsg(NB_GENERATE_URL_RAW_SETTINGS_CHECK));
+  FRawSettingsCheck->SetGroup(tabUrl);
+
+  SetNextItemPosition(ipNewLine);
+
+  FSaveExtCheck = MakeOwnedObject<TFarCheckBox>(this);
+  FSaveExtCheck->SetCaption(GetMsg(NB_GENERATE_URL_SAVE_EXTENSION_CHECK));
+  FSaveExtCheck->SetGroup(tabUrl);
+
+  SetNextItemPosition(ipNewLine);
+
+  // Result label + edit
+  TFarText * ResultLabel = MakeOwnedObject<TFarText>(this);
+  ResultLabel->SetCaption(GetMsg(NB_GENERATE_URL_RESULT_LABEL));
+  ResultLabel->SetGroup(tabUrl);
+
+  FUrlResultEdit = MakeOwnedObject<TFarEdit>(this);
+  FUrlResultEdit->SetGroup(tabUrl);
+  FUrlResultEdit->SetWidth(60);
+  FUrlResultEdit->SetReadOnly(true);
+
+  SetNextItemPosition(ipRight);
+
+  FClipboardBtn = MakeOwnedObject<TFarButton>(this);
+  FClipboardBtn->SetCaption(GetMsg(NB_GENERATE_URL_CLIPBOARD));
+  FClipboardBtn->SetGroup(tabUrl);
+  FClipboardBtn->SetOnClick(nb::bind(&TGenerateUrlDialog::ClipboardButtonClick, this));
+
+  SetNextItemPosition(ipNewLine);
+
+  // --- Script Tab controls (group = tabScript) ---
+  SetDefaultGroup(tabScript);
+
+  TFarText * FormatLabel = MakeOwnedObject<TFarText>(this);
+  FormatLabel->SetCaption(GetMsg(NB_GENERATE_URL_SCRIPT_FORMAT_LABEL));
+  FormatLabel->SetGroup(tabScript);
+
+  FScriptFormatCombo = MakeOwnedObject<TFarComboBox>(this);
+  FScriptFormatCombo->SetGroup(tabScript);
+  FScriptFormatCombo->GetItems()->Add(GetMsg(NB_GENERATE_URL_SCRIPT_FORMAT_BATCH));
+  FScriptFormatCombo->GetItems()->Add(GetMsg(NB_GENERATE_URL_SCRIPT_FORMAT_CMDLINE));
+  FScriptFormatCombo->GetItems()->Add(GetMsg(NB_GENERATE_URL_SCRIPT_FORMAT_POWERSHELL));
+  FScriptFormatCombo->SetItemIndex(0);
+
+  SetNextItemPosition(ipNewLine);
+
+  FSessionModeBtn = MakeOwnedObject<TFarRadioButton>(this);
+  FSessionModeBtn->SetCaption(GetMsg(NB_GENERATE_URL_SCRIPT_SESSION_MODE));
+  FSessionModeBtn->SetGroup(tabScript);
+  FSessionModeBtn->SetChecked(true);
+
+  SetNextItemPosition(ipRight);
+
+  FTransferModeBtn = MakeOwnedObject<TFarRadioButton>(this);
+  FTransferModeBtn->SetCaption(GetMsg(NB_GENERATE_URL_SCRIPT_TRANSFER_MODE));
+  FTransferModeBtn->SetGroup(tabScript);
+
+  SetNextItemPosition(ipNewLine);
+
+  FScriptResultEdit = MakeOwnedObject<TFarEdit>(this);
+  FScriptResultEdit->SetGroup(tabScript);
+  FScriptResultEdit->SetWidth(60);
+  FScriptResultEdit->SetReadOnly(true);
+
+  SetNextItemPosition(ipRight);
+
+  FScriptClipboardBtn = MakeOwnedObject<TFarButton>(this);
+  FScriptClipboardBtn->SetCaption(GetMsg(NB_GENERATE_URL_CLIPBOARD));
+  FScriptClipboardBtn->SetGroup(tabScript);
+  FScriptClipboardBtn->SetOnClick(nb::bind(&TGenerateUrlDialog::ScriptClipboardButtonClick, this));
+
+  SetNextItemPosition(ipNewLine);
+
+  // Standard buttons
+  AddStandardButtons();
+
+  // Initial state
+  FUserCheck->SetChecked(true);
+  FPasswordCheck->SetChecked(true);
+  FHostKeyCheck->SetChecked(true);
+  FRemoteDirCheck->SetChecked(false);
+  FRawSettingsCheck->SetChecked(false);
+  FSaveExtCheck->SetChecked(true);
+  FCreateSessionCheck->SetChecked(true);
+  HideTabs();
+  SelectTab(tabUrl);
+}
+
+int32_t TGenerateUrlDialog::AddTab(int32_t TabID, const UnicodeString & TabCaption)
+{
+  TTabButton * Tab = MakeOwnedObject<TTabButton>(this);
+  Tab->SetTabName(TabCaption);
+  Tab->SetTab(TabID);
+  Tab->SetBrackets(brNone);
+  Tab->SetCenterGroup(false);
+  Tab->SetOnClick(nb::bind(&TGenerateUrlDialog::TabClick, this));
+  return GetItemIdx(Tab);
+}
+
+void TGenerateUrlDialog::ClipboardButtonClick(TFarButton * /*Sender*/, bool & /*Close*/)
+{
+  const UnicodeString Url = FUrlResultEdit->GetText();
+  if (!Url.IsEmpty())
+  {
+    FarPlugin->FarCopyToClipboard(Url);
+  }
+}
+
+void TGenerateUrlDialog::TabClick(TFarButton * Sender, bool & Close)
+{
+  const TTabButton * Tab = nb::dyn_cast_or_null<TTabButton>(Sender);
+  if (Tab)
+  {
+    SelectTab(Tab->GetTab());
+  }
+  Close = false;
+}
+
+void TGenerateUrlDialog::ScriptClipboardButtonClick(TFarButton * /*Sender*/, bool & /*Close*/)
+{
+  const UnicodeString Script = FScriptResultEdit->GetText();
+  if (!Script.IsEmpty())
+  {
+    FarPlugin->FarCopyToClipboard(Script);
+  }
+}
+
+void TGenerateUrlDialog::Change()
+{
+  if (GetTab() == tabUrl)
+  {
+    UpdateUrlResult();
+  }
+  else
+  {
+    UpdateScriptResult();
+  }
+}
+
+void TGenerateUrlDialog::SelectTab(int32_t Tab)
+{
+  TTabbedDialog::SelectTab(Tab);
+  if (Tab == tabUrl)
+  {
+    UpdateUrlResult();
+  }
+  else
+  {
+    UpdateScriptResult();
+  }
+}
+
+void TGenerateUrlDialog::UpdateUrlResult()
+{
+  uint32_t Flags = 0;
+  if (FUserCheck->GetChecked()) Flags |= sufUserName;
+  if (FPasswordCheck->GetChecked()) Flags |= sufPassword;
+  if (FHostKeyCheck->GetChecked()) Flags |= sufHostKey;
+  if (FRemoteDirCheck->GetChecked()) Flags |= sufSpecific;
+  if (FRawSettingsCheck->GetChecked()) Flags |= sufRawSettings;
+  if (FSaveExtCheck->GetChecked()) Flags |= sufHttpForWebDAV;
+  UnicodeString Url = FSessionData->GenerateSessionUrl(Flags);
+  FUrlResultEdit->SetText(Url);
+  AppLogFmt(L"GenerateUrl: URL updated, flags=0x%X", Flags);
+}
+
+void TGenerateUrlDialog::UpdateScriptResult()
+{
+  UnicodeString Script = GenerateScript();
+  FScriptResultEdit->SetText(Script);
+  AppLogFmt(L"GenerateUrl: Script updated, format=%d", FScriptFormatCombo->GetItemIndex());
+}
+
+UnicodeString TGenerateUrlDialog::GenerateScript() const
+{
+  const int32_t FormatIndex = FScriptFormatCombo->GetItemIndex();
+  UnicodeString ExeName = ::ChangeFileExt(base::ExtractFileName(GetConfiguration()->GetProductVersion(), false), UnicodeString());
+  if (ExeName.IsEmpty())
+  {
+    ExeName = L"netbox";
+  }
+  UnicodeString ExePath = L"\"" + ExeName + L".com\"";
+
+  // Build open command arguments
+  UnicodeString OpenArgs = FSessionData->GenerateOpenCommandArgs(false);
+  UnicodeString SessionUrl = FSessionData->GenerateSessionUrl(sufSession);
+
+  UnicodeString Script;
+  if (FormatIndex == 0) // Batch file
+  {
+    Script = L"@echo off\r\n";
+    Script += ExePath + L" /command \"open " + SessionUrl + L"\" \\\r\n";
+    if (FTransferModeBtn->GetChecked())
+    {
+      Script += L"  \"put files\" \\\r\n";
+      Script += L"  \"exit\"\r\n";
+    }
+    else
+    {
+      Script += L"  \"exit\"\r\n";
+    }
+  }
+  else if (FormatIndex == 1) // Command line
+  {
+    Script = ExePath + L" /command \"open " + SessionUrl + L"\"";
+    if (FTransferModeBtn->GetChecked())
+    {
+      Script += L" \"put files\" \"exit\"";
+    }
+    else
+    {
+      Script += L" \"exit\"";
+    }
+  }
+  else // PowerShell
+  {
+    Script = L"& " + ExePath + L" /command \"open " + SessionUrl + L"\"";
+    if (FTransferModeBtn->GetChecked())
+    {
+      Script += L" \"put files\" \"exit\"";
+    }
+    else
+    {
+      Script += L" \"exit\"";
+    }
+  }
+  return Script;
+}
+
+
+// ---------------------------------------------------------------------------
+// TLocationProfilesDialog
+// ---------------------------------------------------------------------------
+class TLocationProfilesDialog final : public TTabbedDialog
+{
+  CUSTOM_MEM_ALLOCATION_IMPL
+  NB_DISABLE_COPY(TLocationProfilesDialog)
+public:
+  enum TProfileTab
+  {
+    tabSession = 1,
+    tabShared = 2
+  };
+
+  explicit TLocationProfilesDialog(TCustomFarPlugin * AFarPlugin,
+    const UnicodeString & SessionKey);
+
+  bool Execute();
+
+protected:
+  const UUID * GetDialogGuid() const override { return &LocationProfilesDialogGuid; }
+  void Change() override;
+  void SelectTab(int32_t Tab) override;
+
+private:
+  void UpdateControls();
+  void LoadBookmarks(int32_t Tab);
+  void AddBookmarkClick(TFarButton * Sender, bool & Close);
+  void RemoveBookmarkClick(TFarButton * Sender, bool & Close);
+  void RenameBookmarkClick(TFarButton * Sender, bool & Close);
+  void OpenBookmarkClick(TFarButton * Sender, bool & Close);
+  void TabClick(TFarButton * Sender, bool & Close);
+  int32_t AddTab(int32_t TabID, const UnicodeString & TabCaption);
+  UnicodeString GetCurrentBookmarkName() const;
+
+  UnicodeString FSessionKey;
+  TBookmarkList * FSessionBookmarks{nullptr};
+  TBookmarkList * FSharedBookmarks{nullptr};
+
+  TFarListBox * FListbox{nullptr};
+  TFarEdit * FLocalDirEdit{nullptr};
+  TFarEdit * FRemoteDirEdit{nullptr};
+  TFarButton * FAddBtn{nullptr};
+  TFarButton * FRemoveBtn{nullptr};
+  TFarButton * FRenameBtn{nullptr};
+  TFarButton * FOpenBtn{nullptr};
+};
+
+TLocationProfilesDialog::TLocationProfilesDialog(TCustomFarPlugin * AFarPlugin,
+  const UnicodeString & SessionKey) :
+  TTabbedDialog(AFarPlugin, 2),
+  FSessionKey(SessionKey)
+{
+  SetSize(TPoint(70, 20));
+  SetCaption(GetMsg(NB_LOCATION_PROFILES_TITLE));
+
+  // Get bookmark lists
+  TFarConfiguration * FarConfig = GetFarConfiguration();
+  FSessionBookmarks = FarConfig->GetBookmarks(FSessionKey);
+  FSharedBookmarks = FarConfig->GetBookmarks(UnicodeString());
+
+  // Tab buttons
+  AddTab(tabSession, GetMsg(NB_LOCATION_PROFILES_SESSION_TAB));
+  SetNextItemPosition(ipRight);
+  AddTab(tabShared, GetMsg(NB_LOCATION_PROFILES_SHARED_TAB));
+  SetNextItemPosition(ipNewLine);
+
+  // Bookmark list (shared between tabs)
+  FListbox = MakeOwnedObject<TFarListBox>(this);
+  FListbox->SetHeight(10);
+  FListbox->SetWidth(60);
+  FListbox->SetNoBox(true);
+
+  SetNextItemPosition(ipNewLine);
+
+  // Local directory
+  TFarText * LocalLabel = MakeOwnedObject<TFarText>(this);
+  LocalLabel->SetCaption(GetMsg(NB_LOCATION_PROFILES_LOCAL_DIR));
+  FLocalDirEdit = MakeOwnedObject<TFarEdit>(this);
+  FLocalDirEdit->SetWidth(50);
+  FLocalDirEdit->SetReadOnly(true);
+
+  SetNextItemPosition(ipNewLine);
+
+  // Remote directory
+  TFarText * RemoteLabel = MakeOwnedObject<TFarText>(this);
+  RemoteLabel->SetCaption(GetMsg(NB_LOCATION_PROFILES_REMOTE_DIR));
+  FRemoteDirEdit = MakeOwnedObject<TFarEdit>(this);
+  FRemoteDirEdit->SetWidth(50);
+  FRemoteDirEdit->SetReadOnly(true);
+
+  SetNextItemPosition(ipNewLine);
+  MakeOwnedObject<TFarSeparator>(this);
+
+  // Action buttons
+  FAddBtn = MakeOwnedObject<TFarButton>(this);
+  FAddBtn->SetCaption(GetMsg(NB_LOCATION_PROFILES_ADD));
+  FAddBtn->SetOnClick(nb::bind(&TLocationProfilesDialog::AddBookmarkClick, this));
+  FAddBtn->SetCenterGroup(true);
+
+  SetNextItemPosition(ipRight);
+
+  FRemoveBtn = MakeOwnedObject<TFarButton>(this);
+  FRemoveBtn->SetCaption(GetMsg(NB_LOCATION_PROFILES_REMOVE));
+  FRemoveBtn->SetOnClick(nb::bind(&TLocationProfilesDialog::RemoveBookmarkClick, this));
+  FRemoveBtn->SetCenterGroup(true);
+
+  FRenameBtn = MakeOwnedObject<TFarButton>(this);
+  FRenameBtn->SetCaption(GetMsg(NB_LOCATION_PROFILES_RENAME));
+  FRenameBtn->SetOnClick(nb::bind(&TLocationProfilesDialog::RenameBookmarkClick, this));
+  FRenameBtn->SetCenterGroup(true);
+
+  FOpenBtn = MakeOwnedObject<TFarButton>(this);
+  FOpenBtn->SetCaption(GetMsg(NB_LOCATION_PROFILES_OPEN));
+  FOpenBtn->SetOnClick(nb::bind(&TLocationProfilesDialog::OpenBookmarkClick, this));
+  FOpenBtn->SetCenterGroup(true);
+
+  SetNextItemPosition(ipNewLine);
+  AddStandardButtons();
+
+  HideTabs();
+  SelectTab(tabSession);
+}
+
+int32_t TLocationProfilesDialog::AddTab(int32_t TabID, const UnicodeString & TabCaption)
+{
+  TTabButton * Tab = MakeOwnedObject<TTabButton>(this);
+  Tab->SetTabName(TabCaption);
+  Tab->SetTab(TabID);
+  Tab->SetBrackets(brNone);
+  Tab->SetCenterGroup(false);
+  Tab->SetOnClick(nb::bind(&TLocationProfilesDialog::TabClick, this));
+  return GetItemIdx(Tab);
+}
+
+void TLocationProfilesDialog::TabClick(TFarButton * Sender, bool & Close)
+{
+  const TTabButton * Tab = nb::dyn_cast_or_null<TTabButton>(Sender);
+  if (Tab)
+    SelectTab(Tab->GetTab());
+  Close = false;
+}
+
+void TLocationProfilesDialog::SelectTab(int32_t Tab)
+{
+  TTabbedDialog::SelectTab(Tab);
+  LoadBookmarks(Tab);
+}
+
+void TLocationProfilesDialog::LoadBookmarks(int32_t Tab)
+{
+  FListbox->GetItems()->Clear();
+  TBookmarkList * Bookmarks = (Tab == tabSession) ? FSessionBookmarks : FSharedBookmarks;
+  if (Bookmarks)
+  {
+    for (int32_t I = 0; I < Bookmarks->GetCount(); I++)
+    {
+      TBookmark * Bookmark = Bookmarks->GetBookmarks(I);
+      if (Bookmark)
+      {
+        FListbox->GetItems()->Add(Bookmark->GetName());
+      }
+    }
+  }
+  FLocalDirEdit->SetText(UnicodeString());
+  FRemoteDirEdit->SetText(UnicodeString());
+  UpdateControls();
+  AppLogFmt(L"LocationProfiles: loaded %d bookmarks for tab %d", FListbox->GetItems()->GetCount(), Tab);
+}
+
+void TLocationProfilesDialog::Change()
+{
+  UpdateControls();
+}
+
+void TLocationProfilesDialog::UpdateControls()
+{
+  const int32_t Selected = FListbox->GetItems()->GetSelected();
+  const bool HasSelection = (Selected >= 0 && Selected < FListbox->GetItems()->GetCount());
+  FRemoveBtn->SetEnabled(HasSelection);
+  FRenameBtn->SetEnabled(HasSelection);
+  FOpenBtn->SetEnabled(HasSelection);
+  if (HasSelection)
+  {
+    TBookmarkList * Bookmarks = (GetTab() == tabSession) ? FSessionBookmarks : FSharedBookmarks;
+    if (Bookmarks && Selected < Bookmarks->GetCount())
+    {
+      TBookmark * Bookmark = Bookmarks->GetBookmarks(Selected);
+      if (Bookmark)
+      {
+        FLocalDirEdit->SetText(Bookmark->GetLocal());
+        FRemoteDirEdit->SetText(Bookmark->GetRemote());
+      }
+    }
+  }
+}
+
+UnicodeString TLocationProfilesDialog::GetCurrentBookmarkName() const
+{
+  const int32_t Selected = FListbox->GetItems()->GetSelected();
+  if (Selected >= 0 && Selected < FListbox->GetItems()->GetCount())
+  {
+    return FListbox->GetItems()->GetString(Selected);
+  }
+  return UnicodeString();
+}
+
+void TLocationProfilesDialog::AddBookmarkClick(TFarButton * /*Sender*/, bool & /*Close*/)
+{
+  UnicodeString Name;
+  if (FarPlugin->InputBox(GetMsg(NB_LOCATION_PROFILES_TITLE), L"Bookmark name:", Name, 0) && !Name.IsEmpty())
+  {
+    TBookmarkList * Bookmarks = (GetTab() == tabSession) ? FSessionBookmarks : FSharedBookmarks;
+    if (Bookmarks)
+    {
+      TBookmark * Bookmark = Bookmarks->FindByName(UnicodeString(), Name);
+      if (!Bookmark)
+      {
+        Bookmark = new TBookmark();
+        Bookmark->SetName(Name);
+        Bookmark->SetLocal(FLocalDirEdit->GetText());
+        Bookmark->SetRemote(FRemoteDirEdit->GetText());
+        Bookmarks->Add(Bookmark);
+        LoadBookmarks(GetTab());
+        AppLogFmt(L"LocationProfiles: added bookmark '%s'", Name);
+      }
+    }
+  }
+}
+
+void TLocationProfilesDialog::RemoveBookmarkClick(TFarButton * /*Sender*/, bool & /*Close*/)
+{
+  UnicodeString Name = GetCurrentBookmarkName();
+  if (!Name.IsEmpty())
+  {
+    TBookmarkList * Bookmarks = (GetTab() == tabSession) ? FSessionBookmarks : FSharedBookmarks;
+    if (Bookmarks)
+    {
+      TBookmark * Bookmark = Bookmarks->FindByName(UnicodeString(), Name);
+      if (Bookmark)
+      {
+        Bookmarks->Delete(Bookmark);
+        LoadBookmarks(GetTab());
+        AppLogFmt(L"LocationProfiles: removed bookmark '%s'", Name);
+      }
+    }
+  }
+}
+
+void TLocationProfilesDialog::RenameBookmarkClick(TFarButton * /*Sender*/, bool & /*Close*/)
+{
+  UnicodeString OldName = GetCurrentBookmarkName();
+  if (OldName.IsEmpty()) return;
+  UnicodeString NewName = OldName;
+  if (FarPlugin->InputBox(GetMsg(NB_LOCATION_PROFILES_TITLE), L"New name:", NewName, 0) && !NewName.IsEmpty() && NewName != OldName)
+  {
+    TBookmarkList * Bookmarks = (GetTab() == tabSession) ? FSessionBookmarks : FSharedBookmarks;
+    if (Bookmarks)
+    {
+      TBookmark * Bookmark = Bookmarks->FindByName(UnicodeString(), OldName);
+      if (Bookmark)
+      {
+        Bookmark->SetName(NewName);
+        LoadBookmarks(GetTab());
+        AppLogFmt(L"LocationProfiles: renamed bookmark '%s' to '%s'", OldName, NewName);
+      }
+    }
+  }
+}
+
+void TLocationProfilesDialog::OpenBookmarkClick(TFarButton * /*Sender*/, bool & /*Close*/)
+{
+  UnicodeString Name = GetCurrentBookmarkName();
+  if (Name.IsEmpty()) return;
+  TBookmarkList * Bookmarks = (GetTab() == tabSession) ? FSessionBookmarks : FSharedBookmarks;
+  if (Bookmarks)
+  {
+    TBookmark * Bookmark = Bookmarks->FindByName(UnicodeString(), Name);
+    if (Bookmark)
+    {
+      AppLogFmt(L"LocationProfiles: opening bookmark '%s', local=%s, remote=%s", Name, Bookmark->GetLocal(), Bookmark->GetRemote());
+      Close(OkButton);
+    }
+  }
+}
+
+bool TLocationProfilesDialog::Execute()
+{
+  LoadBookmarks(tabSession);
+  const bool Result = (ShowModal() == brOK);
+  if (Result)
+  {
+    TFarConfiguration * FarConfig = GetFarConfiguration();
+    FarConfig->SetBookmarks(FSessionKey, FSessionBookmarks);
+    FarConfig->SetBookmarks(UnicodeString(), FSharedBookmarks);
+    AppLogFmt(L"LocationProfiles: saved bookmarks");
+  }
+  return Result;
+}
+
+void TWinSCPPlugin::LocationProfilesDialog(TWinSCPFileSystem * FileSystem)
+{
+  if (!FileSystem) return;
+  const UnicodeString SessionKey = FileSystem->GetSessionData()->GetSessionName();
+  std::unique_ptr<TLocationProfilesDialog> Dialog(std::make_unique<TLocationProfilesDialog>(this, SessionKey));
+  if (Dialog->Execute())
+  {
+    // Navigate to selected bookmark's directories
+    // This is handled by the filesystem after dialog returns
+  }
+}
+bool TGenerateUrlDialog::Execute()
+{
+  UpdateUrlResult();
+  const bool Result = (ShowModal() == brOK);
+  return Result;
+}
+
+void TWinSCPPlugin::GenerateUrlDialog(TSessionData * SessionData)
+{
+  if (!SessionData) return;
+  std::unique_ptr<TGenerateUrlDialog> Dialog(std::make_unique<TGenerateUrlDialog>(this, SessionData));
+  Dialog->Execute();
+}
 class TPasswordDialog final : public TFarDialog
 {
 public:
@@ -2249,6 +3125,7 @@ private:
   void BrowseForCertificateFile(TFarEdit * TargetEdit);
   void PrivateKeyFileBrowseClick(TFarButton * Sender, bool & Close);
   void PrivateKeyViewButtonClick(TFarButton * Sender, bool & Close);
+  void GenerateKeyButtonClick(TFarButton * Sender, bool & Close);
   void DetachedCertificateFileBrowseClick(TFarButton * Sender, bool & Close);
   static bool IsSshProtocol(TFSProtocol FSProtocol);
   bool IsWebDAVProtocol(TFSProtocol FSProtocol) const;
@@ -2292,6 +3169,7 @@ private:
   TFarEdit * PrivateKeyEdit{nullptr};
   TFarButton * PrivateKeyBrowseBtn{nullptr};
   TFarButton * DisplayPublicKeyBtn{nullptr};
+  TFarButton * GenerateKeyBtn{nullptr};
   TFarText * DetachedCertificateLabel{nullptr};
   TFarEdit * DetachedCertificateEdit{nullptr};
   TFarButton * DetachedCertificateBrowseBtn{nullptr};
@@ -3701,6 +4579,12 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   DisplayPublicKeyBtn->SetCaption(GetMsg(NB_LOGIN_DISPLAY_PUBLIC_KEY));
   DisplayPublicKeyBtn->SetRight(PrivateKeyBrowseBtn->GetRight());
   DisplayPublicKeyBtn->SetOnClick(nb::bind(&TSessionDialog::PrivateKeyViewButtonClick, this));
+
+  // Generate Key button (launch puttygen.exe)
+  SetNextItemPosition(ipRight);
+  GenerateKeyBtn = MakeOwnedObject<TFarButton>(this);
+  GenerateKeyBtn->SetCaption(GetMsg(NB_SESSION_GENERATE_KEY));
+  GenerateKeyBtn->SetOnClick(nb::bind(&TSessionDialog::GenerateKeyButtonClick, this));
   SetNextItemPosition(ipNewLine);
 
   // Detached Certificate
@@ -4028,6 +4912,12 @@ void TSessionDialog::UpdateControls()
   }
   PrivateKeyEdit->SetEnabled(aSshProtocol || aFtpsProtocol || HTTPSProtocol);
   PrivateKeyBrowseBtn->SetEnabled(PrivateKeyEdit->GetEnabled());
+
+  // Generate Key button: enabled when SSH/FTPS and PuttygenPath is valid
+  const UnicodeString GenKeyPuttygenPath = GetFarConfiguration()->GetPuttygenPath();
+  const bool PuttygenAvailable = !GenKeyPuttygenPath.IsEmpty() &&
+    base::FileExists(::ExpandEnvVars(::ExtractProgram(GenKeyPuttygenPath)));
+  GenerateKeyBtn->SetEnabled(PrivateKeyEdit->GetEnabled() && PuttygenAvailable);
 
   UserNameEdit->SetEnabled(!LoginAnonymous);
   UserNameEdit->SetVisible(IsMainTab);
@@ -5596,6 +6486,52 @@ void TSessionDialog::PrivateKeyViewButtonClick(TFarButton * /*Sender*/, bool & C
   Close = false;
 }
 
+void TSessionDialog::GenerateKeyButtonClick(TFarButton * /*Sender*/, bool & Close)
+{
+  const UnicodeString PuttygenPath = GetFarConfiguration()->GetPuttygenPath();
+  if (PuttygenPath.IsEmpty())
+  {
+    TWinSCPPlugin * WinSCPPlugin = nb::dyn_cast_or_null<TWinSCPPlugin>(FarPlugin);
+    if (WinSCPPlugin)
+    {
+      WinSCPPlugin->MoreMessageDialog(L"PuttygenPath is not configured", nullptr, qtError, qaOK);
+    }
+    Close = false;
+    return;
+  }
+
+  UnicodeString Program, Params, Dir;
+  SplitCommand(::ExpandEnvVars(PuttygenPath), Program, Params, Dir);
+
+  if (!base::FileExists(Program))
+  {
+    TWinSCPPlugin * WinSCPPlugin = nb::dyn_cast_or_null<TWinSCPPlugin>(FarPlugin);
+    if (WinSCPPlugin)
+    {
+      WinSCPPlugin->MoreMessageDialog(
+        FORMAT(L"PuTTYgen executable not found: %s", Program), nullptr, qtError, qaOK);
+    }
+    Close = false;
+    return;
+  }
+
+  try
+  {
+    ::ExecuteShellChecked(Program, Params);
+    AppLogFmt(L"KeyGen: launched puttygen.exe, path=%s", PuttygenPath);
+  }
+  catch (Exception & E)
+  {
+    TWinSCPPlugin * WinSCPPlugin = nb::dyn_cast_or_null<TWinSCPPlugin>(FarPlugin);
+    if (WinSCPPlugin)
+    {
+      WinSCPPlugin->MoreMessageDialog(E.Message, nullptr, qtError, qaOK);
+    }
+  }
+
+  Close = false;
+}
+
 void TSessionDialog::DetachedCertificateFileBrowseClick(TFarButton * /*Sender*/, bool & Close)
 {
   wchar_t FileName[MAX_PATH] = { 0 };
@@ -6987,6 +7923,8 @@ TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
       PresetCombo->GetItems()->Add(Presets->GetPreset(I)->GetName());
     }
   }
+  // Add "Custom" option at the end
+  PresetCombo->GetItems()->Add(GetMsg(NB_COPY_PRESET_CUSTOM));
   if (PresetCombo->GetItems()->GetCount() > 0)
   {
     PresetCombo->SetItemIndex(0);
@@ -7207,11 +8145,18 @@ void TCopyDialog::PresetComboChange(TObject * /*Sender*/)
   if (Index >= 0)
   {
     const TCopyParamPresetList * Presets = GetFarConfiguration()->GetCopyParamPresets();
-    if (Presets && Index < Presets->GetCount())
+    const int32_t PresetCount = Presets ? Presets->GetCount() : 0;
+    if (Index < PresetCount)
     {
       FCopyParams.Assign(&Presets->GetPreset(Index)->GetCopyParam());
-      // Preset loaded: Presets->GetPreset(Index)->GetName()
+      AppLogFmt(L"CopyDialog: preset '%s' selected", Presets->GetPreset(Index)->GetName());
       Change();
+    }
+    else if (Index == PresetCount)
+    {
+      // "Custom" selected — launch custom copy param dialog
+      AppLogFmt(L"CopyDialog: custom preset selected, opening CustomCopyParam");
+      CustomCopyParam();
     }
   }
 }

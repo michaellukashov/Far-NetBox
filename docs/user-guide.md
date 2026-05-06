@@ -155,6 +155,64 @@ The **SshSimple** setting simplifies the SCP command set for compatibility with 
 - When enabled, NetBox avoids advanced SCP features that some shells (e.g., busybox, chroot) do not support.
 - Disable for full feature access on standard OpenSSH servers.
 
+
+## Commands Menu
+
+Press **F11** → **NetBox** to access the plugin commands menu. The following commands are available:
+
+| Command | Description |
+|---------|-------------|
+| **Add Bookmark** | Save the current local and remote directories as a named bookmark |
+| **Open Directory** | Navigate to a bookmarked or typed directory path |
+| **Location Profiles** | Manage session and shared bookmark profiles (add, remove, rename, open) |
+| **Home Directory** | Navigate to the session's home directory |
+| **Synchronize Browsing** | Toggle synchronized browsing between panels |
+| **Edit History** | View and select from recent edit history |
+| **Cleanup Configuration** | Selectively clean up configuration, sessions, caches, INI file, or random seed |
+| **Generate URL** | Generate a session URL or script snippet (Batch/CmdLine/PowerShell) |
+| **Putty** | Open the session in PuTTY terminal |
+| **Pageant** | Launch Pageant SSH authentication agent |
+| **Configure** | Open NetBox configuration dialog |
+| **About** | Show version and build information |
+
+### Generate URL
+
+The Generate URL dialog produces session URLs and script snippets for automation:
+
+- **URL tab**: Generate a connection URL with selectable components (username, password, host key, remote directory, raw settings)
+- **Script tab**: Generate script snippets in Batch, Command-line, or PowerShell format, using `netbox.com` as the executable
+- **Copy to Clipboard**: Copy the generated URL or script to the system clipboard
+
+### Location Profiles
+
+The Location Profiles dialog manages bookmarked directory pairs:
+
+- **Session tab**: Bookmarks specific to the current session
+- **Shared tab**: Bookmarks shared across all sessions
+- **Add**: Create a new bookmark with the current directories
+- **Remove**: Delete the selected bookmark
+- **Rename**: Change the name of the selected bookmark
+- **Open**: Navigate to the bookmarked directories
+
+### Cleanup Configuration
+
+The Cleanup Configuration dialog allows selective removal of stored data:
+
+| Category | Description |
+|----------|-------------|
+| Configuration | Reset all NetBox configuration settings |
+| Stored sessions | Delete all saved session entries |
+| Caches | Clear cached data (directory listings, host keys) |
+| INI file | Delete the NetBox INI configuration file |
+| Random seed file | Delete the SSH random seed file |
+
+### Generate Key
+
+The **Generate Key** button on the Session dialog Auth tab launches PuTTYgen to create SSH key pairs. This button is only enabled when the PuTTYgen path is configured and the key file is a PuTTY native format (.ppk).
+
+### Copy Dialog Preset
+
+The copy/transfer dialog includes a **Preset** dropdown with saved transfer configurations. Select **Custom** from the dropdown to open the full transfer settings dialog for fine-tuning parameters such as transfer mode, filename modification, permissions, and timestamps.
 ## File Operations
 
 ### WebDAV Overwrite and Refresh

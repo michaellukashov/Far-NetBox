@@ -9,6 +9,7 @@
 #include <Exceptions.h>
 #include <CoreMain.h>
 #include <TextsCore.h>
+#include <MsgIDs.h>
 #include <TextsWin.h>
 #include <HelpWin.h>
 #include <HelpCore.h>

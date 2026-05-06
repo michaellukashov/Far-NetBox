@@ -185,6 +185,17 @@ $# Commands Menu
   #Synchronize browsing#
      Toggle synchronized browsing mode.
 
+  #Cleanup Configuration#
+     Selectively clean up configuration, stored sessions, caches, INI file, or random seed.
+
+  #Generate URL#
+     Generate a session URL or script snippet for automation.
+     Supports URL format and Batch/CmdLine/PowerShell script formats.
+
+  #Location Profiles#
+     Manage session and shared bookmark profiles.
+     Add, remove, rename, and open bookmarked directory pairs.
+
   #Configure#
      Open main configuration dialog.
 
@@ -447,6 +458,9 @@ $# Plugin GUIDs
     Synchronize dialog          {24A78A92-E48D-4E96-BE1A-BD5EAAE87B6B}
     Session dialog              {D3D0BC72-0473-47E2-9DF8-19B0DC2E0F0A}
     Transfer editor dialog      {33906B6C-7885-484E-A773-99D91974582C}
+    Cleanup dialog              {88A02D0F-73E4-4D1A-9394-D63C63C2FECD}
+    Generate URL dialog         {C20227CE-08CB-47F4-9864-2A35E546D6C6}
+    Location Profiles dialog    {9EC9FAE6-83A4-46C7-9FC7-D9D330B27532}
     File system info dialog     {77C86B6-3FDD-498C-9256-3ED0BA70D03D}
     Apply command dialog        {AF95C5A6-04FC-4979-863D-9AF4E537CEC5}
     Full synchronize dialog     {8169A8EE-A920-4ED6-B4A8-A209FA5A71D7}

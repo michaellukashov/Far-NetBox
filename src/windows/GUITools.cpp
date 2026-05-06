@@ -9,6 +9,7 @@
 #include "GUITools.h"
 // #include "WinConfiguration.h"
 #include <TextsCore.h>
+#include <MsgIDs.h>
 #include <TextsWin.h>
 #include <CoreMain.h>
 #include <SessionData.h>
