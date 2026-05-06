@@ -1359,6 +1359,7 @@
 "Master password successfully changed."
 "**Master password successfully set.**\n\nYour stored passwords are secured by AES cipher now."
 "**You have deleted your master password.**\n\nYour stored passwords are not secured now."
+"Too many failed attempts. Please wait %d seconds."
 
 "Minimum TLS version:"
 "Maximum TLS version:"

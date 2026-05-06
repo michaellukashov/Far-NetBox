@@ -8,6 +8,7 @@
 #if defined(__BORLANDC__)
 #include "CustomDirView.hpp"
 #endif // defined(__BORLANDC__)
+#include <MsgIDs.h>
 #include "FileInfo.h"
 
 #if !defined(__BORLANDC__)
