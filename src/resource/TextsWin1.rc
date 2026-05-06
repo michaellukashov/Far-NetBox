@@ -728,5 +728,6 @@ BEGIN
         STORE_URL, "https://www.microsoft.com/store/apps/9p0pq8b65n8x?cid=%s"
         ABOUT_STORE_URL, "https://winscp.net/eng/docs/microsoft_store"
         STORE_GET_IMG_URL, "https://winscp.net/updatenews.php?store_get_img=1"
+        MASTER_PASSWORD_LOCKOUT, "Too many failed attempts. Please wait %d seconds."
 
 END

@@ -731,6 +731,7 @@
 #define STORE_URL               7415
 #define ABOUT_STORE_URL         7416
 #define STORE_GET_IMG_URL       7417
+#define MASTER_PASSWORD_LOCKOUT 7418
 
 #define EXTENSION_STRINGS       7500
 

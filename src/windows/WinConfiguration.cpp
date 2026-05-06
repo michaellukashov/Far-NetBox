@@ -1975,7 +1975,7 @@ bool TWinConfiguration::ValidateMasterPassword(UnicodeString value,
       if (Elapsed < TValidationAttemptTracker::LockoutSeconds)
       {
         throw Exception(FORMAT(
-          LoadStr(NB_MASTER_PASSWORD_LOCKOUT).c_str(),
+          LoadStr(MASTER_PASSWORD_LOCKOUT).c_str(),
           TValidationAttemptTracker::LockoutSeconds - Elapsed));
       }
       FValidationTracker.ConsecutiveFailures.store(0);

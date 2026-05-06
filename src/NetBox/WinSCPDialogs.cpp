@@ -1219,7 +1219,7 @@ bool TMasterPasswordDialog::Execute()
         if (RecryptErrors->GetCount() > 0)
         {
           AppLogFmt(L"MasterPassword: recryption completed with %d errors", RecryptErrors->GetCount());
-          MessageDialog(FORMAT(L"Password changed, but %d session(s) could not be recrypted.", RecryptErrors->GetCount()), qtWarning, qaOK);
+          MessageDialog(FORMAT(GetMsg(NB_MASTER_PASSWORD_RECRYPT_CHANGE).c_str(), RecryptErrors->GetCount()), qtWarning, qaOK);
         }
         GetConfiguration()->DoSave(false, false);
         MessageDialog(GetMsg(NB_MASTER_PASSWORD_CHANGED), qtInformation, qaOK);
@@ -1258,7 +1258,7 @@ bool TMasterPasswordDialog::Execute()
         if (RecryptErrors->GetCount() > 0)
         {
           AppLogFmt(L"MasterPassword: recryption completed with %d errors", RecryptErrors->GetCount());
-          MessageDialog(FORMAT(L"Password set, but %d session(s) could not be recrypted.", RecryptErrors->GetCount()), qtWarning, qaOK);
+          MessageDialog(FORMAT(GetMsg(NB_MASTER_PASSWORD_RECRYPT_SET).c_str(), RecryptErrors->GetCount()), qtWarning, qaOK);
         }
         GetConfiguration()->DoSave(false, false);
         MessageDialog(GetMsg(NB_MASTER_PASSWORD_SET2), qtInformation, qaOK);
@@ -1292,7 +1292,7 @@ bool TMasterPasswordDialog::Execute()
         if (RecryptErrors->GetCount() > 0)
         {
           AppLogFmt(L"MasterPassword: recryption completed with %d errors", RecryptErrors->GetCount());
-          MessageDialog(FORMAT(L"Password cleared, but %d session(s) could not be recrypted.", RecryptErrors->GetCount()), qtWarning, qaOK);
+          MessageDialog(FORMAT(GetMsg(NB_MASTER_PASSWORD_RECRYPT_CLEAR).c_str(), RecryptErrors->GetCount()), qtWarning, qaOK);
         }
         GetConfiguration()->DoSave(false, false);
         MessageDialog(GetMsg(NB_MASTER_PASSWORD_CLEARED2), qtInformation, qaOK);
@@ -1314,10 +1314,6 @@ bool TWinSCPPlugin::SecurityConfigurationDialog()
 {
   AppLogFmt(L"SecurityConfigurationDialog: opening");
 
-  if (WinConfiguration->GetUseMasterPassword())
-  {
-    AppLogFmt(L"WARNING: RecryptPasswords MSVC stub — stored passwords will not be recrypted on master password change");
-  }
 
   std::unique_ptr<TWinSCPDialog> Dialog(std::make_unique<TWinSCPDialog>(this));
   Dialog->SetSize(TPoint(74, 22));
