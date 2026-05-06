@@ -98,6 +98,60 @@ All log file opens use:
 
 File handles are **owned by tinylog** (not the caller):
 - `LogStream::~LogStream()` calls `fclose(file_)` at `libs/tinylog/src/LogStream.cpp:40`
+## Crash-Resilient Logging
+
+To reduce log data loss when NetBox crashes during protocol operations, an **emergency flush mechanism** is installed via an unhandled exception filter.
+
+### Architecture
+
+```
+SEH Unhandled Exception
+       |
+       v
+NetBoxExceptionFilter()          [src/NetBox/WinSCPPlugin.cpp]
+       |
+       +-- Flush all TinyLog instances via EmergencyFlushAll(200)
+       |      |
+       |      +-- Per-instance: LogStream::EmergencyFlush()
+       |      |   - TryEnterCriticalSection (non-blocking)
+       |      |   - If acquired: WriteBuffer() + optional SwapBuffer() + WriteBuffer()
+       |      |   - Clear drain_buffer_ flag
+       |      |
+       |      +-- Signal worker thread exit (run_.store(false), cond_signal)
+       |      +-- WaitForSingleObject(thrd_, 50ms) per instance
+       |
+       +-- Flush TApplicationLog via TryEnter + fflush
+       |
+       +-- Chain to previous filter (SetUnhandledExceptionFilter return value)
+```
+
+### Exception Filter Safety
+
+The filter runs in a crash context where the heap may be corrupt and locks may be held:
+
+| Safety Measure | Rationale |
+|---|---|
+| `__try` / `__except(EXCEPTION_EXECUTE_HANDLER)` | If the flush itself crashes, silently chain to the previous filter |
+| `OutputDebugStringA` only (stack buffer) | No heap allocation; `AppLogFmt` is banned (uses heap + critical section + fwrite) |
+| `pthread_mutex_tryenter` / `TryEnterCriticalSection` | Non-blocking; if the crashing thread holds the mutex, shared buffers are skipped |
+| `WaitForSingleObject` with 50ms timeout | Do not block process termination; timeout is acceptable loss |
+| `std::atomic<bool> run_` with release/acquire | Prevents data race between crash handler (writer) and worker thread (reader) |
+
+### Loss Windows
+
+| Layer | Data | Flush Interval | Loss on Crash |
+|---|---|---|---|
+| **Layer 1** | TLS staging buffer (`tls_buffer_`) | Every `Write()` call (implicit) | Up to 4KB of uncommitted log text from the crashing thread |
+| **Layer 2** | Shared front/back buffer | Background thread ~1s timeout + explicit `SwapBuffer()` | Up to 2x buffer capacity (~64KB default) if mutex is busy |
+| **Layer 3** | OS file cache / disk | `fwrite` is buffered by CRT; `fflush` on emergency flush | Up to 4KB CRT stream buffer if `fflush` is skipped due to busy mutex |
+
+### TApplicationLog
+
+`TApplicationLog` (`src/core/SessionInfo.cpp`) uses **synchronous** `fwrite` under `TCriticalSection`. Completed writes are already on disk (modulo the CRT 4KB stream buffer). Emergency flush attempts `TCriticalSection::TryEnter()` + `fflush`; if the crashing thread holds the critical section, only the CRT stream buffer is at risk.
+
+### Platform Notes
+
+On Win32, the bundled pthreads compatibility layer defines `typedef HANDLE pthread_t` (`libs/tinylog/tinylog/platform_win32.h:43`). Casting `pthread_t` to `HANDLE` for `WaitForSingleObject` is therefore safe.
 
 ## Configuration Options
 
