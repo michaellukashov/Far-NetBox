@@ -107,6 +107,8 @@ extern const TObjectClassId OBJECT_CLASS_TSFTPFileSystem;
 extern const TObjectClassId OBJECT_CLASS_TWebDAVFileSystem;
 extern const TObjectClassId OBJECT_CLASS_TGUICopyParamType;
 extern const TObjectClassId OBJECT_CLASS_TCopyParamRule;
+extern const TObjectClassId OBJECT_CLASS_TCopyParamPreset;
+extern const TObjectClassId OBJECT_CLASS_TCopyParamPresetList;
 extern const TObjectClassId OBJECT_CLASS_TGUIConfiguration;
 
 extern const TObjectClassId OBJECT_CLASS_TFarConfiguration;

@@ -252,6 +252,58 @@ public:
 
 };
 
+class NB_CORE_EXPORT TCopyParamPreset : public TObject
+{
+public:
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TCopyParamPreset); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCopyParamPreset) || TObject::is(Kind); }
+public:
+  explicit TCopyParamPreset() noexcept;
+  explicit TCopyParamPreset(const UnicodeString & Name) noexcept;
+  TCopyParamPreset(const TCopyParamPreset & Source) noexcept;
+  virtual ~TCopyParamPreset() noexcept override;
+  TCopyParamPreset & operator =(const TCopyParamPreset & rhs);
+  void Assign(const TCopyParamPreset * Source);
+
+  void Load(THierarchicalStorage * Storage);
+  void Save(THierarchicalStorage * Storage) const;
+
+  UnicodeString GetName() const { return FName; }
+  void SetName(const UnicodeString & Value) { FName = Value; }
+  const TCopyParamType & GetCopyParam() const { return FCopyParam; }
+  TCopyParamType & GetCopyParam() { return FCopyParam; }
+  void SetCopyParam(const TCopyParamType & Value) { FCopyParam.Assign(&Value); }
+
+private:
+  UnicodeString FName;
+  TCopyParamType FCopyParam;
+};
+
+class NB_CORE_EXPORT TCopyParamPresetList : public TObject
+{
+public:
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TCopyParamPresetList); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCopyParamPresetList) || TObject::is(Kind); }
+public:
+  TCopyParamPresetList() noexcept;
+  virtual ~TCopyParamPresetList() noexcept override;
+
+  int32_t GetCount() const { return nb::ToInt32(FPresets.size()); }
+  TCopyParamPreset * GetPreset(int32_t Index) const;
+  int32_t FindPreset(const UnicodeString & Name) const;
+  int32_t AddPreset(std::unique_ptr<TCopyParamPreset> Preset);
+  void DeletePreset(int32_t Index);
+  void Clear();
+
+  void Load(THierarchicalStorage * Storage);
+  void Save(THierarchicalStorage * Storage) const;
+
+  void AddDefaultPresets();
+
+private:
+  std::vector<std::unique_ptr<TCopyParamPreset>> FPresets;
+};
+
 NB_CORE_EXPORT uint32_t GetSpeedLimit(const UnicodeString & Text);
 NB_CORE_EXPORT UnicodeString SetSpeedLimit(uint32_t Limit);
 NB_CORE_EXPORT void CopySpeedLimits(TStrings * Source, TStrings * Dest);

@@ -160,7 +160,6 @@
 "Ustawie&nia integracji"
 "&Security"
 "&Ustawienie panelu"
-
 "Dodaj do menu &Dysków"
 "Dodaj do menu &Wtyczek"
 "Dodaj polecenia do &menu Wtyczek (Alt-Shift-W)"
@@ -397,7 +396,6 @@
 
 " Session password "
 "Remember password for &duration of session"
-
 " Trusted host certification authorities "
 "&Load authorities from PuTTY"
 "Name"
@@ -562,6 +560,11 @@
 "Automatyczne monity w stanie &bezczynności"
 "&Dźwięk, gdy kolejka pusta lub transfer wymaga uwagi"
 "Użyj &hasła z głównej sesji"
+"Ustawienie"
+"Domyślne"
+"Pliki tekstowe (ASCII)"
+"Binarne wszystkie"
+"Bez zachowania czasu"
 
 "Polecenia NetBox"
 "Wyświetl &plik dziennika sesji"

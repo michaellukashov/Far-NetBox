@@ -160,7 +160,6 @@
 "Ajustes de i&ntegración"
 "&Security"
 "Ajustes de &panel"
-
 "Añadir a menú de &Discos"
 "Añadir a menú de Com&plementos"
 "Añadir &comandos a menú de Complementos (Alt-Shift-W)"
@@ -397,7 +396,6 @@
 
 " Session password "
 "Remember password for &duration of session"
-
 " Trusted host certification authorities "
 "&Load authorities from PuTTY"
 "Name"
@@ -562,6 +560,11 @@
 "Emerger prompts &automáticamente al estar en reposo (idle)"
 "&Beep al vaciarse la cola o transferencia requiere atención"
 "Reusar &contraseña de la sesión principal"
+"Preajuste"
+"Predeterminado"
+"Archivos de texto (ASCII)"
+"Binario todo"
+"Sin preservar la hora"
 
 "Comandos NetBox"
 "Mostrar archivo re&gistro de sesión"

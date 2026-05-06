@@ -160,7 +160,6 @@
 "I&ntegration settings"
 "&Security"
 "&Panel settings"
-
 "Add to &Disks menu"
 "Add to &Plugins menu"
 "Add &commands to Plugins menu (Alt-Shift-W)"
@@ -397,7 +396,6 @@
 
 " Session password "
 "Remember password for &duration of session"
-
 " Trusted host certification authorities "
 "&Load authorities from PuTTY"
 "Name"
@@ -562,6 +560,11 @@
 "&Automatically popup prompts when idle"
 "&Beep when queue empties or transfer requires attention"
 "Reuse &password of the main session"
+"Préréglage"
+"Par défaut"
+"Fichiers texte (ASCII)"
+"Binaire tout"
+"Sans préservation de l'heure"
 
 "NetBox commands"
 "Display session log &file"

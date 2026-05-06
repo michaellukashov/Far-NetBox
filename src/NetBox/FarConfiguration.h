@@ -2,6 +2,7 @@
 
 #include <plugin.hpp>
 #include "GUIConfiguration.h"
+#include "CopyParam.h"
 
 class TCustomFarPlugin;
 class TBookmarks;
@@ -85,6 +86,8 @@ public:
   TBookmarkList * GetBookmarks(const UnicodeString & Key);
   void SetBookmarks(const UnicodeString & Key, const TBookmarkList * Value);
 
+  TCopyParamPresetList * GetCopyParamPresets() const { return FCopyParamPresets.get(); }
+
 public:
   virtual UnicodeString TemporaryDir(bool Mask = false) const override { return ""; }
 
@@ -107,6 +110,8 @@ private:
 private:
   gsl::not_null<TCustomFarPlugin *> FFarPlugin;
   std::unique_ptr<TBookmarks> FBookmarks{std::make_unique<TBookmarks>()};
+
+  std::unique_ptr<TCopyParamPresetList> FCopyParamPresets{std::make_unique<TCopyParamPresetList>()};
   int32_t FFarConfirmations{-1};
   bool FConfirmOverwritingOverride{false};
   bool FConfirmSynchronizedBrowsing{false};

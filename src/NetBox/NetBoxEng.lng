@@ -396,7 +396,6 @@
 
 " Session password "
 "Remember password for &duration of session"
-
 " Trusted host certification authorities "
 "&Load authorities from PuTTY"
 "Name"
@@ -561,6 +560,11 @@
 "&Automatically popup prompts when idle"
 "&Beep when queue empties or transfer requires attention"
 "Reuse &password of the main session"
+"Preset"
+"Default"
+"Text files (ASCII)"
+"Binary all"
+"No preserve time"
 
 "NetBox commands"
 "Display session log &file"

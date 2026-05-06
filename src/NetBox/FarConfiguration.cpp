@@ -147,6 +147,12 @@ void TFarConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
 
     Storage->CloseSubKey();
   }
+
+  if (Storage->OpenSubKeyPath("TransferPresets", /*CanCreate=*/true))
+  {
+    FCopyParamPresets->Save(Storage);
+    Storage->CloseSubKey();
+  }
 }
 
 void TFarConfiguration::LoadData(THierarchicalStorage * Storage)
@@ -166,6 +172,17 @@ void TFarConfiguration::LoadData(THierarchicalStorage * Storage)
   {
     FBookmarks->Load(Storage);
     Storage->CloseSubKey();
+  }
+
+  if (Storage->OpenSubKeyPath("TransferPresets", false))
+  {
+    FCopyParamPresets->Load(Storage);
+    Storage->CloseSubKey();
+  }
+  else
+  {
+    // No saved presets — initialize with shipped defaults
+    FCopyParamPresets->AddDefaultPresets();
   }
 }
 

@@ -4101,6 +4101,7 @@ void TSessionDialog::UpdateControls()
 
   // SSH tab
   SshTab->SetEnabled(aSshProtocol);
+  CompressionCheck->SetEnabled(aSshProtocol);
   CipherUpButton->SetEnabled(CipherListBox->GetItems()->GetLastPosChange() != 0);
   CipherDownButton->SetEnabled(
     CipherListBox->GetItems()->GetLastPosChange() < CipherListBox->GetItems()->GetCount() - 1);
@@ -4113,8 +4114,9 @@ void TSessionDialog::UpdateControls()
   AuthKIPasswordCheck->SetEnabled(
     Authentication &&
     AuthKICheck->GetEnabled() && AuthKICheck->GetChecked());
-  // AuthGSSAPICheck3->SetEnabled(Authentication);
-  GSSAPIFwdTGTCheck->SetEnabled(AuthGSSAPICheck3->Checked);
+  AuthGSSAPICheck3->SetEnabled(Authentication);
+  AgentFwdCheck->SetEnabled(Authentication && TryAgentCheck->GetChecked());
+  GSSAPIFwdTGTCheck->SetEnabled(AuthGSSAPICheck3->GetEnabled() && AuthGSSAPICheck3->GetChecked());
 
   const bool UseDetachedCertificate = !PrivateKeyEdit->GetText().IsEmpty();
   DetachedCertificateLabel->SetEnabled(aSshProtocol && Authentication && UseDetachedCertificate);
@@ -4154,6 +4156,7 @@ void TSessionDialog::UpdateControls()
   WebDAVTab->SetEnabled(InternalWebDAVProtocol);
 
   WebDavLiberalEscapingCheck->SetEnabled(InternalWebDAVProtocol);
+  WebDAVCompressionCheck->SetEnabled(InternalWebDAVProtocol);
   WebDAVTlsCertificateFileLabel->SetEnabled(InternalWebDAVProtocol);
   WebDAVTlsCertificateFileEdit->SetEnabled(InternalWebDAVProtocol);
   WebDAVTlsCertificateFileBrowseBtn->SetEnabled(InternalWebDAVProtocol);
@@ -6906,8 +6909,9 @@ public:
 
 protected:
   virtual bool CloseQuery() override;
-  virtual void Change() override;
+  void Change() override;
   void CustomCopyParam();
+  void PresetComboChange(TObject * Sender);
 
   UnicodeString FormatPrompt();
   intptr_t DialogProc(intptr_t Msg, intptr_t Param1, void * Param2) override;
@@ -6919,6 +6923,8 @@ private:
   TFarText * MsgText{nullptr};
   TFarEdit * DirectoryEdit{nullptr};
   TFarLister * CopyParamLister{nullptr};
+
+  TFarComboBox * PresetCombo{nullptr};
   TFarCheckBox * NewerOnlyCheck{nullptr};
   TFarCheckBox * SaveSettingsCheck{nullptr};
   TFarCheckBox * QueueCheck{nullptr};
@@ -6966,6 +6972,26 @@ TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
   CopyParamLister->SetLeft(GetBorderBox()->GetLeft() + 1);
   CopyParamLister->SetTabStop(false);
   CopyParamLister->SetOnMouseClick(nb::bind(&TCopyDialog::CopyParamListerClick, this));
+
+  SetNextItemPosition(ipRight);
+  TFarText * PresetLabel = MakeOwnedObject<TFarText>(this);
+  PresetLabel->SetCaption(GetMsg(NB_TRANSFER_PRESET_LABEL));
+  PresetCombo = MakeOwnedObject<TFarComboBox>(this);
+  PresetCombo->SetDropDownList(true);
+  PresetCombo->SetOnExit(nb::bind(&TCopyDialog::PresetComboChange, this));
+  // Populate presets from configuration
+  if (const auto * Presets = GetFarConfiguration()->GetCopyParamPresets())
+  {
+    for (int32_t I = 0; I < Presets->GetCount(); I++)
+    {
+      PresetCombo->GetItems()->Add(Presets->GetPreset(I)->GetName());
+    }
+  }
+  if (PresetCombo->GetItems()->GetCount() > 0)
+  {
+    PresetCombo->SetItemIndex(0);
+  }
+  SetNextItemPosition(ipNewLine);
 
   MakeOwnedObject<TFarSeparator>(this);
 
@@ -7173,6 +7199,21 @@ void TCopyDialog::TransferSettingsButtonClick(
 {
   CustomCopyParam();
   Close = false;
+}
+
+void TCopyDialog::PresetComboChange(TObject * /*Sender*/)
+{
+  const int32_t Index = PresetCombo->GetItemIndex();
+  if (Index >= 0)
+  {
+    const TCopyParamPresetList * Presets = GetFarConfiguration()->GetCopyParamPresets();
+    if (Presets && Index < Presets->GetCount())
+    {
+      FCopyParams.Assign(&Presets->GetPreset(Index)->GetCopyParam());
+      // Preset loaded: Presets->GetPreset(Index)->GetName()
+      Change();
+    }
+  }
 }
 
 void TCopyDialog::CopyParamListerClick(

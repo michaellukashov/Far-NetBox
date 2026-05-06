@@ -443,11 +443,11 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
   conf_set_str(conf, CONF_srcaddr, AnsiString(Data->FSourceAddress).c_str());
 
   // permanent settings
-  conf_set_bool(conf, CONF_nopty, !Data->GetInteractiveTerminal());
+  conf_set_bool(conf, CONF_nopty, !Data->GetInteractiveTerminal()); // NetBox: configurable (WinSCP always TRUE)
   conf_set_str(conf, CONF_termtype, AnsiString(Data->GetTerminalType()).c_str());
   conf_set_int(conf, CONF_width, Data->GetTerminalWidth());
   conf_set_int(conf, CONF_height, Data->GetTerminalHeight());
-  conf_set_bool(conf, CONF_tcp_keepalives, true); // TODO: false?
+  conf_set_bool(conf, CONF_tcp_keepalives, false); // Aligned with WinSCP 6.5.6 and PuTTY default
   conf_set_bool(conf, CONF_ssh_show_banner, TRUE);
   conf_set_int(conf, CONF_proxy_log_to_term, FORCE_OFF);
 
@@ -495,6 +495,8 @@ void TSecureShell::Open()
     FSendBuf = FSessionData->GetSendBuf();
     LogEvent(FORMAT("Send buffer optimization: %s (FSendBuf=%d)",
       (FSendBuf > 0 ? "enabled" : "disabled"), FSendBuf));
+    LogEvent(FORMAT("Config: nopty=%d, tcp_keepalives=0 (WinSCP aligned)",
+      nb::ToInt32(!FSessionData->GetInteractiveTerminal())));
     FInteractive = FSessionData->GetInteractiveTerminal();
     FTerminalWidth = FSessionData->GetTerminalWidth();
     FTerminalHeight = FSessionData->GetTerminalHeight();
