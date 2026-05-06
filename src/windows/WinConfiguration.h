@@ -518,6 +518,15 @@ private:
   int32_t FDontDecryptPasswords;
   std::atomic<int32_t> FMasterPasswordSession{0};
   std::atomic<bool> FMasterPasswordSessionAsked{false};
+
+  struct TValidationAttemptTracker
+  {
+    std::atomic<uint32_t> ConsecutiveFailures{0};
+    std::atomic<uint32_t> LastAttemptTime{0};
+    static constexpr uint32_t MaxAttempts = 5;
+    static constexpr uint32_t LockoutSeconds = 30;
+  };
+  TValidationAttemptTracker FValidationTracker;
   std::unique_ptr<TStringList> FCustomCommandOptions;
   bool FCustomCommandOptionsModified;
   int32_t FLastMachineInstallations;
@@ -709,7 +718,7 @@ public:
   virtual RawByteString StronglyRecryptPassword(const RawByteString & Password, const UnicodeString & Key);
   void SetMasterPassword(UnicodeString value);
   void ChangeMasterPassword(UnicodeString value, TStrings * RecryptPasswordErrors);
-  bool ValidateMasterPassword(UnicodeString value);
+  bool ValidateMasterPassword(UnicodeString value, bool CountAttempt = true);
   void ClearMasterPassword(TStrings * RecryptPasswordErrors);
   void BeginMasterPasswordSession();
   void EndMasterPasswordSession();
