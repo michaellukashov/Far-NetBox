@@ -600,8 +600,8 @@ void TWinConfiguration::Default()
   FVersionHistory = L"";
   AddVersionToHistory();
   FUseMasterPassword = false;
-  FPlainMasterPasswordEncrypt = L"";
-  FPlainMasterPasswordDecrypt = L"";
+  FPlainMasterPasswordEncrypt.Clear();
+  FPlainMasterPasswordDecrypt.Clear();
   FMasterPasswordVerifier = L"";
   FOpenedStoredSessionFolders = L"";
   FAutoImportedFromPuttyOrFilezilla = false;
@@ -1860,7 +1860,7 @@ RawByteString TWinConfiguration::StronglyRecryptPassword(const RawByteString & P
       // Though it should not actually happen, as we call AskForMasterPasswordIfNotSetAndNeededToPersistSessionData in DoSaveSession.
       AskForMasterPasswordIfNotSet();
       Password = ScramblePassword(PasswordText);
-      AES256EncyptWithMAC(Password, FPlainMasterPasswordEncrypt, Result);
+      AES256EncyptWithMAC(Password, FPlainMasterPasswordEncrypt.GetValue(), Result);
       Result = SetExternalEncryptedPassword(Result);
     }
   }
@@ -1882,7 +1882,7 @@ UnicodeString TWinConfiguration::DecryptPassword(const RawByteString & Password,
       {
         AskForMasterPassword();
       }
-      if (!AES256DecryptWithMAC(Buf, FPlainMasterPasswordDecrypt, Buf) ||
+      if (!AES256DecryptWithMAC(Buf, FPlainMasterPasswordDecrypt.GetValue(), Buf) ||
           !UnscramblePassword(Buf, Result))
       {
         throw Exception(LoadStr(DECRYPT_PASSWORD_ERROR));
@@ -1912,13 +1912,13 @@ void TWinConfiguration::SetMasterPassword(UnicodeString value)
   // (this is bit of edge case, not really well tested)
   if (!FUseMasterPassword)
   {
-    FPlainMasterPasswordDecrypt = value;
+    FPlainMasterPasswordDecrypt.SetValue(value);
   }
   else if (DebugAlwaysTrue(FUseMasterPassword) &&
       DebugAlwaysTrue(ValidateMasterPassword(value)))
   {
-    FPlainMasterPasswordEncrypt = value;
-    FPlainMasterPasswordDecrypt = value;
+    FPlainMasterPasswordEncrypt.SetValue(value);
+    FPlainMasterPasswordDecrypt.SetValue(value);
   }
 }
 
@@ -1930,7 +1930,7 @@ UnicodeString TWinConfiguration::GetMasterKey() const
   UnicodeString Result;
   if (FUseMasterPassword && !FPlainMasterPasswordDecrypt.IsEmpty())
   {
-    Result = FPlainMasterPasswordDecrypt;
+    Result = FPlainMasterPasswordDecrypt.GetValue();
     DEBUG_PRINTF("MasterKey: using master password for key derivation");
   }
   else
@@ -1946,7 +1946,7 @@ void TWinConfiguration::ChangeMasterPassword(
   RawByteString Verifier;
   AES256CreateVerifier(value, Verifier);
   FMasterPasswordVerifier = BytesToHex(Verifier);
-  FPlainMasterPasswordEncrypt = value;
+  FPlainMasterPasswordEncrypt.SetValue(value);
   FUseMasterPassword = true;
   try
   {
@@ -1954,7 +1954,7 @@ void TWinConfiguration::ChangeMasterPassword(
   }
   __finally
   {
-    FPlainMasterPasswordDecrypt = value;
+    FPlainMasterPasswordDecrypt.SetValue(value);
   }
 }
 
@@ -1970,14 +1970,14 @@ void TWinConfiguration::ClearMasterPassword(TStrings * RecryptPasswordErrors)
 {
   FMasterPasswordVerifier = L"";
   FUseMasterPassword = false;
-  Shred(FPlainMasterPasswordEncrypt);
+  FPlainMasterPasswordEncrypt.Clear();
   try
   {
     RecryptPasswords(RecryptPasswordErrors);
   }
   __finally
   {
-    Shred(FPlainMasterPasswordDecrypt);
+    FPlainMasterPasswordDecrypt.Clear();
   }
 }
 

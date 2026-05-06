@@ -109,6 +109,7 @@ function(netbox_define_base_sources)
     base/StrUtils.cpp
     base/WideStrUtils.cpp
     base/LibraryLoader.cpp
+    base/SecureString.cpp
   PARENT_SCOPE)
 endfunction()
 

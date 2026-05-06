@@ -21,7 +21,7 @@ void TWinConfiguration::ChangeMasterPassword(
   RawByteString Verifier;
   AES256CreateVerifier(value, Verifier);
   FMasterPasswordVerifier = BytesToHex(Verifier);
-  FPlainMasterPasswordEncrypt = value;
+  FPlainMasterPasswordEncrypt.SetValue(value);
   FUseMasterPassword = true;
   try__finally
   {
@@ -29,7 +29,7 @@ void TWinConfiguration::ChangeMasterPassword(
   }
   __finally
   {
-    FPlainMasterPasswordDecrypt = value;
+    FPlainMasterPasswordDecrypt.SetValue(value);
   } end_try__finally
 }
 
@@ -43,13 +43,13 @@ bool TWinConfiguration::ValidateMasterPassword(UnicodeString value) {
 void TWinConfiguration::ClearMasterPassword(TStrings * RecryptPasswordErrors) {
   FMasterPasswordVerifier = L"";
   FUseMasterPassword = false;
-  Shred(FPlainMasterPasswordEncrypt);
+  FPlainMasterPasswordEncrypt.Clear();
   try__finally
   {
     MasterPasswordRecryptPasswords(this, RecryptPasswordErrors);
   }
   __finally
   {
-    Shred(FPlainMasterPasswordDecrypt);
+    FPlainMasterPasswordDecrypt.Clear();
   } end_try__finally
 }

@@ -3,6 +3,7 @@
 #define WinConfigurationH
 
 #include "CustomWinConfiguration.h"
+#include "SecureString.h"
 #if defined(__BORLANDC__)
 #include "CustomDirView.hpp"
 #endif // defined(__BORLANDC__)
@@ -477,8 +478,8 @@ private:
   bool FFullRowSelect;
   bool FOfferedEditorAutoConfig;
   bool FUseMasterPassword;
-  UnicodeString FPlainMasterPasswordEncrypt;
-  UnicodeString FPlainMasterPasswordDecrypt;
+  TSecureString FPlainMasterPasswordEncrypt;
+  TSecureString FPlainMasterPasswordDecrypt;
   UnicodeString FMasterPasswordVerifier;
   TMasterPasswordPromptEvent FOnMasterPasswordPrompt;
   UnicodeString FOpenedStoredSessionFolders;
