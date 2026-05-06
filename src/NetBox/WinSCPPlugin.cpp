@@ -30,6 +30,38 @@ void DestroyFarPlugin(TCustomFarPlugin *& Plugin)
   Plugin = nullptr;
 }
 
+static LPTOP_LEVEL_EXCEPTION_FILTER FPrevFilter = nullptr;
+
+static LONG WINAPI NetBoxExceptionFilter(PEXCEPTION_POINTERS ExceptionInfo)
+{
+  __try
+  {
+    (void)ExceptionInfo;
+    OutputDebugStringA("NetBox: Unhandled exception detected, flushing logs...\n");
+
+    // Flush all tinylog instances (session logs, action logs)
+    tinylog::TinyLog::EmergencyFlushAll(200);
+
+    // Flush application log
+    if (ApplicationLog != nullptr)
+    {
+      ApplicationLog->EmergencyFlush();
+    }
+    OutputDebugStringA("NetBox: Log flush complete, chaining to previous filter...\n");
+  }
+  __except (EXCEPTION_EXECUTE_HANDLER)
+  {
+    OutputDebugStringA("NetBox: Exception filter itself crashed, chaining...\n");
+  }
+
+  if (FPrevFilter != nullptr)
+  {
+    return FPrevFilter(ExceptionInfo);
+  }
+
+  return EXCEPTION_CONTINUE_SEARCH;
+}
+
 static UnicodeString GetDbgPath(const char * Env) noexcept
 {
   const char * Path = getenv(Env);
@@ -62,6 +94,9 @@ static UnicodeString GetDbgPath(const char * Env) noexcept
 TWinSCPPlugin::TWinSCPPlugin(HINSTANCE HInst) noexcept :
   TCustomFarPlugin(OBJECT_CLASS_TWinSCPPlugin, HInst)
 {
+  FPrevFilter = SetUnhandledExceptionFilter(&NetBoxExceptionFilter);
+  OutputDebugStringA("NetBox: Exception filter installed\n");
+
 #ifndef NDEBUG
   // setup debug handlers
   const UnicodeString DbgFileName = GetDbgPath("NETBOX_DBG");
@@ -92,6 +127,8 @@ TWinSCPPlugin::~TWinSCPPlugin() noexcept
   { tinylog::TinyLog * PObj = g_tinylog; delete PObj; }
 #endif //ifndef NDEBUG
   // DEBUG_PRINTF("begin");
+  SetUnhandledExceptionFilter(FPrevFilter);
+  OutputDebugStringA("NetBox: Exception filter removed\n");
 }
 
 bool TWinSCPPlugin::HandlesFunction(THandlesFunction Function) const

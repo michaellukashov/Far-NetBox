@@ -2026,3 +2026,23 @@ void TApplicationLog::Log(const UnicodeString & S)
     }
   }
 }
+
+bool TApplicationLog::EmergencyFlush()
+{
+  bool Result = false;
+  if (FFile != nullptr)
+  {
+    if (FCriticalSection.TryEnter())
+    {
+      fflush(static_cast<FILE *>(FFile));
+      FCriticalSection.Leave();
+      Result = true;
+      OutputDebugStringA("NetBox: TApplicationLog emergency flush succeeded\n");
+    }
+    else
+    {
+      OutputDebugStringA("NetBox: TApplicationLog emergency flush skipped (mutex busy)\n");
+    }
+  }
+  return Result;
+}

@@ -442,9 +442,8 @@ public:
   void Enable(const UnicodeString & Path);
   void AddStartupInfo();
   void Log(const UnicodeString & S);
-  __property bool Logging = { read = FLogging };
+  bool EmergencyFlush();
   const ROProperty2<bool> Logging{&FLogging};
-  __property UnicodeString Path = { read = FPath };
   const ROProperty2<UnicodeString> Path{&FPath};
 
 private:
