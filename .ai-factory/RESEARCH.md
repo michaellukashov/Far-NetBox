@@ -1,11 +1,11 @@
 # Research
 
-Updated: 2026-05-04 15:45
+Updated: 2026-05-06
 Status: active
 
 ## Active Summary (input for /aif-plan)
 
-Updated: 2026-05-04 15:45
+Updated: 2026-05-06
 
 Goal: Capture institutional knowledge from deep codebase investigations to inform future planning and prevent regression
 
@@ -26,6 +26,7 @@ Decisions:
 - SFTP Log Protocol: Level 3 added for binary dump (separate from Level 2 headers).
 - CMake: 97% reduction in main CMakeLists.txt via modular orchestrator pattern.
 - OpenSSH certificate auth (WinSCP-aligned): Silent pre-connect conversion inside StoreToConfig(). Effective key file resolved before CONF_keyfile. Passphrase encryption uses effective key file path. Temp PPK cleaned in TSecureShell destructor. No interactive dialogs (Far plugin context).
+- Master password infrastructure: Effectively complete. All security-critical gaps (TSecureString, atomic counters, rate limiting, error reporting) are implemented. Active-terminal recryption gap is non-issue in Far plugin context (no TTerminalManager registry, per-panel terminal ownership).
 Open questions:
 - Silent mode file operations: Error collection mechanism designed but not implemented.
 - ~~Stack overflow (#497): Symlink cycle detection needed in CalculateFilesSize (mirrors FilesFind pattern).~~ **FIXED** (commit `2689164e6`, 2026-05-03).
@@ -39,7 +40,9 @@ Success signals:
 - No crashes in 48hr stress test
 
 Next step:
-- Prioritize remaining open question: silent mode file operations (designed, not implemented).
+Prioritize remaining open question: silent mode file operations (designed, not implemented).
+Resume WinSCP feature alignment roadmap: Phase 1 dialog UX refinements + upstream bug fix porting (no longer blocked by crash bugs).
+Active plan: `.ai-factory/plans/emergency-flush-crash-handler.md` — Tinylog emergency flush + SEH exception filter for crash-debugging.
 - Resume WinSCP feature alignment roadmap: Phase 1 dialog UX refinements + upstream bug fix porting (no longer blocked by crash bugs).
 
 ## Sessions
@@ -363,3 +366,27 @@ Links (paths):
 - `D:\Projects\WinSCP-work\winscp-master\source\core\SecureShell.cpp` (SendBuffer, SIO_IDEAL_SEND_BACKLOG_QUERY)
 - `D:\Projects\WinSCP-work\winscp-master\source\core\FtpFileSystem.cpp`, `NeonIntf.cpp`, `ScpFileSystem.cpp` (FMTLOAD vulnerable sites)
 - NetBox fix: `git show 17a50dfdc` (src/base/Common.cpp)
+
+### 2026-05-06 — Master Password Infrastructure Audit & Cleanup
+
+What changed:
+- Audited `master-password-infrastructure-research.md` gaps against actual codebase. Verified which gaps are closed, which are non-issues, and which remain theoretical.
+
+Key findings:
+- **Gap 3 (TSecureString): CLOSED** — `TSecureString` exists in `src/base/SecureString.cpp` with `VirtualLock`, `SecureZeroMemory`, move-only semantics. Already used for `FPlainMasterPasswordEncrypt`/`Decrypt`.
+- **Gap 4 (Thread-unsafe counters): CLOSED** — `FMasterPasswordSession` is `std::atomic<int32_t>`, `FMasterPasswordSessionAsked` is `std::atomic<bool>`. `TValidationAttemptTracker` uses `std::atomic<uint32_t>`.
+- **Gap 5 (No rate limiting): CLOSED** — `ValidateMasterPassword` implements 5-failure → 30s lockout with `GetTickCount()` (WinXP-compatible wrap-safe subtraction). `CountAttempt` parameter allows dialog inline validation without counting.
+- **Gap 6 (Hardcoded strings): CLOSED** — All dialog strings use `GetMsg(NB_MASTER_PASSWORD_*)` MsgIDs. No literals in `WinSCPDialogs.cpp`.
+- **Gap 7 (Recryption errors discarded): CLOSED** — Errors are logged via `AppLogFmt` and shown to user via `MessageDialog` with recrypt error count. Minor UX gap vs WinSCP's `MoreMessageDialog`, but not silent discard.
+- **Gap 2 (Exception safety): NON-ISSUE** — `try__finally` / `__finally` macros guarantee cleanup on unwind. Theoretical stale-decrypt-key window during exception is acceptable risk.
+- **Gap 1 (RecryptPasswords stub): NON-ISSUE** — NetBox has no central `TTerminalManager` registry of active terminals. Each Far panel owns its own `TTerminal` via `TWinSCPFileSystem::FTerminal`. Active terminals do not persist remembered passwords across reconnect in the Far plugin context, so the missing active-terminal walk is not reachable in practice.
+
+Action taken:
+- Closed 6 of 7 gaps as resolved or non-issues. Master password infrastructure is effectively complete; no implementation work required. Removed from active concerns.
+
+Links (paths):
+- `.ai-factory/references/master-password-infrastructure-research.md` (legacy assessment, now partially stale)
+- `src/base/SecureString.cpp`
+- `src/windows/MasterPassword.cpp`
+- `src/windows/WinConfiguration.h` (atomic counters, TValidationAttemptTracker)
+- `src/NetBox/WinSCPDialogs.cpp` (dialog validation flow)
