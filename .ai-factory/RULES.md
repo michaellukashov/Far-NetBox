@@ -10,13 +10,18 @@
 - use skill `caveman` if available
 - Use skills if available: `cpp-coding-standards`, `cpp-expert`, `memory-safety-patterns`, `pp-modern-features`, `git-commit`
 
-- After adding/deleting IDs in `src/base/MsgIDs.h`, update all language files:
-  - `src/NetBox/NetBoxEng.lng`: add English message
-  - `src/NetBox/NetBoxRus.lng`: add Russian translation
-  - and so on for all `*.lng` files
-  - All `*.lng` files must have the same number of lines
-  - All `*.lng` files must have Encoding: UTF-8 with BOM
-  - Ensure proper line endings (CRLF) and newline at end of file
+- After adding/deleting IDs in `src/base/MsgIDs.h`, update **all five** language files at the **same zero-based index**:
+  - `src/NetBox/NetBoxEng.lng`
+  - `src/NetBox/NetBoxRus.lng`
+  - `src/NetBox/NetBoxFr.lng`
+  - `src/NetBox/NetBoxPol.lng`
+  - `src/NetBox/NetBoxSpa.lng`
+  - **Alignment rule:** Every `NB_*` / `MSG_*` enum identifier maps to a quoted string by zero-based index. The Nth enum member must be the Nth quoted string (lines starting with `"`) in every `.lng` file. Blank lines and the `.Language=` header do **not** count.
+  - **Verification:** Run `python scripts/verify_lng_alignment.py` before committing. Exit code 0 = aligned; anything else = fix before commit.
+  - All `.lng` files must have the **same count of quoted strings** (not necessarily same total line count).
+  - Encoding: UTF-8 **without BOM**.
+  - Line endings: CRLF with newline at end of file.
+  - **Crash risk:** Misaligned strings cause `GetMsg(MsgId)` to return wrong text or crash Far Manager at runtime.
 
 - The code should remain as similar as possible to the source code of the WinSCP project
   - WinSCP code for reference: `https://github.com/winscp/winscp`

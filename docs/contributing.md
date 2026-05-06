@@ -50,6 +50,37 @@ All Far Manager API calls must execute on the main thread. Worker threads use ev
 
 See `.ai-factory/rules/threading.md` for the full threading convention rules.
 
+## Localization String Alignment
+
+`MsgIDs.h` defines an ordered enum of message identifiers. Every `.lng`
+file (English, Russian, French, Polish, Spanish) must contain the same
+number of quoted strings in the **exact same order**.
+Blank lines and the `.Language=…` header do **not** count as strings.
+
+**Why it matters:** `GetMsg(MsgId)` indexes directly into the `.lng`
+string table. If a string is inserted at the wrong position, every
+subsequent string shifts, and the UI displays the wrong text or
+**crashes Far Manager** at runtime.
+
+**Rule:** Before adding new strings, run:
+
+```cmd
+python scripts/verify_lng_alignment.py
+```
+
+When adding `N` new `NB_*` or `MSG_*` identifiers to `MsgIDs.h`, you
+must insert exactly `N` new quoted strings at the **same zero-based
+index** into **all five** `.lng` files. The script reports the line
+number for every enum so you can verify placement.
+
+### Example Workflow
+
+1. Add the new enum constant(s) to `MsgIDs.h` at the correct logical
+   position (e.g., after `NB_TRANSFER_REMEMBER_PASSWORD`).
+2. Run `python scripts/verify_lng_alignment.py` to see the target
+   line number in each `.lng` file.
+3. Insert the translated quoted strings at those line numbers.
+4. Re-run the script until all counts match and key indices align.
 ## Build Workflow
 
 ### Quick Build
