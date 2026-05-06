@@ -158,6 +158,7 @@
 "Paramètres de &journalisation"
 "&About"
 "I&ntegration settings"
+"&Security"
 "&Panel settings"
 
 "Add to &Disks menu"
@@ -389,6 +390,21 @@
 "No validity expression configured."
 "Error in validity expression."
 "**Stop showing Login dialog automatically?** Please confirm if you really want to WinSCP stop showing Login dialog automatically on startup and when the last session is closed.\n\nIf you change your mind later, you can revert this in Preferences on Environment > Window page.\n\nTo open the Login dialog manually, go to Tabs > New Tab [> Remote Tab] or use corresponding toolbar button."
+
+" Master password "
+"&Use master password"
+"Chan&ge master password..."
+
+" Session password "
+"Remember password for &duration of session"
+
+" Trusted host certification authorities "
+"&Load authorities from PuTTY"
+"Name"
+"Hosts"
+"&Add..."
+"&Edit..."
+"&Remove"
 
 " Tunnel "
 "Se connecter via un tunnel SSH"
