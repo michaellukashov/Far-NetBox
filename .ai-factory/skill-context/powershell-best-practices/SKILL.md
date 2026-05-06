@@ -135,7 +135,13 @@ The .bat file must contain BOTH cmake commands:
 
 ```bat
 @echo off
-call "C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64
+REM NOTE: Use find-vs.bat or vswhere.exe for dynamic discovery instead of hardcoded paths
+call "%~dp0find-vs.bat"
+if %errorlevel% neq 0 (
+    echo ERROR: Failed to locate Visual Studio
+    exit /b 1
+)
+call "%VCVARSALL%" x86_amd64
 cmake -S . -B build-RelWithDebugInfo -G "Ninja" -DCMAKE_BUILD_TYPE=RelWithDebugInfo
 cmake --build build-RelWithDebugInfo -j
 ```
@@ -154,18 +160,44 @@ Run with `cmd /c build-x64.bat` — not `build-x64.bat` directly.
 
 ## VS Edition Detection
 
-Different VS editions install to different paths. Use this pattern in .bat files:
+Different VS editions (Community, Professional, Enterprise, BuildTools) install to different paths.
+**Always prefer `vswhere.exe` (ships with every VS install) for dynamic discovery.**
+
+### Primary — vswhere.exe (Recommended)
+
+```bat
+@echo off
+for /f "delims=" %%a in ('"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath 2^>nul') do (
+    set "VSINSTALLPATH=%%a"
+)
+if not defined VSINSTALLPATH (
+    echo ERROR: Visual Studio with C++ tools not found. Install VS 2022 with "Desktop development with C++" workload.
+    exit /b 1
+)
+call "%VSINSTALLPATH%\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64
+```
+
+### Fallback — Edition scan (no vswhere)
+
+If `vswhere.exe` is unavailable, scan common edition paths:
 
 ```bat
 @echo off
 for /f "delims=" %%a in ('dir /b "C:\Program Files\Microsoft Visual Studio\2022\*\VC\Auxiliary\Build\vcvarsall.bat" 2^>nul') do (
     call "C:\Program Files\Microsoft Visual Studio\2022\%%a\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64
-    cmake -S . -B build-RelWithDebugInfo -G "Ninja"
-    cmake --build build-RelWithDebugInfo -j
     goto :eof
 )
 echo ERROR: VS2022 not found
 ```
+
+### Common install paths by edition
+
+| Edition | Typical Path |
+|---------|-------------|
+| Community | `C:\Program Files\Microsoft Visual Studio\2022\Community` |
+| Professional | `C:\Program Files\Microsoft Visual Studio\2022\Professional` |
+| Enterprise | `C:\Program Files\Microsoft Visual Studio\2022\Enterprise` |
+| BuildTools | `C:\Program Files\Microsoft Visual Studio\2022\BuildTools` |
 
 ## Platform Targets
 
