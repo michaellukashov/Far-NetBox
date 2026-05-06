@@ -1983,15 +1983,15 @@ void TWinConfiguration::ClearMasterPassword(TStrings * RecryptPasswordErrors)
 
 void TWinConfiguration::AskForMasterPassword()
 {
-  if (FMasterPasswordSession > 0)
+  if (FMasterPasswordSession.load() > 0)
   {
-    if (FMasterPasswordSessionAsked)
+    if (FMasterPasswordSessionAsked.load())
     {
       Abort();
     }
 
     // set before call to OnMasterPasswordPrompt as it may abort
-    FMasterPasswordSessionAsked = true;
+    FMasterPasswordSessionAsked.store(true, std::memory_order_relaxed);
   }
 
   if (FOnMasterPasswordPrompt == nullptr)
@@ -2017,19 +2017,19 @@ void TWinConfiguration::AskForMasterPasswordIfNotSet()
 void TWinConfiguration::BeginMasterPasswordSession()
 {
   // We do not expect nesting
-  DebugAssert(FMasterPasswordSession == 0);
-  DebugAssert(!FMasterPasswordSessionAsked || (FMasterPasswordSession > 0));
+  DebugAssert(FMasterPasswordSession.load() == 0);
+  DebugAssert(!FMasterPasswordSessionAsked.load() || (FMasterPasswordSession.load() > 0));
   // This should better be thread-specific
-  FMasterPasswordSession++;
+  FMasterPasswordSession.fetch_add(1, std::memory_order_relaxed);
 }
 
 void TWinConfiguration::EndMasterPasswordSession()
 {
-  if (DebugAlwaysTrue(FMasterPasswordSession > 0))
+  if (DebugAlwaysTrue(FMasterPasswordSession.load() > 0))
   {
-    FMasterPasswordSession--;
+    FMasterPasswordSession.fetch_sub(1, std::memory_order_relaxed);
   }
-  FMasterPasswordSessionAsked = false;
+  FMasterPasswordSessionAsked.store(false, std::memory_order_relaxed);
 }
 
 void TWinConfiguration::SetDDDisableMove(bool value)

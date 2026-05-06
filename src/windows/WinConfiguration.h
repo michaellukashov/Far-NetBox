@@ -4,6 +4,7 @@
 
 #include "CustomWinConfiguration.h"
 #include "SecureString.h"
+#include <atomic>
 #if defined(__BORLANDC__)
 #include "CustomDirView.hpp"
 #endif // defined(__BORLANDC__)
@@ -515,8 +516,8 @@ private:
   int32_t FRemoteThumbnailSizeLimit;
   UnicodeString FFirstRun;
   int32_t FDontDecryptPasswords;
-  int32_t FMasterPasswordSession;
-  bool FMasterPasswordSessionAsked;
+  std::atomic<int32_t> FMasterPasswordSession{0};
+  std::atomic<bool> FMasterPasswordSessionAsked{false};
   std::unique_ptr<TStringList> FCustomCommandOptions;
   bool FCustomCommandOptionsModified;
   int32_t FLastMachineInstallations;
