@@ -1345,9 +1345,9 @@ bool TMasterPasswordDialog::Execute(
 void TMasterPasswordDialog::DoChange(bool & CanSubmit)
 {
   CanSubmit =
-    (!WinConfiguration->UseMasterPassword || (IsValidPassword(CurrentEdit->Text) >= 0)) &&
-    ((NewEdit == nullptr) || (IsValidPassword(NewEdit->Text) >= 0)) &&
-    ((ConfirmEdit == nullptr) || (IsValidPassword(ConfirmEdit->Text) >= 0));
+    (!WinConfiguration->UseMasterPassword || (IsValidPassword(CurrentEdit->Text) > 0)) &&
+    ((NewEdit == nullptr) || (IsValidPassword(NewEdit->Text) > 0)) &&
+    ((ConfirmEdit == nullptr) || (IsValidPassword(ConfirmEdit->Text) > 0));
   TCustomDialog::DoChange(CanSubmit);
 }
 
