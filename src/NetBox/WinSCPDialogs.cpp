@@ -2398,6 +2398,12 @@ void TGenerateUrlDialog::SelectTab(int32_t Tab)
 
 void TGenerateUrlDialog::UpdateUrlResult()
 {
+  if (!FUserCheck || !FPasswordCheck || !FHostKeyCheck || !FRemoteDirCheck ||
+      !FRawSettingsCheck || !FSaveExtCheck || !FSessionData || !FUrlResultEdit)
+  {
+    AppLogFmt(L"GenerateUrl: null guard triggered in UpdateUrlResult");
+    return;
+  }
   uint32_t Flags = 0;
   if (FUserCheck->GetChecked()) Flags |= sufUserName;
   if (FPasswordCheck->GetChecked()) Flags |= sufPassword;
@@ -2412,6 +2418,11 @@ void TGenerateUrlDialog::UpdateUrlResult()
 
 void TGenerateUrlDialog::UpdateScriptResult()
 {
+  if (!FScriptFormatCombo || !FScriptResultEdit)
+  {
+    AppLogFmt(L"GenerateUrl: null guard triggered in UpdateScriptResult");
+    return;
+  }
   UnicodeString Script = GenerateScript();
   FScriptResultEdit->SetText(Script);
   AppLogFmt(L"GenerateUrl: Script updated, format=%d", FScriptFormatCombo->GetItemIndex());
@@ -2419,6 +2430,11 @@ void TGenerateUrlDialog::UpdateScriptResult()
 
 UnicodeString TGenerateUrlDialog::GenerateScript() const
 {
+  if (!FScriptFormatCombo || !FTransferModeBtn)
+  {
+    AppLogFmt(L"GenerateUrl: null guard triggered in GenerateScript");
+    return UnicodeString();
+  }
   const int32_t FormatIndex = FScriptFormatCombo->GetItemIndex();
   UnicodeString ExeName = ::ChangeFileExt(base::ExtractFileName(GetConfiguration()->GetProductVersion(), false), UnicodeString());
   if (ExeName.IsEmpty())
@@ -2493,6 +2509,10 @@ public:
 
   bool Execute();
 
+  bool GetOpened() const { return FOpened; }
+  UnicodeString GetOpenedLocalDir() const { return FOpenedLocalDir; }
+  UnicodeString GetOpenedRemoteDir() const { return FOpenedRemoteDir; }
+
 protected:
   const UUID * GetDialogGuid() const override { return &LocationProfilesDialogGuid; }
   void Change() override;
@@ -2520,6 +2540,10 @@ private:
   TFarButton * FRemoveBtn{nullptr};
   TFarButton * FRenameBtn{nullptr};
   TFarButton * FOpenBtn{nullptr};
+
+  UnicodeString FOpenedLocalDir;
+  UnicodeString FOpenedRemoteDir;
+  bool FOpened{false};
 };
 
 TLocationProfilesDialog::TLocationProfilesDialog(TCustomFarPlugin * AFarPlugin,
@@ -2684,7 +2708,7 @@ UnicodeString TLocationProfilesDialog::GetCurrentBookmarkName() const
 void TLocationProfilesDialog::AddBookmarkClick(TFarButton * /*Sender*/, bool & /*Close*/)
 {
   UnicodeString Name;
-  if (FarPlugin->InputBox(GetMsg(NB_LOCATION_PROFILES_TITLE), L"Bookmark name:", Name, 0) && !Name.IsEmpty())
+  if (FarPlugin->InputBox(GetMsg(NB_LOCATION_PROFILES_TITLE), GetMsg(NB_LOCATION_BOOKMARK_NAME_PROMPT), Name, 0) && !Name.IsEmpty())
   {
     TBookmarkList * Bookmarks = (GetTab() == tabSession) ? FSessionBookmarks : FSharedBookmarks;
     if (Bookmarks)
@@ -2715,9 +2739,13 @@ void TLocationProfilesDialog::RemoveBookmarkClick(TFarButton * /*Sender*/, bool 
       TBookmark * Bookmark = Bookmarks->FindByName(UnicodeString(), Name);
       if (Bookmark)
       {
-        Bookmarks->Delete(Bookmark);
-        LoadBookmarks(GetTab());
-        AppLogFmt(L"LocationProfiles: removed bookmark '%s'", Name);
+        if (MessageDialog(FORMAT(GetMsg(NB_LOCATION_PROFILES_REMOVE_CONFIRM), Name),
+                          qtConfirmation, qaOK | qaCancel) == qaOK)
+        {
+          Bookmarks->Delete(Bookmark);
+          LoadBookmarks(GetTab());
+          AppLogFmt(L"LocationProfiles: removed bookmark '%s'", Name);
+        }
       }
     }
   }
@@ -2728,7 +2756,7 @@ void TLocationProfilesDialog::RenameBookmarkClick(TFarButton * /*Sender*/, bool 
   UnicodeString OldName = GetCurrentBookmarkName();
   if (OldName.IsEmpty()) return;
   UnicodeString NewName = OldName;
-  if (FarPlugin->InputBox(GetMsg(NB_LOCATION_PROFILES_TITLE), L"New name:", NewName, 0) && !NewName.IsEmpty() && NewName != OldName)
+  if (FarPlugin->InputBox(GetMsg(NB_LOCATION_PROFILES_TITLE), GetMsg(NB_LOCATION_BOOKMARK_RENAME_PROMPT), NewName, 0) && !NewName.IsEmpty() && NewName != OldName)
   {
     TBookmarkList * Bookmarks = (GetTab() == tabSession) ? FSessionBookmarks : FSharedBookmarks;
     if (Bookmarks)
@@ -2754,6 +2782,9 @@ void TLocationProfilesDialog::OpenBookmarkClick(TFarButton * /*Sender*/, bool & 
     TBookmark * Bookmark = Bookmarks->FindByName(UnicodeString(), Name);
     if (Bookmark)
     {
+      FOpenedLocalDir = Bookmark->GetLocal();
+      FOpenedRemoteDir = Bookmark->GetRemote();
+      FOpened = true;
       AppLogFmt(L"LocationProfiles: opening bookmark '%s', local=%s, remote=%s", Name, Bookmark->GetLocal(), Bookmark->GetRemote());
       Close(OkButton);
     }
@@ -2781,8 +2812,27 @@ void TWinSCPPlugin::LocationProfilesDialog(TWinSCPFileSystem * FileSystem)
   std::unique_ptr<TLocationProfilesDialog> Dialog(std::make_unique<TLocationProfilesDialog>(this, SessionKey));
   if (Dialog->Execute())
   {
-    // Navigate to selected bookmark's directories
-    // This is handled by the filesystem after dialog returns
+    if (Dialog->GetOpened())
+    {
+      UnicodeString RemoteDir = Dialog->GetOpenedRemoteDir();
+      if (!RemoteDir.IsEmpty())
+      {
+        TTerminal * Terminal = FileSystem->GetTerminal();
+        if (Terminal)
+        {
+          Terminal->ChangeDirectory(RemoteDir);
+          if (FileSystem->UpdatePanel(true))
+          {
+            FileSystem->RedrawPanel();
+          }
+        }
+      }
+      UnicodeString LocalDir = Dialog->GetOpenedLocalDir();
+      if (!LocalDir.IsEmpty())
+      {
+        // Local panel follows via SynchronizeBrowsing if enabled
+      }
+    }
   }
 }
 bool TGenerateUrlDialog::Execute()
@@ -11366,4 +11416,3 @@ bool TWinSCPFileSystem::CreateDirectoryDialog(UnicodeString & Directory,
   }
   return Result;
 }
-

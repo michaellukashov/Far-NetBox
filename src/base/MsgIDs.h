@@ -1445,4 +1445,11 @@ enum MsgIDs {
     // CopyParamCustom
     NB_COPY_PRESET_CUSTOM,
     NB_CONFIRMATIONS_SILENT_MODE,
+
+    // Location Profiles InputBox prompts
+    NB_LOCATION_BOOKMARK_NAME_PROMPT,
+    NB_LOCATION_BOOKMARK_RENAME_PROMPT,
+
+    // Location Profiles remove confirmation
+    NB_LOCATION_PROFILES_REMOVE_CONFIRM,
 };
