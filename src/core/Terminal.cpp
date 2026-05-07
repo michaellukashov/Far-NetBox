@@ -32,6 +32,7 @@
 #include <openssl/pkcs12.h>
 #include <openssl/err.h>
 #include <algorithm>
+#include <FormatUtils.h>
 
 #ifndef AUTO_WINSOCK
 #include <WinSock2.h>
@@ -8052,7 +8053,7 @@ bool TTerminal::CopyToRemote(
     // Show summary in status line instead of full report
     const UnicodeString Summary = FORMAT(L"%d errors - see %s",
       static_cast<int32_t>(OperationProgress.GetErrorLog().GetErrorCount()),
-      ErrorFilePath);
+      nb::EscapeFmtChars(ErrorFilePath));
     DoInformation(Summary, 0, L"");
   }
   return Result;
@@ -8686,7 +8687,7 @@ bool TTerminal::CopyToLocal(
         // Show summary in status line instead of full report
         const UnicodeString Summary = FORMAT(L"%d errors - see %s",
           static_cast<int32_t>(OperationProgress.GetErrorLog().GetErrorCount()),
-          ErrorFilePath);
+          nb::EscapeFmtChars(ErrorFilePath));
         DoInformation(Summary, 0, L"");
       }
     }
