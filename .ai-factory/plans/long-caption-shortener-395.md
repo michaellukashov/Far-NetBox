@@ -31,10 +31,11 @@ only truncation in the codebase is:
 Add to `Sysutils` namespace (next to existing `RightCutToLength`):
 
 ```cpp
+```cpp
 NB_CORE_EXPORT UnicodeString CutToLength(
     const UnicodeString & Str,
     int32_t MaxLength,
-    const UnicodeString & Ellipsis = L"..");
+    const UnicodeString & Ellipsis = L"\u2026");
 ```
 
 **Behavior:**
@@ -51,16 +52,15 @@ NB_CORE_EXPORT UnicodeString CutToLength(
 **Suffix detection:** Find the **last** `(` that has a matching `)` at the end of the string
 (trailing spaces allowed). This matches common patterns like `(PEM)`, `(TCP)`, `(IPv4)`.
 
-**Ellipsis default:** `".."` (two dots, not Unicode ellipsis `…`) — because Far Manager
-text-mode dialogs use fixed-width character cells where two dots are more readable than
-a single Unicode ellipsis character.
+**Ellipsis default:** `L"\u2026"` (Unicode ellipsis) — consistent with `RightCutToLength`
+and standard UI conventions for truncated text.
+
 
 ### Key Decisions
 
 |Decision|Rationale|
 |---|---|
-|Place in `Sysutils` namespace|Same namespace as `RightCutToLength`, follows existing convention|
-|Default ellipsis = `".."` not `L"\u2026"`|Text-mode Far Manager uses fixed-width cells; two dots are clearer than a single Unicode ellipsis that may not render|
+|Default ellipsis = `L"\u2026"` (Unicode ellipsis)|Consistent with sister function `RightCutToLength`; standard UI convention for truncated text|
 |Preserve `(suffix)` pattern|Most long labels in NetBox have parenthesized qualifiers like `(PEM)`, `(TCP)`, `(SSH)` that are critical for user comprehension|
 |Suffix detection: last `(`...`)` at end|Covers all existing label patterns without over-engineering|
 |Fallback to plain truncation|When suffix alone exceeds MaxLength, plain truncation is the only option|
@@ -71,11 +71,11 @@ a single Unicode ellipsis character.
 
 ### Phase 1: Implementation
 
-- [ ] Task 1: Add `CutToLength` declaration to `src/base/Sysutils.hpp`
+ - [x] Task 1: Add `CutToLength` declaration to `src/base/Sysutils.hpp`
   - Add after the existing `RightCutToLength` declaration (line 291)
-  - Signature: `NB_CORE_EXPORT UnicodeString CutToLength(const UnicodeString & Str, int32_t MaxLength, const UnicodeString & Ellipsis = L"..");`
+  - Signature: `NB_CORE_EXPORT UnicodeString CutToLength(const UnicodeString & Str, int32_t MaxLength, const UnicodeString & Ellipsis = L"\u2026");`
 
-- [ ] Task 2: Implement `CutToLength` in `src/base/Sysutils.cpp`
+ - [x] Task 2: Implement `CutToLength` in `src/base/Sysutils.cpp`
   - Add after `RightCutToLength` implementation (after line 238)
   - Logic:
     1. Guard: MaxLength <= 0 → return ""
@@ -89,10 +89,10 @@ a single Unicode ellipsis character.
   - Verbose logging: DEBUG_PRINTF when truncation occurs
   - IMPORTANT: UnicodeString is 1-indexed (VCL/BCB6 convention). All Pos(), SubString(), Delete(), Replace() use 1-based positions. Never pass 0 as position — it throws ThrowIfOutOfRange. Use SubStr(1, n) not SubStr(0, n).
 
-- [ ] Task 3: Refactor `TPasswordDialog::GenerateLabel` to use `CutToLength`
+ - [x] Task 3: Refactor `TPasswordDialog::GenerateLabel` to use `CutToLength`
   - File: `src/NetBox/WinSCPDialogs.cpp` (lines 2885-2905)
   - Replace the ad-hoc `if (GetSize().x - 10 < Caption.Length())` block with:
-    `Caption = ::Sysutils::CutToLength(::StripHotkey(ACaption), GetSize().x - 10, L"..");`
+    `Caption = ::Sysutils::CutToLength(::StripHotkey(ACaption), GetSize().x - 10);`
     (StripHotkey is called before CutToLength so invisible `&` markers don't inflate Length())
   - Add `#include <Sysutils.hpp>` if not already present (confirmed: NOT included in WinSCPDialogs.cpp)
   - Set `Truncated = Truncated || (Caption != ACaption);` — preserves the existing behavior
@@ -101,7 +101,7 @@ a single Unicode ellipsis character.
 
 ### Phase 2: Documentation
 
-- [ ] Task 4: Update docs/architecture.md or contributing.md with the new utility
+ - [x] Task 4: Update docs/architecture.md or contributing.md with the new utility
   - Brief note: `CutToLength` added to Sysutils for label text shortening with suffix preservation
 
 ## Commit Plan
@@ -119,4 +119,4 @@ a single Unicode ellipsis character.
 |Multiple parenthesized groups `(A) (B)`|Preserve only the last `(B)` as suffix|
 |Hotkey `&` in label|`CutToLength` does NOT strip hotkeys internally. Callers must call `::StripHotkey()` first — otherwise invisible `&` chars inflate `.Length()` and the truncated result will be shorter than expected on-screen|
 |MaxLength = ellipsis length|Return just the ellipsis (degenerate case)|
-|Ellipsis changed from `" ..."` to `".."`|Intentional: gives 2 more chars of visible text per truncation vs original ad-hoc code. Visual appearance differs (no leading space, 2 dots vs 3) — acceptable for text-mode Far Manager dialogs|
+|Ellipsis changed from `" ..."` to `L"\u2026"`|Intentional: aligns with `RightCutToLength` default. Visual appearance differs from original ad-hoc code (no leading space, Unicode ellipsis vs 3 chars) — acceptable for text-mode Far Manager dialogs|

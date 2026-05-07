@@ -44,6 +44,17 @@ Development guide for Far-NetBox. Target audience: AI assistants and human contr
 - Log with `FTerminal->LogEvent()` for debug output
 - Use `DebugAssert()` for invariants (fires in debug builds)
 
+
+## String Utilities
+
+The `Sysutils` namespace in `src/base/Sysutils.hpp` provides common string operations for dialog labels and file paths:
+
+| Function | Purpose |
+|---|---|
+| `RightCutToLength(Str, MaxLength, Ellipsis)` | Truncate from the right; keeps left portion, appends Unicode ellipsis `\u2026` |
+| `CutToLength(Str, MaxLength, Ellipsis)` | Truncate from the right with parenthesized suffix preservation (e.g. `"TLS client certificate (PEM)"` -> `"TLS client cert.. (PEM)"`) |
+
+Both functions use 1-based indexing following the VCL/BCB6 convention. When truncating dialog label text, call `::StripHotkey()` first to remove Far Manager `&` hotkey markers -- they count toward `.Length()` but are invisible on screen, causing incorrect truncation width.
 ## Thread Safety
 
 All Far Manager API calls must execute on the main thread. Worker threads use event-driven waits (`WaitForSingleObject`) instead of busy-waiting (`Sleep` loops).
