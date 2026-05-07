@@ -47,7 +47,7 @@ Success signals:
 Next step:
   - ~~Implement Phase 2 fixes: 4 issues found in verification~~ **DONE** (commit `9b5f49b01`, 2026-05-10)
   - ~~Prioritize remaining open question: silent mode file operations (designed, not implemented).~~ **DONE** (plan `silent-mode-ui-and-refinements.md` fully implemented).
-  - **Start Security Hardening (Phase 5)**: Review master password infrastructure, identify remaining security gaps.
+  - ~~**Start Security Hardening (Phase 5)**~~ **DONE** — TSecureString, atomic counters, rate limiting, error surfacing, dialog alignment, security tab, tests all implemented.
 ## Sessions
 
 ### 2026-05-10 (evening) — Phase 2 Verification Fixes + Gap Resolution

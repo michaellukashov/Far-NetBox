@@ -44,7 +44,7 @@
   - Phase 2: Productivity features (Generate URL, KeyGen, Cleanup, FS Info)
   - Phase 3: Workspace save/restore and location profiles — **POSTPONED** (2026-05-10)
   - Phase 4: Directory comparison and advanced sync
-  - Phase 5: Security hardening (master password)
+  - Phase 5: Security hardening (master password) — **COMPLETE** (2026-05-10)
   - Phase 6: Scripting engine (deferred to v2.0)
 ## Technical Debt / Refactoring
 
