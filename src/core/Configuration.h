@@ -473,9 +473,7 @@ public:
   int32_t& KeyVersion{FKeyVersion};
   __property TSshHostCAList * SshHostCAList = { read = GetSshHostCAList, write = SetSshHostCAList };
   __property TSshHostCAList * PuttySshHostCAList = { read = GetPuttySshHostCAList };
-//  const ROProperty<TSshHostCAList *> PuttySshHostCAList{nb::bind(&TConfiguration::GetPuttySshHostCAList, this)};
   __property TSshHostCAList * ActiveSshHostCAList = { read = GetActiveSshHostCAList };
-//  const ROProperty<TSshHostCAList *> ActiveSshHostCAList{nb::bind(&TConfiguration::GetActiveSshHostCAList, this)};
   __property bool SshHostCAsFromPuTTY = { read = FSshHostCAsFromPuTTY, write = FSshHostCAsFromPuTTY };
   bool& SshHostCAsFromPuTTY{FSshHostCAsFromPuTTY};
   __property int32_t HttpsCertificateValidation = { read = FHttpsCertificateValidation, write = FHttpsCertificateValidation };

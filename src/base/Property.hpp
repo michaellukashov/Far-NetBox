@@ -25,10 +25,10 @@ public:
     DebugCheck(!_getter.empty());
   }
   ROProperty(const ROProperty &) = delete;
-  ROProperty(ROProperty &&) noexcept = default;
+  constexpr ROProperty(ROProperty &&) noexcept = default;
   ~ROProperty() = default;
   ROProperty & operator =(const ROProperty &) = delete;
-  ROProperty & operator =(ROProperty &&) noexcept = default;
+  constexpr ROProperty & operator =(ROProperty &&) noexcept = default;
 
   constexpr T operator()() const
   {
@@ -42,6 +42,8 @@ public:
     return _getter();
   }
 
+  // Note: operator->() requires T to be a pointer type (or provide its own operator->()).
+  // For non-pointer T (e.g., UnicodeString), using -> on the property is a compile error.
   constexpr T operator ->() const
   {
     return _getter();
@@ -77,10 +79,10 @@ public:
     DebugCheck(!_getter.empty());
   }
   ROIndexedProperty(const ROIndexedProperty &) = delete;
-  ROIndexedProperty(ROIndexedProperty &&) noexcept = default;
+  constexpr ROIndexedProperty(ROIndexedProperty &&) noexcept = default;
   ~ROIndexedProperty() = default;
   ROIndexedProperty & operator =(const ROIndexedProperty &) = delete;
-  ROIndexedProperty & operator =(ROIndexedProperty &&) noexcept = default;
+  constexpr ROIndexedProperty & operator =(ROIndexedProperty &&) noexcept = default;
   constexpr T operator [](int32_t Index) const
   {
     DebugCheck(_getter);
@@ -102,10 +104,10 @@ public:
     DebugCheck(_value != nullptr);
   }
   ROProperty2(const ROProperty2 &) = delete;
-  ROProperty2(ROProperty2 &&) noexcept = default;
+  constexpr ROProperty2(ROProperty2 &&) noexcept = default;
   ~ROProperty2() = default;
   ROProperty2 & operator =(const ROProperty2 &) = delete;
-  ROProperty2 & operator =(ROProperty2 &&) noexcept = default;
+  constexpr ROProperty2 & operator =(ROProperty2 &&) noexcept = default;
 
   constexpr T operator ()() const
   {
@@ -119,6 +121,8 @@ public:
     return *_value;
   }
 
+  // Note: operator->() requires T to be a pointer type (or provide its own operator->()).
+  // For non-pointer T (e.g., UnicodeString), using -> on the property is a compile error.
   constexpr T operator ->() const
   {
     DebugCheck(_value);
@@ -167,7 +171,7 @@ public:
     DebugCheck(!_setter.empty());
   }
   RWProperty(const RWProperty &) = delete;
-  RWProperty(RWProperty &&) noexcept = default;
+  constexpr RWProperty(RWProperty &&) noexcept = default;
   ~RWProperty() = default;
   RWProperty & operator =(const RWProperty & Value)
   {
@@ -175,7 +179,7 @@ public:
     _setter(Value());
     return *this;
   }
-  RWProperty & operator =(RWProperty &&) noexcept = default;
+  constexpr RWProperty & operator =(RWProperty &&) noexcept = default;
 
   using ROProperty<T>::operator();
   void operator()(ValueType Value)
@@ -208,7 +212,7 @@ public:
     DebugCheck(_value != nullptr);
   }
   RWProperty2(const RWProperty2 &) = delete;
-  RWProperty2(RWProperty2 &&) noexcept = default;
+  constexpr RWProperty2(RWProperty2 &&) noexcept = default;
   ~RWProperty2() = default;
   RWProperty2 & operator =(const RWProperty2 & Value)
   {
@@ -216,7 +220,7 @@ public:
     *_value = Value();
     return *this;
   }
-  RWProperty2 & operator =(RWProperty2 &&) noexcept = default;
+  constexpr RWProperty2 & operator =(RWProperty2 &&) noexcept = default;
 
   constexpr T operator ()() const
   {
@@ -230,6 +234,8 @@ public:
     return *_value;
   }
 
+  // Note: operator->() requires T to be a pointer type (or provide its own operator->()).
+  // For non-pointer T (e.g., UnicodeString), using -> on the property is a compile error.
   constexpr T operator ->() const
   {
     DebugCheck(_value);
@@ -290,7 +296,7 @@ public:
     DebugCheck(!_setter.empty());
   }
   RWPropertySimple(const RWPropertySimple &) = delete;
-  RWPropertySimple(RWPropertySimple &&) noexcept = default;
+  constexpr RWPropertySimple(RWPropertySimple &&) noexcept = default;
   ~RWPropertySimple() = default;
   RWPropertySimple & operator =(const RWPropertySimple & Value)
   {
@@ -298,7 +304,7 @@ public:
     _setter(Value());
     return *this;
   }
-  RWPropertySimple & operator =(RWPropertySimple &&) noexcept = default;
+  constexpr RWPropertySimple & operator =(RWPropertySimple &&) noexcept = default;
   constexpr T operator ()() const
   {
     DebugCheck(_value);
@@ -309,6 +315,8 @@ public:
     DebugCheck(_value);
     return *_value;
   }
+  // Note: operator->() requires T to be a pointer type (or provide its own operator->()).
+  // For non-pointer T (e.g., UnicodeString), using -> on the property is a compile error.
   constexpr T operator ->() const
   {
     DebugCheck(_value);
