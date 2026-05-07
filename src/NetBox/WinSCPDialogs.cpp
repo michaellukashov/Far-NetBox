@@ -678,7 +678,7 @@ bool TWinSCPPlugin::EnduranceConfigurationDialog()
 
   Text = MakeOwnedObject<TFarText>(Dialog);
   Text->SetCaption(GetMsg(NB_TRANSFER_SESSION_TIMEOUTS_WAIT_TIMEOUT_LABEL));
-  
+
   Dialog->SetNextItemPosition(ipRight);
 
   TFarEdit * WaitDialogTimeoutEdit = MakeOwnedObject<TFarEdit>(Dialog);
@@ -939,7 +939,7 @@ bool TWinSCPPlugin::ConfirmationsConfigurationDialog()
   std::unique_ptr<TWinSCPDialog> DialogPtr(std::make_unique<TWinSCPDialog>(this));
   TWinSCPDialog * Dialog = DialogPtr.get();
 
-  Dialog->SetSize(TPoint(67, 10));
+  Dialog->SetSize(TPoint(67, 12));
   Dialog->SetCaption(FORMAT("%s - %s",
     GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_CONFIRMATIONS))));
   Dialog->SetDialogGuid(&ConfirmationsConfigurationDialogGuid);
@@ -957,6 +957,13 @@ bool TWinSCPPlugin::ConfirmationsConfigurationDialog()
   TFarCheckBox * ConfirmSynchronizedBrowsingCheck = MakeOwnedObject<TFarCheckBox>(Dialog);
   ConfirmSynchronizedBrowsingCheck->SetCaption(GetMsg(NB_CONFIRMATIONS_SYNCHRONIZED_BROWSING));
 
+  TFarCheckBox * SilentModeCheck = MakeOwnedObject<TFarCheckBox>(Dialog);
+  SilentModeCheck->SetCaption(GetMsg(NB_CONFIRMATIONS_SILENT_MODE));
+
+  ConfirmOverwritingCheck->SetEnabledDependencyNegative(SilentModeCheck);
+  ConfirmCommandSessionCheck->SetEnabledDependencyNegative(SilentModeCheck);
+  ConfirmResumeCheck->SetEnabledDependencyNegative(SilentModeCheck);
+  ConfirmSynchronizedBrowsingCheck->SetEnabledDependencyNegative(SilentModeCheck);
   Dialog->AddStandardButtons();
 
   TFarConfiguration * FarConfiguration = GetFarConfiguration();
@@ -966,6 +973,8 @@ bool TWinSCPPlugin::ConfirmationsConfigurationDialog()
   ConfirmResumeCheck->SetChecked(GetGUIConfiguration()->GetConfirmResume());
   ConfirmSynchronizedBrowsingCheck->SetChecked(FarConfiguration->GetConfirmSynchronizedBrowsing());
 
+  SilentModeCheck->SetChecked(GetConfiguration()->GetSilentMode());
+
   const bool Result = (Dialog->ShowModal() == brOK);
 
   if (Result)
@@ -973,6 +982,9 @@ bool TWinSCPPlugin::ConfirmationsConfigurationDialog()
     GetConfiguration()->BeginUpdate();
     try__finally
     {
+      GetConfiguration()->SetSilentMode(SilentModeCheck->GetChecked());
+      AppLogFmt(L"ConfirmationsConfigurationDialog: SilentMode set to %d", SilentModeCheck->GetChecked() ? 1 : 0);
+
       FarConfiguration->SetConfirmOverwritingOverride(
         ConfirmOverwritingCheck->GetSelected() != BSTATE_3STATE);
       GetGUIConfiguration()->SetConfirmCommandSession(ConfirmCommandSessionCheck->GetChecked());
@@ -1756,7 +1768,7 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
     Height++;
   }
 
-  int32_t Width = std::max({50, 
+  int32_t Width = std::max({50,
     ProductName.Length(),
     Comments.Length(),
     LegalCopyright.Length(),
@@ -7990,7 +8002,7 @@ UnicodeString TCopyDialog::FormatPrompt()
     Prompt = FORMAT(GetMsg(FMove ? NB_MOVE_FILES_PROMPT : NB_COPY_FILES_PROMPT), FFileList->GetCount());
   }
   else
-  {      
+  {
     const UnicodeString PromptMsg = GetMsg(FMove ? NB_MOVE_FILE_PROMPT : NB_COPY_FILE_PROMPT);
     const UnicodeString FileName = FFileList->GetString(0);
     const UnicodeString OnlyFileName = FToRemote ?
@@ -8893,7 +8905,7 @@ do { \
   AddItem(CONTROL ## Edit, 0, UseCertificate ? \
     FSessionInfo.CertificateFingerprint ## CERT_HASH : FSessionInfo.HostKeyFingerprint ## HOST_HASH); \
 } while (0)
-      
+
   if (AControl == ServerFingerprintEdit)
   {
     SET_CONTROLS(ServerFingerprint, MD5, SHA1);

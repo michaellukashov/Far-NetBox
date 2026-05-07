@@ -10,17 +10,16 @@
 - use skill `caveman` if available
 - Use skills if available: `cpp-coding-standards`, `cpp-expert`, `memory-safety-patterns`, `pp-modern-features`, `git-commit`
 
-- After adding/deleting IDs in `src/base/MsgIDs.h`, update **all five** language files at the **same zero-based index**:
-  - `src/NetBox/NetBoxEng.lng`
-  - `src/NetBox/NetBoxRus.lng`
-  - `src/NetBox/NetBoxFr.lng`
-  - `src/NetBox/NetBoxPol.lng`
-  - `src/NetBox/NetBoxSpa.lng`
-  - **Alignment rule:** Every `NB_*` / `MSG_*` enum identifier maps to a quoted string by zero-based index. The Nth enum member must be the Nth quoted string (lines starting with `"`) in every `.lng` file. Blank lines and the `.Language=` header do **not** count.
+- **String ID alignment:** All string IDs in `src/base/MsgIDs.h` map to the correct quoted string at the **same zero-based index** in **every** `.lng` file. The Nth `NB_*` / `MSG_*` enum identifier must match the Nth quoted string (line starting with `"`) in each language file. Blank lines and the `.Language=` header do **not** count.
+  - When adding/deleting IDs, update **all five** language files at the **same zero-based index**:
+    - `src/NetBox/NetBoxEng.lng`
+    - `src/NetBox/NetBoxRus.lng`
+    - `src/NetBox/NetBoxFr.lng`
+    - `src/NetBox/NetBoxPol.lng`
+    - `src/NetBox/NetBoxSpa.lng`
   - **Verification:** Run `python scripts/verify_lng_alignment.py` before committing. Exit code 0 = aligned; anything else = fix before commit.
   - All `.lng` files must have the **same count of quoted strings** (not necessarily same total line count).
-  - Encoding: UTF-8 **without BOM**.
-  - Line endings: CRLF with newline at end of file.
+  - Encoding: UTF-8 **without BOM**. Line endings: CRLF with newline at end of file.
   - **Crash risk:** Misaligned strings cause `GetMsg(MsgId)` to return wrong text or crash Far Manager at runtime.
 
 - The code should remain as similar as possible to the source code of the WinSCP project

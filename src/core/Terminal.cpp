@@ -3297,12 +3297,13 @@ void TTerminal::CloseOnCompletion(
 }
 
 TBatchOverwrite TTerminal::EffectiveBatchOverwrite(
-  const UnicodeString & ASourceFullFileName, const TCopyParamType * CopyParam, int32_t Params, TFileOperationProgressType * AOperationProgress, bool Special) const
+  const UnicodeString & ASourceFullFileName, const TCopyParamType * CopyParam, int32_t Params, TFileOperationProgressType * AOperationProgress, bool Special)
 {
-  // Silent mode: never prompt, always overwrite
+  // Silent mode: never prompt, overwrite only if source is newer
   if (FConfiguration->GetSilentMode())
   {
-    return boAll;
+    LogEvent(1, L"Silent mode active: overwrite if newer (boOlder)");
+    return boOlder;
   }
 
   TBatchOverwrite Result;
@@ -3343,7 +3344,7 @@ TBatchOverwrite TTerminal::EffectiveBatchOverwrite(
 }
 
 bool TTerminal::CheckRemoteFile(
-  const UnicodeString & AFileName, const TCopyParamType * CopyParam, int32_t Params, TFileOperationProgressType * AOperationProgress) const
+  const UnicodeString & AFileName, const TCopyParamType * CopyParam, int32_t Params, TFileOperationProgressType * AOperationProgress)
 {
   bool Result;
   AOperationProgress->LockUserSelections();
@@ -8021,7 +8022,38 @@ bool TTerminal::CopyToRemote(
   {
     const UnicodeString Report = OperationProgress.GetErrorLog().GenerateReport();
     LogEvent(1, L"Silent mode error report:\n" + Report);
-    DoInformation(Report, 0, L"");
+
+    // Write full report to .errors file
+    UnicodeString LogFilePath = FConfiguration->GetLogFileName();
+    if (LogFilePath.IsEmpty())
+    {
+      LogFilePath = FConfiguration->GetDefaultLogFileName();
+    }
+    UnicodeString ErrorFilePath = ChangeFileExt(LogFilePath, L".errors");
+
+    FILE * ErrorFile = _wfsopen(ApiPath(ErrorFilePath).c_str(), L"w", SH_DENYWR);
+    if (ErrorFile == nullptr)
+    {
+      // Retry with no sharing restrictions (same pattern as SessionInfo.cpp)
+      ErrorFile = _wfsopen(ApiPath(ErrorFilePath).c_str(), L"w", SH_DENYNO);
+    }
+    if (ErrorFile != nullptr)
+    {
+      const UTF8String UtfReport = UTF8String(Report);
+      fwrite(UtfReport.c_str(), 1, UtfReport.Length(), ErrorFile);
+      fclose(ErrorFile);
+      LogEvent(1, L"Silent mode error report written to: " + ErrorFilePath);
+    }
+    else
+    {
+      LogEvent(0, L"Silent mode: failed to write error report to: " + ErrorFilePath);
+    }
+
+    // Show summary in status line instead of full report
+    const UnicodeString Summary = FORMAT(L"%d errors - see %s",
+      static_cast<int32_t>(OperationProgress.GetErrorLog().GetErrorCount()),
+      ErrorFilePath);
+    DoInformation(Summary, 0, L"");
   }
   return Result;
 }
@@ -8624,7 +8656,38 @@ bool TTerminal::CopyToLocal(
       {
         const UnicodeString Report = OperationProgress.GetErrorLog().GenerateReport();
         LogEvent(1, L"Silent mode error report:\n" + Report);
-        DoInformation(Report, 0, L"");
+
+        // Write full report to .errors file
+        UnicodeString LogFilePath = FConfiguration->GetLogFileName();
+        if (LogFilePath.IsEmpty())
+        {
+          LogFilePath = FConfiguration->GetDefaultLogFileName();
+        }
+        UnicodeString ErrorFilePath = ChangeFileExt(LogFilePath, L".errors");
+
+        FILE * ErrorFile = _wfsopen(ApiPath(ErrorFilePath).c_str(), L"w", SH_DENYWR);
+        if (ErrorFile == nullptr)
+        {
+          // Retry with no sharing restrictions (same pattern as SessionInfo.cpp)
+          ErrorFile = _wfsopen(ApiPath(ErrorFilePath).c_str(), L"w", SH_DENYNO);
+        }
+        if (ErrorFile != nullptr)
+        {
+          const UTF8String UtfReport = UTF8String(Report);
+          fwrite(UtfReport.c_str(), 1, UtfReport.Length(), ErrorFile);
+          fclose(ErrorFile);
+          LogEvent(1, L"Silent mode error report written to: " + ErrorFilePath);
+        }
+        else
+        {
+          LogEvent(0, L"Silent mode: failed to write error report to: " + ErrorFilePath);
+        }
+
+        // Show summary in status line instead of full report
+        const UnicodeString Summary = FORMAT(L"%d errors - see %s",
+          static_cast<int32_t>(OperationProgress.GetErrorLog().GetErrorCount()),
+          ErrorFilePath);
+        DoInformation(Summary, 0, L"");
       }
     }
     __finally

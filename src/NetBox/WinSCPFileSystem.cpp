@@ -1109,7 +1109,7 @@ bool TWinSCPFileSystem::ProcessKeyEx(int32_t Key, uint32_t ControlState)
       EditHistory();
       Handled = true;
     }
-  
+
     if ((Key == VK_F12) && CheckControlMaskSet(ControlState, SHIFTMASK, ALTMASK))
     {
       OpenDirectory(false);
@@ -1124,7 +1124,7 @@ bool TWinSCPFileSystem::ProcessKeyEx(int32_t Key, uint32_t ControlState)
     }
 
     // Return to session panel
-    if (Focused && !Handled && !IsConnectedDirectly() && 
+    if (Focused && !Handled && !IsConnectedDirectly() &&
          ((Key == VK_RETURN) && (ControlState == 0) && (Focused->GetFileName() == PARENTDIRECTORY) ||
          (Key == VK_PRIOR) && CheckControlMaskSet(ControlState, CTRLMASK)) && FLastPath == ROOTDIRECTORY)
     {
@@ -2221,7 +2221,11 @@ void TWinSCPFileSystem::ToggleSynchronizeBrowsing()
 {
   FSynchronisingBrowse = !FSynchronisingBrowse;
 
-  if (GetFarConfiguration()->GetConfirmSynchronizedBrowsing())
+  if (GetConfiguration()->GetSilentMode())
+  {
+    AppLogFmt(L"Silent mode: bypassing synchronized browsing confirmation");
+  }
+  else if (GetFarConfiguration()->GetConfirmSynchronizedBrowsing())
   {
     const UnicodeString Message = FSynchronisingBrowse ?
       GetMsg(NB_SYNCHRONIZE_BROWSING_ON) : GetMsg(NB_SYNCHRONIZE_BROWSING_OFF);
@@ -2482,9 +2486,13 @@ int32_t TWinSCPFileSystem::MakeDirectoryEx(UnicodeString & AName, OPERATION_MODE
     TRemoteProperties Properties = GetGUIConfiguration()->GetNewDirectoryProperties();
     bool SaveSettings = false;
 
-    if ((OpMode & OPM_SILENT) ||
+    if (GetConfiguration()->GetSilentMode() || (OpMode & OPM_SILENT) ||
       CreateDirectoryDialog(AName, &Properties, SaveSettings))
     {
+      if (GetConfiguration()->GetSilentMode())
+      {
+        AppLogFmt(L"Silent mode: bypassing create directory confirmation");
+      }
       if (SaveSettings)
       {
         GetGUIConfiguration()->SetNewDirectoryProperties(Properties);
@@ -2511,12 +2519,16 @@ int32_t TWinSCPFileSystem::MakeDirectoryEx(UnicodeString & AName, OPERATION_MODE
   {
     DebugAssert(!(OpMode & OPM_SILENT) || !AName.IsEmpty());
 
-    if (((OpMode & OPM_SILENT) ||
+    if ((GetConfiguration()->GetSilentMode() || (OpMode & OPM_SILENT) ||
         GetWinSCPPlugin()->InputBox(GetMsg(NB_CREATE_FOLDER_TITLE),
           ::StripHotkey(GetMsg(NB_CREATE_FOLDER_PROMPT)),
           AName, 0, MAKE_SESSION_FOLDER_HISTORY)) &&
       !AName.IsEmpty())
     {
+      if (GetConfiguration()->GetSilentMode())
+      {
+        AppLogFmt(L"Silent mode: bypassing create session folder confirmation");
+      }
       TSessionData::ValidateName(AName);
       FNewSessionsFolder = AName;
       return 1;
@@ -2609,18 +2621,26 @@ bool TWinSCPFileSystem::DeleteFilesEx(TObjectList * PanelItems, OPERATION_MODES 
         PanelItems->GetAs<TFarPanelItem>(0)->GetFileName());
     }
 
-    if ((OpMode & OPM_SILENT) || !GetFarConfiguration()->GetConfirmDeleting() ||
+    if (GetConfiguration()->GetSilentMode() || (OpMode & OPM_SILENT) || !GetFarConfiguration()->GetConfirmDeleting() ||
       (MoreMessageDialog(Query, nullptr, qtConfirmation, qaOK | qaCancel) == qaOK))
     {
+      if (GetConfiguration()->GetSilentMode())
+      {
+        AppLogFmt(L"Silent mode: bypassing delete files confirmation");
+      }
       FTerminal->DeleteFiles(FFileList.get());
     }
     return true;
   }
   else if (IsSessionList())
   {
-    if ((OpMode & OPM_SILENT) || !GetFarConfiguration()->GetConfirmDeleting() ||
+    if (GetConfiguration()->GetSilentMode() || (OpMode & OPM_SILENT) || !GetFarConfiguration()->GetConfirmDeleting() ||
       (MoreMessageDialog(GetMsg(NB_DELETE_SESSIONS_CONFIRM), nullptr, qtConfirmation, qaOK | qaCancel) == qaOK))
     {
+      if (GetConfiguration()->GetSilentMode())
+      {
+        AppLogFmt(L"Silent mode: bypassing delete sessions confirmation");
+      }
       ProcessSessions(PanelItems, nb::bind(&TWinSCPFileSystem::DeleteSession, this), nullptr);
     }
     return true;
@@ -2921,7 +2941,11 @@ void TWinSCPFileSystem::ExportSession(TSessionData * Data, void * AParam)
   if (FileExists(XmlFileName))
   {
     UnicodeString ConfirmMsg = FORMAT("File %s already exists. Overwrite?", XmlFileName);
-    if (MoreMessageDialog(ConfirmMsg, nullptr, qtConfirmation, qaYes | qaNo | qaCancel) != qaYes)
+    if (GetConfiguration()->GetSilentMode())
+    {
+      AppLogFmt(L"Silent mode: bypassing XML export overwrite confirmation");
+    }
+    else if (MoreMessageDialog(ConfirmMsg, nullptr, qtConfirmation, qaYes | qaNo | qaCancel) != qaYes)
     {
       return; // User cancelled
     }
@@ -3177,7 +3201,11 @@ bool TWinSCPFileSystem::ImportSessions(TObjectList * PanelItems, bool /*Move*/,
           }
           if (StoredKeys->GetCount() > 5) SessionNames += L"...";
           UnicodeString ConfirmMsg = FORMAT("%s will import sessions: %s. Continue?", FileName, SessionNames);
-          if (MoreMessageDialog(ConfirmMsg, nullptr, qtConfirmation, qaYes | qaNo) != qaYes)
+          if (GetConfiguration()->GetSilentMode())
+          {
+            AppLogFmt(L"Silent mode: bypassing import sessions confirmation");
+          }
+          else if (MoreMessageDialog(ConfirmMsg, nullptr, qtConfirmation, qaYes | qaNo) != qaYes)
           {
             return false;
           }

@@ -418,12 +418,12 @@ protected:
   bool DoCalculateDirectorySize(const UnicodeString & AFileName, TCalculateSizeParams * Params);
   void CalculateLocalFileSize(
     const UnicodeString & AFileName, const TSearchRecSmart & Rec, /*int64_t*/ void * Size);
-  TBatchOverwrite EffectiveBatchOverwrite(
-    const UnicodeString & ASourceFullFileName, const TCopyParamType * CopyParam, int32_t Params,
-    TFileOperationProgressType * AOperationProgress, bool Special) const;
+    TBatchOverwrite EffectiveBatchOverwrite(
+      const UnicodeString & ASourceFullFileName, const TCopyParamType * CopyParam, int32_t Params,
+      TFileOperationProgressType * AOperationProgress, bool Special);
   bool CheckRemoteFile(
     const UnicodeString & AFileName, const TCopyParamType * CopyParam,
-    int32_t Params, TFileOperationProgressType * AOperationProgress) const;
+    int32_t Params, TFileOperationProgressType * AOperationProgress);
   uint32_t ConfirmFileOverwrite(
     const UnicodeString & ASourceFullFileName, const UnicodeString & ATargetFileName,
     const TOverwriteFileParams * FileParams, uint32_t Answers, TQueryParams * QueryParams,

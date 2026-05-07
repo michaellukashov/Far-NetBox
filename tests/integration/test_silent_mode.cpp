@@ -1,7 +1,10 @@
 #define NOMINMAX
 #include <iostream>
 #include <cassert>
+#include <fstream>
+#include <string>
 #include <FileOperationProgress.h>
+#include <Sysutils.hpp>
 
 int main()
 {
@@ -72,6 +75,43 @@ int main()
     assert(!Progress.GetErrorLog().HasErrors());
 
     std::wcout << L"Test: OperationProgress error log integration works" << std::endl;
+  }
+
+  // --- Error report file output ---
+  {
+    TFileOperationErrorLog ErrorLog;
+    ErrorLog.AddError(L"file1.txt", L"Error 1", osLocal, TFileOperationErrorCategory::Other);
+    ErrorLog.AddError(L"file2.txt", L"Error 2", osRemote, TFileOperationErrorCategory::Other);
+    UnicodeString Report = ErrorLog.GenerateReport();
+
+    // Derive .errors path from a simulated log path
+    UnicodeString LogFilePath = L"C:\\temp\\session.log";
+    UnicodeString ErrorFilePath = ChangeFileExt(LogFilePath, L".errors");
+    assert(ErrorFilePath == L"C:\\temp\\session.errors");
+
+    // Also test .xml extension
+    UnicodeString XmlFilePath = L"C:\\temp\\config.xml";
+    UnicodeString XmlErrorFilePath = ChangeFileExt(XmlFilePath, L".errors");
+    assert(XmlErrorFilePath == L"C:\\temp\\config.errors");
+
+    // Write report to file using standard C++ streams
+    std::wstring WErrorPath(ErrorFilePath.c_str());
+    std::wofstream OutFile(WErrorPath);
+    OutFile << std::wstring(Report.c_str());
+    OutFile.close();
+
+    // Read file back and verify content
+    std::wifstream InFile(WErrorPath);
+    std::wstring ReadBack((std::istreambuf_iterator<wchar_t>(InFile)),
+                           std::istreambuf_iterator<wchar_t>());
+    InFile.close();
+
+    assert(ReadBack == std::wstring(Report.c_str()));
+
+    // Clean up
+    std::remove("C:\\temp\\session.errors");
+
+    std::wcout << L"Test: error report file written and verified" << std::endl;
   }
 
   std::wcout << L"All silent mode tests passed." << std::endl;
