@@ -2940,7 +2940,7 @@ void TWinSCPFileSystem::ExportSession(TSessionData * Data, void * AParam)
   // Check if file already exists
   if (FileExists(XmlFileName))
   {
-    UnicodeString ConfirmMsg = FORMAT("File %s already exists. Overwrite?", XmlFileName);
+    UnicodeString ConfirmMsg = FORMAT("File %s already exists. Overwrite?", nb::EscapeFmtChars(XmlFileName));
     if (GetConfiguration()->GetSilentMode())
     {
       AppLogFmt(L"Silent mode: bypassing XML export overwrite confirmation");
@@ -3200,7 +3200,7 @@ bool TWinSCPFileSystem::ImportSessions(TObjectList * PanelItems, bool /*Move*/,
             SessionNames += StoredKeys->GetString(i);
           }
           if (StoredKeys->GetCount() > 5) SessionNames += L"...";
-          UnicodeString ConfirmMsg = FORMAT("%s will import sessions: %s. Continue?", FileName, SessionNames);
+          UnicodeString ConfirmMsg = FORMAT("%s will import sessions: %s. Continue?", nb::EscapeFmtChars(FileName), nb::EscapeFmtChars(SessionNames));
           if (GetConfiguration()->GetSilentMode())
           {
             AppLogFmt(L"Silent mode: bypassing import sessions confirmation");
