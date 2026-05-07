@@ -603,6 +603,7 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
   const int32_t MApplyCommand = MenuItems->AddString(GetMsg(NB_MENU_COMMANDS_APPLY_COMMAND), FSVisible);
   const int32_t MFullSynchronize = MenuItems->AddString(GetMsg(NB_MENU_COMMANDS_FULL_SYNCHRONIZE), AnyFSVisible);
   const int32_t MSynchronize = MenuItems->AddString(GetMsg(NB_MENU_COMMANDS_SYNCHRONIZE), AnyFSVisible);
+  const int32_t MCompareDirectories = MenuItems->AddString(GetMsg(NB_MENU_COMMANDS_COMPARE_DIRECTORIES), AnyFSVisible);
   const int32_t MQueue = MenuItems->AddString(GetMsg(NB_MENU_COMMANDS_QUEUE), FSVisible);
   const int32_t MInformation = MenuItems->AddString(GetMsg(NB_MENU_COMMANDS_INFORMATION), FSVisible);
   const int32_t MLog = MenuItems->AddString(GetMsg(NB_MENU_COMMANDS_LOG), FSVisible);
@@ -680,6 +681,19 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
         DebugAssert(AnotherFileSystem != nullptr);
         if (AnotherFileSystem)
           AnotherFileSystem->Synchronize();
+      }
+    }
+    else if (Result == MCompareDirectories)
+    {
+      if (WinSCPFileSystem != nullptr)
+      {
+        WinSCPFileSystem->CompareDirectories();
+      }
+      else
+      {
+        DebugAssert(AnotherFileSystem != nullptr);
+        if (AnotherFileSystem)
+          AnotherFileSystem->CompareDirectories();
       }
     }
     else if ((Result == MQueue) && WinSCPFileSystem)

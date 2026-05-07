@@ -153,6 +153,7 @@ protected:
   void CopyFullFileNamesToClipboard();
   void FullSynchronize(bool Source);
   void Synchronize();
+  void CompareDirectories();
   void OpenDirectory(bool Add);
   void HomeDirectory();
   void ToggleSynchronizeBrowsing();

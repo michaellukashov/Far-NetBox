@@ -1452,4 +1452,8 @@ enum MsgIDs {
 
     // Location Profiles remove confirmation
     NB_LOCATION_PROFILES_REMOVE_CONFIRM,
+    // Compare Directories
+    NB_MENU_COMMANDS_COMPARE_DIRECTORIES,
+    NB_COMPARE_DIRECTORIES_TITLE,
+    NB_COMPARE_DIRECTORIES_NO_DIFFERENCES,
 };

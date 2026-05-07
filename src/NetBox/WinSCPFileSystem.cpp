@@ -1756,6 +1756,35 @@ void TWinSCPFileSystem::Synchronize()
   } end_try__finally
 }
 
+void TWinSCPFileSystem::CompareDirectories()
+{
+  TFarPanelInfo ** AnotherPanel = GetAnotherPanelInfo();
+  RequireLocalPanel(*AnotherPanel, GetMsg(NB_SYNCHRONIZE_LOCAL_PATH_REQUIRED));
+
+  const UnicodeString LocalDir = (*AnotherPanel)->GetCurrentDirectory();
+  const UnicodeString RemoteDir = FTerminal->GetCurrentDirectory();
+
+  try
+  {
+    int32_t Params = TTerminal::spTimestamp;
+    std::unique_ptr<TSynchronizeChecklist> Checklist(FTerminal->SynchronizeCollect(
+      LocalDir, RemoteDir, TTerminal::smBoth, nullptr, Params, nullptr, nullptr));
+    if (Checklist && Checklist->GetCount() > 0)
+    {
+      SynchronizeChecklistDialog(Checklist.get(), TTerminal::smBoth, Params, LocalDir, RemoteDir);
+    }
+    else
+    {
+      MoreMessageDialog(GetMsg(NB_COMPARE_DIRECTORIES_NO_DIFFERENCES), nullptr, qtInformation, qaOK);
+    }
+  }
+  catch (Exception & E)
+  {
+    FTerminal->LogEvent(FORMAT(L"Compare: error: %s", E.Message));
+    ShowExtendedException(&E);
+  }
+}
+
 void TWinSCPFileSystem::DoSynchronize(
   TSynchronizeController * /*Sender*/, const UnicodeString & LocalDirectory,
   const UnicodeString & RemoteDirectory, const TCopyParamType & CopyParam,
