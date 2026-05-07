@@ -2345,6 +2345,7 @@ int32_t TGenerateUrlDialog::AddTab(int32_t TabID, const UnicodeString & TabCapti
 
 void TGenerateUrlDialog::ClipboardButtonClick(TFarButton * /*Sender*/, bool & /*Close*/)
 {
+  if (!FUrlResultEdit) return;
   const UnicodeString Url = FUrlResultEdit->GetText();
   if (!Url.IsEmpty())
   {
@@ -2364,6 +2365,7 @@ void TGenerateUrlDialog::TabClick(TFarButton * Sender, bool & Close)
 
 void TGenerateUrlDialog::ScriptClipboardButtonClick(TFarButton * /*Sender*/, bool & /*Close*/)
 {
+  if (!FScriptResultEdit) return;
   const UnicodeString Script = FScriptResultEdit->GetText();
   if (!Script.IsEmpty())
   {
@@ -2830,7 +2832,7 @@ void TWinSCPPlugin::LocationProfilesDialog(TWinSCPFileSystem * FileSystem)
       UnicodeString LocalDir = Dialog->GetOpenedLocalDir();
       if (!LocalDir.IsEmpty())
       {
-        // Local panel follows via SynchronizeBrowsing if enabled
+        FileSystem->SynchronizeBrowsing(LocalDir);
       }
     }
   }
