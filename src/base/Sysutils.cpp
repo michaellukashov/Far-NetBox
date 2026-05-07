@@ -234,6 +234,7 @@ UnicodeString RightCutToLength(const UnicodeString & Str, int32_t MaxLength, con
     return Result;
 
   const auto Dots = Ellipsis.SubStr(0, MaxLength);
+  DEBUG_PRINTF("RightCutToLength: truncated '%s' to %d chars", Str.c_str(), MaxLength);
   return Result.Replace(MaxLength - Dots.Length() + 1, Str.Length() - MaxLength + Dots.Length(), Dots.c_str());
 }
 
@@ -278,6 +279,7 @@ UnicodeString CutToLength(const UnicodeString & Str, int32_t MaxLength, const Un
       {
         UnicodeString Body = Str.SubString(1, OpenParen - 1);
         Body.SetLength(BodyMaxLen);
+        DEBUG_PRINTF("CutToLength: truncated '%s' to '%s' (MaxLength=%d)", Str.c_str(), (Body + Ellipsis + Suffix).c_str(), MaxLength);
         return Body + Ellipsis + Suffix;
       }
     }
@@ -290,8 +292,10 @@ UnicodeString CutToLength(const UnicodeString & Str, int32_t MaxLength, const Un
   if (KeepLen > 0)
   {
     Result.SetLength(KeepLen);
+    DEBUG_PRINTF("CutToLength: truncated '%s' to '%s' (MaxLength=%d)", Str.c_str(), (Result + Dots).c_str(), MaxLength);
     return Result + Dots;
   }
+  DEBUG_PRINTF("CutToLength: truncated '%s' to '%s' (MaxLength=%d)", Str.c_str(), Dots.SubStr(1, MaxLength).c_str(), MaxLength);
   return Dots.SubStr(1, MaxLength);
 }
 

@@ -31,7 +31,6 @@ only truncation in the codebase is:
 Add to `Sysutils` namespace (next to existing `RightCutToLength`):
 
 ```cpp
-```cpp
 NB_CORE_EXPORT UnicodeString CutToLength(
     const UnicodeString & Str,
     int32_t MaxLength,

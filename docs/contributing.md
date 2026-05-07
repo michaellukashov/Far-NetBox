@@ -52,7 +52,7 @@ The `Sysutils` namespace in `src/base/Sysutils.hpp` provides common string opera
 | Function | Purpose |
 |---|---|
 | `RightCutToLength(Str, MaxLength, Ellipsis)` | Truncate from the right; keeps left portion, appends Unicode ellipsis `\u2026` |
-| `CutToLength(Str, MaxLength, Ellipsis)` | Truncate from the right with parenthesized suffix preservation (e.g. `"TLS client certificate (PEM)"` -> `"TLS client cert.. (PEM)"`) |
+| `CutToLength(Str, MaxLength, Ellipsis)` | Truncate from the right with parenthesized suffix preservation (e.g. `"TLS client certificate (PEM)"` -> `"TLS client cert… (PEM)"`) |
 
 Both functions use 1-based indexing following the VCL/BCB6 convention. When truncating dialog label text, call `::StripHotkey()` first to remove Far Manager `&` hotkey markers -- they count toward `.Length()` but are invisible on screen, causing incorrect truncation width.
 ## Thread Safety
