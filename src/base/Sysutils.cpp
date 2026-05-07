@@ -237,6 +237,64 @@ UnicodeString RightCutToLength(const UnicodeString & Str, int32_t MaxLength, con
   return Result.Replace(MaxLength - Dots.Length() + 1, Str.Length() - MaxLength + Dots.Length(), Dots.c_str());
 }
 
+UnicodeString CutToLength(const UnicodeString & Str, int32_t MaxLength, const UnicodeString & Ellipsis)
+{
+  if (MaxLength <= 0)
+    return L"";
+
+  if (Str.Length() <= MaxLength)
+    return Str;
+
+  // Detect parenthesized suffix: find last '(' that has matching ')' at end
+  int32_t OpenParen = 0;
+  int32_t CloseParen = 0;
+
+  // Find last non-space character
+  int32_t P = Str.Length();
+  while (P >= 1 && Str[P] == L' ')
+    P--;
+
+  if (P >= 1 && Str[P] == L')')
+  {
+    CloseParen = P;
+    // Find matching '(' by scanning backward
+    int32_t Q = CloseParen - 1;
+    while (Q >= 1 && Str[Q] != L'(')
+      Q--;
+
+    if (Q >= 1)
+      OpenParen = Q;
+  }
+
+  if (OpenParen > 0 && CloseParen > 0)
+  {
+    UnicodeString Suffix = Str.SubString(OpenParen, Str.Length() - OpenParen + 1);
+    const int32_t SuffixLen = Suffix.Length();
+
+    if (SuffixLen < MaxLength)
+    {
+      const int32_t BodyMaxLen = MaxLength - SuffixLen - Ellipsis.Length();
+      if (BodyMaxLen > 0)
+      {
+        UnicodeString Body = Str.SubString(1, OpenParen - 1);
+        Body.SetLength(BodyMaxLen);
+        return Body + Ellipsis + Suffix;
+      }
+    }
+  }
+
+  // Plain right-truncation with ellipsis
+  UnicodeString Result = Str;
+  const auto Dots = Ellipsis.SubStr(1, MaxLength);
+  const int32_t KeepLen = MaxLength - Dots.Length();
+  if (KeepLen > 0)
+  {
+    Result.SetLength(KeepLen);
+    return Result + Dots;
+  }
+  return Dots.SubStr(1, MaxLength);
+}
+
 UnicodeString UpperCase(const UnicodeString & Str)
 {
   UnicodeString Result(Str);

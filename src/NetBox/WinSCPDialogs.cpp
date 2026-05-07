@@ -31,6 +31,7 @@
 #include <System.IOUtils.hpp>
 #include <commdlg.h>
 #include <S3FileSystem.h>
+#include <Sysutils.hpp>
 
 #ifdef max
 #undef max
@@ -2894,10 +2895,10 @@ void TPasswordDialog::GenerateLabel(const UnicodeString & ACaption,
   }
   FPrompt += Caption;
 
-  if (GetSize().x - 10 < nb::ToInt32(Caption.Length()))
+  UnicodeString StrippedCaption = ::StripHotkey(ACaption);
+  Caption = ::Sysutils::CutToLength(StrippedCaption, GetSize().x - 10);
+  if (Caption != StrippedCaption)
   {
-    Caption.SetLength(GetSize().x - 10 - 4);
-    Caption += L" ...";
     Truncated = true;
   }
 

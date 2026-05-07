@@ -289,6 +289,7 @@ NB_CORE_EXPORT UnicodeString Trim(const UnicodeString & Str);
 NB_CORE_EXPORT UnicodeString TrimLeft(const UnicodeString & Str);
 NB_CORE_EXPORT UnicodeString TrimRight(const UnicodeString & Str);
 NB_CORE_EXPORT UnicodeString RightCutToLength(const UnicodeString& Str, int32_t MaxLength, const UnicodeString& Ellipsis = L"\u2026");
+NB_CORE_EXPORT UnicodeString CutToLength(const UnicodeString & Str, int32_t MaxLength, const UnicodeString & Ellipsis = L"\u2026");
 NB_CORE_EXPORT UnicodeString UpperCase(const UnicodeString & Str);
 NB_CORE_EXPORT UnicodeString LowerCase(const UnicodeString & Str);
 NB_CORE_EXPORT UnicodeString AnsiLowerCase(const UnicodeString & Str);
