@@ -230,7 +230,11 @@ feat(session): workspace save/restore and location profiles
 
 **Affected files:** `src/NetBox/WinSCPFileSystem.cpp`, `src/NetBox/WinSCPDialogs.cpp`, `src/core/Terminal.cpp`
 
-- [ ] **Task 4.1: Directory comparison mode**
+- [x] **Task 4.1: Directory comparison mode**
+  - Add "Compare Directories" command (Ctrl-F12 or menu) — DONE (commit `26e011a29`)
+  - Uses existing `SynchronizeCollect` + `SynchronizeChecklistDialog`
+  - Shows comparison results or "no differences found" message
+  - Files: `src/NetBox/WinSCPFileSystem.cpp`, `src/NetBox/WinSCPPlugin.cpp`, `src/base/MsgIDs.h`, 5× `.lng`
   - Add "Compare Directories" command (Ctrl-F12 or menu)
   - Mark differing files in Far panel with color/symbol (using Far's panel highlighting)
   - Criteria: size, timestamp, or both
