@@ -42,7 +42,7 @@
 - WinSCP feature alignment — see `.ai-factory/plans/winscp-feature-alignment-roadmap.md`
   - Phase 1: Dialog UX & upstream bug fix porting
   - Phase 2: Productivity features (Generate URL, KeyGen, Cleanup, FS Info)
-  - Phase 3: Workspace save/restore and location profiles
+  - Phase 3: Workspace save/restore and location profiles — **POSTPONED** (2026-05-10)
   - Phase 4: Directory comparison and advanced sync
   - Phase 5: Security hardening (master password)
   - Phase 6: Scripting engine (deferred to v2.0)

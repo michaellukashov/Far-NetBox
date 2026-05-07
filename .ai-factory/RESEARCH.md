@@ -7,7 +7,7 @@ Status: active
 
 Updated: 2026-05-10
 
-Goal: Fix 4 issues found in WinSCP UX Parity Phase 2 verification
+Goal: Phase 2 verification fixes DONE — next: Security Hardening (Phase 5)
 
 Constraints:
 - No modifications to `libs/` — use patches only
@@ -33,7 +33,7 @@ Decisions:
 - Master password infrastructure: Effectively complete. All security-critical gaps (TSecureString, atomic counters, rate limiting, error reporting) are implemented. Active-terminal recryption gap is non-issue in Far plugin context (no TTerminalManager registry, per-panel terminal ownership).
 - UX parity scope: "Structural parity" only — same dialogs must exist as in WinSCP. Behavioral parity (keyboard shortcuts, menu structure, workflow sequencing) is out of scope. Interaction differences due to Far text-mode (no drag-drop, no tree view, no MDI tabs) are accepted.
 Open questions:
-- Silent mode file operations: Error collection mechanism designed but not implemented.
+  - ~~Silent mode file operations: Error collection mechanism designed but not implemented.~~ **COMPLETE** — 8-task plan `silent-mode-ui-and-refinements.md` fully implemented (UI toggle, boOlder overwrite, confirmation suppression, error report file).
 - ~~Stack overflow (#497): Symlink cycle detection needed in CalculateFilesSize (mirrors FilesFind pattern).~~ **FIXED** (commit `2689164e6`, 2026-05-03).
 - ~~DST timestamp (#391): Remove erroneous DST subtraction in ConvertTimestampToUnix for dstmWin on Win7+.~~ **FIXED** (commit `17a50dfdc`, 2026-05-02).
 - ~~Private key auth (#392): Passphrase prompt misclassification or path encoding issue suspected; needs diagnostic logging.~~ **FIXED** (commit `e41274cd7`, 2026-05-02).
@@ -45,10 +45,27 @@ Success signals:
 - No crashes in 48hr stress test
 
 Next step:
-- Implement Phase 2 fixes: 4 issues found in verification (see Session 2026-05-10 below).
-- Prioritize remaining open question: silent mode file operations (designed, not implemented).
-
+  - ~~Implement Phase 2 fixes: 4 issues found in verification~~ **DONE** (commit `9b5f49b01`, 2026-05-10)
+  - ~~Prioritize remaining open question: silent mode file operations (designed, not implemented).~~ **DONE** (plan `silent-mode-ui-and-refinements.md` fully implemented).
+  - **Start Security Hardening (Phase 5)**: Review master password infrastructure, identify remaining security gaps.
 ## Sessions
+
+### 2026-05-10 (evening) — Phase 2 Verification Fixes + Gap Resolution
+
+What changed:
+- All 4 Phase 2 verification issues fixed and committed (`9b5f49b01`)
+- Gap A resolved: Local dir navigation via `SynchronizeBrowsing()` in Location Profiles wrapper
+- Gap B resolved: Clipboard button null guards added to TGenerateUrlDialog
+- Plan `phase2-verification-fixes.md` updated with all issues marked DONE
+- 1312 .lng entries aligned, zero build warnings, CRLF verified
+
+Key decisions:
+- Local dir navigation uses existing `TWinSCPFileSystem::SynchronizeBrowsing()` (FarControl FCTL_SETPANELDIRECTORY + PANEL_PASSIVE)
+- Clipboard null guards use early return pattern (consistent with other null guards in TGenerateUrlDialog)
+
+Links (paths):
+- src/NetBox/WinSCPDialogs.cpp (local dir nav + null guards)
+- .ai-factory/plans/phase2-verification-fixes.md (updated plan)
 
 ### 2026-05-10 — WinSCP UX Parity Phase 2 Verification & Planning
 

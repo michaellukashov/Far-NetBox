@@ -2,7 +2,7 @@
 
 **Branch:** feature/master-password-hardening
 **Created:** 2026-05-05
-**Status:** Ready for implementation
+**Status:** Complete — core infrastructure implemented, tests added (2026-05-10)
 
 ---
 
