@@ -2,7 +2,7 @@
 
 **Branch:** feature/silent-mode-file-operations
 **Created:** 2026-04-22
-**Status:** Ready for implementation
+**Status:** Complete — all tasks implemented
 
 ## Settings
 
@@ -52,7 +52,7 @@ Implement silent mode for file operations to eliminate blocking dialogs during s
 
 ### Phase 1: Configuration Infrastructure
 
-#### Task 1: Add SilentMode configuration flag
+#### Task 1: Add SilentMode configuration flag [x]
 **Files:**
 - `src/core/Configuration.h`
 - `src/core/Configuration.cpp`
@@ -85,7 +85,7 @@ Add `FSilentMode` boolean flag to `TConfiguration` class with getter/setter meth
 
 ---
 
-#### Task 2: Add SilentMode to GUI configuration
+#### Task 2: Add SilentMode to GUI configuration [x]
 **Files:**
 - `src/windows/GUIConfiguration.h`
 - `src/windows/GUIConfiguration.cpp`
@@ -112,7 +112,7 @@ Expose `SilentMode` flag in `TGUIConfiguration` for GUI applications. Inherit fr
 
 ---
 
-#### Task 3: Add SilentMode to Far configuration
+#### Task 3: Add SilentMode to Far configuration [x]
 **Files:**
 - `src/NetBox/FarConfiguration.h`
 - `src/NetBox/FarConfiguration.cpp`
@@ -141,7 +141,7 @@ Expose `SilentMode` flag in `TFarConfiguration` for Far Manager plugin. Inherit 
 
 ### Phase 2: Error Collection Infrastructure
 
-#### Task 4: Create TFileOperationError structure
+#### Task 4: Create TFileOperationError structure [x]
 **Files:**
 - `src/core/FileOperationProgress.h`
 
@@ -187,7 +187,7 @@ struct TFileOperationError
 
 ---
 
-#### Task 5: Create TFileOperationErrorLog class
+#### Task 5: Create TFileOperationErrorLog class [x]
 **Files:**
 - `src/core/FileOperationProgress.h`
 - `src/core/FileOperationProgress.cpp`
@@ -242,7 +242,7 @@ private:
 
 ---
 
-#### Task 6: Integrate error log into TFileOperationProgressType
+#### Task 6: Integrate error log into TFileOperationProgressType [x]
 **Files:**
 - `src/core/FileOperationProgress.h`
 - `src/core/FileOperationProgress.cpp`
@@ -280,7 +280,7 @@ Add error log instance to progress tracking so file operations can collect error
 ---
 
 ### Phase 3: Silent Mode Logic Integration
-#### Task 7: Modify EffectiveBatchOverwrite for silent mode
+#### Task 7: Modify EffectiveBatchOverwrite for silent mode [x]
 **Files:**
 - `src/core/Terminal.cpp` (line ~3285: `EffectiveBatchOverwrite()`)
 
@@ -297,11 +297,11 @@ Update `TTerminal::EffectiveBatchOverwrite()` to return `boAll` (overwrite all) 
     TFileOperationProgressType * AOperationProgress,
     bool Special) const
   {
-    // Silent mode: never prompt, always overwrite
+    // Silent mode: never prompt, overwrite only if source is newer
     if (FConfiguration->GetSilentMode())
     {
-      LogEvent(1, L"Silent mode active: auto-overwrite enabled");
-      return boAll;
+      LogEvent(1, L"Silent mode active: overwrite if newer (boOlder)");
+      return boOlder;
     }
 
     // ... existing logic
@@ -309,13 +309,13 @@ Update `TTerminal::EffectiveBatchOverwrite()` to return `boAll` (overwrite all) 
   ```
 
 **Logging:**
-- `DEBUG: Silent mode active: auto-overwrite enabled` (level 2 = DEBUG)
+- `DEBUG: Silent mode active: overwrite if newer (boOlder)` (level 2 = DEBUG)
 - `DEBUG: EffectiveBatchOverwrite: SilentMode=[true/false], returning [BatchOverwriteMode]`
 
-**Note:** Silent mode always returns `boAll` (overwrite all). If user wants conditional overwrite (e.g., only newer files), they must use interactive mode with batch overwrite settings.
+**Note:** Silent mode returns `boOlder` (overwrite if source is newer). This is safer than unconditional overwrite and works across all protocols since they populate `TRemoteFile::FModification` timestamps. The early return bypasses the `!Special` downgrade at line ~3336-3340, so `boOlder` will NOT be downgraded to `boNo`.
 
 **Acceptance:**
-- When `SilentMode` is `true`, `EffectiveBatchOverwrite()` returns `boAll`
+- When `SilentMode` is `true`, `EffectiveBatchOverwrite()` returns `boOlder`
 - Existing interactive mode behavior unchanged when `SilentMode` is `false`
 - Log entry confirms silent mode activation
 
@@ -513,45 +513,62 @@ UnicodeString TFileOperationErrorLog::GenerateReport() const
 
 ---
 
-#### Task 13: Display error report after operations
+#### Task 13: Display error report after operations [x]
 **Files:**
 - `src/core/Terminal.cpp` (end of file operation methods)
-
 **Description:**
-After file operations complete in silent mode, display error report if any errors occurred.
+After file operations complete in silent mode, write the full error report to a `.errors` file alongside the session log and show a brief summary in the status line.
 
 **Implementation:**
 At the end of `CopyToLocal()`, `CopyToRemote()`, etc.:
 ```cpp
-if (FConfiguration->GetSilentMode() && OperationProgress->GetErrorLog().HasErrors())
+if (FConfiguration->GetSilentMode() && OperationProgress.GetErrorLog().HasErrors())
 {
-  const UnicodeString Report = OperationProgress->GetErrorLog().GenerateReport();
+  const UnicodeString Report = OperationProgress.GetErrorLog().GenerateReport();
   LogEvent(1, L"Silent mode error report:\n" + Report);
-  
-  // Show to user via callback if available
-  if (FOnInformation)
+
+  // Write full report to .errors file
+  UnicodeString LogFilePath = FConfiguration->GetLogFileName();
+  if (LogFilePath.IsEmpty())
   {
-    FOnInformation(this, Report, 0, L"");
+    LogFilePath = FConfiguration->GetDefaultLogFileName();
+  }
+  UnicodeString ErrorFilePath = ChangeFileExt(LogFilePath, L".errors");
+
+  FILE * ErrorFile = _wfsopen(ApiPath(ErrorFilePath).c_str(), L"w", SH_DENYWR);
+  if (ErrorFile == nullptr)
+  {
+    ErrorFile = _wfsopen(ApiPath(ErrorFilePath).c_str(), L"w", SH_DENYNO);
+  }
+  if (ErrorFile != nullptr)
+  {
+    const UTF8String UtfReport = UTF8String(Report);
+    fwrite(UtfReport.c_str(), 1, UtfReport.Length(), ErrorFile);
+    fclose(ErrorFile);
+    LogEvent(1, L"Silent mode error report written to: " + ErrorFilePath);
   }
   else
   {
-    // Fallback: write to error log file
-    const UnicodeString ErrorLogPath = FConfiguration->GetLogFileName() + L".errors";
-    // Write Report to ErrorLogPath
+    LogEvent(0, L"Silent mode: failed to write error report to: " + ErrorFilePath);
   }
+
+  // Show summary in status line instead of full report
+  const UnicodeString Summary = FORMAT(L"%d errors - see %s",
+    static_cast<int32_t>(OperationProgress.GetErrorLog().GetErrorCount()),
+    nb::EscapeFmtChars(ErrorFilePath));
+  DoInformation(Summary, 0, L"");
 }
-```
 ```
 
 **Logging:**
-- `INFO: Silent mode error report:` (level 1 = INFO)
-- `[Full error report content]`
-- `DEBUG: Error report written to [ErrorLogPath]` (if fallback used)
+- `INFO: Silent mode error report written to: <ErrorFilePath>` (level 1 = INFO)
+- `WARN: Silent mode: failed to write error report to: <ErrorFilePath>` (level 0 = WARN)
 
 **Acceptance:**
-- Error report logged after operations complete
-- Report shown to user if callback available
-- Only displayed when errors occurred
+- Error report written to `.errors` file alongside session log
+- Status line shows summary: `"<N> errors - see <path>"`
+- If file open fails, warning is logged and operation continues
+- Both `CopyToLocal` and `CopyToRemote` error report sites updated
 
 **Blocked by:** Task 12, Task 10
 
@@ -559,7 +576,7 @@ if (FConfiguration->GetSilentMode() && OperationProgress->GetErrorLog().HasError
 
 ### Phase 6: Testing
 
-#### Task 14: Add unit tests for configuration
+#### Task 14: Add unit tests for configuration [x]
 **Files:**
 - `tests/core/test_configuration.cpp` (create if needed)
 
@@ -585,7 +602,7 @@ Test `SilentMode` configuration flag persistence and retrieval.
 
 ---
 
-#### Task 15: Add integration tests for silent mode
+#### Task 15: Add integration tests for silent mode [x]
 **Files:**
 - `tests/integration/test_silent_mode.cpp` (create if needed)
 
@@ -617,7 +634,7 @@ Test silent mode behavior end-to-end with mock file operations.
 
 ### Phase 7: Documentation
 
-#### Task 16: Update user documentation
+#### Task 16: Update user documentation [x]
 **Files:**
 - `docs/silent-mode.md` (create)
 - `docs/configuration.md` (update)
@@ -629,9 +646,9 @@ Document silent mode feature, configuration, and error reporting for end users.
 - What is silent mode
 - When to use it (automation, batch operations, deadlock prevention)
 - How to enable/disable (configuration setting)
-- Error reporting behavior (dialog if available, fallback to .errors file)
+- Error reporting behavior (`.errors` file + status line summary)
 - Limitations and caveats:
-  - Silent mode always overwrites files (no conditional overwrite)
+  - Silent mode uses `boOlder` (overwrite only if source is newer)
   - Silent mode persists across application restarts
   - Error reports truncated after 100 entries for readability
 
@@ -688,7 +705,7 @@ feat(core): add silent mode continue-on-error to FileOperationLoopQuery
 feat(core): add error reporting
 
 - Implement error report generation
-- Display error report after operations complete
+- Write `.errors` file + show summary status line after operations complete
 ```
 
 **Checkpoint 6** (after Task 15):
