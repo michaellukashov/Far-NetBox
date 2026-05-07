@@ -1,119 +1,168 @@
-# Plan: WinSCP Feature Alignment Phase 1
+# Implementation Plan: Phase 2 Verification Fixes
 
-**Mode:** fast
-**Created:** 2026-05-05
-**Updated:** 2026-05-05 (improved via /aif-improve)
-**Source:** `.ai-factory/plans/winscp-feature-alignment-roadmap.md` Phase 1
+Branch: fix/phase2-verification-fixes
+Created: 2026-05-10
 
----
+## Settings
 
-## Goal
-
-Complete dialog UX alignment with WinSCP patterns and reconcile Terminal/SecureShell code differences. Previously blocking crash bugs (#497, #391, #392, #508) are already fixed — this phase is low-risk UX polish + proactive maintenance.
+- Testing: no (skip tests)
+- Logging: verbose (detailed DEBUG logs)
+- Docs: yes (mandatory docs checkpoint)
+- Roadmap Linkage: none
 
 ## Research Context
 
-From RESEARCH.md Active Summary:
-- Next step: resume WinSCP feature alignment roadmap Phase 1 (dialog UX refinements + upstream bug fix porting)
-- Constraints: C++17 only, no std::filesystem, no libs/ modifications, Far API main-thread only, MSVC /W4 zero warnings
-- Success signals: zero warnings, plugin DLL in Far3_<platform>/Plugins/NetBox/, manual test protocol passes
+Source: .ai-factory/RESEARCH.md (Active Summary)
 
-## Key Discovery (from /aif-improve audit)
+Goal: Achieve structural UX parity with WinSCP — all dialogs that exist in WinSCP must exist in NetBox
 
-NetBox is **ahead** of WinSCP in Terminal.cpp and SecureShell.cpp safety fixes (retry counter, InfiniteWait guard, null-handle guard, MAXIMUM_WAIT_OBJECTS guard, exception-safe FWaiting counter). The original plan framing of "port upstream fixes" was inaccurate — very few genuine upstream fixes are missing. Task 1 has been reframed accordingly.
+Constraints:
+- No modifications to `libs/` — use patches only
+- Far Manager API calls on main thread only
+- MSVC /W4 zero warnings
+- WinXP compatibility (_WIN32_WINNT=0x0501)
+- Incremental evolution — no architectural rewrites
+- C++17 standard only (no std::filesystem, std::variant)
 
----
+Decisions:
+- SCP Esc cancellation: Four-layer fix adopted (console buffer scan, csCancel semantics, EAbort("") dispatch, deferred reconnect). Post-cancel session reset via FNeedsSessionReset + FLastDirectory.
+- SSH/SCP buffer corruption: Default SendBuf=0, SshSimple=false to disable dynamic TCP send backlog query.
+- Multithreading: Far API marshaling via Synchronize/PostMainThreadSynchro; event-driven waits replace Sleep polling.
+- CWE-134: EscapeFmtChars() utility for all untrusted args to FMTLOAD.
+- OpenSSH certificate auth (WinSCP-aligned): Silent pre-connect conversion inside StoreToConfig(). Effective key file resolved before CONF_keyfile. Passphrase encryption uses effective key file path. Temp PPK cleaned in TSecureShell destructor. No interactive dialogs (Far plugin context).
+- Master password infrastructure: Effectively complete. All security-critical gaps (TSecureString, atomic counters, rate limiting, error reporting) are implemented. Active-terminal recryption gap is non-issue in Far plugin context.
+- UX parity scope: "Structural parity" only — same dialogs must exist as in WinSCP. Behavioral parity (keyboard shortcuts, menu structure, workflow sequencing) is out of scope.
+
+Open questions:
+- Silent mode file operations: Error collection mechanism designed but not implemented.
+
+Success signals:
+- Zero build warnings under /W4
+- Plugin DLL in Far3_<platform>/Plugins/NetBox/
+- `python scripts/verify_lng_alignment.py` passes
+- All CRLF line endings, UTF-8 without BOM, no trailing whitespace
 
 ## Tasks
 
-### Task 1: Audit and reconcile Terminal/SecureShell differences ✅
-- Compare WinSCP 6.5.6 `core/Terminal.cpp` and `core/SecureShell.cpp` against NetBox equivalents
-- Backport any missing WinSCP fixes found in the comparison
-- Document NetBox-specific safety enhancements already present (for upstream contribution awareness)
-- **Specific item:** Resolve `CONF_tcp_keepalives` default — NetBox sets `true` (with TODO), WinSCP sets `0` (disabled). Align with WinSCP or document rationale
-- **Specific item:** Review `CONF_nopty` handling — NetBox makes it configurable via `GetInteractiveTerminal()`, WinSCP always disables. Verify this is intentional
-- Add `FTerminal->LogEvent(L"Terminal/SecureShell reconciliation: <description>")` per change
-- **Files:** `src/core/Terminal.cpp`, `src/core/SecureShell.cpp`
-- **Blocked by:** none
+### Phase 1: Defensive Fixes
 
-### Task 2: Fix missing SetEnabled() calls in UpdateControls() ✅
-- Audit all controls in `TSessionDialog::UpdateControls()` for missing `SetEnabled()` calls based on protocol selection
-- **Known gaps to fix:**
-  - `CompressionCheck` — never disabled when SSH tab is inactive
-  - `AgentFwdCheck` — no explicit enablement gating
-  - Any other controls that should be enabled/disabled per protocol but aren't
-- Verify all `SetVisible(false)` controls on S3/TLS tabs are correctly handled (audit confirmed they are — no action needed)
-- **Note:** No MakeOwnedObject leaks found — that item is removed from scope
-- Add logging: `FTerminal->LogEvent(L"Dialog: control <name> enabled=%d")` for changed enablement logic
-- **MsgIDs/.lng:** Add any new message IDs needed for control labels or tooltips; keep MsgIDs.h and all .lng files structurally aligned
-- **Files:** `src/NetBox/WinSCPDialogs.cpp`, `src/NetBox/WinSCPDialogs.h`, `src/base/MsgIDs.h`, `src/resource/*.lng`
-- **Blocked by:** none
+- [ ] **Task 1: Add null checks in TGenerateUrlDialog**
+  - Files: `src/NetBox/WinSCPDialogs.cpp`
+  - Add null guards at entry of `GenerateScript()`, `UpdateScriptResult()`, `UpdateUrlResult()`
+  - Guard `FScriptFormatCombo`, `FTransferModeBtn`, `FScriptResultEdit`, `FUrlResultEdit`, `FSessionData`
+  - LOG: `AppLogFmt(L"GenerateUrl: null guard triggered in %s", __FUNCTION__)`
+  - Acceptance: No crashes if MakeOwnedObject fails; build zero warnings
 
-### Task 3a: Copy parameter preset infrastructure ✅
-- Add `TCopyParamPreset` class with name + TCopyParamType data (in CopyParam.h/cpp)
-- Add preset storage to `TFarConfiguration` under `TransferPresets` FarSettings key
-  - Storage: Count + DefaultPreset + numbered subkeys (Name + CopyParamType fields)
-  - Load/Save via existing `TCopyParamType::Load/Save` under numbered subkeys
-- Add 4 shipped default presets: "Default", "Text files (ASCII)", "Binary all", "No preserve time"
-- **Scope:** Manual preset selection only — no autoselection rules (WinSCP's rule engine deferred to later phase)
-- **MsgIDs/.lng:** ~15 new NB_TRANSFER_PRESET_* IDs + corresponding .lng entries; keep MsgIDs.h and all .lng files structurally aligned
-- Add `FTerminal->LogEvent(L"Copy param preset loaded: %s", PresetName)` 
-- **Files:** `src/core/CopyParam.h`, `src/core/CopyParam.cpp`, `src/NetBox/FarConfiguration.h`, `src/NetBox/FarConfiguration.cpp`, `src/base/MsgIDs.h`, `src/resource/*.lng`
-- **Blocked by:** none
+- [ ] **Task 2: Build verification**
+  - Run `cmd /c build-x64.bat`
+  - Verify zero warnings under /W4
+  - Acceptance: Build passes with zero warnings
 
-### Task 3b: Copy parameter preset UI ✅
-- Add `TFarComboBox` for preset selection to `TCopyDialog` (between CopyParamLister and TransferSettings button)
-- On preset change: load FCopyParams from preset storage via `TCopyParamType::Load()`
-- Add preset management dialog (minimal: listbox + Add/Edit/Delete buttons)
-- Wire preset combo into `TFullSynchronizeDialog` and `TSynchronizeDialog` (same pattern)
-- **Files:** `src/NetBox/WinSCPDialogs.cpp`, `src/NetBox/WinSCPDialogs.h`
-- **Blocked by:** Task 2 (UpdateControls enablement must be correct before adding new controls) and Task 3a (infrastructure must exist first)
+### Phase 2: Localization Fixes
 
-### Task 4: Build verification & regression test ✅
-- Run `build-x64.bat` → zero warnings
-- Verify plugin DLL in `Far3_x64/Plugins/NetBox/`
-- Manual test: connect SFTP, FTP, WebDAV, S3; transfer file; cancel operation; navigate directories
-- Test preset: select preset in copy dialog, verify transfer settings applied correctly
-- **Blocked by:** Tasks 1, 2, 3a, 3b
+- [ ] **Task 3: Add MsgIDs for Location Profiles InputBox prompts**
+  - Files: `src/base/MsgIDs.h`
+  - Add `NB_LOCATION_BOOKMARK_NAME_PROMPT` and `NB_LOCATION_BOOKMARK_RENAME_PROMPT` after current last ordinal
+  - LOG: `AppLogFmt(L"MsgIDs: added NB_LOCATION_BOOKMARK_NAME_PROMPT ordinal=%d")`
+  - Acceptance: Ordinals are sequential, no conflicts
 
-## Dependency Graph
+- [ ] **Task 4: Replace hardcoded English with GetMsg()**
+  - Files: `src/NetBox/WinSCPDialogs.cpp`
+  - Line 2687: Replace `L"Bookmark name:"` with `GetMsg(NB_LOCATION_BOOKMARK_NAME_PROMPT)`
+  - Line 2731: Replace `L"New name:"` with `GetMsg(NB_LOCATION_BOOKMARK_RENAME_PROMPT)`
+  - LOG: `AppLogFmt(L"LocationProfiles: replaced hardcoded InputBox prompt")`
+  - Acceptance: No hardcoded English strings remain in Location Profiles dialog
 
-```
-Task 1 ──────────────┐
-Task 2 ─────┬────────┤
-Task 3a ────┼────────┤
-            └→ Task 3b ──→ Task 4
-```
+- [ ] **Task 5: Update all 5 .lng files**
+  - Files: `src/NetBox/NetBox{Eng,Rus,Fr,Pol,Spa}.lng`
+  - Append 2 entries to each file at the correct ordinal position
+  - NetBoxEng.lng: `"Bookmark name:"` and `"New name:"`
+  - NetBoxRus.lng: `"Имя закладки:"` and `"Новое имя:"`
+  - NetBoxFr.lng: `"Nom du signet:"` and `"Nouveau nom:"`
+  - NetBoxPol.lng: `"Nazwa zakładki:"` and `"Nowa nazwa:"`
+  - NetBoxSpa.lng: `"Nombre del marcador:"` and `"Nuevo nombre:"`
+  - LOG: `AppLogFmt(L"Lang: added 2 entries to %s", Language)`
+  - Acceptance: All 5 .lng files have entries at correct ordinals
 
-Tasks 1, 2, 3a are independent and can be done in parallel.
-Task 3b depends on both Task 2 and Task 3a.
-Task 4 depends on all previous tasks.
+- [ ] **Task 6: Run alignment verification**
+  - Run `python scripts/verify_lng_alignment.py`
+  - Acceptance: Exit code 0 — all files aligned
 
-## Commit Checkpoints
+### Phase 3: UX Fixes
 
-**Checkpoint 1** (after Tasks 1, 2):
-```
-fix(ui): reconcile Terminal/SecureShell with WinSCP, fix UpdateControls enablement
+- [ ] **Task 7: Add confirmation dialog before removing bookmark**
+  - Files: `src/NetBox/WinSCPDialogs.cpp` (line 2707)
+  - Insert `MessageDialog()` check before `Bookmarks->Delete()` in `RemoveBookmarkClick()`
+  - Use `qtConfirmation` query type with `qaOK | qaCancel` answer flags
+  - LOG: `AppLogFmt(L"LocationProfiles: remove confirmation shown for '%s'", Name)`
+  - Acceptance: Removing bookmark shows confirmation; cancel prevents deletion
 
-- Resolve CONF_tcp_keepalives default alignment
-- Add SetEnabled() for CompressionCheck, AgentFwdCheck per protocol
-- Document NetBox-specific safety enhancements
-```
+- [ ] **Task 8: Add MsgID for remove confirmation**
+  - Files: `src/base/MsgIDs.h`
+  - Add `NB_LOCATION_PROFILES_REMOVE_CONFIRM` after current last ordinal
+  - LOG: `AppLogFmt(L"MsgIDs: added NB_LOCATION_PROFILES_REMOVE_CONFIRM ordinal=%d")`
+  - Acceptance: Ordinal is sequential, no conflicts
 
-**Checkpoint 2** (after Tasks 3a, 3b):
-```
-feat(transfer): add copy parameter presets with UI
+- [ ] **Task 9: Update all 5 .lng files for remove confirmation**
+  - Files: `src/NetBox/NetBox{Eng,Rus,Fr,Pol,Spa}.lng`
+  - Append 1 entry to each file at the correct ordinal position
+  - NetBoxEng.lng: `"Do you wish to remove bookmark '%s'"`
+  - NetBoxRus.lng: `"Удалить закладку '%s'"`
+  - NetBoxFr.lng: `"Voulez-vous supprimer le signet '%s'"`
+  - NetBoxPol.lng: `"Czy chcesz usunąć zakładkę '%s'"`
+  - NetBoxSpa.lng: `"¿Desea eliminar el marcador '%s'"`
+  - LOG: `AppLogFmt(L"Lang: added remove confirmation to %s", Language)`
+  - Acceptance: All 5 .lng files have entries at correct ordinals
 
-- Add TCopyParamPreset storage in FarConfiguration
-- Add preset combo to TCopyDialog and sync dialogs
-- Ship 4 default presets (Default, Text, Binary, NoPreserve)
-```
+### Phase 4: Navigation Fix
 
-## Notes
+- [ ] **Task 10: Add OpenBookmarkClick navigation members to TLocationProfilesDialog**
+  - Files: `src/NetBox/WinSCPDialogs.h` (or `.cpp` if class defined there)
+  - Add public getters: `GetOpened()`, `GetOpenedLocalDir()`, `GetOpenedRemoteDir()`
+  - Add private members: `FOpenedLocalDir`, `FOpenedRemoteDir`, `FOpened`
+  - LOG: `AppLogFmt(L"LocationProfiles: added navigation members")`
+  - Acceptance: Members compile without warnings
 
-- No architectural changes — all modifications are additive/refactoring within existing class boundaries
-- No libs/ modifications required
-- All Far Manager API calls must remain on main thread (verify in WinSCPDialogs.cpp changes)
-- MsgIDs.h + .lng files must stay structurally aligned — GetMsg crashes if they diverge
-- Preset autoselection rules (hostname/username matching) deferred to WinSCP alignment Phase 2
-- If Terminal/SecureShell audit yields no new fixes to port, Task 1 becomes documentation-only
+- [ ] **Task 11: Update OpenBookmarkClick to store selected paths**
+  - Files: `src/NetBox/WinSCPDialogs.cpp` (line 2747)
+  - Replace body to store `FOpenedLocalDir`, `FOpenedRemoteDir`, `FOpened=true` before `Close(OkButton)`
+  - LOG: `AppLogFmt(L"LocationProfiles: storing bookmark paths for navigation")`
+  - Acceptance: OpenBookmarkClick stores paths and closes dialog
+
+- [ ] **Task 12: Update LocationProfilesDialog wrapper to navigate after Execute()**
+  - Files: `src/NetBox/WinSCPDialogs.cpp` (line 2777)
+  - After `Execute()` returns true, check `GetOpened()` and navigate using `FTerminal->ChangeDirectory()` + `UpdatePanel()` + `RedrawPanel()`
+  - LOG: `AppLogFmt(L"LocationProfiles: navigating to bookmark remote=%s", RemoteDir)`
+  - Acceptance: Clicking Open navigates remote panel to bookmarked remote dir
+
+- [ ] **Task 13: Verify navigation works**
+  - Manual test: Open Location Profiles dialog, select a bookmark, click Open
+  - Verify remote panel navigates to bookmarked remote directory
+  - Verify local panel follows (if SynchronizeBrowsing enabled)
+  - Acceptance: Navigation works as expected
+
+## Commit Plan
+
+- **Commit 1** (after tasks 1-2): "fix(defensive): add null guards in TGenerateUrlDialog"
+- **Commit 2** (after tasks 3-6): "fix(i18n): localize Location Profiles InputBox prompts"
+- **Commit 3** (after tasks 7-9): "fix(ux): add confirmation before removing Location Profiles bookmark"
+- **Commit 4** (after tasks 10-13): "fix(ui): Location Profiles Open button navigates to bookmarked directories"
+
+## Success Criteria
+
+| Issue | Verification |
+|-------|-------------|
+| 1 (Navigation) | Open button navigates remote panel to bookmarked remote dir |
+| 2 (Localization) | `grep -r "Bookmark name:" src/` returns no hits; all 5 .lng files have new entries |
+| 3 (Remove confirm) | Removing bookmark shows confirmation; cancel prevents deletion |
+| 4 (Null checks) | Build with zero warnings under /W4 |
+| All | `python scripts/verify_lng_alignment.py` passes |
+| All | CRLF line endings, UTF-8 without BOM, no trailing whitespace |
+
+## Risks
+
+| Risk | Likelihood | Impact | Mitigation |
+|------|-----------|--------|------------|
+| `FTerminal->ChangeDirectory()` API differs from expected | Low | Medium | Check WinSCPFileSystem.h for correct API |
+| Null checks mask real initialization bugs | Low | Low | Keep null checks as defensive only, log warning |
+| New MsgIDs shift existing ordinals | Low | High | Verify ordinals are appended at end, not inserted |
