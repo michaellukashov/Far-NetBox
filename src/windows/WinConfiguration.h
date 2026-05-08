@@ -19,11 +19,33 @@ constexpr int ccTime = 1;
 constexpr int ccSize = 2;
 using TColor = uint32_t; // COLORREF equivalent
 struct TFont {};
-enum TFormatBytesStyle { fbsAuto = 0, fbsBytes, fbsKB, fbsMB, fbsGB };
+enum TFormatBytesStyle { fbsAuto = 0, fbsBytes, fbsKB, fbsMB, fbsGB, fbKilobytes = fbsKB };
+enum TAssemblyLanguage { alIntel = 0, alATT, alCSharp = alIntel };
+enum TDirectoryViewStyle { dvsIcon = 0, dvsSmallIcon, dvsList, dvsReport, dvsThumbnail, dvsTile, dvsThumbof };
+constexpr int32_t USER_DEFAULT_SCREEN_DPI = 96;
 
-enum TAssemblyLanguage { alIntel = 0, alATT };
-// Minimal stub for TCustomWinConfiguration
-// class TCustomWinConfiguration {};
+template<typename T>
+inline T Min(T a, T b) { return (a < b) ? a : b; }
+
+inline UnicodeString SaveDefaultPixelsPerInch() { return L"96"; }
+inline int32_t DimensionToDefaultPixelsPerInch(int32_t Dim) { return Dim; }
+inline UnicodeString GetResourceModuleName(const UnicodeString & /*Name*/, const wchar_t * /*ExeName*/) { return L""; }
+inline UnicodeString IniFileStorageNameForReading() { return L""; }
+inline bool DeleteFile(const UnicodeString & /*FileName*/) { return false; }
+
+struct TApplication { UnicodeString Name; };
+extern TApplication * Application;
+struct TScreen { int32_t WorkAreaWidth; int32_t WorkAreaHeight; };
+extern TScreen * Screen;
+
+struct TTerminalManager { static TTerminalManager * Instance() { static TTerminalManager m; return &m; } };
+class TIniFileStorage : public THierarchicalStorage { public: static TIniFileStorage * CreateFromPath(const UnicodeString &) { return nullptr; } };
+
+inline LCID GetAppliedLocale() { return 0; }
+#define AppliedLocale (GetAppliedLocale())
+
+bool DumpResourceToFile(const UnicodeString &, const UnicodeString &);
+
 #endif
 
 enum TEditor { edInternal, edExternal, edOpen };
@@ -324,14 +346,15 @@ public:
   __property const TEditorData * Data = { read = GetConstData };
   __property UnicodeString Name = { read = GetName };
 
+  const TEditorData * GetConstData() const { return &FData; };
   TEditorData * GetData();
+  const TEditorData * GetData() const { return &FData; }
 
 private:
   TEditorData FData;
   mutable UnicodeString FName;
 
   UnicodeString GetName() const;
-  const TEditorData * GetConstData() const { return &FData; };
 };
 
 class TEditorList
@@ -363,15 +386,19 @@ public:
   __property const TEditorPreferences * Editors[int32_t Index] = { read = GetEditor };
   __property bool Modified = { read = FModified };
 
+public:
+  int32_t GetCount() const;
+
+  void Modify();
+
+  const TEditorPreferences * GetEditor(int32_t Index) const;
+
 private:
+  void Init();
+
   TList * FEditors;
   bool FModified;
 
-  int32_t GetCount() const;
-
-  void Init();
-  void Modify();
-  const TEditorPreferences * GetEditor(int32_t Index) const;
 };
 
 class TBookmarks;
@@ -701,7 +728,7 @@ public:
   TWinConfiguration();
   virtual ~TWinConfiguration();
   void RecryptPasswords(TStrings * RecryptPasswordErrors);
-  bool GetUseMasterPassword() const;
+  bool GetUseMasterPassword() const; // defined in MasterPassword.cpp
   bool GetRefreshRemotePanel() { return FRefreshRemotePanel; }
   virtual void Default();
   void ClearTemporaryLoginData();
@@ -710,11 +737,10 @@ public:
   TStrings * FindTemporaryFolders();
   bool AnyTemporaryFolders();
   void CleanupTemporaryFolders();
-  void CleanupTemporaryFolders(TStrings * Folders = nullptr);
+  void CleanupTemporaryFolders(TStrings * Folders);
   UnicodeString ExpandedTemporaryDirectory();
   void CheckDefaultTranslation();
-  const TEditorPreferences * DefaultEditorForFile(
-    const UnicodeString FileName, bool Local, const TFileMasks::TParams & MaskParams);
+  const TEditorPreferences * DefaultEditorForFile(const UnicodeString FileName, bool Local, const TFileMasks::TParams & MaskParams);
   virtual UnicodeString DecryptPassword(const RawByteString & Password, const UnicodeString & Key);
   virtual RawByteString StronglyRecryptPassword(const RawByteString & Password, const UnicodeString & Key);
   void SetMasterPassword(UnicodeString value);
@@ -742,10 +768,8 @@ public:
   bool UseDarkTheme();
   TResolvedDoubleClickAction ResolveDoubleClickAction(bool IsDirectory, TTerminal * Terminal);
   bool TrySetSafeStorage();
-
   static void RestoreFont(const TFontConfiguration & Configuration, TFont * Font);
   static void StoreFont(TFont * Font, TFontConfiguration & Configuration);
-
   __property TScpCommanderConfiguration ScpCommander = { read = FScpCommander, write = SetScpCommander };
   __property TScpExplorerConfiguration ScpExplorer = { read = FScpExplorer, write = SetScpExplorer };
   __property bool SelectDirectories = { read = FSelectDirectories, write = SetSelectDirectories };
@@ -980,11 +1004,14 @@ public:
   __property int32_t Count = { read = GetCount };
   __property const TCustomCommandType * Commands[int32_t Index] = { read = GetConstCommand };
 
+public:
+  int32_t GetCount() const;
+
+  const TCustomCommandType * GetConstCommand(int32_t Index) const;
+
 private:
   bool FModified;
   TList * FCommands;
-  int32_t GetCount() const;
-  const TCustomCommandType * GetConstCommand(int32_t Index) const;
   TCustomCommandType * GetCommand(int32_t Index);
 };
 

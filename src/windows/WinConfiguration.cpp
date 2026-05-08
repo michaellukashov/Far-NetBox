@@ -16,6 +16,12 @@
 #include "CoreMain.h"
 #include <VCLCommon.h>
 
+// Forward declarations for MSVC compatibility
+#if !defined(__BORLANDC__)
+TColor RestoreColor(const UnicodeString & CStr);
+UnicodeString StoreColor(TColor Color);
+#endif // !defined(__BORLANDC__)
+
 
 TWinConfiguration * WinConfiguration = nullptr;
 
@@ -67,10 +73,10 @@ void TFileColorData::LoadList(const UnicodeString & S, TList & List)
   std::unique_ptr<TStringList> Strings(CommaTextToStringList(S));
 
   List.clear();
-  for (int32_t Index = 0; Index < Strings->Count; Index++)
+  for (int32_t Index = 0; Index < Strings->GetCount(); Index++)
   {
     TFileColorData FileColorData;
-    FileColorData.Load(Strings->Strings[Index]);
+    FileColorData.Load(Strings->GetString(Index));
     List.push_back(FileColorData);
   }
 }
@@ -82,7 +88,7 @@ UnicodeString TFileColorData::SaveList(const TList & List)
   {
     Strings->Add((*Iter).Save());
   }
-  return Strings->CommaText;
+  return Strings->GetCommaText();
 }
 
 
@@ -154,7 +160,7 @@ TEditorPreferences::TEditorPreferences(const TEditorData & Data) :
 
 bool TEditorPreferences::operator==(const TEditorPreferences & rhs) const
 {
-  return (FData == rhp.FData);
+  return (FData == rhs.FData);
 }
 #undef C
 
@@ -234,7 +240,7 @@ UnicodeString TEditorPreferences::GetName() const
       UnicodeString ExternalEditor = FData.ExternalEditor;
       ReformatFileNameCommand(ExternalEditor);
       SplitCommand(ExternalEditor, Program, Params, Dir);
-      FName = ExtractFileName(Program);
+      FName = ExtractFileBaseName(Program);
       int32_t P = FName.LastDelimiter(L".");
       if (P > 0)
       {
@@ -244,7 +250,7 @@ UnicodeString TEditorPreferences::GetName() const
 #if defined(__BORLANDC__)
       if (FName.ByteType(1) == mbSingleByte)
 #else
-      if (FName.ByteType(1) == 0)
+      if (FName.Length() > 0 && static_cast<uint8_t>(FName[1]) < 0x80)
 #endif // defined(__BORLANDC__)
       {
         if (FName.UpperCase() == FName)
@@ -296,9 +302,9 @@ TEditorList & TEditorList::operator=(const TEditorList & rhs)
 {
   Clear();
 
-  for (int32_t Index = 0; Index < rhl.Count; Index++)
+  for (int32_t Index = 0; Index < rhs.GetCount(); Index++)
   {
-    Add(new TEditorPreferences(*rhl.Editors[Index]));
+    Add(new TEditorPreferences(*rhs.GetEditor(Index)));
   }
   // there should be comparison of with the assigned list, but we rely on caller
   // to do it instead (TWinConfiguration::SetEditorList)
@@ -308,13 +314,13 @@ TEditorList & TEditorList::operator=(const TEditorList & rhs)
 
 bool TEditorList::operator==(const TEditorList & rhs) const
 {
-  bool Result = (Count == rhl.Count);
+  bool Result = (GetCount() == rhs.GetCount());
   if (Result)
   {
     int32_t i = 0;
-    while ((i < Count) && Result)
+    while ((i < GetCount()) && Result)
     {
-      Result = (*Editors[i]) == (*rhl.Editors[i]);
+      Result = (*GetEditor(i)) == (*rhs.GetEditor(i));
       i++;
     }
   }
@@ -323,16 +329,16 @@ bool TEditorList::operator==(const TEditorList & rhs) const
 
 void TEditorList::Clear()
 {
-  for (int32_t i = 0; i < Count; i++)
+  for (int32_t i = 0; i < GetCount(); i++)
   {
-    delete Editors[i];
+    delete GetEditor(i);
   }
   FEditors->Clear();
 }
 
 void TEditorList::Add(TEditorPreferences * Editor)
 {
-  Insert(Count, Editor);
+  Insert(GetCount(), Editor);
 }
 
 void TEditorList::Insert(int32_t Index, TEditorPreferences * Editor)
@@ -343,10 +349,10 @@ void TEditorList::Insert(int32_t Index, TEditorPreferences * Editor)
 
 void TEditorList::Change(int32_t Index, TEditorPreferences * Editor)
 {
-  if (!((*Editors[Index]) == *Editor))
+  if (!((*GetEditor(Index)) == *Editor))
   {
-    delete Editors[Index];
-    FEditors->Items[Index] = (reinterpret_cast<TObject *>(Editor));
+    delete GetEditor(Index);
+    FEditors->SetItem(Index, reinterpret_cast<TObject *>(Editor));
     Modify();
   }
   else
@@ -366,8 +372,8 @@ void TEditorList::Move(int32_t CurIndex, int32_t NewIndex)
 
 void TEditorList::Delete(int32_t Index)
 {
-  DebugAssert((Index >= 0) && (Index < Count));
-  delete Editors[Index];
+  DebugAssert((Index >= 0) && (Index < GetCount()));
+  delete GetEditor(Index);
   FEditors->Delete(Index);
   Modify();
 }
@@ -379,7 +385,7 @@ const TEditorPreferences * TEditorList::Find(
   int32_t i = 0;
   while ((i < FEditors->Count) && (Result == nullptr))
   {
-    Result = Editors[i];
+    Result = GetEditor(i);
     if (!Result->Matches(FileName, Local, Params))
     {
       Result = nullptr;
@@ -403,7 +409,7 @@ void TEditorList::Load(THierarchicalStorage * Storage)
       Next = Storage->OpenSubKey(Name, false);
       if (Next)
       {
-        try
+        try__finally
         {
           Editor = new TEditorPreferences();
           Editor->Load(Storage, false);
@@ -411,7 +417,7 @@ void TEditorList::Load(THierarchicalStorage * Storage)
         __finally
         {
           Storage->CloseSubKey();
-        }
+        } end_try__finally
       }
     }
     catch(...)
@@ -435,18 +441,18 @@ void TEditorList::Load(THierarchicalStorage * Storage)
 void TEditorList::Save(THierarchicalStorage * Storage) const
 {
   Storage->ClearSubKeys();
-  for (int32_t Index = 0; Index < Count; Index++)
+  for (int32_t Index = 0; Index < GetCount(); Index++)
   {
     if (Storage->OpenSubKey(IntToStr(Index), true))
     {
-      try
+      try__finally
       {
-        Editors[Index]->Save(Storage);
+    GetEditor(Index)->Save(Storage);
       }
       __finally
       {
         Storage->CloseSubKey();
-      }
+      } end_try__finally
     }
   }
 }
@@ -465,14 +471,14 @@ const TEditorPreferences * TEditorList::GetEditor(int32_t Index) const
 bool TEditorList::IsDefaultList() const
 {
   bool Result = true;
-  for (int32_t Index = 0; Result && (Index < Count); Index++)
+  for (int32_t Index = 0; Result && (Index < GetCount()); Index++)
   {
     const TEditorPreferences * Editor = GetEditor(Index);
-    if (Editor->Data->Editor == edInternal)
+    if (Editor->GetConstData()->Editor == edInternal)
     {
       // noop (keeps Result true)
     }
-    else if (Editor->Data->Editor == edExternal)
+    else if (Editor->GetConstData()->Editor == edExternal)
     {
       UnicodeString ExternalEditor = Editor->ExtractExternalEditorName();
       UnicodeString DefaultExternalEditor = ExtractProgramName(TEditorPreferences::GetDefaultExternalEditor());
@@ -515,13 +521,13 @@ TWinConfiguration::TWinConfiguration(): TCustomWinConfiguration()
   }
 
   // Load complete locale according to the UI language
-  SetLocaleInternal(nullptr, true, true);
+  SetLocaleInternal(0, true, true);
   FDefaultLocale = AppliedLocale;
 }
 
 TWinConfiguration::~TWinConfiguration()
 {
-  if (!FTemporarySessionFile.IsEmpty()) DeleteFile(ApiPath(FTemporarySessionFile));
+  if (!FTemporarySessionFile.IsEmpty()) ::DeleteFileW(ApiPath(FTemporarySessionFile).c_str());
   ClearTemporaryLoginData();
   ReleaseExtensionTranslations();
 
@@ -636,21 +642,21 @@ void TWinConfiguration::Default()
   FExtensionsDeleted = L"";
   FLockedInterface = false;
 
-  HonorDrivePolicy = 1;
-  UseABDrives = true;
-  TimeoutShellOperations = true;
-  TimeoutShellIconRetrieval = false;
-  UseIconUpdateThread = true;
-  AllowWindowPrint = false;
-  StoreTransition = stInit;
-  QueueTransferLimitMax = 9;
-  HiContrast = false;
-  EditorCheckNotModified = false;
-  SessionTabCaptionTruncation = true;
-  LoadingTooLongLimit = 15;
-  RemoteThumbnailMask = EmptyStr;
-  RemoteThumbnailSizeLimit = 50 * 1024;
-  FirstRun = StandardDatestamp();
+  SetHonorDrivePolicy(1);
+  SetUseABDrives(true);
+  SetTimeoutShellOperations(true);
+  FTimeoutShellIconRetrieval = false;
+  SetUseIconUpdateThread(true);
+  SetAllowWindowPrint(false);
+  SetStoreTransition(stInit);
+  SetQueueTransferLimitMax(9);
+  SetHiContrast(false);
+  SetEditorCheckNotModified(false);
+  SetSessionTabCaptionTruncation(true);
+  SetLoadingTooLongLimit(15);
+  FRemoteThumbnailMask = EmptyStr;
+  FRemoteThumbnailSizeLimit = 50 * 1024;
+  SetFirstRun(StandardDatestamp());
 
   FEditor.Font.FontName = DefaultFixedWidthFontName;
   FEditor.Font.FontSize = DefaultFixedWidthFontSize;
@@ -843,7 +849,7 @@ bool TWinConfiguration::DetectRegistryStorage(HKEY RootKey)
 {
   bool Result = false;
   TRegistryStorage * Storage = new TRegistryStorage(RegistryStorageKey, RootKey);
-  try
+  try__finally
   {
     if (Storage->OpenRootKey(false))
     {
@@ -854,7 +860,7 @@ bool TWinConfiguration::DetectRegistryStorage(HKEY RootKey)
   __finally
   {
     delete Storage;
-  }
+  } end_try__finally
   return Result;
 }
 
@@ -864,7 +870,7 @@ bool TWinConfiguration::CanWriteToStorage()
   try
   {
     THierarchicalStorage * Storage = CreateConfigStorage();
-    try
+    try__finally
     {
       Storage->AccessMode = smReadWrite;
       // This is actually not very good test, as we end up potentially with
@@ -881,7 +887,7 @@ bool TWinConfiguration::CanWriteToStorage()
     __finally
     {
       delete Storage;
-    }
+    } end_try__finally
     Result = true;
   }
   catch(...)
@@ -989,6 +995,7 @@ void TWinConfiguration::Saved()
   FEditorList->Saved();
 }
 
+#if defined(__BORLANDC__)
 void TWinConfiguration::RecryptPasswords(TStrings * RecryptPasswordErrors)
 {
   TCustomWinConfiguration::RecryptPasswords(RecryptPasswordErrors);
@@ -1013,6 +1020,7 @@ void TWinConfiguration::RecryptPasswords(TStrings * RecryptPasswordErrors)
     }
   }
 }
+#endif // defined(__BORLANDC__)
 
 bool TWinConfiguration::GetUseMasterPassword()
 {
@@ -1043,16 +1051,15 @@ THierarchicalStorage * TWinConfiguration::CreateScpStorage(bool & SessionList)
 // duplicated from core\configuration.cpp
 #undef LASTELEM
 #define BLOCK(KEY, CANCREATE, BLOCK) \
-  do { if (Storage->OpenSubKeyPath(KEY, CANCREATE)) try { BLOCK } __finally { Storage->CloseSubKeyPath(); } } while(0)
-#define KEY(TYPE, VAR) KEYEX(TYPE, VAR, PropertyToKey(TEXT(#VAR)))
+  do { if (Storage->OpenSubKeyPath(KEY, CANCREATE)) try__finally { BLOCK } __finally { Storage->CloseSubKeyPath(); } end_try__finally } while(0)
+#define KEY(TYPE, VAR) KEYEX(TYPE, F##VAR, PropertyToKey(TEXT(#VAR)))
 #define REGCONFIG(CANCREATE) \
   BLOCK("Interface", CANCREATE, \
-    KEYEX(Integer,DoubleClickAction, "CopyOnDoubleClick"); \
+    KEYEX(Integer, FDoubleClickAction, "CopyOnDoubleClick"); \
     KEY(Bool,     CopyOnDoubleClickConfirmation); \
     KEY(Bool,     AlwaysRespectDoubleClickAction); \
     KEY(Bool,     DDDisableMove); \
-    KEYEX(Integer, DDTransferConfirmation, "DDTransferConfirmation2"); \
-    KEY(String,   DDTemporaryDirectory); \
+    KEYEX(Integer, FDDTransferConfirmation, "DDTransferConfirmation2"); \
     KEY(String,   DDDrives); \
     KEY(Bool,     DDWarnLackOfTempSpace); \
     KEY(Float,    DDWarnLackOfTempSpaceRatio); \
@@ -1099,10 +1106,10 @@ THierarchicalStorage * TWinConfiguration::CreateScpStorage(bool & SessionList)
     KEY(Bool,     AutoOpenInPutty); \
     KEY(Bool,     RefreshRemotePanel); \
     KEY(DateTime, RefreshRemotePanelInterval); \
-    KEYEX(String, PanelFont.FontName, "PanelFontName"); \
-    KEYEX(Integer,PanelFont.FontSize, "PanelFontSize"); \
-    KEYEX(Integer,PanelFont.FontStyle, "PanelFontStyle"); \
-    KEYEX(Integer,PanelFont.FontCharset, "PanelFontCharset"); \
+    KEYEX(String, FPanelFont.FontName, "PanelFontName"); \
+    KEYEX(Integer, FPanelFont.FontSize, "PanelFontSize"); \
+    KEYEX(Integer, FPanelFont.FontStyle, "PanelFontStyle"); \
+    KEYEX(Integer, FPanelFont.FontCharset, "PanelFontCharset"); \
     KEY(Bool,     NaturalOrderNumericalSorting); \
     KEY(Bool,     AlwaysSortDirectoriesByName); \
     KEY(Bool,     FullRowSelect); \
@@ -1131,7 +1138,6 @@ THierarchicalStorage * TWinConfiguration::CreateScpStorage(bool & SessionList)
     KEY(String,   FileColors); \
     KEY(Integer,  RunsSinceLastTip); \
     KEY(Bool,     HonorDrivePolicy); \
-    KEY(Bool,     UseABDrives); \
     KEY(Integer,  LastMachineInstallations); \
     KEYEX(String, FExtensionsDeleted, "ExtensionsDeleted"); \
     KEYEX(String, FExtensionsOrder, "ExtensionsOrder"); \
@@ -1148,7 +1154,7 @@ THierarchicalStorage * TWinConfiguration::CreateScpStorage(bool & SessionList)
     KEY(String,   FirstRun); \
   ); \
   BLOCK("Interface\\Editor", CANCREATE, \
-    KEYEX(String,   Editor.Font.FontName, "FontName2"); \
+    KEYEX(String, FEditor.Font.FontName, "FontName2"); \
     KEY(Integer,  Editor.Font.FontSize); \
     KEY(Integer,  Editor.Font.FontStyle); \
     KEY(Integer,  Editor.Font.FontCharset); \
@@ -1221,7 +1227,7 @@ THierarchicalStorage * TWinConfiguration::CreateScpStorage(bool & SessionList)
     KEY(String,   FUpdates.ConsoleVersion); \
   ); \
   BLOCK("Interface\\Explorer", CANCREATE, \
-    KEYEX(String,  ScpExplorer.ToolbarsLayout, ToolbarsLayoutKey); \
+    KEYEX(String, FScpExplorer.ToolbarsLayout, ToolbarsLayoutKey); \
     KEY(String,  ScpExplorer.ToolbarsButtons); \
     KEY(String,  ScpExplorer.DirViewParams); \
     KEY(String,  ScpExplorer.LastLocalTargetDirectory); \
@@ -1235,7 +1241,7 @@ THierarchicalStorage * TWinConfiguration::CreateScpStorage(bool & SessionList)
     KEY(Integer, ScpExplorer.DriveViewWidthPixelsPerInch); \
   ); \
   BLOCK("Interface\\Commander", CANCREATE, \
-    KEYEX(String,  ScpCommander.ToolbarsLayout, ToolbarsLayoutKey); \
+    KEYEX(String, FScpCommander.ToolbarsLayout, ToolbarsLayoutKey); \
     KEY(String,  ScpCommander.ToolbarsButtons); \
     KEY(Integer, ScpCommander.CurrentPanel); \
     KEY(Float,   ScpCommander.LocalPanelWidth); \
@@ -1243,7 +1249,7 @@ THierarchicalStorage * TWinConfiguration::CreateScpStorage(bool & SessionList)
     KEY(Bool,    ScpCommander.SessionsTabs); \
     KEY(Bool,    ScpCommander.StatusBar); \
     KEY(String,  ScpCommander.WindowParams); \
-    KEYEX(Integer, ScpCommander.NortonLikeMode, "ExplorerStyleSelection"); \
+    KEYEX(Integer, FScpCommander.NortonLikeMode, "ExplorerStyleSelection"); \
     KEY(Bool,    ScpCommander.PreserveLocalDirectory); \
     KEY(Bool,    ScpCommander.CompareByTime); \
     KEY(Bool,    ScpCommander.CompareBySize); \
@@ -1272,12 +1278,12 @@ THierarchicalStorage * TWinConfiguration::CreateScpStorage(bool & SessionList)
     KEY(String,  ScpCommander.RemotePanel.LastPath); \
   ); \
   BLOCK(L"Interface\\Commander\\OtherLocalPanel", CANCREATE, \
-    KEYEX(String, ScpCommander.OtherLocalPanelDirViewParams, L"DirViewParams"); \
-    KEYEX(String, ScpCommander.OtherLocalPanelLastPath, L"LastPath"); \
+    KEYEX(String, FScpCommander.OtherLocalPanelDirViewParams, L"DirViewParams"); \
+    KEYEX(String, FScpCommander.OtherLocalPanelLastPath, L"LastPath"); \
   ); \
   BLOCK(L"Security", CANCREATE, \
-    KEY(Bool,    FUseMasterPassword); \
-    KEY(String,  FMasterPasswordVerifier); \
+    KEY(Bool,    UseMasterPassword); \
+    KEY(String,  MasterPasswordVerifier); \
   );
 
 void TWinConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
@@ -1299,7 +1305,7 @@ void TWinConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
   {
     FCustomCommandList->Save(Storage);
 
-    if (FCustomCommandList->Count == 0)
+    if (FCustomCommandList->GetCount() == 0)
     {
       Storage->WriteBool(L"CustomCommandsNone", true);
     }
@@ -1320,20 +1326,20 @@ void TWinConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
 
   if ((All || FEditorList->Modified) &&
       Storage->OpenSubKeyPath(L"Interface\\Editor", true))
-  try
+  try__finally
   {
     FEditorList->Save(Storage);
   }
   __finally
   {
     Storage->CloseSubKeyPath();
-  }
+  } end_try__finally
 }
 
 void TWinConfiguration::LoadFrom(THierarchicalStorage * Storage)
 {
   FLegacyEditor = new TEditorPreferences();
-  try
+  try__finally
   {
     FLegacyEditor->LegacyDefaults();
 
@@ -1342,15 +1348,15 @@ void TWinConfiguration::LoadFrom(THierarchicalStorage * Storage)
     // Following needs to be done even if there's no Configuration key in the storage,
     // so it cannot be in LoadData
 
-    int32_t EditorCount = FEditorList->Count;
+    int32_t EditorCount = FEditorList->GetCount();
     if (EditorCount == 0)
     {
       TEditorPreferences * AlternativeEditor = nullptr;
       try
       {
-        if (FLegacyEditor->Data->Editor == edInternal)
+        if (FLegacyEditor->GetConstData()->Editor == edInternal)
         {
-          if (!FLegacyEditor->Data->ExternalEditor.IsEmpty())
+          if (!FLegacyEditor->GetConstData()->ExternalEditor.IsEmpty())
           {
             AlternativeEditor = new TEditorPreferences(*FLegacyEditor);
             AlternativeEditor->GetData()->Editor = edExternal;
@@ -1359,7 +1365,7 @@ void TWinConfiguration::LoadFrom(THierarchicalStorage * Storage)
         }
         else
         {
-          if (FLegacyEditor->Data->ExternalEditor.IsEmpty())
+          if (FLegacyEditor->GetConstData()->ExternalEditor.IsEmpty())
           {
             FLegacyEditor->GetData()->Editor = edInternal;
           }
@@ -1393,7 +1399,7 @@ void TWinConfiguration::LoadFrom(THierarchicalStorage * Storage)
   {
     delete FLegacyEditor;
     FLegacyEditor = nullptr;
-  }
+  } end_try__finally
 
   if (FUpdates.ConnectionType == -1)
   {
@@ -1599,11 +1605,11 @@ void TWinConfiguration::LoadExtensionList()
   {
     UnicodeString S = CutToChar(ShortCuts, L'|', false);
     TShortCut ShortCut = static_cast<TShortCut>(StrToInt(CutToChar(S, L'=', false)));
-    for (int32_t Index = 0; Index < FExtensionList->Count; Index++)
+    for (int32_t Index = 0; Index < FExtensionList->GetCount(); Index++)
     {
-      if (FExtensionList->Commands[Index]->Id == S)
+      if (FExtensionList->GetConstCommand(Index)->Id == S)
       {
-        const_cast<TCustomCommandType *>(FExtensionList->Commands[Index])->ShortCut = ShortCut;
+        const_cast<TCustomCommandType *>(FExtensionList->GetConstCommand(Index))->ShortCut = ShortCut;
       }
     }
   }
@@ -1663,7 +1669,7 @@ void TWinConfiguration::LoadData(THierarchicalStorage * Storage)
   }
 
   if (Storage->OpenSubKeyPath(L"Interface\\Editor", false))
-  try
+  try__finally
   {
     FEditorList->Clear();
     FEditorList->Load(Storage);
@@ -1671,20 +1677,20 @@ void TWinConfiguration::LoadData(THierarchicalStorage * Storage)
   __finally
   {
     Storage->CloseSubKeyPath();
-  }
+  } end_try__finally
 
   // load legacy editor configuration
   DebugAssert(FLegacyEditor != nullptr);
   if (Storage->OpenSubKeyPath(L"Interface\\Editor", false))
   {
-    try
+    try__finally
     {
       FLegacyEditor->Load(Storage, true);
     }
     __finally
     {
       Storage->CloseSubKeyPath();
-    }
+    } end_try__finally
   }
 }
 
@@ -1958,14 +1964,14 @@ void TWinConfiguration::ChangeMasterPassword(
   FMasterPasswordVerifier = BytesToHex(Verifier);
   FPlainMasterPasswordEncrypt.SetValue(value);
   FUseMasterPassword = true;
-  try
+  try__finally
   {
     RecryptPasswords(RecryptPasswordErrors);
   }
   __finally
   {
     FPlainMasterPasswordDecrypt.SetValue(value);
-  }
+  } end_try__finally
 }
 
 bool TWinConfiguration::ValidateMasterPassword(UnicodeString value,
@@ -2013,14 +2019,14 @@ void TWinConfiguration::ClearMasterPassword(TStrings * RecryptPasswordErrors)
   FMasterPasswordVerifier = L"";
   FUseMasterPassword = false;
   FPlainMasterPasswordEncrypt.Clear();
-  try
+  try__finally
   {
     RecryptPasswords(RecryptPasswordErrors);
   }
   __finally
   {
     FPlainMasterPasswordDecrypt.Clear();
-  }
+  } end_try__finally
 }
 
 void TWinConfiguration::AskForMasterPassword()
@@ -2573,9 +2579,9 @@ void TWinConfiguration::SetExtensionList(TCustomCommandList * value)
     std::unique_ptr<TStringList> DeletedExtensions(CreateSortedStringList());
     ParseExtensionList(DeletedExtensions.get(), FExtensionsDeleted);
 
-    for (int32_t Index = 0; Index < ExtensionList->Count; Index++)
+    for (int32_t Index = 0; Index < ExtensionList->GetCount(); Index++)
     {
-      const TCustomCommandType * CustomCommand = ExtensionList->Commands[Index];
+      const TCustomCommandType * CustomCommand = ExtensionList->GetConstCommand(Index);
       int32_t Index = value->FindIndexByFileName(CustomCommand->FileName);
       if (Index < 0)
       {
@@ -2588,9 +2594,9 @@ void TWinConfiguration::SetExtensionList(TCustomCommandList * value)
     }
 
     FExtensionsOrder = L"";
-    for (int32_t Index = 0; Index < value->Count; Index++)
+    for (int32_t Index = 0; Index < value->GetCount(); Index++)
     {
-      const TCustomCommandType * CustomCommand = value->Commands[Index];
+      const TCustomCommandType * CustomCommand = value->GetConstCommand(Index);
       AddToList(FExtensionsOrder, CustomCommand->Id, L"|");
 
       int32_t DeletedIndex = DeletedExtensions->IndexOf(CustomCommand->Id);
@@ -2603,15 +2609,15 @@ void TWinConfiguration::SetExtensionList(TCustomCommandList * value)
     FExtensionList->Assign(value);
 
     FExtensionsDeleted = L"";
-    for (int32_t Index = 0; Index < DeletedExtensions->Count; Index++)
+    for (int32_t Index = 0; Index < DeletedExtensions->GetCount(); Index++)
     {
       AddToList(FExtensionsDeleted, DeletedExtensions->Strings[Index], L"|");
     }
 
     FExtensionsShortCuts = L"";
-    for (int32_t Index = 0; Index < value->Count; Index++)
+    for (int32_t Index = 0; Index < value->GetCount(); Index++)
     {
-      const TCustomCommandType * Extension = value->Commands[Index];
+      const TCustomCommandType * Extension = value->GetConstCommand(Index);
       if (Extension->HasCustomShortCut())
       {
         AddToList(FExtensionsShortCuts, FORMAT(L"%d=%s", (Extension->ShortCut, Extension->Id)), L"|");
@@ -2699,7 +2705,7 @@ TStrings * TWinConfiguration::DoFindTemporaryFolders(bool OnlyFirst)
     while ((FindNextChecked(SRec) == 0) && (!OnlyFirst || Result->Count == 0));
   }
 
-  if (Result->Count == 0)
+  if (Result->GetCount() == 0)
   {
     Result.reset(nullptr);
   }
@@ -2729,13 +2735,13 @@ void TWinConfiguration::CleanupTemporaryFolders()
 
 void TWinConfiguration::CleanupTemporaryFolders(TStrings * Folders)
 {
-  if (DebugAlwaysTrue(Folders->Count > 0))
+  if (DebugAlwaysTrue(Folders->GetCount() > 0))
   {
     Usage->Inc(L"TemporaryDirectoryCleanups");
   }
 
   UnicodeString ErrorList;
-  for (int32_t i = 0; i < Folders->Count; i++)
+  for (int32_t i = 0; i < Folders->GetCount(); i++)
   {
     if (!RecursiveDeleteFile(Folders->Strings[i]))
     {
@@ -2933,7 +2939,7 @@ TStringList * TWinConfiguration::LoadJumpList(
 
   std::unique_ptr<TStringList> List(std::make_unique<TStringList>());
   List->CaseSensitive = false;
-  List->CommaText = JumpList;
+  List->SetCommaText(JumpList);
   return List.release();
 }
 
@@ -2942,7 +2948,7 @@ void TWinConfiguration::SaveJumpList(
 {
   UnicodeString JumpList = Storage->ReadString(Name, L"");
 
-  UnicodeString NewJumpList = List->CommaText;
+  UnicodeString NewJumpList = List->GetCommaText();
   if (NewJumpList != JumpList)
   {
     Storage->WriteString(Name, NewJumpList);
@@ -2951,16 +2957,16 @@ void TWinConfiguration::SaveJumpList(
 
 void TWinConfiguration::TrimJumpList(TStringList * List)
 {
-  while (List->Count > 30)
+  while (List->GetCount() > 30)
   {
-    List->Delete(List->Count - 1);
+    List->Delete(List->GetCount() - 1);
   }
 }
 
 void TWinConfiguration::UpdateEntryInJumpList(
   bool Session, const UnicodeString & Name, bool Add)
 {
-  try
+  try__finally
   {
     std::unique_ptr<THierarchicalStorage> Storage(CreateConfigStorage());
     TAutoNestingCounter DontDecryptPasswordsCounter(FDontDecryptPasswords);
@@ -2997,7 +3003,7 @@ void TWinConfiguration::UpdateEntryInJumpList(
       SaveJumpList(Storage.get(), L"JumpList", ListSessions.get());
       SaveJumpList(Storage.get(), L"JumpListWorkspaces", ListWorkspaces.get());
     }
-  }
+  } end_try__finally
   catch (Exception & E)
   {
     throw ExtException(&E, MainInstructions(LoadStr(JUMPLIST_ERROR)));
@@ -3040,7 +3046,7 @@ void TWinConfiguration::UpdateStaticUsage()
 
   Usage->Set(L"Interface", Interface);
   Usage->Set(L"ThemeDark", UseDarkTheme());
-  Usage->Set(L"CustomCommandsCount", (FCustomCommandsDefaults ? 0 : FCustomCommandList->Count));
+  Usage->Set(L"CustomCommandsCount", (FCustomCommandsDefaults ? 0 : FCustomCommandList->GetCount()));
   Usage->Set(L"UsingLocationProfiles", UseLocationProfiles);
   Usage->Set(L"UsingMasterPassword", UseMasterPassword);
   Usage->Set(L"UsingAutoSaveWorkspace", AutoSaveWorkspace);
@@ -3068,10 +3074,10 @@ void TWinConfiguration::UpdateStaticUsage()
   Usage->Set(L"LastMonitor", LastMonitor);
 
   UnicodeString ExternalEditors;
-  for (int32_t Index = 0; Index < EditorList->Count; Index++)
+  for (int32_t Index = 0; Index < EditorList->GetCount(); Index++)
   {
-    const TEditorPreferences * Editor = EditorList->Editors[Index];
-    if (Editor->Data->Editor == edExternal)
+    const TEditorPreferences * Editor = EditorList->GetEditor(Index);
+    if (Editor->GetConstData()->Editor == edExternal)
     {
       AddToList(ExternalEditors, Editor->ExtractExternalEditorName(), ",");
     }
@@ -3087,9 +3093,9 @@ void TWinConfiguration::UpdateStaticUsage()
   int32_t ExtensionsPortable = 0;
   int32_t ExtensionsInstalled = 0;
   int32_t ExtensionsUser = 0;
-  for (int32_t Index = 0; Index < FExtensionList->Count; Index++)
+  for (int32_t Index = 0; Index < FExtensionList->GetCount(); Index++)
   {
-    const TCustomCommandType * CustomCommand = FExtensionList->Commands[Index];
+    const TCustomCommandType * CustomCommand = FExtensionList->GetConstCommand(Index);
     UnicodeString PathId = ExcludeTrailingBackslash(ExtractFilePath(CustomCommand->Id));
     if (SameText(PathId, ExtensionsCommonPathId))
     {
@@ -3110,7 +3116,7 @@ void TWinConfiguration::UpdateStaticUsage()
 
   std::unique_ptr<TStringList> DeletedExtensions(CreateSortedStringList());
   ParseExtensionList(DeletedExtensions.get(), FExtensionsDeleted);
-  Usage->Set(L"ExtensionsDeleted", (DeletedExtensions->Count));
+  Usage->Set(L"ExtensionsDeleted", (DeletedExtensions->GetCount()));
 }
 
 void TWinConfiguration::RestoreFont(
@@ -3266,7 +3272,7 @@ void TCustomCommandType::LoadExtension(TStrings * Lines, const UnicodeString & P
 
   UnicodeString ExtensionLine;
   bool Break = false;
-  for (int32_t Index = 0; !Break && (Index < Lines->Count); Index++)
+  for (int32_t Index = 0; !Break && (Index < Lines->GetCount()); Index++)
   {
     UnicodeString Line = Lines->Strings[Index].Trim();
     if (!Line.IsEmpty())
@@ -3837,14 +3843,14 @@ void TCustomCommandList::Load(THierarchicalStorage * Storage)
   if (Storage->OpenSubKey(L"CustomCommands", false))
   {
     TStrings * Names = new TStringList();
-    try
+    try__finally
     {
       Storage->ReadValues(Names, true);
-      for (int32_t Index = 0; Index < Names->Count; Index++)
+      for (int32_t Index = 0; Index < Names->GetCount(); Index++)
       {
         TCustomCommandType * Command = new TCustomCommandType();
-        Command->Name = Names->Names[Index];
-        Command->Command = Names->Values[Names->Names[Index]];
+        Command->Name = Names->GetNames[Index];
+        Command->Command = Names->Values[Names->GetNames[Index]];
         FCommands->Add(Command);
       }
       Storage->CloseSubKey();
@@ -3852,12 +3858,12 @@ void TCustomCommandList::Load(THierarchicalStorage * Storage)
     __finally
     {
       delete Names;
-    }
+    } end_try__finally
   }
 
   if (Storage->OpenSubKey(L"CustomCommandsParams", false))
   {
-    for (int32_t Index = 0; Index < FCommands->Count; Index++)
+    for (int32_t Index = 0; Index < GetCount(); Index++)
     {
       TCustomCommandType * Command = GetCommand(Index);
       Command->Params = Storage->ReadInteger(Command->Name, Command->Params);
@@ -3867,7 +3873,7 @@ void TCustomCommandList::Load(THierarchicalStorage * Storage)
 
   if (Storage->OpenSubKey(L"CustomCommandsShortCuts", false))
   {
-    for (int32_t Index = 0; Index < FCommands->Count; Index++)
+    for (int32_t Index = 0; Index < GetCount(); Index++)
     {
       TCustomCommandType * Command = GetCommand(Index);
       Command->ShortCut = (Word)Storage->ReadInteger(Command->Name, Command->ShortCut);
@@ -3882,9 +3888,9 @@ void TCustomCommandList::Save(THierarchicalStorage * Storage)
   if (Storage->OpenSubKey(L"CustomCommands", true))
   {
     Storage->ClearValues();
-    for (int32_t Index = 0; Index < FCommands->Count; Index++)
+    for (int32_t Index = 0; Index < GetCount(); Index++)
     {
-      const TCustomCommandType * Command = Commands[Index];
+      const TCustomCommandType * Command = GetConstCommand(Index);
       Storage->WriteString(Command->Name, Command->Command);
     }
     Storage->CloseSubKey();
@@ -3892,9 +3898,9 @@ void TCustomCommandList::Save(THierarchicalStorage * Storage)
   if (Storage->OpenSubKey(L"CustomCommandsParams", true))
   {
     Storage->ClearValues();
-    for (int32_t Index = 0; Index < FCommands->Count; Index++)
+    for (int32_t Index = 0; Index < GetCount(); Index++)
     {
-      const TCustomCommandType * Command = Commands[Index];
+      const TCustomCommandType * Command = GetConstCommand(Index);
       Storage->WriteInteger(Command->Name, Command->Params);
     }
     Storage->CloseSubKey();
@@ -3902,9 +3908,9 @@ void TCustomCommandList::Save(THierarchicalStorage * Storage)
   if (Storage->OpenSubKey(L"CustomCommandsShortCuts", true))
   {
     Storage->ClearValues();
-    for (int32_t Index = 0; Index < FCommands->Count; Index++)
+    for (int32_t Index = 0; Index < GetCount(); Index++)
     {
-      const TCustomCommandType * Command = Commands[Index];
+      const TCustomCommandType * Command = GetConstCommand(Index);
       if (Command->ShortCut != 0)
       {
         Storage->WriteInteger(Command->Name, Command->ShortCut);
@@ -3916,9 +3922,9 @@ void TCustomCommandList::Save(THierarchicalStorage * Storage)
 
 void TCustomCommandList::Clear()
 {
-  for (int32_t Index = 0; Index < FCommands->Count; Index++)
+  for (int32_t Index = 0; Index < GetCount(); Index++)
   {
-    delete Commands[Index];
+    delete GetCommand(Index);
   }
   FCommands->Clear();
 }
@@ -4039,10 +4045,10 @@ TCustomCommandType * TCustomCommandList::GetCommand(int32_t Index)
 
 bool TCustomCommandList::Equals(const TCustomCommandList * Other) const
 {
-  bool Result = (Count == Other->Count);
-  for (int32_t Index = 0; Result && (Index < Count); Index++)
+  bool Result = (GetCount() == Other->GetCount());
+  for (int32_t Index = 0; Result && (Index < GetCount()); Index++)
   {
-    Result = Commands[Index]->Equals(Other->Commands[Index]);
+    Result = GetConstCommand(Index)->Equals(Other->GetConstCommand(Index));
   }
   return Result;
 }
@@ -4050,9 +4056,9 @@ bool TCustomCommandList::Equals(const TCustomCommandList * Other) const
 void TCustomCommandList::Assign(const TCustomCommandList * Other)
 {
   Clear();
-  for (int32_t Index = 0; Index < Other->Count; Index++)
+  for (int32_t Index = 0; Index < Other->GetCount(); Index++)
   {
-    Add(new TCustomCommandType(*Other->Commands[Index]));
+    Add(new TCustomCommandType(*Other->GetConstCommand(Index)));
   }
   // there should be comparison of with the assigned list, be we rely on caller
   // to do it instead (TGUIConfiguration::SetCopyParamList)
@@ -4061,11 +4067,11 @@ void TCustomCommandList::Assign(const TCustomCommandList * Other)
 
 const TCustomCommandType * TCustomCommandList::Find(const UnicodeString Name) const
 {
-  for (int32_t Index = 0; Index < FCommands->Count; Index++)
+  for (int32_t Index = 0; Index < GetCount(); Index++)
   {
-    if (Commands[Index]->Name == Name)
+    if (GetConstCommand(Index)->Name == Name)
     {
-      return Commands[Index];
+      return GetConstCommand(Index);
     }
   }
   return nullptr;
@@ -4073,11 +4079,11 @@ const TCustomCommandType * TCustomCommandList::Find(const UnicodeString Name) co
 
 const TCustomCommandType * TCustomCommandList::Find(TShortCut ShortCut) const
 {
-  for (int32_t Index = 0; Index < FCommands->Count; Index++)
+  for (int32_t Index = 0; Index < GetCount(); Index++)
   {
-    if (Commands[Index]->ShortCut == ShortCut)
+    if (GetConstCommand(Index)->ShortCut == ShortCut)
     {
-      return Commands[Index];
+      return GetConstCommand(Index);
     }
   }
   return nullptr;
@@ -4085,9 +4091,9 @@ const TCustomCommandType * TCustomCommandList::Find(TShortCut ShortCut) const
 
 int32_t TCustomCommandList::FindIndexByFileName(const UnicodeString & FileName) const
 {
-  for (int32_t Index = 0; Index < FCommands->Count; Index++)
+  for (int32_t Index = 0; Index < GetCount(); Index++)
   {
-    if (IsPathToSameFile(Commands[Index]->FileName, FileName))
+    if (IsPathToSameFile(GetConstCommand(Index)->FileName, FileName))
     {
       return Index;
     }
@@ -4097,9 +4103,9 @@ int32_t TCustomCommandList::FindIndexByFileName(const UnicodeString & FileName) 
 
 void TCustomCommandList::ShortCuts(TShortCuts & ShortCuts) const
 {
-  for (int32_t Index = 0; Index < FCommands->Count; Index++)
+  for (int32_t Index = 0; Index < GetCount(); Index++)
   {
-    const TCustomCommandType * Command = Commands[Index];
+    const TCustomCommandType * Command = GetConstCommand(Index);
     if (Command->ShortCut != 0)
     {
       ShortCuts.Add(Command->ShortCut);
