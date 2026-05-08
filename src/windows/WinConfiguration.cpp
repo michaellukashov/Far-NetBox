@@ -488,6 +488,11 @@ bool TEditorList::IsDefaultList() const
 
 TWinConfiguration::TWinConfiguration(): TCustomWinConfiguration()
 {
+}
+
+void TWinConfiguration::ConfigurationInit()
+{
+  TCustomWinConfiguration::ConfigurationInit();
   FInvalidDefaultTranslationMessage = L"";
   FDDExtInstalled = -1;
   FBookmarks = new TBookmarks();
@@ -501,6 +506,7 @@ TWinConfiguration::TWinConfiguration(): TCustomWinConfiguration()
   FCustomCommandOptions = std::make_unique<TStringList>();
   FCustomCommandOptionsModified = false;
   FExtensionTranslations = std::make_unique<TStringList>();
+#if defined(__BORLANDC__)
   Default();
 
   // This matters only if the translations are in the executable folder and auto-loaded by VCL (System.Pas - DelayLoadResourceModule)
@@ -513,6 +519,7 @@ TWinConfiguration::TWinConfiguration(): TCustomWinConfiguration()
   {
     FInvalidDefaultTranslationMessage = E.Message;
   }
+#endif // defined(__BORLANDC__)
 
   // Load complete locale according to the UI language
   SetLocaleInternal(0, true, true);
@@ -531,6 +538,11 @@ TWinConfiguration::~TWinConfiguration()
   delete FEditorList;
 }
 
+UnicodeString TWinConfiguration::ModuleFileName() const
+{
+  return UnicodeString();
+}
+
 void TWinConfiguration::Default()
 {
   FCustomCommandsDefaults = true;
@@ -538,9 +550,11 @@ void TWinConfiguration::Default()
 
   TCustomWinConfiguration::Default();
 
+#if defined(__BORLANDC__)
   int32_t WorkAreaWidthScaled = DimensionToDefaultPixelsPerInch(Screen->WorkAreaWidth);
   int32_t WorkAreaHeightScaled = DimensionToDefaultPixelsPerInch(Screen->WorkAreaHeight);
   UnicodeString PixelsPerInchToolbarValue = L"PixelsPerInch=" + SaveDefaultPixelsPerInch();
+#endif // defined(__BORLANDC__)
 
   FDDDisableMove = false;
   FDDTransferConfirmation = asAuto;

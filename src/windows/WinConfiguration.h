@@ -734,10 +734,12 @@ protected:
 public:
   TWinConfiguration();
   virtual ~TWinConfiguration();
+  virtual UnicodeString ModuleFileName() const override;
+  virtual void ConfigurationInit() override;
   void RecryptPasswords(TStrings * RecryptPasswordErrors);
   virtual bool GetUseMasterPassword() const override; // defined in MasterPassword.cpp
   bool GetRefreshRemotePanel() { return FRefreshRemotePanel; }
-  virtual void Default();
+  virtual void Default() override;
   void ClearTemporaryLoginData();
   virtual THierarchicalStorage * CreateScpStorage(bool & SessionList);
   virtual UnicodeString TemporaryDir(bool Mask = false) const override;
@@ -1016,10 +1018,12 @@ public:
 
   void ShortCuts(TShortCuts & ShortCuts);
 
-bool GetModified() const { return FModified; }
-__property bool Modified = { read = FModified };
+  bool GetModified() const { return FModified; }
+  __property bool Modified = { read = FModified };
   __property int32_t Count = { read = GetCount };
+#if defined(__BORLANDC__)
   __property const TCustomCommandType * Commands[int32_t Index] = { read = GetConstCommand };
+#endif // defined(__BORLANDC__)
 
 public:
   int32_t GetCount() const;
@@ -1034,6 +1038,5 @@ private:
 
 extern TWinConfiguration * WinConfiguration;
 extern const UnicodeString WinSCPExtensionExt;
-
 
 #endif

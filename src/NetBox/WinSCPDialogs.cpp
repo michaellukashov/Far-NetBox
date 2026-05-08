@@ -4039,21 +4039,24 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   S3CredentialsEnvCheck->SetOnAllowChange(nb::bind(&TSessionDialog::S3CredentialsEnvCheckAllowChange, this));
 
   // Profile
-  SetNextItemPosition(ipRight);
+  SetNextItemPosition(ipNewLine);
   S3ProfileLabel = MakeOwnedObject<TFarText>(this);
   S3ProfileLabel->SetCaption(GetMsg(NB_S3_PROFILE));
   S3ProfileLabel->SetVisible(false);
+  S3ProfileLabel->SetWidth(20);
 
   SetNextItemPosition(ipRight);
   S3ProfileCombo = MakeOwnedObject<TFarComboBox>(this);
   S3ProfileCombo->GetItems()->Add(GetMsg(NB_S3_GENERAL_NAME));
   S3ProfileCombo->SetDropDownList(true);
-  S3ProfileCombo->SetWidth(25);
+  // S3ProfileCombo->SetWidth(20);
   S3ProfileCombo->SetVisible(false);
+
   // Default region
   SetNextItemPosition(ipNewLine);
   Text = MakeOwnedObject<TFarText>(this);
   Text->SetCaption(GetMsg(NB_S3_DEFAULTREGION));
+  Text->SetWidth(20);
 
   SetNextItemPosition(ipRight);
   S3DefaultRegionCombo = MakeOwnedObject<TFarComboBox>(this);
@@ -4064,6 +4067,8 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   SetNextItemPosition(ipNewLine);
   Text = MakeOwnedObject<TFarText>(this);
   Text->SetCaption(GetMsg(NB_S3_URLSTYLE));
+  Text->SetWidth(20);
+
   SetNextItemPosition(ipRight);
   S3UrlStyleCombo = MakeOwnedObject<TFarComboBox>(this);
   S3UrlStyleCombo->SetDropDownList(true);
@@ -4087,7 +4092,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   SetNextItemPosition(ipRight);
   S3SessionTokenEdit = MakeOwnedObject<TFarEdit>(this);
-  S3SessionTokenEdit->SetWidth(25);
+  // S3SessionTokenEdit->SetWidth(25);
   S3SessionTokenEdit->SetVisible(false);
 
   // Role ARN
@@ -4099,7 +4104,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   SetNextItemPosition(ipRight);
   S3RoleArnEdit = MakeOwnedObject<TFarEdit>(this);
-  S3RoleArnEdit->SetWidth(25);
+  // S3RoleArnEdit->SetWidth(25);
   S3RoleArnEdit->SetVisible(false);
 
   // Role session name
@@ -4111,7 +4116,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   SetNextItemPosition(ipRight);
   S3RoleSessionNameEdit = MakeOwnedObject<TFarEdit>(this);
-  S3RoleSessionNameEdit->SetWidth(25);
+  // S3RoleSessionNameEdit->SetWidth(25);
   S3RoleSessionNameEdit->SetVisible(false);
   // Authentication
   MakeOwnedObject<TFarSeparator>(this);

@@ -12,10 +12,13 @@
 
 TConfiguration * CreateConfiguration()
 {
-  WinConfiguration = new TWinConfiguration();
   TConfiguration * Result = new TFarConfiguration(FarPlugin);
   Result->ConfigurationInit();
   Result->Default();
+  DebugAssert(WinConfiguration == nullptr);
+  WinConfiguration = new TWinConfiguration();
+  WinConfiguration->ConfigurationInit();
+  WinConfiguration->Default();
   return Result;
 }
 

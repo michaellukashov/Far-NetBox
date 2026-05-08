@@ -9,12 +9,7 @@
 #include "Exceptions.h"
 #include "Exceptions.h"
 
-#include <vector>
 #include <mutex>
-
-#if defined(__BORLANDC__)
-// already included unconditionally above
-#endif // defined(__BORLANDC__)
 
 class TFileOperationProgressType;
 enum TFileOperation { foNone, foCopy, foMove, foDelete, foSetProperties,
@@ -84,6 +79,7 @@ private:
   nb::vector_t<TFileOperationError> FErrors;
   mutable std::mutex FMutex;
 };
+
 class TFileOperationStatistics final : public TObject
 {
 public:
