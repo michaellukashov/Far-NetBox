@@ -1,182 +1,212 @@
-# Plan: Build TWinConfiguration under MSVC with Borland Guards
+# Plan: Fix Borland-specific errors in TWinConfiguration (MSVC)
 
-**Created:** 2026-05-08  
-**Branch:** lmv/dev (current)  
-**Description:** Make `TWinConfiguration` compile under MSVC by restructuring Borland-specific code with `#if defined(__BORLANDC__)` / `#endif // defined(__BORLANDC__)` guards and providing MSVC alternatives.
+**Created:** 2026-05-08
+**Branch:** lmv/dev (current)
+**Description:** Fix 100+ MSVC compilation errors in `TWinConfiguration` methods (lines 549-1607) that use Borland-specific features. Phase 1-2 completed (implementations moved out of Borland guard, header compatibility verified). Phase 3 build failed with these errors.
 
 ## Settings
 
-- **Testing:** No (skip tests)
-- **Logging:** Verbose (default)
-- **Docs:** No (warn-only)
-- **Build type:** RelWithDebugInfo
-- **Platform:** x64
+| Setting | Value |
+|---------|-------|
+| Testing | No |
+| Logging | Verbose |
+| Docs | No (warn-only) |
+| Build type | RelWithDebugInfo |
+| Platform | x64 |
+
+## Roadmap Linkage
+
+Milestone: "none"
+Rationale: "Skipped by user"
 
 ## Context
 
-### Current Problem
+### Current State
 
-`WinConfiguration.cpp` has a large `#if defined(__BORLANDC__)` block (lines 22-477) containing implementations for:
-- `TFileColorData` (constructor, Load, Save, LoadList, SaveList)
-- `TEditorData` (constructors, operator==, ExternalEditorOptionsAutodetect)
-- `TEditorPreferences` (constructors, operator==, Matches, GetDefaultExternalEditor, etc.)
-- `TEditorList` (constructor, destructor, Init, Modify, Saved, operator=, operator==, Clear, Add, Insert, Change, Move, Delete, Find, Load, Save, GetCount, GetEditor, IsDefaultList)
-- Static variables: `NotepadName`, `ToolbarsLayoutKey`, `ToolbarsLayoutOldKey`, `DefaultUpdatesPeriod`, `ScpExplorerDirViewParamsDefault`, etc.
+Phase 1-2 are complete:
+- Shared implementations (TFileColorData, TEditorData, TEditorPreferences, TEditorList) moved out of `#if defined(__BORLANDC__)` guard
+- MSVC compatibility stubs added to WinConfiguration.h (lines 14-49)
+- RecryptPasswords guarded with `#if defined(__BORLANDC__)`
 
-Under MSVC, these implementations are excluded, but `TWinConfiguration` methods (lines 479-4099) depend on them.
+Build fails with 100+ errors in `TWinConfiguration` methods (lines 549-1607). The compiler stopped at 100 errors. These are all pre-existing Borland-specific features that were never guarded.
 
-### Compatibility Layer (Already Exists)
+### Error Categories
 
-The codebase already provides MSVC compatibility:
-- `__property` → no-op comment macro (`src/include/nbglobals.h` line 219)
-- `__finally` → lambda syntax macro (`src/base/Sysutils.hpp` line 562)
+| Category | Lines | Errors |
+|----------|-------|--------|
+| String concatenation (narrow + UnicodeString) | 549 | 1 |
+| Undeclared identifiers (VCL constants) | 661-662, 1295, 1479 | ~10 |
+| Function signature mismatches | 902, 1025, 1503, 1596 | 4 |
+| Missing members (TStrings/TStringList/TCustomCommandType) | 1304, 1327, 1432, 1486-1505 | ~15 |
+| Missing functions (ExtractFileName, StrToInt) | 1466, 1497, 1555, 1607 | 4 |
+| Missing types (LastChar, ExeName) | 1563, 1485 | 2 |
+| dynamic_cast conversion errors | 1538, 1573 | 2 |
+
+### MSVC Compatibility Layer (Already Exists)
+
+- `TColor` → `uint32_t` typedef
+- `TFont` → empty struct
 - `TList`, `TObject`, `TStringList` → defined in `src/base/Classes.hpp`
-- `TColor` → `uint32_t` typedef (`WinConfiguration.h` line 20)
-- `TNortonLikeMode`, `TCompareCriterias`, `TFormatBytesStyle`, `TIncrementalSearch`, `TAssemblyLanguage` → enums/typedefs in `WinConfiguration.h` lines 16-24
+- `SaveDefaultPixelsPerInch()` → returns `"96"`
+- `Application` / `Screen` → stub structs
+- `TTerminalManager` → stub with `Instance()`
+- `StrToIntDef`, `StrToInt64`, `TryStrToInt` → exist in `src/base/Sysutils.hpp`
+- `ExtractFileName` → exists in `src/base/Common.cpp`
 
-### Borland-Specific Features in the Guard
+### Critical Gaps
 
-| Feature | Location | MSVC Alternative |
-|---------|----------|------------------|
-| `SaveDefaultPixelsPerInch()` | Lines 30, 33 | Return `"96"` (or hardcode default) |
-| `RestoreColor()` / `StoreColor()` | Lines 47, 53 | Provide MSVC stubs (parse/return color values) |
-| `CutToChar()` | Line 47 | Available in Common.h |
-| `CommaTextToStringList()` | Line 59 | Available in Common.h |
-| `StripHotkey()` / `LoadStr()` | Lines 217, 221 | Available in WinInterface/Common |
-| `mbSingleByte` | Line 236 | Define as enum constant |
-| `ByteType()`, `SubString()` | Lines 236, 245-246 | UnicodeString methods (available) |
-| `Application->Name` / `Application->ExeName` | Lines 499, 1469 | `ModuleFileName()` alternative |
+- `StrToInt()` → missing (only `StrToIntDef` and `TryStrToInt` exist)
+- `TStrings::Values[]`, `ValueFromIndex`, `Names[]` → missing
+- `DefaultFixedWidthFontName`, `DefaultFixedWidthFontSize` → undeclared
+- `CSIDL_APPDATA` → undeclared
+- `TApplication::ExeName` → missing from struct
+- `TEditorList::Modified`, `TCustomCommandList::Modified` → missing
+- `TCustomCommandType::Id` → missing
 
 ## Tasks
 
-### Phase 1: Restructure WinConfiguration.cpp ✅ COMPLETED
+### Phase 1: Add missing MSVC stubs to WinConfiguration.h
 
-**Goal:** Move shared implementations out of the Borland guard; keep only Borland-specific code inside `#if defined(__BORLANDC__)` / `#endif // defined(__BORLANDC__)`.
+**Task 1.1:** Add missing VCL constants and struct members to WinConfiguration.h
 
-**Task 1.1:** Move static variables out of the Borland guard ✅
-- Move `NotepadName`, `ToolbarsLayoutKey`, `ToolbarsLayoutOldKey`, `DefaultUpdatesPeriod` outside the guard
-- Move `QueueViewLayoutDefault`, `ScpCommanderWindowParamsDefault`, `ScpExplorerWindowParamsDefault` outside the guard
-- **Verify:** These variables are needed by both compilers
+- **Target:** `src/windows/WinConfiguration.h` (MSVC compatibility block, lines 14-49)
+- **Changes:**
+  - Add `DefaultFixedWidthFontName` (const UnicodeString, e.g. `L"Courier New"`)
+  - Add `DefaultFixedWidthFontSize` (const int32_t, e.g. `10`)
+  - Add `CSIDL_APPDATA` (constexpr, e.g. `0x001a`)
+  - Add `ExeName` to `TApplication` struct (UnicodeString)
+  - Add `FLocaleSafe`, `FLastMonitor`, `FHonorDrivePolicy`, `FTimeoutShellOperations`, `FFUpdates` as TWinConfiguration members or stubs
+- **Logging:** Log at trace level when MSVC stubs are used
+- **Verify:** Compile check — no more "undeclared identifier" errors for these symbols
 
-**Task 1.2:** Move `ScpExplorerDirViewParamsDefault` and `ScpCommanderLocalPanelDirViewParamsDefault` to `#if !defined(__BORLANDC__)` with hardcoded defaults ✅
-- Under Borland: use `SaveDefaultPixelsPerInch()` (VCL function)
-- Under MSVC: use hardcoded `"96"` (standard DPI)
-- **Verify:** Default values are correct for MSVC
+### Phase 2: Add missing functions to Sysutils.hpp
 
-**Task 1.3:** Move `TFileColorData` implementation out of the Borland guard ✅
-- The implementation uses `TColor()` (already `uint32_t` in MSVC), `RestoreColor()`, `StoreColor()`, `TList`, `TStringList`
-- `TList` and `TStringList` are available in both compilers
-- `RestoreColor()` and `StoreColor()` need MSVC stubs if they're VCL-specific
-- **Verify:** Check if `RestoreColor()` and `StoreColor()` are available in MSVC
+**Task 2.1:** Add `StrToInt` function to Sysutils.hpp
 
-**Task 1.4:** Move `TEditorData` implementation out of the Borland guard ✅
-- Uses `NotepadName` (static), `ReformatFileNameCommand()`, `ExtractProgramName()`, `SameText()`, `IsWin10Build()`
-- All should be available in MSVC
-- **Verify:** All functions are available
+- **Target:** `src/base/Sysutils.hpp` (around line 338)
+- **Changes:**
+  - Add `inline int32_t StrToInt(const UnicodeString & Value)` declaration
+  - Add implementation in `src/base/Sysutils.cpp` (after TryStrToInt, ~line 187)
+  - Implementation: call `TryStrToInt` and throw on failure
+- **Logging:** Log on conversion failure
+- **Verify:** Compile check — no more "identifier not found" for `StrToInt`
 
-**Task 1.5:** Move `TEditorPreferences` implementation out of the Borland guard ✅
-- Uses `StripHotkey()`, `LoadStr()`, `mbSingleByte`, `ByteType()`, `SubString()`, `UpperCase()`, `LowerCase()`
-- `mbSingleByte` needs definition for MSVC
-- `ByteType()`, `SubString()`, `UpperCase()`, `LowerCase()` are UnicodeString methods (available)
-- **Verify:** Check `mbSingleByte` and `StripHotkey()` availability
+### Phase 3: Add missing TStrings members
 
-**Task 1.6:** Move `TEditorList` implementation out of the Borland guard ✅
-- Uses `TList`, `TObject`, `reinterpret_cast<TObject *>`, `__finally`
-- `TList` and `TObject` are available in both compilers
-- `__finally` is a macro that converts to lambda syntax
-- `reinterpret_cast<TObject *>` may need adjustment
-- **Verify:** Check `reinterpret_cast` usage and `__finally` macro
+**Task 3.1:** Add `Values[]`, `ValueFromIndex`, `Names[]` to TStrings in Classes.hpp
 
-**Task 1.7:** Handle `RecryptPasswords` MSVC implementation ✅
-- Borland version (line 998) uses `TTerminalManager::Instance(false)` — Borland-specific
-- Added `#if defined(__BORLANDC__)` guard around Borland version
-- MSVC version at line 4114 in `#if !defined(__BORLANDC__)` — already correct
-- **Verify:** Both compilers see only their respective implementation
+- **Target:** `src/base/Classes.hpp` (TStrings class)
+- **Changes:**
+  - Add `UnicodeString Values[const UnicodeString & Name]` property getter/setter
+  - Add `UnicodeString ValueFromIndex[int32_t Index]` property getter
+  - Add `UnicodeString Names[int32_t Index]` property getter
+  - Implementation: delegate to existing `GetName`, `GetValue`, `GetValueFromIndex` methods
+- **Logging:** Log at trace level for property access
+- **Verify:** Compile check — no more "is not a member of TStrings" errors
 
-### Phase 2: Update WinConfiguration.h ✅ COMPLETED
+### Phase 4: Add missing members to TCustomCommandList/TEditorList/TCustomCommandType
 
-**Goal:** Ensure the header compiles under MSVC.
+**Task 4.1:** Add `Modified` property to TCustomCommandList and TEditorList
 
-**Task 2.1:** Verify `__property` declarations are handled ✅
-- The `__property` keyword is defined as a no-op comment in `nbglobals.h`
-- All `__property` declarations should compile under MSVC
-- **Verify:** No compilation errors from `__property`
+- **Target:** `src/windows/WinConfiguration.h` (TCustomCommandList and TEditorList classes)
+- **Changes:**
+  - Add `bool Modified` property (or getter) to `TCustomCommandList`
+  - Add `bool Modified` property (or getter) to `TEditorList`
+  - Note: `TEditorList::Modified` already exists as a field, but `__property` might need adjustment
+- **Logging:** Log at trace level
+- **Verify:** Compile check — no more "is not a member" errors
 
-**Task 2.2:** Verify `__closure` vs function pointer handling ✅
-- Already handled at lines 387-391 of WinConfiguration.h
-- **Verify:** No compilation errors
+**Task 4.2:** Add `Id` member to TCustomCommandType
 
-### Phase 3: Build Verification ❌ INCOMPLETE
+- **Target:** `src/windows/WinConfiguration.h` (TCustomCommandType class)
+- **Changes:**
+  - Add `UnicodeString Id` member field
+- **Logging:** Log at trace level
+- **Verify:** Compile check — no more "is not a member" error
 
-**Goal:** Ensure the code compiles with zero warnings.
+### Phase 5: Fix function signature mismatches
 
-**Task 3.1:** Build with MSVC x64 RelWithDebugInfo ❌
-- Use `cmd /c build-x64.bat`
-- Build failed with 100+ errors in TWinConfiguration methods (lines 549-1607)
-- Errors are in `TWinConfiguration` methods that use Borland-specific features
-- **Status:** Build fails — see Phase 4 for remaining work
+**Task 5.1:** Fix `IniFileStorageNameForReading` function call (line 902)
 
-**Task 3.2:** Verify plugin DLL location ❌
-- Cannot verify until build succeeds
+- **Target:** `src/windows/WinConfiguration.cpp` line 902
+- **Changes:** Change `IniFileStorageNameForReading` to `IniFileStorageNameForReading()` (add `()` to call the function)
+- **Verify:** Compile check
 
-### Phase 4: Fix Borland-specific code in TWinConfiguration methods 🔴 NEW
+**Task 5.2:** Fix `GetUseMasterPassword` const mismatch (line 1025)
 
-**Goal:** Fix all Borland-specific features in `TWinConfiguration` methods (lines 549-4099) that prevent compilation under MSVC.
+- **Target:** `src/windows/WinConfiguration.cpp` line 1025
+- **Changes:** Add `const` to the definition: `bool TWinConfiguration::GetUseMasterPassword() const`
+- **Verify:** Compile check
 
-**Status:** 100+ errors discovered during build. These are pre-existing issues in the TWinConfiguration methods that were never guarded.
+**Task 5.3:** Fix `IsPathToSameFile` function signature (line 1503)
 
-**Task 4.1:** Fix string concatenation issues
-- Line 549: `"PixelsPerInch=" + SaveDefaultPixelsPerInch()` — narrow char + UnicodeString
-- Fix: Use `L"PixelsPerInch="` (wide string) or change to `UnicodeString`
+- **Target:** `src/windows/WinConfiguration.cpp` line 1503
+- **Changes:** Check declaration in `src/base/Common.h` and update call site to match
+- **Verify:** Compile check
 
-**Task 4.2:** Fix undeclared identifiers (Borland VCL constants)
-- Lines 661-662: `DefaultFixedWidthFontName`, `DefaultFixedWidthFontSize`
-- Line 1295: `FLocaleSafe`, `FLastMonitor`, `FHonorDrivePolicy`, `FTimeoutShellOperations`, `FFUpdates`
-- Line 1479: `CSIDL_APPDATA`
-- Fix: Add MSVC stubs/definitions in header
+**Task 5.4:** Fix `DoLoadExtensionList` function signature (line 1596)
 
-**Task 4.3:** Fix function signature mismatches
-- Line 902: `IniFileStorageNameForReading` used as variable, not function call — add `()`
-- Line 1025: `GetUseMasterPassword()` missing `const` — add `const`
-- Line 1503: `IsPathToSameFile` function signature mismatch
-- Line 1596: `DoLoadExtensionList` function signature mismatch
-- Fix: Correct signatures to match declarations
+- **Target:** `src/windows/WinConfiguration.cpp` line 1596
+- **Changes:** Check declaration and update call site to match (currently takes 2 args, declaration takes 1)
+- **Verify:** Compile check
 
-**Task 4.4:** Fix missing members in TStrings/TStringList/TCustomCommandType
-- Lines 1486-1505: `Values`, `ValueFromIndex`, `Names` not members of `TStrings`
-- Line 1304, 1327: `Modified` not a member of `TCustomCommandList`/`TEditorList`
-- Line 1432: `Id` not a member of `TCustomCommandType`
-- Fix: Add MSVC stubs or restructure
+### Phase 6: Fix missing functions and types
 
-**Task 4.5:** Fix missing functions and types
-- Lines 1466, 1497, 1555: `ExtractFileName` not found — use `ExtractFileBaseName`
-- Line 1607: `StrToInt` not found — add MSVC alternative
-- Line 1563: `LastChar` not a member of `UnicodeString` — add method or use alternative
-- Line 1485: `ExeName` not a member of `TApplication` — add to struct
-- Fix: Add MSVC compatibility stubs
+**Task 6.1:** Fix `ExtractFileName` not found (lines 1466, 1497, 1555)
 
-**Task 4.6:** Fix dynamic_cast conversion errors
-- Lines 1538, 1573: `dynamic_cast` conversion errors
-- Fix: Use `reinterpret_cast` or restructure code
+- **Target:** `src/windows/WinConfiguration.cpp`
+- **Changes:** Check if `ExtractFileName` is declared in `Common.h`. If not, add declaration. If it's `ExtractFileBaseName` that's available, update calls.
+- **Verify:** Compile check
 
-**Task 4.7:** Build and verify
-- Build with MSVC x64 RelWithDebugInfo
-- Verify zero warnings
-- Verify plugin DLL location
+**Task 6.2:** Fix `LastChar` not a member of UnicodeString (line 1563)
+
+- **Target:** `src/windows/WinConfiguration.cpp` line 1563
+- **Changes:** Replace `FName.LastChar()` with `FName[FName.Length()]` or similar MSVC-compatible alternative
+- **Verify:** Compile check
+
+**Task 6.3:** Add `ExeName` to `TApplication` struct (line 1485)
+
+- **Target:** `src/windows/WinConfiguration.h` (TApplication struct in MSVC block)
+- **Changes:** Add `UnicodeString ExeName;` to `TApplication` struct
+- **Verify:** Compile check
+
+### Phase 7: Fix string concatenation and dynamic_cast
+
+**Task 7.1:** Fix string concatenation at line 549
+
+- **Target:** `src/windows/WinConfiguration.cpp` line 549
+- **Changes:** Change `"PixelsPerInch=" + SaveDefaultPixelsPerInch()` to `L"PixelsPerInch=" + SaveDefaultPixelsPerInch()`
+- **Verify:** Compile check
+
+**Task 7.2:** Fix dynamic_cast conversion errors (lines 1538, 1573)
+
+- **Target:** `src/windows/WinConfiguration.cpp`
+- **Changes:** Replace `dynamic_cast` with `reinterpret_cast` or `static_cast` for MSVC compatibility
+- **Verify:** Compile check
+
+### Phase 8: Build and verify
+
+**Task 8.1:** Build with MSVC x64 RelWithDebugInfo
+
+- **Target:** Run `cmd /c build-x64.bat`
+- **Changes:** None — verification only
+- **Verify:** Zero warnings, zero errors
+
+**Task 8.2:** Verify plugin DLL location
+
+- **Target:** Check `Far3_x64/Plugins/NetBox/NetBox.dll` exists
+- **Verify:** DLL is in correct location
 
 ## Commit Plan
 
-Single commit with conventional format:
+8 tasks → checkpoints every 3-5:
 
-```
-Build TWinConfiguration under MSVC with Borland guards
-
-- Move shared implementations (TFileColorData, TEditorData, TEditorPreferences, TEditorList) out of #if defined(__BORLANDC__) guard
-- Add #if !defined(__BORLANDC__) sections for MSVC-specific defaults
-- Keep Borland-specific code (SaveDefaultPixelsPerInch, etc.) in #if defined(__BORLANDC__) guard
-- Guard Borland RecryptPasswords with #if defined(__BORLANDC__)
-- Phase 4 pending: 100+ errors in TWinConfiguration methods need MSVC stubs
-```
+| Checkpoint | Tasks | Message |
+|------------|-------|---------|
+| 1 | Task 1.1 | `refactor(win): add VCL constants to MSVC compatibility layer` |
+| 2 | Task 2.1, 3.1, 4.1, 4.2 | `refactor(win): add StrToInt, TStrings members, TCustomCommandList/TEditorList/TCustomCommandType stubs` |
+| 3 | Task 5.1-5.4, 6.1-6.3 | `refactor(win): fix function signatures and missing types` |
+| 4 | Task 7.1-7.2, 8.1-8.2 | `refactor(win): fix string concat, dynamic_cast, build verification` |
 
 ## Anti-Patterns
 
@@ -188,3 +218,14 @@ Build TWinConfiguration under MSVC with Borland guards
 - **DO** verify UTF-8 without BOM
 - **DO** verify zero trailing whitespace
 
+## Next Steps
+
+```
+/aif-implement
+
+CONTEXT FROM /aif-plan:
+- Plan file: .ai-factory/PLAN.md
+- Testing: no
+- Logging: verbose
+- Docs: no (warn-only)
+```
