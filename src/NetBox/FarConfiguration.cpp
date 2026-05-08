@@ -5,6 +5,7 @@
 
 #include "Bookmarks.h"
 #include "FarConfiguration.h"
+#include "WinConfiguration.h"
 #include "Far3Storage.h"
 #include "FarPlugin.h"
 #include "CoreMain.h"
@@ -31,6 +32,8 @@ TFarConfiguration::TFarConfiguration(gsl::not_null<TCustomFarPlugin *> APlugin) 
 {
 //  TFarConfiguration::Default();
   //CacheFarSettings();
+  // from UserInterface.cpp
+  WinConfiguration = new TWinConfiguration();
 }
 
 TFarConfiguration::~TFarConfiguration() noexcept = default;

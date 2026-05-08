@@ -23,7 +23,7 @@ enum TFormatBytesStyle { fbsAuto = 0, fbsBytes, fbsKB, fbsMB, fbsGB };
 enum TIncrementalSearch { isOff = -1, isNameStartOnly, isName, isAll };
 enum TAssemblyLanguage { alIntel = 0, alATT };
 // Minimal stub for TCustomWinConfiguration
-class TCustomWinConfiguration {};
+// class TCustomWinConfiguration {};
 #endif
 
 enum TEditor { edInternal, edExternal, edOpen };
@@ -701,12 +701,12 @@ public:
   TWinConfiguration();
   virtual ~TWinConfiguration();
   void RecryptPasswords(TStrings * RecryptPasswordErrors);
-  bool GetUseMasterPassword();
+  bool GetUseMasterPassword() const;
   bool GetRefreshRemotePanel() { return FRefreshRemotePanel; }
   virtual void Default();
   void ClearTemporaryLoginData();
   virtual THierarchicalStorage * CreateScpStorage(bool & SessionList);
-  virtual UnicodeString TemporaryDir(bool Mask = false);
+  virtual UnicodeString TemporaryDir(bool Mask = false) const override;
   TStrings * FindTemporaryFolders();
   bool AnyTemporaryFolders();
   void CleanupTemporaryFolders();
@@ -987,9 +987,6 @@ private:
   const TCustomCommandType * GetConstCommand(int32_t Index) const;
   TCustomCommandType * GetCommand(int32_t Index);
 };
-
-#if defined(__BORLANDC__)
-#endif // defined(__BORLANDC__)
 
 extern TWinConfiguration * WinConfiguration;
 extern const UnicodeString WinSCPExtensionExt;

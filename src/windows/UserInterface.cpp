@@ -33,6 +33,7 @@ const UnicodeString AppName = L"WinSCP";
 TConfiguration * CreateConfiguration()
 {
   WinConfiguration = new TWinConfiguration();
+#if defined(__BORLANDC__)
   CustomWinConfiguration = WinConfiguration;
   GUIConfiguration = CustomWinConfiguration;
 
@@ -59,6 +60,7 @@ TConfiguration * CreateConfiguration()
       WinConfiguration->OptionsStorage = RawConfig.get();
     }
   }
+#endif // defined(__BORLANDC__)
 
   return WinConfiguration;
 }

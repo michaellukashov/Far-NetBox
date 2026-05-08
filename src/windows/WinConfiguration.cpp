@@ -16,11 +16,10 @@
 #include "CoreMain.h"
 #include <VCLCommon.h>
 
-#ifdef __BORLANDC__
-
-
 
 TWinConfiguration * WinConfiguration = nullptr;
+
+#if defined(__BORLANDC__)
 
 static UnicodeString NotepadName(L"notepad.exe");
 static UnicodeString ToolbarsLayoutKey(L"ToolbarsLayout2");
@@ -475,6 +474,7 @@ bool TEditorList::IsDefaultList() const
   return Result;
 }
 
+#endif // defined(__BORLANDC__)
 
 TWinConfiguration::TWinConfiguration(): TCustomWinConfiguration()
 {
@@ -4098,9 +4098,6 @@ void TCustomCommandList::ShortCuts(TShortCuts & ShortCuts) const
 }
 
 #else // !__BORLANDC__ - MSVC implementation
-
-// Global WinConfiguration instance for MSVC builds
-TWinConfiguration * WinConfiguration = nullptr;
 
 // MSVC implementation: recrypt stored sessions directly.
 // Note: TTerminalManager is not available in NetBox (WinSCP GUI-only),

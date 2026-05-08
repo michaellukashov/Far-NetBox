@@ -14,7 +14,8 @@ void MasterPasswordRecryptPasswords(TWinConfiguration * Config, TStrings * Recry
 }
 }
 
-bool TWinConfiguration::GetUseMasterPassword() {
+bool TWinConfiguration::GetUseMasterPassword() const
+{
   return FUseMasterPassword;
 }
 

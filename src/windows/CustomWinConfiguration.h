@@ -51,6 +51,8 @@ struct TLoginDialogConfiguration : public TConsoleWinConfiguration
 
 #undef C
 
+#endif // defined(__BORLANDC__)
+
 class TCustomWinConfiguration : public TGUIConfiguration
 {
 static const int MaxHistoryCount = 50;
@@ -128,7 +130,5 @@ public:
 };
 
 extern TCustomWinConfiguration * CustomWinConfiguration;
-
-#endif // defined(__BORLANDC__)
 
 #endif
