@@ -21,8 +21,6 @@
 // WM_USER_INVALIDATEITEM + 16 (packages/filemng/DirView.pas)
 #define WM_QUEUE_CALLBACK (WM_WINSCP_USER + 17)
 
-#if defined(__BORLANDC__)
-
 #define C(Property) (Property != rhc.Property) ||
 struct TSynchronizeChecklistConfiguration
 {
@@ -50,8 +48,6 @@ struct TLoginDialogConfiguration : public TConsoleWinConfiguration
 };
 
 #undef C
-
-#endif // defined(__BORLANDC__)
 
 class TCustomWinConfiguration : public TGUIConfiguration
 {

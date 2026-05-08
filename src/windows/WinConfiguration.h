@@ -20,7 +20,7 @@ constexpr int ccSize = 2;
 using TColor = uint32_t; // COLORREF equivalent
 struct TFont {};
 enum TFormatBytesStyle { fbsAuto = 0, fbsBytes, fbsKB, fbsMB, fbsGB };
-enum TIncrementalSearch { isOff = -1, isNameStartOnly, isName, isAll };
+
 enum TAssemblyLanguage { alIntel = 0, alATT };
 // Minimal stub for TCustomWinConfiguration
 // class TCustomWinConfiguration {};

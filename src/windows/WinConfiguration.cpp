@@ -19,21 +19,29 @@
 
 TWinConfiguration * WinConfiguration = nullptr;
 
-#if defined(__BORLANDC__)
-
+// Shared static variables
 static UnicodeString NotepadName(L"notepad.exe");
 static UnicodeString ToolbarsLayoutKey(L"ToolbarsLayout2");
 static UnicodeString ToolbarsLayoutOldKey(L"ToolbarsLayout");
 TDateTime DefaultUpdatesPeriod(7);
+UnicodeString QueueViewLayoutDefault;
+UnicodeString ScpCommanderWindowParamsDefault;
+UnicodeString ScpExplorerWindowParamsDefault;
+
+#if defined(__BORLANDC__)
 // WORKAROUND (the semicolon, see TCustomListViewColProperties.GetParamsStr, and see other instances below)
 const UnicodeString ScpExplorerDirViewParamsDefault =
   L"0;1;0|150,1;70,1;150,1;79,1;62,1;55,0;20,0;150,0;125,0;@" + SaveDefaultPixelsPerInch() + L"|6;7;8;0;1;2;3;4;5";
 const UnicodeString ScpCommanderRemotePanelDirViewParamsDefault = ScpExplorerDirViewParamsDefault;
 const UnicodeString ScpCommanderLocalPanelDirViewParamsDefault =
   L"0;1;0|150,1;70,1;120,1;150,1;55,0;55,0;@" + SaveDefaultPixelsPerInch() + L"|5;0;1;2;3;4";
-UnicodeString QueueViewLayoutDefault;
-UnicodeString ScpCommanderWindowParamsDefault;
-UnicodeString ScpExplorerWindowParamsDefault;
+#else // !defined(__BORLANDC__)
+const UnicodeString ScpExplorerDirViewParamsDefault =
+  L"0;1;0|150,1;70,1;150,1;79,1;62,1;55,0;20,0;150,0;125,0;@96|6;7;8;0;1;2;3;4;5";
+const UnicodeString ScpCommanderRemotePanelDirViewParamsDefault = ScpExplorerDirViewParamsDefault;
+const UnicodeString ScpCommanderLocalPanelDirViewParamsDefault =
+  L"0;1;0|150,1;70,1;120,1;150,1;55,0;55,0;@96|5;0;1;2;3;4";
+#endif // defined(__BORLANDC__)
 
 static const wchar_t FileColorDataSeparator = L':';
 TFileColorData::TFileColorData() :
@@ -233,7 +241,11 @@ UnicodeString TEditorPreferences::GetName() const
         FName.SetLength(P - 1);
       }
 
+#if defined(__BORLANDC__)
       if (FName.ByteType(1) == mbSingleByte)
+#else
+      if (FName.ByteType(1) == 0)
+#endif // defined(__BORLANDC__)
       {
         if (FName.UpperCase() == FName)
         {
@@ -473,8 +485,6 @@ bool TEditorList::IsDefaultList() const
   }
   return Result;
 }
-
-#endif // defined(__BORLANDC__)
 
 TWinConfiguration::TWinConfiguration(): TCustomWinConfiguration()
 {
@@ -4097,8 +4107,7 @@ void TCustomCommandList::ShortCuts(TShortCuts & ShortCuts) const
   }
 }
 
-#else // !__BORLANDC__ - MSVC implementation
-
+#if !defined(__BORLANDC__)
 // MSVC implementation: recrypt stored sessions directly.
 // Note: TTerminalManager is not available in NetBox (WinSCP GUI-only),
 // so active terminal recryption is skipped.
@@ -4106,5 +4115,4 @@ void TWinConfiguration::RecryptPasswords(TStrings * RecryptPasswordErrors)
 {
   GetStoredSessions()->RecryptPasswords(RecryptPasswordErrors);
 }
-
-#endif // __BORLANDC__
+#endif // !defined(__BORLANDC__)

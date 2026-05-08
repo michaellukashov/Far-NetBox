@@ -1,168 +1,142 @@
-# Implementation Plan: Phase 2 Verification Fixes
+# Plan: Build TWinConfiguration under MSVC with Borland Guards
 
-Branch: fix/phase2-verification-fixes
-Created: 2026-05-10
+**Created:** 2026-05-08  
+**Branch:** lmv/dev (current)  
+**Description:** Make `TWinConfiguration` compile under MSVC by restructuring Borland-specific code with `#if defined(__BORLANDC__)` / `#endif // defined(__BORLANDC__)` guards and providing MSVC alternatives.
 
 ## Settings
 
-- Testing: no (skip tests)
-- Logging: verbose (detailed DEBUG logs)
-- Docs: yes (mandatory docs checkpoint)
-- Roadmap Linkage: none
+- **Testing:** No (skip tests)
+- **Logging:** Verbose (default)
+- **Docs:** No (warn-only)
+- **Build type:** RelWithDebugInfo
+- **Platform:** x64
 
-## Research Context
+## Context
 
-Source: .ai-factory/RESEARCH.md (Active Summary)
+### Current Problem
 
-Goal: Achieve structural UX parity with WinSCP — all dialogs that exist in WinSCP must exist in NetBox
+`WinConfiguration.cpp` has a large `#if defined(__BORLANDC__)` block (lines 22-477) containing implementations for:
+- `TFileColorData` (constructor, Load, Save, LoadList, SaveList)
+- `TEditorData` (constructors, operator==, ExternalEditorOptionsAutodetect)
+- `TEditorPreferences` (constructors, operator==, Matches, GetDefaultExternalEditor, etc.)
+- `TEditorList` (constructor, destructor, Init, Modify, Saved, operator=, operator==, Clear, Add, Insert, Change, Move, Delete, Find, Load, Save, GetCount, GetEditor, IsDefaultList)
+- Static variables: `NotepadName`, `ToolbarsLayoutKey`, `ToolbarsLayoutOldKey`, `DefaultUpdatesPeriod`, `ScpExplorerDirViewParamsDefault`, etc.
 
-Constraints:
-- No modifications to `libs/` — use patches only
-- Far Manager API calls on main thread only
-- MSVC /W4 zero warnings
-- WinXP compatibility (_WIN32_WINNT=0x0501)
-- Incremental evolution — no architectural rewrites
-- C++17 standard only (no std::filesystem, std::variant)
+Under MSVC, these implementations are excluded, but `TWinConfiguration` methods (lines 479-4099) depend on them.
 
-Decisions:
-- SCP Esc cancellation: Four-layer fix adopted (console buffer scan, csCancel semantics, EAbort("") dispatch, deferred reconnect). Post-cancel session reset via FNeedsSessionReset + FLastDirectory.
-- SSH/SCP buffer corruption: Default SendBuf=0, SshSimple=false to disable dynamic TCP send backlog query.
-- Multithreading: Far API marshaling via Synchronize/PostMainThreadSynchro; event-driven waits replace Sleep polling.
-- CWE-134: EscapeFmtChars() utility for all untrusted args to FMTLOAD.
-- OpenSSH certificate auth (WinSCP-aligned): Silent pre-connect conversion inside StoreToConfig(). Effective key file resolved before CONF_keyfile. Passphrase encryption uses effective key file path. Temp PPK cleaned in TSecureShell destructor. No interactive dialogs (Far plugin context).
-- Master password infrastructure: Effectively complete. All security-critical gaps (TSecureString, atomic counters, rate limiting, error reporting) are implemented. Active-terminal recryption gap is non-issue in Far plugin context.
-- UX parity scope: "Structural parity" only — same dialogs must exist as in WinSCP. Behavioral parity (keyboard shortcuts, menu structure, workflow sequencing) is out of scope.
+### Compatibility Layer (Already Exists)
 
-Open questions:
-- Silent mode file operations: Error collection mechanism designed but not implemented.
+The codebase already provides MSVC compatibility:
+- `__property` → no-op comment macro (`src/include/nbglobals.h` line 219)
+- `__finally` → lambda syntax macro (`src/base/Sysutils.hpp` line 562)
+- `TList`, `TObject`, `TStringList` → defined in `src/base/Classes.hpp`
+- `TColor` → `uint32_t` typedef (`WinConfiguration.h` line 20)
+- `TNortonLikeMode`, `TCompareCriterias`, `TFormatBytesStyle`, `TIncrementalSearch`, `TAssemblyLanguage` → enums/typedefs in `WinConfiguration.h` lines 16-24
 
-Success signals:
-- Zero build warnings under /W4
-- Plugin DLL in Far3_<platform>/Plugins/NetBox/
-- `python scripts/verify_lng_alignment.py` passes
-- All CRLF line endings, UTF-8 without BOM, no trailing whitespace
+### Borland-Specific Features in the Guard
+
+| Feature | Location | MSVC Alternative |
+|---------|----------|------------------|
+| `SaveDefaultPixelsPerInch()` | Lines 30, 33 | Return `"96"` (or hardcode default) |
+| `RestoreColor()` / `StoreColor()` | Lines 47, 53 | Provide MSVC stubs (parse/return color values) |
+| `CutToChar()` | Line 47 | Available in Common.h |
+| `CommaTextToStringList()` | Line 59 | Available in Common.h |
+| `StripHotkey()` / `LoadStr()` | Lines 217, 221 | Available in WinInterface/Common |
+| `mbSingleByte` | Line 236 | Define as enum constant |
+| `ByteType()`, `SubString()` | Lines 236, 245-246 | UnicodeString methods (available) |
+| `Application->Name` / `Application->ExeName` | Lines 499, 1469 | `ModuleFileName()` alternative |
 
 ## Tasks
 
-### Phase 1: Defensive Fixes
+### Phase 1: Restructure WinConfiguration.cpp
 
-- [ ] **Task 1: Add null checks in TGenerateUrlDialog**
-  - Files: `src/NetBox/WinSCPDialogs.cpp`
-  - Add null guards at entry of `GenerateScript()`, `UpdateScriptResult()`, `UpdateUrlResult()`
-  - Guard `FScriptFormatCombo`, `FTransferModeBtn`, `FScriptResultEdit`, `FUrlResultEdit`, `FSessionData`
-  - LOG: `AppLogFmt(L"GenerateUrl: null guard triggered in %s", __FUNCTION__)`
-  - Acceptance: No crashes if MakeOwnedObject fails; build zero warnings
+**Goal:** Move shared implementations out of the Borland guard; keep only Borland-specific code inside `#if defined(__BORLANDC__)` / `#endif // defined(__BORLANDC__)`.
 
-- [ ] **Task 2: Build verification**
-  - Run `cmd /c build-x64.bat`
-  - Verify zero warnings under /W4
-  - Acceptance: Build passes with zero warnings
+**Task 1.1:** Move static variables out of the Borland guard
+- Move `NotepadName`, `ToolbarsLayoutKey`, `ToolbarsLayoutOldKey`, `DefaultUpdatesPeriod` outside the guard
+- Move `QueueViewLayoutDefault`, `ScpCommanderWindowParamsDefault`, `ScpExplorerWindowParamsDefault` outside the guard
+- **Verify:** These variables are needed by both compilers
 
-### Phase 2: Localization Fixes
+**Task 1.2:** Move `ScpExplorerDirViewParamsDefault` and `ScpCommanderLocalPanelDirViewParamsDefault` to `#if !defined(__BORLANDC__)` with hardcoded defaults
+- Under Borland: use `SaveDefaultPixelsPerInch()` (VCL function)
+- Under MSVC: use hardcoded `"96"` (standard DPI)
+- **Verify:** Default values are correct for MSVC
 
-- [ ] **Task 3: Add MsgIDs for Location Profiles InputBox prompts**
-  - Files: `src/base/MsgIDs.h`
-  - Add `NB_LOCATION_BOOKMARK_NAME_PROMPT` and `NB_LOCATION_BOOKMARK_RENAME_PROMPT` after current last ordinal
-  - LOG: `AppLogFmt(L"MsgIDs: added NB_LOCATION_BOOKMARK_NAME_PROMPT ordinal=%d")`
-  - Acceptance: Ordinals are sequential, no conflicts
+**Task 1.3:** Move `TFileColorData` implementation out of the Borland guard
+- The implementation uses `TColor()` (already `uint32_t` in MSVC), `RestoreColor()`, `StoreColor()`, `TList`, `TStringList`
+- `TList` and `TStringList` are available in both compilers
+- `RestoreColor()` and `StoreColor()` need MSVC stubs if they're VCL-specific
+- **Verify:** Check if `RestoreColor()` and `StoreColor()` are available in MSVC
 
-- [ ] **Task 4: Replace hardcoded English with GetMsg()**
-  - Files: `src/NetBox/WinSCPDialogs.cpp`
-  - Line 2687: Replace `L"Bookmark name:"` with `GetMsg(NB_LOCATION_BOOKMARK_NAME_PROMPT)`
-  - Line 2731: Replace `L"New name:"` with `GetMsg(NB_LOCATION_BOOKMARK_RENAME_PROMPT)`
-  - LOG: `AppLogFmt(L"LocationProfiles: replaced hardcoded InputBox prompt")`
-  - Acceptance: No hardcoded English strings remain in Location Profiles dialog
+**Task 1.4:** Move `TEditorData` implementation out of the Borland guard
+- Uses `NotepadName` (static), `ReformatFileNameCommand()`, `ExtractProgramName()`, `SameText()`, `IsWin10Build()`
+- All should be available in MSVC
+- **Verify:** All functions are available
 
-- [ ] **Task 5: Update all 5 .lng files**
-  - Files: `src/NetBox/NetBox{Eng,Rus,Fr,Pol,Spa}.lng`
-  - Append 2 entries to each file at the correct ordinal position
-  - NetBoxEng.lng: `"Bookmark name:"` and `"New name:"`
-  - NetBoxRus.lng: `"Имя закладки:"` and `"Новое имя:"`
-  - NetBoxFr.lng: `"Nom du signet:"` and `"Nouveau nom:"`
-  - NetBoxPol.lng: `"Nazwa zakładki:"` and `"Nowa nazwa:"`
-  - NetBoxSpa.lng: `"Nombre del marcador:"` and `"Nuevo nombre:"`
-  - LOG: `AppLogFmt(L"Lang: added 2 entries to %s", Language)`
-  - Acceptance: All 5 .lng files have entries at correct ordinals
+**Task 1.5:** Move `TEditorPreferences` implementation out of the Borland guard
+- Uses `StripHotkey()`, `LoadStr()`, `mbSingleByte`, `ByteType()`, `SubString()`, `UpperCase()`, `LowerCase()`
+- `mbSingleByte` needs definition for MSVC
+- `ByteType()`, `SubString()`, `UpperCase()`, `LowerCase()` are UnicodeString methods (available)
+- **Verify:** Check `mbSingleByte` and `StripHotkey()` availability
 
-- [ ] **Task 6: Run alignment verification**
-  - Run `python scripts/verify_lng_alignment.py`
-  - Acceptance: Exit code 0 — all files aligned
+**Task 1.6:** Move `TEditorList` implementation out of the Borland guard
+- Uses `TList`, `TObject`, `reinterpret_cast<TObject *>`, `__finally`
+- `TList` and `TObject` are available in both compilers
+- `__finally` is a macro that converts to lambda syntax
+- `reinterpret_cast<TObject *>` may need adjustment
+- **Verify:** Check `reinterpret_cast` usage and `__finally` macro
 
-### Phase 3: UX Fixes
+**Task 1.7:** Handle `RecryptPasswords` MSVC implementation
+- Currently at line 4100 in `#else` block
+- Need to ensure it's properly guarded
+- **Verify:** MSVC implementation is correct
 
-- [ ] **Task 7: Add confirmation dialog before removing bookmark**
-  - Files: `src/NetBox/WinSCPDialogs.cpp` (line 2707)
-  - Insert `MessageDialog()` check before `Bookmarks->Delete()` in `RemoveBookmarkClick()`
-  - Use `qtConfirmation` query type with `qaOK | qaCancel` answer flags
-  - LOG: `AppLogFmt(L"LocationProfiles: remove confirmation shown for '%s'", Name)`
-  - Acceptance: Removing bookmark shows confirmation; cancel prevents deletion
+### Phase 2: Update WinConfiguration.h
 
-- [ ] **Task 8: Add MsgID for remove confirmation**
-  - Files: `src/base/MsgIDs.h`
-  - Add `NB_LOCATION_PROFILES_REMOVE_CONFIRM` after current last ordinal
-  - LOG: `AppLogFmt(L"MsgIDs: added NB_LOCATION_PROFILES_REMOVE_CONFIRM ordinal=%d")`
-  - Acceptance: Ordinal is sequential, no conflicts
+**Goal:** Ensure the header compiles under MSVC.
 
-- [ ] **Task 9: Update all 5 .lng files for remove confirmation**
-  - Files: `src/NetBox/NetBox{Eng,Rus,Fr,Pol,Spa}.lng`
-  - Append 1 entry to each file at the correct ordinal position
-  - NetBoxEng.lng: `"Do you wish to remove bookmark '%s'"`
-  - NetBoxRus.lng: `"Удалить закладку '%s'"`
-  - NetBoxFr.lng: `"Voulez-vous supprimer le signet '%s'"`
-  - NetBoxPol.lng: `"Czy chcesz usunąć zakładkę '%s'"`
-  - NetBoxSpa.lng: `"¿Desea eliminar el marcador '%s'"`
-  - LOG: `AppLogFmt(L"Lang: added remove confirmation to %s", Language)`
-  - Acceptance: All 5 .lng files have entries at correct ordinals
+**Task 2.1:** Verify `__property` declarations are handled
+- The `__property` keyword is defined as a no-op comment in `nbglobals.h`
+- All `__property` declarations should compile under MSVC
+- **Verify:** No compilation errors from `__property`
 
-### Phase 4: Navigation Fix
+**Task 2.2:** Verify `__closure` vs function pointer handling
+- Already handled at lines 387-391 of WinConfiguration.h
+- **Verify:** No compilation errors
 
-- [ ] **Task 10: Add OpenBookmarkClick navigation members to TLocationProfilesDialog**
-  - Files: `src/NetBox/WinSCPDialogs.h` (or `.cpp` if class defined there)
-  - Add public getters: `GetOpened()`, `GetOpenedLocalDir()`, `GetOpenedRemoteDir()`
-  - Add private members: `FOpenedLocalDir`, `FOpenedRemoteDir`, `FOpened`
-  - LOG: `AppLogFmt(L"LocationProfiles: added navigation members")`
-  - Acceptance: Members compile without warnings
+### Phase 3: Build Verification
 
-- [ ] **Task 11: Update OpenBookmarkClick to store selected paths**
-  - Files: `src/NetBox/WinSCPDialogs.cpp` (line 2747)
-  - Replace body to store `FOpenedLocalDir`, `FOpenedRemoteDir`, `FOpened=true` before `Close(OkButton)`
-  - LOG: `AppLogFmt(L"LocationProfiles: storing bookmark paths for navigation")`
-  - Acceptance: OpenBookmarkClick stores paths and closes dialog
+**Goal:** Ensure the code compiles with zero warnings.
 
-- [ ] **Task 12: Update LocationProfilesDialog wrapper to navigate after Execute()**
-  - Files: `src/NetBox/WinSCPDialogs.cpp` (line 2777)
-  - After `Execute()` returns true, check `GetOpened()` and navigate using `FTerminal->ChangeDirectory()` + `UpdatePanel()` + `RedrawPanel()`
-  - LOG: `AppLogFmt(L"LocationProfiles: navigating to bookmark remote=%s", RemoteDir)`
-  - Acceptance: Clicking Open navigates remote panel to bookmarked remote dir
+**Task 3.1:** Build with MSVC x64 RelWithDebugInfo
+- Use `cmd /c build-x64.bat`
+- Verify zero warnings
+- **Verify:** `build-x64.bat` completes with zero warnings
 
-- [ ] **Task 13: Verify navigation works**
-  - Manual test: Open Location Profiles dialog, select a bookmark, click Open
-  - Verify remote panel navigates to bookmarked remote directory
-  - Verify local panel follows (if SynchronizeBrowsing enabled)
-  - Acceptance: Navigation works as expected
+**Task 3.2:** Verify plugin DLL location
+- Check `Far3_x64/Plugins/NetBox/NetBox.dll` exists
+- **Verify:** DLL is in correct location
 
 ## Commit Plan
 
-- **Commit 1** (after tasks 1-2): "fix(defensive): add null guards in TGenerateUrlDialog"
-- **Commit 2** (after tasks 3-6): "fix(i18n): localize Location Profiles InputBox prompts"
-- **Commit 3** (after tasks 7-9): "fix(ux): add confirmation before removing Location Profiles bookmark"
-- **Commit 4** (after tasks 10-13): "fix(ui): Location Profiles Open button navigates to bookmarked directories"
+Single commit with conventional format:
 
-## Success Criteria
+```
+Build TWinConfiguration under MSVC with Borland guards
 
-| Issue | Verification |
-|-------|-------------|
-| 1 (Navigation) | Open button navigates remote panel to bookmarked remote dir |
-| 2 (Localization) | `grep -r "Bookmark name:" src/` returns no hits; all 5 .lng files have new entries |
-| 3 (Remove confirm) | Removing bookmark shows confirmation; cancel prevents deletion |
-| 4 (Null checks) | Build with zero warnings under /W4 |
-| All | `python scripts/verify_lng_alignment.py` passes |
-| All | CRLF line endings, UTF-8 without BOM, no trailing whitespace |
+- Move shared implementations (TFileColorData, TEditorData, TEditorPreferences, TEditorList) out of #if defined(__BORLANDC__) guard
+- Add #if !defined(__BORLANDC__) sections for MSVC-specific defaults
+- Keep Borland-specific code (SaveDefaultPixelsPerInch, etc.) in #if defined(__BORLANDC__) guard
+- Ensure zero MSVC warnings (W4)
+```
 
-## Risks
+## Anti-Patterns
 
-| Risk | Likelihood | Impact | Mitigation |
-|------|-----------|--------|------------|
-| `FTerminal->ChangeDirectory()` API differs from expected | Low | Medium | Check WinSCPFileSystem.h for correct API |
-| Null checks mask real initialization bugs | Low | Low | Keep null checks as defensive only, log warning |
-| New MsgIDs shift existing ordinals | Low | High | Verify ordinals are appended at end, not inserted |
+- **DO NOT** modify files in `libs/` (use patches)
+- **DO NOT** combine shell commands with `&&` or `||`
+- **DO NOT** use Unix-style redirections (`>/dev/null`, `2>/dev/null`)
+- **DO NOT** rewrite entire files — make surgical edits
+- **DO** verify CRLF line endings on all modified files
+- **DO** verify UTF-8 without BOM
+- **DO** verify zero trailing whitespace
