@@ -2,8 +2,10 @@
 #include <vcl.h>
 #pragma hdrstop
 
-// #include "ScpCommander.h"
-// #include "ScpExplorer.h"
+#if defined(__BORLANDC__)
+#include "ScpCommander.h"
+#include "ScpExplorer.h"
+#endif // defined(__BORLANDC__)
 
 #include <CoreMain.h>
 #include <Common.h>
@@ -12,13 +14,19 @@
 #include "ProgParams.h"
 #include "VCLCommon.h"
 #include "WinConfiguration.h"
-// #include "TerminalManager.h"
+#if defined(__BORLANDC__)
+#include "TerminalManager.h"
+#endif // defined(__BORLANDC__)
 #include "TextsWin.h"
 #include "WinInterface.h"
-// #include "PasswordEdit.hpp"
+#if defined(__BORLANDC__)
+#include "PasswordEdit.hpp"
+#endif // defined(__BORLANDC__)
 #include "ProgParams.h"
 #include "Tools.h"
-// #include "Custom.h"
+#if defined(__BORLANDC__)
+#include "Custom.h"
+#endif // defined(__BORLANDC__)
 #include "HelpWin.h"
 #include <Math.hpp>
 #include <PasTools.hpp>
