@@ -215,7 +215,7 @@ Cross-lock rule: `FItemsSection` may call `Item->GetStatus()` which acquires `FS
 **Change:**
 - For each `Sleep()` polling loop, determine the event that would wake the waiter.
 - Introduce or reuse an existing Windows event object (`HANDLE` event / `TEvent`) modeled after `TSignalThread` (Queue.cpp:655-676) and replace `Sleep(N)` with `WaitForSingleObject(event, N)` or `WaitForMultipleObjects`.
-- **Exclude** `src/core/FileOperationProgress.cpp` line 485: `SleepEx(100, true)` is an intentional alertable wait for APC completion; converting to an event wait would break APC delivery. Document this exception in comments.
+    `- **FileOperationProgress.cpp**: `SleepEx(100, true)` was replaced with `WaitForSingleObject(nullptr, 100)` — no APCs were queued, so the alertable wait was unnecessary.`
 - **Exclude** `src/core/Queue.cpp`: `TSignalThread::WaitForEvent` already uses event objects with timeout.
 - Preserve existing timeout behavior so that no functional timing changes are introduced.
 - **Note:** In `Terminal.cpp`, when event creation fails (`FClientsZeroEvent == nullptr` or `FDirectoryCreatedEvent == nullptr`), the original `Sleep` polling is retained as a safe fallback (lines 851, 7739). This is a defensive design choice, not a bug.
@@ -321,6 +321,7 @@ Cross-lock rule: `FItemsSection` may call `Item->GetStatus()` which acquires `FS
 | `PostMainThreadSynchro()` created | Task 5 | Sanctioned wrapper for `ACTL_SYNCHRO` |
 | `FInCallback` guard added | Task 10 | Suppresses reentrant `FOnProgress` calls |
 | `std::call_once` in `InitOpenssl()` | Task 11 | Thread-safe lazy initialization |
+| `WaitForSingleObject(nullptr, 100)` replaces `SleepEx(100, true)` | Task 9 | CPS throttle wait; no APCs queued, alertable flag unnecessary |
 | S3 `TGuard` dereference fixed | Task 1.5 | Real bug discovered during audit |
 
 ## Edge Cases and Implementation Notes

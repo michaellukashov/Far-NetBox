@@ -553,7 +553,7 @@ int64_t TFileOperationProgressType::AdjustToCPSLimit(
 {
   // Use GetCPSLimit() to read the live value (including parent chain for parallel transfers).
   // The parent traversal in GetCPSLimit() is O(1) in practice (at most 2 levels).
-  // Lock contention is negligible compared to the SleepEx() throttling wait.
+  // Lock contention is negligible compared to the throttling wait.
   const uint64_t CPSLimit = GetCPSLimit();
   if (CPSLimit > 0)
   {
@@ -570,9 +570,10 @@ int64_t TFileOperationProgressType::AdjustToCPSLimit(
       }
 
       if (FRemainingCPS == 0)
-        // Intentional alertable wait for APC completion; do NOT convert to event wait.
+        // CPS throttle wait. No APCs are queued here; use WaitForSingleObject
+        // for consistent event-driven pattern.
       {
-        SleepEx(100, true);
+        ::WaitForSingleObject(nullptr, 100);
         DoProgress();
       }
     }

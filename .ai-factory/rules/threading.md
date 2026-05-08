@@ -18,7 +18,7 @@ Worker threads must not perform UI work. They signal events; the main thread per
 
 Use `WaitForSingleObject`, `WaitForMultipleObjects`, or condition-variable equivalents instead of `Sleep()` loops for thread synchronization.
 
-Exception: `SleepEx(100, true)` in `FileOperationProgress.cpp` is an intentional alertable wait for APC completion.
+
 
 ## 4. Lock Ordering
 
