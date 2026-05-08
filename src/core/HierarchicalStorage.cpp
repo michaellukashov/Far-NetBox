@@ -2028,7 +2028,7 @@ UnicodeString TOptionsIniFile::ReadString(const UnicodeString & Section, const U
     int32_t Index = FOptions->IndexOfName(Name);
     if (Index >= 0)
     {
-      Value = FOptions->ValueFromIndex[Index];
+      Value = FOptions->ValueFromIndex(Index);
     }
     else
     {
@@ -2060,7 +2060,7 @@ void TOptionsIniFile::ReadSection(const UnicodeString Section, TStrings * String
     {
       for (int32_t Index = 0; Index < FOptions->Count; Index++)
       {
-        UnicodeString Name = FOptions->Names[Index];
+        UnicodeString Name = FOptions->Names(Index);
         if (SameText(Name.SubString(1, SectionPrefix.Length()), SectionPrefix) &&
             (LastDelimiter(PathDelim, Name) <= SectionPrefix.Length()))
         {
@@ -2081,7 +2081,7 @@ void TOptionsIniFile::ReadSections(TStrings * Strings)
 
   for (int32_t Index = 0; Index < FOptions->Count; Index++)
   {
-    UnicodeString Name = FOptions->Names[Index];
+    UnicodeString Name = FOptions->Names(Index);
     int32_t P = LastDelimiter(PathDelim, Name);
     if (P > 0)
     {

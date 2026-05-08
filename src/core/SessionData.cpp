@@ -3954,8 +3954,8 @@ UnicodeString TSessionData::GenerateSessionUrl(uint32_t Flags) const
       {
         Url +=
           UnicodeString(UrlParamSeparator) +
-          UrlRawSettingsParamNamePrefix + EncodeUrlString(LowerCase(RawSettings->Names[Index])) +
-          UnicodeString(UrlParamValueSeparator) + EncodeUrlString(RawSettings->ValueFromIndex[Index]);
+          UrlRawSettingsParamNamePrefix + EncodeUrlString(LowerCase(RawSettings->Names(Index))) +
+          UnicodeString(UrlParamValueSeparator) + EncodeUrlString(RawSettings->ValueFromIndex(Index));
       }
     }
 #endif // defined(__BORLANDC__)

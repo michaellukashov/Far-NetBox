@@ -243,7 +243,7 @@ static UnicodeString ReadSecurityUrl(const UnicodeString & Url, int32_t ConnectT
   std::unique_ptr<TStrings> RequestHeaders(new TStringList());
   if (!S3SessionToken.IsEmpty())
   {
-    RequestHeaders->Values[L"X-aws-ec2-metadata-token"] = S3SessionToken;
+    RequestHeaders->Values(L"X-aws-ec2-metadata-token", S3SessionToken);
     Http->RequestHeaders = RequestHeaders.get();
   }
   Http->Get();
@@ -382,7 +382,7 @@ static UnicodeString GetS3ConfigValue(
           int32_t TtlSeconds = 6 * 60 * 60; // max possible
           TDateTime TokenExpiration = IncSecond(Now(), TtlSeconds);
           std::unique_ptr<TStrings> RequestHeaders(new TStringList());
-          RequestHeaders->Values[L"X-aws-ec2-metadata-token-ttl-seconds"] = IntToStr(TtlSeconds);
+          RequestHeaders->Values(L"X-aws-ec2-metadata-token-ttl-seconds", IntToStr(TtlSeconds));
           Http->RequestHeaders = RequestHeaders.get();
           Http->Put(EmptyStr);
           S3SessionToken = Http->Response.Trim();
