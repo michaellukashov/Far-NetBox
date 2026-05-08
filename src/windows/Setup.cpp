@@ -2133,7 +2133,7 @@ UnicodeString FirstUnshownTip()
   int LastTipSeen = -1;
   for (int Index = 0; Index < TipsSeen->Count; Index++)
   {
-    int TipIndex = Tips->IndexOf(TipsSeen->Names[Index]);
+    int TipIndex = Tips->IndexOf(TipsSeen->Names(Index));
     if (TipIndex >= 0)
     {
       LastTipSeen = TipIndex;
@@ -2195,7 +2195,7 @@ static UnicodeString TipUrl(TTipsData * TipsData)
 static void TipSeen(const UnicodeString & Tip)
 {
   std::unique_ptr<TStringList> TipsSeen(CommaTextToStringList(WinConfiguration->TipsSeen));
-  TipsSeen->Values[Tip] = FormatDateTime(L"yyyy-mm-dd", Now());
+  TipsSeen->Values(Tip, FormatDateTime(L"yyyy-mm-dd", Now()));
   WinConfiguration->TipsSeen = TipsSeen->CommaText;
   WinConfiguration->TipsShown = Now();
   WinConfiguration->RunsSinceLastTip = 0;

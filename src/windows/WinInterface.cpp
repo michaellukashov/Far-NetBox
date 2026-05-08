@@ -909,7 +909,7 @@ void CopyParamListPopup(TRect Rect, TPopupMenu * Menu,
   const TCopyParamList * CopyParamList = GUIConfiguration->CopyParamList;
   for (int i = 0; i < CopyParamList->Count; i++)
   {
-    UnicodeString Name = CopyParamList->Names[i];
+    UnicodeString Name = CopyParamList->Names(i);
     TCopyParamType AParam = GUIConfiguration->CopyParamPreset[Name];
     if (AParam.AnyUsableCopyParam(CopyParamAttrs) ||
         // This makes "Binary" preset visible,
@@ -1001,7 +1001,7 @@ int CopyParamListPopupClick(TObject * Sender,
       // If saved unmodified, then make this the selected preset
       if (*CopyParamList->CopyParams[Index] == Param)
       {
-        Preset = CopyParamList->Names[Index];
+        Preset = CopyParamList->Names(Index);
       }
     }
     Result = 0;
@@ -1013,7 +1013,7 @@ int CopyParamListPopupClick(TObject * Sender,
   else
   {
     Preset = (Item->Tag >= 0) ?
-      GUIConfiguration->CopyParamList->Names[Item->Tag] : UnicodeString();
+      GUIConfiguration->CopyParamList->Names(Item->Tag) : UnicodeString();
     // The cast strips away the "queue" properties of the TGUICopyParamType
     // that are not configurable in presets
     Param = TCopyParamType(GUIConfiguration->CopyParamPreset[Preset]);
