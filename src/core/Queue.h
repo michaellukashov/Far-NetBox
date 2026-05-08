@@ -567,6 +567,9 @@ private:
   TReadDirectoryProgressEvent FOnReadDirectoryProgress{nullptr};
   TNotifyEvent FOnInitializeLog{nullptr};
 
+  TFileOperationProgressEvent FOnProgress{nullptr};
+  TFileOperationFinishedEvent FOnFinished{nullptr};
+
   TNotifyEvent FOnIdle{nullptr};
 
   TNotifyEvent FAction{nullptr};
@@ -622,6 +625,11 @@ private:
   void TerminalStartReadDirectory(TObject * Sender);
   void TerminalReadDirectoryProgress(TObject * Sender, int32_t Progress, int32_t ResolvedLinks, bool & Cancel);
   void TerminalInitializeLog(TObject * Sender);
+
+  void TerminalProgress(TFileOperationProgressType & ProgressData);
+  void TerminalFinished(TFileOperation Operation, TOperationSide Side,
+    bool Temp, const UnicodeString & FileName, bool Success, bool NotCancelled,
+    TOnceDoneOperation & OnceDoneOperation);
   void DiscardException();
 };
 

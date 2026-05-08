@@ -50,9 +50,9 @@ public:
         const int Result = pthread_cond_timedwait(&FCond, &FMutex, Timeout);
         if ((Result == WAIT_TIMEOUT) && IsActive() && !IsFinished() && FPlugin && FPlugin->GetPluginHandle())
         {
+
           // Marshal idle processing to the main thread via the sanctioned synchro path.
-          // FPlugin->PostMainThreadSynchro(nullptr);
-          FPlugin->FarAdvControl(ACTL_SYNCHRO, 0, nullptr);
+          FPlugin->PostMainThreadSynchro(nullptr);
         }
       }
       FCheckCondition = false;

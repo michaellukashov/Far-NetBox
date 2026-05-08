@@ -252,6 +252,62 @@ public:
   bool Cancel{false};
 };
 
+class TProgressUserAction final : public TUserAction
+{
+  NB_DISABLE_COPY(TProgressUserAction)
+public:
+  explicit TProgressUserAction(TFileOperationProgressEvent && AOnProgress,
+    TFileOperationProgressType & AProgressData) noexcept :
+    OnProgress(std::move(AOnProgress)),
+    ProgressData(AProgressData)
+  {
+  }
+
+  virtual void Execute(void *) override
+  {
+    if (!OnProgress.empty())
+    {
+      OnProgress(ProgressData);
+    }
+  }
+
+  TFileOperationProgressEvent OnProgress;
+  TFileOperationProgressType & ProgressData;
+};
+
+class TFinishedUserAction final : public TUserAction
+{
+  NB_DISABLE_COPY(TFinishedUserAction)
+public:
+  explicit TFinishedUserAction(TFileOperationFinishedEvent && AOnFinished,
+    TFileOperation AOperation, TOperationSide ASide, bool ATemp,
+    const UnicodeString & AFileName, bool ASuccess, bool ANotCancelled,
+    TOnceDoneOperation & AOnceDoneOperation) noexcept :
+    OnFinished(std::move(AOnFinished)),
+    Operation(AOperation), Side(ASide), Temp(ATemp),
+    FileName(AFileName), Success(ASuccess), NotCancelled(ANotCancelled),
+    OnceDoneOperation(AOnceDoneOperation)
+  {
+  }
+
+  virtual void Execute(void *) override
+  {
+    if (!OnFinished.empty())
+    {
+      OnFinished(Operation, Side, Temp, FileName, Success, NotCancelled, OnceDoneOperation);
+    }
+  }
+
+  TFileOperationFinishedEvent OnFinished;
+  TFileOperation Operation;
+  TOperationSide Side;
+  bool Temp;
+  UnicodeString FileName;
+  bool Success;
+  bool NotCancelled;
+  TOnceDoneOperation & OnceDoneOperation;
+};
+
 class TTerminalItem final : public TSignalThread
 {
   friend class TQueueItem;
@@ -2743,6 +2799,8 @@ void TTerminalThread::InitTerminalThread()
   FOnStartReadDirectory = FTerminal->GetOnStartReadDirectory();
   FOnReadDirectoryProgress = FTerminal->GetOnReadDirectoryProgress();
   FOnInitializeLog = FTerminal->GetOnInitializeLog();
+  FOnProgress = FTerminal->GetOnProgress();
+  FOnFinished = FTerminal->GetOnFinished();
 
   FTerminal->SetOnInformation(nb::bind(&TTerminalThread::TerminalInformation, this));
   FTerminal->SetOnQueryUser(nb::bind(&TTerminalThread::TerminalQueryUser, this));
@@ -2753,8 +2811,11 @@ void TTerminalThread::InitTerminalThread()
   FTerminal->SetOnReadDirectory(nb::bind(&TTerminalThread::TerminalReadDirectory, this));
   FTerminal->SetOnStartReadDirectory(nb::bind(&TTerminalThread::TerminalStartReadDirectory, this));
   FTerminal->SetOnReadDirectoryProgress(nb::bind(&TTerminalThread::TerminalReadDirectoryProgress, this));
+
   FTerminal->SetOnInitializeLog(nb::bind(&TTerminalThread::TerminalInitializeLog, this));
 
+  FTerminal->SetOnProgress(nb::bind(&TTerminalThread::TerminalProgress, this));
+  FTerminal->SetOnFinished(nb::bind(&TTerminalThread::TerminalFinished, this));
   Start();
 }
 
@@ -2774,6 +2835,8 @@ TTerminalThread::~TTerminalThread() noexcept
   DebugAssert(FTerminal->GetOnStartReadDirectory() == nb::bind(&TTerminalThread::TerminalStartReadDirectory, this));
   DebugAssert(FTerminal->GetOnReadDirectoryProgress() == nb::bind(&TTerminalThread::TerminalReadDirectoryProgress, this));
   DebugAssert(FTerminal->GetOnInitializeLog() == nb::bind(&TTerminalThread::TerminalInitializeLog, this));
+  DebugAssert(FTerminal->GetOnProgress() == nb::bind(&TTerminalThread::TerminalProgress, this));
+  DebugAssert(FTerminal->GetOnFinished() == nb::bind(&TTerminalThread::TerminalFinished, this));
 
   FTerminal->SetOnInformation(std::forward<TInformationEvent>(FOnInformation));
   FTerminal->SetOnQueryUser(std::forward<TQueryUserEvent>(FOnQueryUser));
@@ -2784,8 +2847,10 @@ TTerminalThread::~TTerminalThread() noexcept
   FTerminal->SetOnReadDirectory(std::forward<TReadDirectoryEvent>(FOnReadDirectory));
   FTerminal->SetOnStartReadDirectory(std::forward<TNotifyEvent>(FOnStartReadDirectory));
   FTerminal->SetOnReadDirectoryProgress(std::forward<TReadDirectoryProgressEvent>(FOnReadDirectoryProgress));
-  FTerminal->SetOnInitializeLog(std::forward<TNotifyEvent>(FOnInitializeLog));
 
+  FTerminal->SetOnInitializeLog(std::forward<TNotifyEvent>(FOnInitializeLog));
+  FTerminal->SetOnProgress(std::forward<TFileOperationProgressEvent>(FOnProgress));
+  FTerminal->SetOnFinished(std::forward<TFileOperationFinishedEvent>(FOnFinished));
 #if defined(__BORLANDC__)
   delete FSection;
 #endif // defined(__BORLANDC__)
@@ -3177,6 +3242,21 @@ void TTerminalThread::TerminalInitializeLog(TObject * Sender)
 
     WaitForUserAction(&Action);
   }
+}
+
+void TTerminalThread::TerminalProgress(TFileOperationProgressType & ProgressData)
+{
+  TProgressUserAction Action(std::forward<TFileOperationProgressEvent>(FOnProgress), ProgressData);
+  WaitForUserAction(&Action);
+}
+
+void TTerminalThread::TerminalFinished(TFileOperation Operation, TOperationSide Side,
+  bool Temp, const UnicodeString & FileName, bool Success, bool NotCancelled,
+  TOnceDoneOperation & OnceDoneOperation)
+{
+  TFinishedUserAction Action(std::forward<TFileOperationFinishedEvent>(FOnFinished),
+    Operation, Side, Temp, FileName, Success, NotCancelled, OnceDoneOperation);
+  WaitForUserAction(&Action);
 }
 
 void TTerminalThread::TerminalPromptUser(TTerminal * ATerminal,
