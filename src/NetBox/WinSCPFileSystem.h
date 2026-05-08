@@ -367,6 +367,7 @@ private:
   bool FLoadingSessionList{false};
   bool FCurrentDirectoryWasChanged{false};
   bool FUpdatingPanelParam{false};
+  DWORD FMainThreadId{0};
 };
 
 class TSessionPanelItem final : public TCustomFarPanelItem

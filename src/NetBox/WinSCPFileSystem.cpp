@@ -301,6 +301,7 @@ TWinSCPFileSystem::TWinSCPFileSystem(gsl::not_null<TCustomFarPlugin *> APlugin) 
   TCustomFarFileSystem(OBJECT_CLASS_TWinSCPFileSystem, APlugin),
   FPathHistory(std::make_unique<TStringList>())
 {
+  FMainThreadId = ::GetCurrentThreadId();
 }
 
 void TWinSCPFileSystem::InitWinSCPFileSystem(const TSecureShell * /*SecureShell*/)
@@ -3878,6 +3879,15 @@ void TWinSCPFileSystem::TerminalShowExtendedException(
 void TWinSCPFileSystem::OperationProgress(
   TFileOperationProgressType & ProgressData)
 {
+  if (::GetCurrentThreadId() != FMainThreadId)
+  {
+    TINYLOG_WARNING(g_tinylog) << TLogContext::Format()
+        << "OperationProgress skipped: worker thread "
+        << std::to_string(::GetCurrentThreadId()) << " != main "
+        << std::to_string(FMainThreadId);
+    return;
+  }
+
   if (FNoProgress)
   {
     return;
