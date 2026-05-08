@@ -16,6 +16,7 @@ extern const TObjectClassId OBJECT_CLASS_TList;
 extern const TObjectClassId OBJECT_CLASS_TObjectList;
 extern const TObjectClassId OBJECT_CLASS_TStrings;
 extern const TObjectClassId OBJECT_CLASS_TStringList;
+extern const TObjectClassId OBJECT_CLASS_THistoryStrings;
 
 extern const TObjectClassId OBJECT_CLASS_Exception;
 extern const TObjectClassId OBJECT_CLASS_EAbort;
@@ -110,6 +111,7 @@ extern const TObjectClassId OBJECT_CLASS_TCopyParamRule;
 extern const TObjectClassId OBJECT_CLASS_TCopyParamPreset;
 extern const TObjectClassId OBJECT_CLASS_TCopyParamPresetList;
 extern const TObjectClassId OBJECT_CLASS_TGUIConfiguration;
+extern const TObjectClassId OBJECT_CLASS_TCustomWinConfiguration;
 
 extern const TObjectClassId OBJECT_CLASS_TFarConfiguration;
 extern const TObjectClassId OBJECT_CLASS_TFarDialog;

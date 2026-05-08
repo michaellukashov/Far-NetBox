@@ -1986,3 +1986,15 @@ TTimeSpan TTimeSpan::FromSeconds(double Value)
   return Result;
 }
 
+NB_CORE_EXPORT TShortCut TextToShortCut(const UnicodeString & Str)
+{
+  TShortCut Result;
+  // TODO: implement
+  return Result;
+}
+
+NB_CORE_EXPORT bool IsCustomShortCut(const TShortCut & ShortCut)
+{
+  // TODO: implement
+  return false;
+}

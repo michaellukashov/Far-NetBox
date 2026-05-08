@@ -5077,8 +5077,8 @@ UnicodeString AssemblyAddRawSettings(
   UnicodeString Result;
   for (int32_t Index = 0; Index < RawSettings->Count; Index++)
   {
-    UnicodeString Name = RawSettings->Names[Index];
-    UnicodeString Value = RawSettings->ValueFromIndex[Index];
+    UnicodeString Name = RawSettings->Names(Index);
+    UnicodeString Value = RawSettings->ValueFromIndex(Index);
     UnicodeString AddRawSettingsMethod =
       RtfLibraryMethod(ClassName, MethodName, false) +
       FORMAT(L"(%s, %s)", (AssemblyString(Language, Name), AssemblyString(Language, Value)));

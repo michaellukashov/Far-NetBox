@@ -4,12 +4,14 @@
 
 #include <iomanip>
 #include <ctime>
+#include <stdexcept>
 
 #include <Classes.hpp>
 #include <Common.h>
 #include <rtlconsts.h>
 #include <Sysutils.hpp>
 #include <nbutils.h>
+#undef StrToInt  // Prevent shlwapi.h macro conflict
 
 UnicodeString MB2W(const char * src, const UINT cp)
 {
@@ -190,6 +192,12 @@ bool TryStrToInt(const UnicodeString & StrValue, int32_t & Value)
   const bool Result = TryStrToInt64(StrValue, Val);
   Value = nb::ToInt32(Val);
   return Result;
+}
+int32_t StrToInt(const UnicodeString & Value)
+{
+  int32_t Result;
+  if (TryStrToInt(Value, Result)) return Result;
+  throw std::invalid_argument("Invalid integer value");
 }
 
 UnicodeString Trim(const UnicodeString & Str)

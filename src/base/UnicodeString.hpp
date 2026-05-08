@@ -157,6 +157,7 @@ public:
 
   bool IsDelimiter(const UnicodeString & Chars, int32_t Pos) const;
   int32_t LastDelimiter(const UnicodeString & Delimiters) const;
+wchar_t* LastChar() { return Length() ? &operator[](Length()) : const_cast<wchar_t*>(L"\0"); }
 
   UnicodeString Trim() const;
   UnicodeString TrimLeft() const;

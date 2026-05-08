@@ -336,6 +336,7 @@ NB_CORE_EXPORT int64_t StrToInt64(const UnicodeString & Value);
 NB_CORE_EXPORT int64_t StrToInt64Def(const UnicodeString & Value, int64_t DefVal);
 NB_CORE_EXPORT bool TryStrToInt64(const UnicodeString & StrValue, int64_t & Value);
 NB_CORE_EXPORT bool TryStrToInt(const UnicodeString & StrValue, int32_t & Value);
+NB_CORE_EXPORT int32_t StrToInt(const UnicodeString & Value);
 
 NB_CORE_EXPORT double StrToFloat(const UnicodeString & Value);
 NB_CORE_EXPORT double StrToFloatDef(const UnicodeString & Value, double DefVal);

@@ -9,6 +9,7 @@ const TObjectClassId OBJECT_CLASS_TListBase = static_cast<TObjectClassId>(nb::co
 const TObjectClassId OBJECT_CLASS_TList = static_cast<TObjectClassId>(nb::counter_id());
 const TObjectClassId OBJECT_CLASS_TObjectList = static_cast<TObjectClassId>(nb::counter_id());
 const TObjectClassId OBJECT_CLASS_TStrings = static_cast<TObjectClassId>(nb::counter_id());
+const TObjectClassId OBJECT_CLASS_THistoryStrings = static_cast<TObjectClassId>(nb::counter_id());
 const TObjectClassId OBJECT_CLASS_TStringList = static_cast<TObjectClassId>(nb::counter_id());
 
 const TObjectClassId OBJECT_CLASS_Exception = static_cast<TObjectClassId>(nb::counter_id());
@@ -43,6 +44,7 @@ const TObjectClassId OBJECT_CLASS_TCopyParamPreset = static_cast<TObjectClassId>
 const TObjectClassId OBJECT_CLASS_TCopyParamPresetList = static_cast<TObjectClassId>(nb::counter_id());
 const TObjectClassId OBJECT_CLASS_TPuttyPasswordThread = static_cast<TObjectClassId>(nb::counter_id());
 const TObjectClassId OBJECT_CLASS_TGUIConfiguration = static_cast<TObjectClassId>(nb::counter_id());
+const TObjectClassId OBJECT_CLASS_TCustomWinConfiguration = static_cast<TObjectClassId>(nb::counter_id());
 
 const TObjectClassId OBJECT_CLASS_TSimpleThread = static_cast<TObjectClassId>(nb::counter_id());
 const TObjectClassId OBJECT_CLASS_TSignalThread = static_cast<TObjectClassId>(nb::counter_id());

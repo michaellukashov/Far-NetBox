@@ -339,7 +339,6 @@ class NB_CORE_EXPORT TObjectList : public TList
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TObjectList); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TObjectList) || TList::is(Kind); }
-
 public:
   TObjectList() : TObjectList(OBJECT_CLASS_TObjectList) {}
   using TList::TList;
@@ -439,6 +438,16 @@ public:
   // TODO: ROIndexedProperty<TObject *> Objects{nb::bind(&TStrings::GetObject, this)};
   // TODO: ROIndexedProperty<UnicodeString> Names{nb::bind(&TStrings::GetName, this)};
   const ROIndexedProperty<UnicodeString> Strings{nb::bind(&TStrings::GetStrings, this)};
+
+#if !defined(__BORLANDC__)
+public:
+  UnicodeString Values(const UnicodeString & AName) const { return GetValue(AName); }
+  void Values(const UnicodeString & AName, const UnicodeString & AValue) { SetValue(AName, AValue); }
+  UnicodeString ValueFromIndex(int32_t Index) const { return GetValueFromIndex(Index); }
+  UnicodeString Names(int32_t Index) const { return GetName(Index); }
+  UnicodeString GetNames(int32_t Index) const { return GetName(Index); }
+#endif
+
 
 protected:
   UnicodeString GetStrings(int32_t Index) const { return GetString(Index); }
@@ -1147,3 +1156,6 @@ public:
     catch(...) {}
   }
 };
+
+NB_CORE_EXPORT TShortCut TextToShortCut(const UnicodeString & Str);
+NB_CORE_EXPORT bool IsCustomShortCut(const TShortCut & ShortCut);
