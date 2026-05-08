@@ -33,7 +33,7 @@ TFarConfiguration::TFarConfiguration(gsl::not_null<TCustomFarPlugin *> APlugin) 
 //  TFarConfiguration::Default();
   //CacheFarSettings();
   // from UserInterface.cpp
-  WinConfiguration = new TWinConfiguration();
+  // WinConfiguration = new TWinConfiguration();
 }
 
 TFarConfiguration::~TFarConfiguration() noexcept = default;

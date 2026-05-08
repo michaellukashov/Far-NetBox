@@ -12,6 +12,7 @@
 
 TConfiguration * CreateConfiguration()
 {
+  WinConfiguration = new TWinConfiguration();
   TConfiguration * Result = new TFarConfiguration(FarPlugin);
   Result->ConfigurationInit();
   Result->Default();

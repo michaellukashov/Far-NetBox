@@ -188,6 +188,7 @@ function(netbox_define_core_sources)
     windows/MasterPassword.cpp
     windows/UserInterface.cpp
     windows/WinInterface.cpp
+    windows/CustomWinConfiguration.cpp
   PARENT_SCOPE)
 endfunction()
 
