@@ -3,7 +3,7 @@
 #include <sstream>
 
 // Thread-local storage for context stack
-thread_local std::vector<TLogContext::ContextEntry> TLogContext::ContextStack_;
+thread_local nb::vector_t<TLogContext::ContextEntry> TLogContext::ContextStack_;
 
 TLogContext::TLogContext(const char* key, const std::string& value)
   : Key_(key)

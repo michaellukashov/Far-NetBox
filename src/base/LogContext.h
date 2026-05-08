@@ -30,7 +30,7 @@ private:
     std::string Value;
   };
 
-  thread_local static std::vector<ContextEntry> ContextStack_;
+  thread_local static nb::vector_t<ContextEntry> ContextStack_;
   const char* Key_;
 };
 

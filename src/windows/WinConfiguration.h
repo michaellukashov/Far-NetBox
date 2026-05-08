@@ -984,7 +984,7 @@ private:
   UnicodeString FDescription;
   UnicodeString FHomePage;
   UnicodeString FOptionsPage;
-  std::vector<TOption> FOptions;
+  nb::vector_t<TOption> FOptions;
 };
 
 class TCustomCommandList

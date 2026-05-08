@@ -1953,8 +1953,8 @@ private:
     std::function<void()> CleanupEvent;
   };
 
-  std::vector<TCleanupItem> FCleanupItems;
-  std::vector<TFarCheckBox *> FCheckBoxes;
+  nb::vector_t<TCleanupItem> FCleanupItems;
+  nb::vector_t<TFarCheckBox *> FCheckBoxes;
   TFarButton * FSelectAllBtn{nullptr};
   TFarButton * FDeselectAllBtn{nullptr};
 };

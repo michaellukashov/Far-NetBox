@@ -81,7 +81,7 @@ public:
   UnicodeString GenerateReport() const;
 
 private:
-  std::vector<TFileOperationError> FErrors;
+  nb::vector_t<TFileOperationError> FErrors;
   mutable std::mutex FMutex;
 };
 class TFileOperationStatistics final : public TObject
