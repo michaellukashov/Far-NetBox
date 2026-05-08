@@ -7,7 +7,7 @@ Status: active
 
 Updated: 2026-05-10
 
-Goal: Phase 2 verification fixes DONE — next: Security Hardening (Phase 5)
+Goal: Add OnProgress/OnFinished marshaling to TTerminalThread — fix Far API calls from worker thread
 
 Constraints:
 - No modifications to `libs/` — use patches only
@@ -18,26 +18,17 @@ Constraints:
 - C++17 standard only (no std::filesystem, std::variant)
 
 Decisions:
-- Location Profiles "Open": store selected bookmark paths in dialog, expose via getters, navigate after Execute()
-- Hardcoded English: add 2 new MsgIDs (NB_LOCATION_BOOKMARK_NAME_PROMPT, NB_LOCATION_BOOKMARK_RENAME_PROMPT) and update all 5 .lng files
-- Remove confirmation: add MessageDialog before deletion, add 1 new MsgID (NB_LOCATION_PROFILES_REMOVE_CONFIRM)
-- Null check: add defensive null guards in TGenerateUrlDialog for FScriptFormatCombo, FTransferModeBtn, and related pointers
-- SCP Esc cancellation: Four-layer fix adopted (console buffer scan, csCancel semantics, EAbort("") dispatch, deferred reconnect). Post-cancel session reset via FNeedsSessionReset + FLastDirectory.
-- SSH/SCP buffer corruption: Default SendBuf=0, SshSimple=false to disable dynamic TCP send backlog query.
-- Multithreading: Far API marshaling via Synchronize/PostMainThreadSynchro; event-driven waits replace Sleep polling.
-- CWE-134: EscapeFmtChars() utility for all untrusted args to FMTLOAD.
-- S3 TLS alignment: Add S3CACertificate serialization + UI; expose Min/Max TLS version on S3 tab.
-- SFTP Log Protocol: Level 3 added for binary dump (separate from Level 2 headers).
-- CMake: 97% reduction in main CMakeLists.txt via modular orchestrator pattern.
-- OpenSSH certificate auth (WinSCP-aligned): Silent pre-connect conversion inside StoreToConfig(). Effective key file resolved before CONF_keyfile. Passphrase encryption uses effective key file path. Temp PPK cleaned in TSecureShell destructor. No interactive dialogs (Far plugin context).
-- Master password infrastructure: Effectively complete. All security-critical gaps (TSecureString, atomic counters, rate limiting, error reporting) are implemented. Active-terminal recryption gap is non-issue in Far plugin context (no TTerminalManager registry, per-panel terminal ownership).
-- UX parity scope: "Structural parity" only — same dialogs must exist as in WinSCP. Behavioral parity (keyboard shortcuts, menu structure, workflow sequencing) is out of scope. Interaction differences due to Far text-mode (no drag-drop, no tree view, no MDI tabs) are accepted.
+- TTerminalThread::InitTerminalThread() must add OnProgress and OnFinished to marshal list
+- Original OnProgress/OnFinished callbacks must be saved before override and restored in destructor
+- TUserAction subclasses needed for progress and finished events
+- Progress marshaling adds latency (every ~500ms or per chunk) but fixes real thread safety bug
+- Message() dialog called from worker thread in OperationProgress is the most dangerous violation
+- Queue's TTerminalItem::OperationProgress is safe (no Far APIs) — only foreground TWinSCPFileSystem::OperationProgress is affected
+- Style: TPluginIdleThread should use PostMainThreadSynchro() wrapper instead of direct FarAdvControl(ACTL_SYNCHRO)
+
 Open questions:
-  - ~~Silent mode file operations: Error collection mechanism designed but not implemented.~~ **COMPLETE** — 8-task plan `silent-mode-ui-and-refinements.md` fully implemented (UI toggle, boOlder overwrite, confirmation suppression, error report file).
-- ~~Stack overflow (#497): Symlink cycle detection needed in CalculateFilesSize (mirrors FilesFind pattern).~~ **FIXED** (commit `2689164e6`, 2026-05-03).
-- ~~DST timestamp (#391): Remove erroneous DST subtraction in ConvertTimestampToUnix for dstmWin on Win7+.~~ **FIXED** (commit `17a50dfdc`, 2026-05-02).
-- ~~Private key auth (#392): Passphrase prompt misclassification or path encoding issue suspected; needs diagnostic logging.~~ **FIXED** (commit `e41274cd7`, 2026-05-02).
-- ~~Second file open crash: Dangling TRemoteFile pointers after directory refresh; Duplicate(false) recommended in CreateFileList.~~ **FIXED** (commits `311e2c8fc` + `8539f9963`, 2026-04-26).
+- None — all resolved
+
 Success signals:
 - Zero build warnings under /W4
 - Plugin DLL in Far3_<platform>/Plugins/NetBox/
@@ -45,9 +36,7 @@ Success signals:
 - No crashes in 48hr stress test
 
 Next step:
-  - ~~Implement Phase 2 fixes: 4 issues found in verification~~ **DONE** (commit `9b5f49b01`, 2026-05-10)
-  - ~~Prioritize remaining open question: silent mode file operations (designed, not implemented).~~ **DONE** (plan `silent-mode-ui-and-refinements.md` fully implemented).
-  - ~~**Start Security Hardening (Phase 5)**~~ **DONE** — TSecureString, atomic counters, rate limiting, error surfacing, dialog alignment, security tab, tests all implemented.
+- **Implement OnProgress/OnFinished marshaling in TTerminalThread** (plan in progress)
 ## Sessions
 
 ### 2026-05-10 (evening) — Phase 2 Verification Fixes + Gap Resolution
