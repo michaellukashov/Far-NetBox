@@ -14,6 +14,7 @@
 #include "Cryptography.h"
 #include "FileInfo.h"
 #include "CoreMain.h"
+#include "StrUtils.hpp"
 #include <VCLCommon.h>
 
 // Forward declarations for MSVC compatibility
@@ -22,9 +23,10 @@ TColor RestoreColor(const UnicodeString & CStr);
 UnicodeString StoreColor(TColor Color);
 #endif // !defined(__BORLANDC__)
 
-
 TWinConfiguration * WinConfiguration = nullptr;
 
+TApplication * Application = nullptr;
+TScreen * Screen = nullptr;
 // Shared static variables
 static UnicodeString NotepadName(L"notepad.exe");
 static UnicodeString ToolbarsLayoutKey(L"ToolbarsLayout2");
@@ -34,20 +36,12 @@ UnicodeString QueueViewLayoutDefault;
 UnicodeString ScpCommanderWindowParamsDefault;
 UnicodeString ScpExplorerWindowParamsDefault;
 
-#if defined(__BORLANDC__)
 // WORKAROUND (the semicolon, see TCustomListViewColProperties.GetParamsStr, and see other instances below)
 const UnicodeString ScpExplorerDirViewParamsDefault =
   L"0;1;0|150,1;70,1;150,1;79,1;62,1;55,0;20,0;150,0;125,0;@" + SaveDefaultPixelsPerInch() + L"|6;7;8;0;1;2;3;4;5";
 const UnicodeString ScpCommanderRemotePanelDirViewParamsDefault = ScpExplorerDirViewParamsDefault;
 const UnicodeString ScpCommanderLocalPanelDirViewParamsDefault =
   L"0;1;0|150,1;70,1;120,1;150,1;55,0;55,0;@" + SaveDefaultPixelsPerInch() + L"|5;0;1;2;3;4";
-#else // !defined(__BORLANDC__)
-const UnicodeString ScpExplorerDirViewParamsDefault =
-  L"0;1;0|150,1;70,1;150,1;79,1;62,1;55,0;20,0;150,0;125,0;@96|6;7;8;0;1;2;3;4;5";
-const UnicodeString ScpCommanderRemotePanelDirViewParamsDefault = ScpExplorerDirViewParamsDefault;
-const UnicodeString ScpCommanderLocalPanelDirViewParamsDefault =
-  L"0;1;0|150,1;70,1;120,1;150,1;55,0;55,0;@96|5;0;1;2;3;4";
-#endif // defined(__BORLANDC__)
 
 static const wchar_t FileColorDataSeparator = L':';
 TFileColorData::TFileColorData() :
@@ -546,7 +540,7 @@ void TWinConfiguration::Default()
 
   int32_t WorkAreaWidthScaled = DimensionToDefaultPixelsPerInch(Screen->WorkAreaWidth);
   int32_t WorkAreaHeightScaled = DimensionToDefaultPixelsPerInch(Screen->WorkAreaHeight);
-  UnicodeString PixelsPerInchToolbarValue = "PixelsPerInch=" + SaveDefaultPixelsPerInch();
+  UnicodeString PixelsPerInchToolbarValue = L"PixelsPerInch=" + SaveDefaultPixelsPerInch();
 
   FDDDisableMove = false;
   FDDTransferConfirmation = asAuto;
@@ -657,7 +651,7 @@ void TWinConfiguration::Default()
   FRemoteThumbnailMask = EmptyStr;
   FRemoteThumbnailSizeLimit = 50 * 1024;
   SetFirstRun(StandardDatestamp());
-
+#if defined(__BORLANDC__)
   FEditor.Font.FontName = DefaultFixedWidthFontName;
   FEditor.Font.FontSize = DefaultFixedWidthFontSize;
   FEditor.Font.FontStyle = 0;
@@ -817,6 +811,7 @@ void TWinConfiguration::Default()
   FScpCommander.OtherLocalPanelDirViewParams = FScpCommander.LocalPanel.DirViewParams;
   FScpCommander.OtherLocalPanelViewStyle = FScpCommander.LocalPanel.ViewStyle;
   FScpCommander.OtherLocalPanelLastPath = UnicodeString();
+#endif // #if defined(__BORLANDC__)
 
   FBookmarks->Clear();
 }
@@ -897,9 +892,9 @@ bool TWinConfiguration::CanWriteToStorage()
 }
 
 bool TWinConfiguration::DetectStorage(bool SafeOnly)
-{
-  bool Result;
-  const UnicodeString IniFile = IniFileStorageNameForReading;
+ {
+   bool Result;
+  const UnicodeString IniFile = IniFileStorageNameForReading();
   if (FileExists(ApiPath(IniFile)))
   {
     Result = !SafeOnly;
@@ -996,6 +991,7 @@ void TWinConfiguration::Saved()
 }
 
 #if defined(__BORLANDC__)
+
 void TWinConfiguration::RecryptPasswords(TStrings * RecryptPasswordErrors)
 {
   TCustomWinConfiguration::RecryptPasswords(RecryptPasswordErrors);
@@ -1020,9 +1016,18 @@ void TWinConfiguration::RecryptPasswords(TStrings * RecryptPasswordErrors)
     }
   }
 }
-#endif // defined(__BORLANDC__)
 
-bool TWinConfiguration::GetUseMasterPassword()
+#endif // !defined(__BORLANDC__)
+
+// MSVC implementation: recrypt stored sessions directly.
+// Note: TTerminalManager is not available in NetBox (WinSCP GUI-only),
+// so active terminal recryption is skipped.
+void TWinConfiguration::RecryptPasswords(TStrings * RecryptPasswordErrors)
+{
+  GetStoredSessions()->RecryptPasswords(RecryptPasswordErrors);
+}
+
+bool TWinConfiguration::GetUseMasterPassword() const
 {
   return FUseMasterPassword;
 }
@@ -1289,19 +1294,19 @@ THierarchicalStorage * TWinConfiguration::CreateScpStorage(bool & SessionList)
 void TWinConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
 {
   TCustomWinConfiguration::SaveData(Storage, All);
-
+#if defined(__BORLANDC__)
   // duplicated from core\configuration.cpp
 #define KEYEX(TYPE, VAR, NAME) Storage->Write ## TYPE(NAME, VAR)
   REGCONFIG(true);
 #undef KEYEX
-
+#endif // #if defined(__BORLANDC__)
   if (Storage->OpenSubKey(L"Bookmarks", true))
   {
     FBookmarks->Save(Storage, All);
 
     Storage->CloseSubKey();
   }
-  if ((All && !FCustomCommandsDefaults) || FCustomCommandList->Modified)
+  if ((All && !FCustomCommandsDefaults) || FCustomCommandList->GetModified())
   {
     FCustomCommandList->Save(Storage);
 
@@ -1324,7 +1329,7 @@ void TWinConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
     FCustomCommandOptionsModified = false;
   }
 
-  if ((All || FEditorList->Modified) &&
+  if ((All || FEditorList->GetModified()) &&
       Storage->OpenSubKeyPath(L"Interface\\Editor", true))
   try__finally
   {
@@ -1429,7 +1434,7 @@ void TWinConfiguration::DoLoadExtensionList(
         else
         {
           std::unique_ptr<TCustomCommandType> CustomCommand(std::make_unique<TCustomCommandType>());
-          CustomCommand->Id = Id;
+          CustomCommand->SetId(Id);
 
           try
           {
@@ -1463,7 +1468,7 @@ const UnicodeString ExtensionsUserExtPathId(L"userext");
 
 static UnicodeString ExtractExtensionBaseName(const UnicodeString & FileName)
 {
-  UnicodeString S = ExtractFileName(FileName);
+  UnicodeString S = base::ExtractFileName(FileName);
   // ExtractFileNameOnly trims the last extension only, we want to trim all extensions
   UnicodeString Result = CutToChar(S, L'.', true);
   return Result;
@@ -1476,17 +1481,20 @@ UnicodeString TWinConfiguration::GetProvisionaryExtensionId(const UnicodeString 
 
 UnicodeString TWinConfiguration::GetUserExtensionsPath()
 {
+#if defined(__BORLANDC__)
   return IncludeTrailingBackslash(GetShellFolderPath(CSIDL_APPDATA)) + L"WinSCP\\" + ExtensionsSubFolder;
+#endif // #if defined(__BORLANDC__)
+  return UnicodeString();
 }
 
 TStrings * TWinConfiguration::GetExtensionsPaths()
 {
   std::unique_ptr<TStrings> Result(std::make_unique<TStringList>());
   UnicodeString ExeParentPath = ExcludeTrailingBackslash(ExtractFilePath(Application->ExeName));
-  Result->Values[ExtensionsCommonPathId] = ExeParentPath;
+  Result->Values(ExtensionsCommonPathId, ExeParentPath);
   UnicodeString CommonExtensions = IncludeTrailingBackslash(ExeParentPath) + ExtensionsSubFolder;
-  Result->Values[ExtensionsCommonExtPathId] = CommonExtensions;
-  Result->Values[ExtensionsUserExtPathId] = GetUserExtensionsPath();
+  Result->Values(ExtensionsCommonExtPathId, CommonExtensions);
+  Result->Values(ExtensionsUserExtPathId, GetUserExtensionsPath());
   return Result.release();
 }
 
@@ -1494,15 +1502,15 @@ UnicodeString TWinConfiguration::GetExtensionId(const UnicodeString & ExtensionP
 {
   UnicodeString Path = ExcludeTrailingBackslash(ExtractFilePath(ExtensionPath));
 
-  UnicodeString NameId = TCustomCommandType::GetExtensionId(ExtractFileName(ExtensionPath));
+  UnicodeString NameId = TCustomCommandType::GetExtensionId(base::ExtractFileName(ExtensionPath));
   if (!NameId.IsEmpty())
   {
     std::unique_ptr<TStrings> ExtensionsPaths(GetExtensionsPaths());
     for (int32_t Index = 0; Index < ExtensionsPaths->Count; Index++)
     {
-      if (IsPathToSameFile(Path, ExtensionsPaths->ValueFromIndex[Index]))
+      if (IsPathToSameFile(Path, ExtensionsPaths->ValueFromIndex(Index)))
       {
-        return IncludeTrailingBackslash(ExtensionsPaths->Names[Index]) + NameId;
+        return IncludeTrailingBackslash(ExtensionsPaths->Names(Index)) + NameId;
       }
     }
   }
@@ -1535,8 +1543,8 @@ void TWinConfiguration::LoadExtensionTranslations()
     {
       ExtensionIndex = FExtensionTranslations->AddObject(ExtensionName, new TStringList());
     }
-    TStringList * ExtensionTranslation = DebugNotNull(dynamic_cast<TStringList *>(FExtensionTranslations->Objects[ExtensionIndex]));
-    ExtensionTranslation->Values[Original] = Translation;
+    TStringList * ExtensionTranslation = DebugNotNull(dynamic_cast<TStringList *>(FExtensionTranslations->Get(ExtensionIndex)));
+    ExtensionTranslation->Values(Original, Translation);
     Index++;
   }
 }
@@ -1552,7 +1560,7 @@ UnicodeString TWinConfiguration::ExtensionStringTranslation(const UnicodeString 
   UnicodeString Result = S;
   if (!ExtensionId.IsEmpty())
   {
-    UnicodeString ExtensionName = ExtractFileName(ExtensionId);
+    UnicodeString ExtensionName = base::ExtractFileName(ExtensionId);
     int32_t ExtensionIndex;
     bool Retry;
     do
@@ -1570,11 +1578,11 @@ UnicodeString TWinConfiguration::ExtensionStringTranslation(const UnicodeString 
 
     if (ExtensionIndex >= 0)
     {
-      TStrings * ExtensionTranslation = DebugNotNull(dynamic_cast<TStrings *>(FExtensionTranslations->Objects[ExtensionIndex]));
+      TStrings * ExtensionTranslation = DebugNotNull(dynamic_cast<TStrings *>(FExtensionTranslations->Get(ExtensionIndex)));
       int32_t StringIndex = ExtensionTranslation->IndexOfName(S);
       if (StringIndex >= 0)
       {
-        Result = ExtensionTranslation->ValueFromIndex[StringIndex];
+        Result = ExtensionTranslation->ValueFromIndex(StringIndex);
       }
     }
   }
@@ -1593,7 +1601,7 @@ void TWinConfiguration::LoadExtensionList()
   std::unique_ptr<TStrings> ExtensionsPaths(GetExtensionsPaths());
   for (int32_t Index = 0; Index < ExtensionsPaths->Count; Index++)
   {
-    DoLoadExtensionList(ExtensionsPaths->ValueFromIndex[Index], ExtensionsPaths->Names[Index], DeletedExtensions.get());
+    DoLoadExtensionList(ExtensionsPaths->ValueFromIndex(Index), ExtensionsPaths->Names(Index), DeletedExtensions.get());
   }
 
   std::unique_ptr<TStringList> OrderedExtensions(std::make_unique<TStringList>());
@@ -1607,7 +1615,7 @@ void TWinConfiguration::LoadExtensionList()
     TShortCut ShortCut = static_cast<TShortCut>(StrToInt(CutToChar(S, L'=', false)));
     for (int32_t Index = 0; Index < FExtensionList->GetCount(); Index++)
     {
-      if (FExtensionList->GetConstCommand(Index)->Id == S)
+      if (FExtensionList->GetConstCommand(Index)->GetId() == S)
       {
         const_cast<TCustomCommandType *>(FExtensionList->GetConstCommand(Index))->ShortCut = ShortCut;
       }
@@ -1628,13 +1636,14 @@ static UnicodeString KeyName(THierarchicalStorage * Storage, const UnicodeString
 void TWinConfiguration::LoadData(THierarchicalStorage * Storage)
 {
   TCustomWinConfiguration::LoadData(Storage);
-
+#if defined(__BORLANDC__)
   // duplicated from core\configuration.cpp
   #define KEYEX(TYPE, VAR, NAME) VAR = Storage->Read ## TYPE(KeyName(Storage, NAME), VAR)
   #pragma warn -eas
   REGCONFIG(false);
   #pragma warn +eas
   #undef KEYEX
+#endif // #if defined(__BORLANDC__)
 
   // to reflect changes to PanelFont
   UpdateIconFont();
@@ -1651,7 +1660,7 @@ void TWinConfiguration::LoadData(THierarchicalStorage * Storage)
     FCustomCommandList->Load(Storage);
     FCustomCommandsDefaults = false;
   }
-  else if (FCustomCommandList->Modified)
+  else if (FCustomCommandList->GetModified())
   {
     // can this (=reloading of configuration) even happen?
     // if it does, shouldn't we reset default commands?
@@ -1752,10 +1761,12 @@ void TWinConfiguration::AddVersionToHistory()
   {
     UnicodeString CurrentVersionInfo =
       IntToStr(CurrentVersion) + L"," + GetReleaseType();
-    AddToList(FVersionHistory, CurrentVersionInfo, L';');
+    AddToList(FVersionHistory, CurrentVersionInfo, L";");
   }
 
+#if defined(__BORLANDC__)
   Usage->Set(L"AnyBetaUsed", AnyBetaInVersionHistory);
+#endif // defined(__BORLANDC__)
 }
 
 bool TWinConfiguration::DoIsBeta(const UnicodeString & ReleaseType)
@@ -1773,6 +1784,7 @@ bool TWinConfiguration::GetAnyBetaInVersionHistory()
 {
   int32_t From = 1;
   bool AnyBeta = false;
+#if defined(__BORLANDC__)
   while (!AnyBeta && (From < VersionHistory.Length()))
   {
     UnicodeString VersionInfo = CopyToChars(VersionHistory, From, L";", true);
@@ -1784,11 +1796,13 @@ bool TWinConfiguration::GetAnyBetaInVersionHistory()
       AnyBeta = true;
     }
   }
+#endif // #if defined(__BORLANDC__)
   return AnyBeta;
 }
 
 bool TWinConfiguration::GetDDExtInstalled()
 {
+#if defined(__BORLANDC__)
   if (FDDExtInstalled < 0)
   {
     if (IsWin64())
@@ -1829,12 +1843,14 @@ bool TWinConfiguration::GetDDExtInstalled()
       }
     }
   }
+#endif // #if defined(__BORLANDC__)
   return (FDDExtInstalled > 0);
 }
 
 bool TWinConfiguration::IsDDExtRunning()
 {
-  bool Result;
+  bool Result = false;
+#if defined(__BORLANDC__)
   if (!DDExtInstalled)
   {
     Result = false;
@@ -1845,18 +1861,26 @@ bool TWinConfiguration::IsDDExtRunning()
     Result = (H != nullptr);
     CloseHandle(H);
   }
-
+#endif // defined(__BORLANDC__)
   return Result;
 }
 
 bool TWinConfiguration::IsDDExtBroken()
 {
+#if defined(__BORLANDC__)
   int32_t Build = GetWindowsBuild();
   return (Build >= 17134) && (Build < 17763);
+#endif // defined(__BORLANDC__)
+  return false;
 }
 
-RawByteString TWinConfiguration::StronglyRecryptPassword(const RawByteString & Password, const UnicodeString & Key)
+// from WinSCPSecurity.cpp
+bool GetExternalEncryptedPassword(const RawByteString & AEncrypted, RawByteString & APassword);
+RawByteString SetExternalEncryptedPassword(const RawByteString & APassword);
+
+RawByteString TWinConfiguration::StronglyRecryptPassword(const RawByteString & APassword, const UnicodeString & Key)
 {
+  RawByteString Password = APassword;
   RawByteString Dummy;
   RawByteString Result;
   if (GetExternalEncryptedPassword(Password, Dummy) ||
@@ -1876,12 +1900,15 @@ RawByteString TWinConfiguration::StronglyRecryptPassword(const RawByteString & P
       // Though it should not actually happen, as we call AskForMasterPasswordIfNotSetAndNeededToPersistSessionData in DoSaveSession.
       AskForMasterPasswordIfNotSet();
       Password = ScramblePassword(PasswordText);
-      AES256EncyptWithMAC(Password, FPlainMasterPasswordEncrypt.GetValue(), Result);
+      AES256EncryptWithMAC(Password, FPlainMasterPasswordEncrypt.GetValue(), Result);
       Result = SetExternalEncryptedPassword(Result);
     }
   }
   return Result;
 }
+
+// from WinSCPSecurity.h
+NB_CORE_EXPORT bool GetExternalEncryptedPassword(const RawByteString & Encrypted, RawByteString & Password);
 
 UnicodeString TWinConfiguration::DecryptPassword(const RawByteString & Password, const UnicodeString & Key)
 {
@@ -2082,67 +2109,93 @@ void TWinConfiguration::EndMasterPasswordSession()
 
 void TWinConfiguration::SetDDDisableMove(bool value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(DDDisableMove);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetDDTransferConfirmation(TAutoSwitch value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(DDTransferConfirmation);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetDDTemporaryDirectory(UnicodeString value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(DDTemporaryDirectory);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetDDDrives(UnicodeString value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(DDDrives);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetDDFakeFile(bool value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(DDFakeFile);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetDDExtTimeout(int32_t value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(DDExtTimeout);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetDDWarnLackOfTempSpace(bool value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(DDWarnLackOfTempSpace);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetDDWarnLackOfTempSpaceRatio(double value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(DDWarnLackOfTempSpaceRatio);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetScpExplorer(TScpExplorerConfiguration value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(ScpExplorer);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetScpCommander(TScpCommanderConfiguration value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(ScpCommander);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetEditor(TEditorConfiguration value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(Editor);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetQueueView(TQueueViewConfiguration value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(QueueView);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetEnableQueueByDefault(bool value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(EnableQueueByDefault);
+#endif // #if defined(__BORLANDC__)
 }
 
 TUpdatesConfiguration TWinConfiguration::GetUpdates()
@@ -2164,146 +2217,203 @@ void TWinConfiguration::SetUpdates(TUpdatesConfiguration value)
 
 void TWinConfiguration::SetVersionHistory(UnicodeString value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(VersionHistory);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetDeleteToRecycleBin(bool value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(DeleteToRecycleBin);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetSelectDirectories(bool value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(SelectDirectories);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetShowHiddenFiles(bool value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(ShowHiddenFiles);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetFormatSizeBytes(TFormatBytesStyle value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(FormatSizeBytes);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetPanelSearch(TIncrementalSearch value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(PanelSearch);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetShowInaccessibleDirectories(bool value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(ShowInaccessibleDirectories);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetConfirmTransferring(bool value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(ConfirmTransferring);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetConfirmDeleting(bool value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(ConfirmDeleting);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetConfirmRecycling(bool value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(ConfirmRecycling);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetUseLocationProfiles(bool value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(UseLocationProfiles);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetUseSharedBookmarks(bool value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(UseSharedBookmarks);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetConfirmClosingSession(bool value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(ConfirmClosingSession);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetDoubleClickAction(TDoubleClickAction value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(DoubleClickAction);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetCopyOnDoubleClickConfirmation(bool value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(CopyOnDoubleClickConfirmation);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetAlwaysRespectDoubleClickAction(bool value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(AlwaysRespectDoubleClickAction);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetDimmHiddenFiles(bool value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(DimmHiddenFiles);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetRenameWholeName(bool value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(RenameWholeName);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetAutoStartSession(UnicodeString value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(AutoStartSession);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetExpertMode(bool value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(ExpertMode);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetDefaultDirIsHome(bool value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(DefaultDirIsHome);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetTemporaryDirectoryAppendSession(bool value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(TemporaryDirectoryAppendSession);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetTemporaryDirectoryAppendPath(bool value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(TemporaryDirectoryAppendPath);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetTemporaryDirectoryDeterministic(bool value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(TemporaryDirectoryDeterministic);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetTemporaryDirectoryCleanup(bool value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(TemporaryDirectoryCleanup);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetConfirmTemporaryDirectoryCleanup(bool value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(ConfirmTemporaryDirectoryCleanup);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetPreservePanelState(bool value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(PreservePanelState);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetDarkTheme(TAutoSwitch value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY_EX(DarkTheme, ConfigureInterface());
+#endif // #if defined(__BORLANDC__)
 }
 
 static int32_t SysDarkTheme(HKEY RootKey)
 {
+#if defined(__BORLANDC__)
   std::unique_ptr<TRegistry> Registry(std::make_unique<TRegistry>());
   Registry->RootKey = RootKey;
   UnicodeString ThemesPersonalizeKey = L"Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize";
@@ -2315,10 +2425,13 @@ static int32_t SysDarkTheme(HKEY RootKey)
     Result = Registry->ReadBool(AppsUseLightThemeValue) ? 0 : 1;
   }
   return Result;
+#endif // #if defined(__BORLANDC__)
+  return -1;
 }
 
 bool TWinConfiguration::UseDarkTheme()
 {
+#if defined(__BORLANDC__)
   switch (WinConfiguration->DarkTheme)
   {
     case asOn:
@@ -2328,238 +2441,333 @@ bool TWinConfiguration::UseDarkTheme()
     default:
       return (GetSysDarkTheme() > 0);
   }
+#endif // #if defined(__BORLANDC__)
+  return false;
 }
 
 void TWinConfiguration::SetLastStoredSession(UnicodeString value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(LastStoredSession);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetAutoSaveWorkspace(bool value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(AutoSaveWorkspace);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetAutoSaveWorkspacePasswords(bool value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(AutoSaveWorkspacePasswords);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetAutoWorkspace(UnicodeString value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(AutoWorkspace);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetPathInCaption(TPathInCaption value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(PathInCaption);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetMinimizeToTray(bool value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(MinimizeToTray);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetBalloonNotifications(bool value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(BalloonNotifications);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetNotificationsTimeout(uint32_t value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(NotificationsTimeout);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetNotificationsStickTime(uint32_t value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(NotificationsStickTime);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetCopyParamAutoSelectNotice(bool value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(CopyParamAutoSelectNotice);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetLockToolbars(bool value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(LockToolbars);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetSelectiveToolbarText(bool value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(SelectiveToolbarText);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetLargerToolbar(int value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(LargerToolbar);
+#endif // #if defined(__BORLANDC__)
 }
 
+void TWinConfiguration::SetAutoOpenInPutty(bool value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(AutoOpenInPutty);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetRefreshRemotePanel(bool value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(RefreshRemotePanel);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetRefreshRemotePanelInterval(TDateTime value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(RefreshRemotePanelInterval);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::UpdateIconFont()
 {
+#if defined(__BORLANDC__)
   UpdateDesktopFont();
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetPanelFont(const TFontConfiguration & value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY_EX(PanelFont, UpdateIconFont());
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetNaturalOrderNumericalSorting(bool value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(NaturalOrderNumericalSorting);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetAlwaysSortDirectoriesByName(bool value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(AlwaysSortDirectoriesByName);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetFullRowSelect(bool value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(FullRowSelect);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetOfferedEditorAutoConfig(bool value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(OfferedEditorAutoConfig);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetOpenedStoredSessionFolders(UnicodeString value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(OpenedStoredSessionFolders);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetAutoImportedFromPuttyOrFilezilla(bool value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(AutoImportedFromPuttyOrFilezilla);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetGenerateUrlComponents(int32_t value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(GenerateUrlComponents);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetGenerateUrlCodeTarget(TGenerateUrlCodeTarget value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(GenerateUrlCodeTarget);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetGenerateUrlScriptFormat(TScriptFormat value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(GenerateUrlScriptFormat);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetGenerateUrlAssemblyLanguage(TAssemblyLanguage value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(GenerateUrlAssemblyLanguage);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetExternalSessionInExistingInstance(bool value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(ExternalSessionInExistingInstance);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetShowLoginWhenNoSession(bool value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(ShowLoginWhenNoSession);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetKeepOpenWhenNoSession(bool value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(KeepOpenWhenNoSession);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetDefaultToNewRemoteTab(bool value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(DefaultToNewRemoteTab);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetLocalIconsByExt(bool value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(LocalIconsByExt);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetFlashTaskbar(bool value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(FlashTaskbar);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetBidiModeOverride(TLocaleFlagOverride value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(BidiModeOverride);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetFlipChildrenOverride(TLocaleFlagOverride value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(FlipChildrenOverride);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetShowTips(bool value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(ShowTips);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetTipsSeen(UnicodeString value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(TipsSeen);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetTipsShown(TDateTime value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(TipsShown);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetFileColors(UnicodeString value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(FileColors);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetRunsSinceLastTip(int32_t value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(RunsSinceLastTip);
+#endif // #if defined(__BORLANDC__)
 }
 
 int TWinConfiguration::GetHonorDrivePolicy()
 {
+#if defined(__BORLANDC__)
   return DriveInfo->HonorDrivePolicy;
+#endif // #if defined(__BORLANDC__)
+  return -1;
 }
 
 void TWinConfiguration::SetHonorDrivePolicy(int value)
 {
+#if defined(__BORLANDC__)
   if (HonorDrivePolicy != value)
   {
     DriveInfo->HonorDrivePolicy = value;
     Changed();
   }
+#endif // #if defined(__BORLANDC__)
 }
 
 bool TWinConfiguration::GetUseABDrives()
 {
+#if defined(__BORLANDC__)
   return DriveInfo->UseABDrives;
+#endif // #if defined(__BORLANDC__)
+  return false;
 }
 
 void TWinConfiguration::SetUseABDrives(bool value)
 {
+#if defined(__BORLANDC__)
   if (UseABDrives != value)
   {
     DriveInfo->UseABDrives = value;
     Changed();
   }
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetCustomCommandList(TCustomCommandList * value)
@@ -2574,6 +2782,7 @@ void TWinConfiguration::SetCustomCommandList(TCustomCommandList * value)
 
 void TWinConfiguration::SetExtensionList(TCustomCommandList * value)
 {
+#if defined(__BORLANDC__)
   if (!ExtensionList->Equals(value))
   {
     std::unique_ptr<TStringList> DeletedExtensions(CreateSortedStringList());
@@ -2626,35 +2835,38 @@ void TWinConfiguration::SetExtensionList(TCustomCommandList * value)
 
     Changed();
   }
+#endif // #if defined(__BORLANDC__)
 }
 
-void TWinConfiguration::CustomCommandShortCuts(TShortCuts & ShortCuts) const
+void TWinConfiguration::CustomCommandShortCuts(TShortCuts & ShortCuts)
 {
+#if defined(__BORLANDC__)
   CustomCommandList->ShortCuts(ShortCuts);
   ExtensionList->ShortCuts(ShortCuts);
+#endif // #if defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetBookmarks(UnicodeString Key,
   TBookmarkList * value)
 {
-  FBookmarks->Bookmarks[Key] = value;
+  FBookmarks->SetBookmarks(Key, value);
   Changed();
 }
 
 TBookmarkList * TWinConfiguration::GetBookmarks(UnicodeString Key)
 {
-  return FBookmarks->Bookmarks[Key];
+  return FBookmarks->GetBookmarks(Key);
 }
 
 void TWinConfiguration::SetSharedBookmarks(TBookmarkList * value)
 {
-  FBookmarks->SharedBookmarks = value;
+  FBookmarks->SetSharedBookmarks(value);
   Changed();
 }
 
 TBookmarkList * TWinConfiguration::GetSharedBookmarks()
 {
-  return FBookmarks->SharedBookmarks;
+  return FBookmarks->GetSharedBookmarks();
 }
 
 UnicodeString TWinConfiguration::GetDefaultKeyFile()
@@ -2664,18 +2876,23 @@ UnicodeString TWinConfiguration::GetDefaultKeyFile()
 
 void TWinConfiguration::SetLastMonitor(int32_t value)
 {
+#if defined(__BORLANDC__)
   ::SetLastMonitor(value);
+#endif // #if defined(__BORLANDC__)
 }
 
 int32_t TWinConfiguration::GetLastMonitor()
 {
+#if defined(__BORLANDC__)
   return ::GetLastMonitor();
+#endif // #if defined(__BORLANDC__)
+  return 0;
 }
 
-UnicodeString TWinConfiguration::ExpandedTemporaryDirectory()
+UnicodeString TWinConfiguration::ExpandedTemporaryDirectory() const
 {
   UnicodeString Result =
-    ExpandFileName(ExpandEnvironmentVariables(DDTemporaryDirectory));
+    ExpandFileName(ExpandEnvironmentVariables(FDDTemporaryDirectory));
   if (Result.IsEmpty())
   {
     Result = SystemTemporaryDirectory();
@@ -2683,7 +2900,7 @@ UnicodeString TWinConfiguration::ExpandedTemporaryDirectory()
   return Result;
 }
 
-UnicodeString TWinConfiguration::TemporaryDir(bool Mask)
+UnicodeString TWinConfiguration::TemporaryDir(bool Mask) const
 {
   return UniqTempDir(ExpandedTemporaryDirectory(), L"scp", Mask);
 }
@@ -2765,14 +2982,14 @@ int32_t TWinConfiguration::GetResourceModuleCompleteness(HINSTANCE Module)
   return StrToIntDef(CompletenessStr, -1);
 }
 
-int32_t TWinConfiguration::GetLocaleCompletenessThreshold()
+int32_t TWinConfiguration::GetLocaleCompletenessThreshold() const
 {
   return 80;
 }
 
 bool TWinConfiguration::IsTranslationComplete(HINSTANCE Module)
 {
-  return (GetResourceModuleCompleteness(Module) >= LocaleCompletenessThreshold);
+  return (GetResourceModuleCompleteness(Module) >= GetLocaleCompletenessThreshold());
 }
 
 HINSTANCE TWinConfiguration::LoadNewResourceModule(LCID ALocale,
@@ -2799,12 +3016,12 @@ void TWinConfiguration::CheckTranslationVersion(const UnicodeString FileName,
 {
   UnicodeString TranslationProductVersion = GetFileProductVersion(FileName);
   UnicodeString TranslationProductName = GetFileProductName(FileName);
-  if ((ProductName != TranslationProductName) ||
-      (ProductVersion != TranslationProductVersion))
+  if ((GetProductName() != TranslationProductName) ||
+      (GetProductVersion() != TranslationProductVersion))
   {
     if (InternalLocaleOnError)
     {
-      LocaleSafe = InternalLocale();
+      SetLocaleSafe(InternalLocale());
     }
 
     if (TranslationProductName.IsEmpty() || TranslationProductVersion.IsEmpty())
@@ -2864,72 +3081,102 @@ void TWinConfiguration::SetCustomCommandOptions(TStrings * value)
 
 void TWinConfiguration::SetLockedInterface(bool value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(LockedInterface);
+#endif // defined(__BORLANDC__)
 }
 
 bool TWinConfiguration::GetTimeoutShellOperations()
 {
+#if defined(__BORLANDC__)
   return ::TimeoutShellOperations;
+#endif // defined(__BORLANDC__)
+  return false;
 }
 
 void TWinConfiguration::SetTimeoutShellOperations(bool value)
 {
+#if defined(__BORLANDC__)
   ::TimeoutShellOperations = value;
+#endif // defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetTimeoutShellIconRetrieval(bool value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(TimeoutShellIconRetrieval);
+#endif // defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetUseIconUpdateThread(bool value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(UseIconUpdateThread);
+#endif // defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetAllowWindowPrint(bool value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(AllowWindowPrint);
+#endif // defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetStoreTransition(TStoreTransition value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(StoreTransition);
+#endif // defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetQueueTransferLimitMax(int32_t value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(QueueTransferLimitMax);
+#endif // defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetHiContrast(bool value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(HiContrast);
+#endif // defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetEditorCheckNotModified(bool value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(EditorCheckNotModified);
+#endif // defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetSessionTabCaptionTruncation(bool value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(SessionTabCaptionTruncation);
+#endif // defined(__BORLANDC__)
 }
 
 void TWinConfiguration::SetLoadingTooLongLimit(int value)
 {
+#if defined(__BORLANDC__)
   DriveViewLoadingTooLongLimit = value;
+#endif // defined(__BORLANDC__)
 }
 
 int TWinConfiguration::GetLoadingTooLongLimit()
 {
+#if defined(__BORLANDC__)
   return DriveViewLoadingTooLongLimit;
+#endif // defined(__BORLANDC__)
+  return 0;
 }
 
 void TWinConfiguration::SetFirstRun(const UnicodeString & value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(FirstRun);
+#endif // defined(__BORLANDC__)
 }
 
 TStringList * TWinConfiguration::LoadJumpList(
@@ -2938,7 +3185,7 @@ TStringList * TWinConfiguration::LoadJumpList(
   UnicodeString JumpList = Storage->ReadString(Name, L"");
 
   std::unique_ptr<TStringList> List(std::make_unique<TStringList>());
-  List->CaseSensitive = false;
+  List->SetCaseSensitive(false);
   List->SetCommaText(JumpList);
   return List.release();
 }
@@ -2966,7 +3213,7 @@ void TWinConfiguration::TrimJumpList(TStringList * List)
 void TWinConfiguration::UpdateEntryInJumpList(
   bool Session, const UnicodeString & Name, bool Add)
 {
-  try__finally
+  try
   {
     std::unique_ptr<THierarchicalStorage> Storage(CreateConfigStorage());
     TAutoNestingCounter DontDecryptPasswordsCounter(FDontDecryptPasswords);
@@ -2998,12 +3245,14 @@ void TWinConfiguration::UpdateEntryInJumpList(
       TrimJumpList(ListSessions.get());
       TrimJumpList(ListWorkspaces.get());
 
+#if defined(__BORLANDC__)
       ::UpdateJumpList(ListSessions.get(), ListWorkspaces.get());
+#endif // defined(__BORLANDC__)
 
       SaveJumpList(Storage.get(), L"JumpList", ListSessions.get());
       SaveJumpList(Storage.get(), L"JumpListWorkspaces", ListWorkspaces.get());
     }
-  } end_try__finally
+  }
   catch (Exception & E)
   {
     throw ExtException(&E, MainInstructions(LoadStr(JUMPLIST_ERROR)));
@@ -3012,22 +3261,30 @@ void TWinConfiguration::UpdateEntryInJumpList(
 
 void TWinConfiguration::AddSessionToJumpList(UnicodeString SessionName)
 {
+#if defined(__BORLANDC__)
   UpdateEntryInJumpList(true, SessionName, true);
+#endif // defined(__BORLANDC__)
 }
 
 void TWinConfiguration::DeleteSessionFromJumpList(UnicodeString SessionName)
 {
+#if defined(__BORLANDC__)
   UpdateEntryInJumpList(true, SessionName, false);
+#endif // defined(__BORLANDC__)
 }
 
 void TWinConfiguration::AddWorkspaceToJumpList(UnicodeString Workspace)
 {
+#if defined(__BORLANDC__)
   UpdateEntryInJumpList(false, Workspace, true);
+#endif // defined(__BORLANDC__)
 }
 
 void TWinConfiguration::DeleteWorkspaceFromJumpList(UnicodeString Workspace)
 {
+#if defined(__BORLANDC__)
   UpdateEntryInJumpList(false, Workspace, false);
+#endif // defined(__BORLANDC__)
 }
 
 void TWinConfiguration::UpdateJumpList()
@@ -3041,6 +3298,7 @@ void TWinConfiguration::UpdateStaticUsage()
   // from TConfiguration::UpdateStaticUsage()
   TAutoNestingCounter DontDecryptPasswordsAutoCounter(FDontDecryptPasswords);
 
+#if defined(__BORLANDC__)
   TCustomWinConfiguration::UpdateStaticUsage();
   Usage->Set(L"Beta", IsBeta);
 
@@ -3117,24 +3375,29 @@ void TWinConfiguration::UpdateStaticUsage()
   std::unique_ptr<TStringList> DeletedExtensions(CreateSortedStringList());
   ParseExtensionList(DeletedExtensions.get(), FExtensionsDeleted);
   Usage->Set(L"ExtensionsDeleted", (DeletedExtensions->GetCount()));
+#endif // defined(__BORLANDC__)
 }
 
 void TWinConfiguration::RestoreFont(
   const TFontConfiguration & Configuration, TFont * Font)
 {
+#if defined(__BORLANDC__)
   Font->Name = Configuration.FontName;
   Font->Size = Configuration.FontSize;
   Font->Charset = Configuration.FontCharset;
   Font->Style = IntToFontStyles(Configuration.FontStyle);
+#endif // defined(__BORLANDC__)
 }
 
 void TWinConfiguration::StoreFont(
   TFont * Font, TFontConfiguration & Configuration)
 {
+#if defined(__BORLANDC__)
   Configuration.FontName = Font->Name;
   Configuration.FontSize = Font->Size;
   Configuration.FontCharset = Font->Charset;
   Configuration.FontStyle = FontStylesToInt(Font->Style);
+#endif // defined(__BORLANDC__)
 }
 
 TResolvedDoubleClickAction TWinConfiguration::ResolveDoubleClickAction(bool IsDirectory, TTerminal * Terminal)
@@ -3150,7 +3413,7 @@ TResolvedDoubleClickAction TWinConfiguration::ResolveDoubleClickAction(bool IsDi
     Result = rdcaNone;
     if (Terminal != nullptr)
     {
-      if (!Terminal->ResolvingSymlinks && !Terminal->IsEncryptingFiles() && !AlwaysRespectDoubleClickAction)
+      if (!Terminal->GetResolvingSymlinks() && !Terminal->IsEncryptingFiles() && !FAlwaysRespectDoubleClickAction)
       {
         Result = rdcaChangeDir;
       }
@@ -3158,7 +3421,7 @@ TResolvedDoubleClickAction TWinConfiguration::ResolveDoubleClickAction(bool IsDi
 
     if (Result == rdcaNone)
     {
-      switch (DoubleClickAction)
+      switch (FDoubleClickAction)
       {
         case dcaOpen:
           Result = rdcaOpen;
@@ -3222,9 +3485,9 @@ TCustomCommandType & TCustomCommandType::operator=(const TCustomCommandType & Ot
 bool TCustomCommandType::Equals(const TCustomCommandType * Other) const
 {
   return
-    (FName == Other->FName) &&
-    (FCommand == Other->FCommand) &&
-    (FParams == Other->FParams) &&
+    (FName == Other->Name) &&
+    (FCommand == Other->Command) &&
+    (FParams == Other->Params) &&
     (FShortCut == Other->FShortCut) &&
     (FShortCutOriginal == Other->FShortCutOriginal) &&
     (FId == Other->FId) &&
@@ -3256,15 +3519,17 @@ UnicodeString TCustomCommandType::GetExtensionId(const UnicodeString & Name)
 void TCustomCommandType::LoadExtension(const UnicodeString & Path)
 {
   std::unique_ptr<TStringList> Lines(std::make_unique<TStringList>());
-  FileName = Path;
+  FFileName = Path;
+#if defined(__BORLANDC__)
   LoadScriptFromFile(Path, Lines.get());
   LoadExtension(Lines.get(), Path);
-  Command = ReplaceStr(Command, L"%EXTENSION_PATH%", Path);
+#endif // defined(__BORLANDC__)
+  FCommand = ReplaceStr(FCommand, L"%EXTENSION_PATH%", Path);
 }
 
 void TCustomCommandType::LoadExtension(TStrings * Lines, const UnicodeString & PathForBaseName)
 {
-  Params = ccLocal;
+  FParams = ccLocal;
   bool AnythingFound = false;
   std::set<UnicodeString> OptionIds;
 
@@ -3280,7 +3545,7 @@ void TCustomCommandType::LoadExtension(TStrings * Lines, const UnicodeString & P
       Line = ReplaceChar(Line, L'\t', L' ');
 
       bool IsComment = false;
-      if (StartsText(ExtensionMark, Line))
+      if (StartsText(UnicodeString(&ExtensionMark, 1), Line))
       {
         IsComment = true;
       }
@@ -3326,16 +3591,16 @@ void TCustomCommandType::LoadExtension(TStrings * Lines, const UnicodeString & P
       if (!ExtensionLine.IsEmpty() && (ExtensionLine[1] == ExtensionMark) && ((P = Pos(L" ", ExtensionLine)) >= 2))
       {
         UnicodeString Key = ExtensionLine.SubString(2, P - 2).LowerCase();
-        UnicodeString Directive = UnicodeString(ExtensionMark) + Key;
+        UnicodeString Directive = UnicodeString(&ExtensionMark, 1) + Key;
         UnicodeString Value = ExtensionLine.SubString(P + 1, ExtensionLine.Length() - P).Trim();
         bool KnownKey = true;
         if (Key == ExtensionNameDirective)
         {
-          Name = WinConfiguration->ExtensionStringTranslation(Id, Value);
+          FName = WinConfiguration->ExtensionStringTranslation(FId, Value);
         }
         else if (Key == ExtensionCommandDirective)
         {
-          Command = Value;
+          FCommand = Value;
         }
         else if (Key == L"require")
         {
@@ -3441,14 +3706,14 @@ void TCustomCommandType::LoadExtension(TStrings * Lines, const UnicodeString & P
         {
           TOption Option;
           if (!ParseOption(Value, Option, ExtensionBaseName) ||
-              (Option.IsControl && (OptionIds.find(Option.Id.LowerCase()) != OptionIds.end())))
+              (Option.GetIsControl() && (OptionIds.find(Option.Id.LowerCase()) != OptionIds.end())))
           {
             throw Exception(MainInstructions(FMTLOAD(EXTENSION_DIRECTIVE_ERROR, (Value, Directive))));
           }
           else
           {
             FOptions.push_back(Option);
-            if (!Option.IsControl)
+            if (!Option.GetIsControl())
             {
               OptionIds.insert(Option.Id.LowerCase());
             }
@@ -3456,7 +3721,7 @@ void TCustomCommandType::LoadExtension(TStrings * Lines, const UnicodeString & P
         }
         else if (Key == L"description")
         {
-          Description = WinConfiguration->ExtensionStringTranslation(Id, Value);
+          FDescription = WinConfiguration->ExtensionStringTranslation(FId, Value);
         }
         else if (Key == L"author")
         {
@@ -3468,11 +3733,11 @@ void TCustomCommandType::LoadExtension(TStrings * Lines, const UnicodeString & P
         }
         else if (Key == L"homepage")
         {
-          HomePage = Value;
+          FHomePage = Value;
         }
         else if (Key == L"optionspage")
         {
-          OptionsPage = Value;
+          FOptionsPage = Value;
         }
         else if (Key == L"source")
         {
@@ -3498,14 +3763,14 @@ void TCustomCommandType::LoadExtension(TStrings * Lines, const UnicodeString & P
     throw Exception(MainInstructions(LoadStr(EXTENSION_NOT_FOUND)));
   }
 
-  if (Name.IsEmpty())
+  if (FName.IsEmpty())
   {
-    throw Exception(MainInstructions(FMTLOAD(EXTENSION_DIRECTIVE_MISSING, (UnicodeString(ExtensionMark) + ExtensionNameDirective))));
+    throw Exception(MainInstructions(FMTLOAD(EXTENSION_DIRECTIVE_MISSING, (UnicodeString(&ExtensionMark, 1) + ExtensionNameDirective))));
   }
 
-  if (Command.IsEmpty())
+  if (FCommand.IsEmpty())
   {
-    throw Exception(MainInstructions(FMTLOAD(EXTENSION_DIRECTIVE_MISSING, (UnicodeString(ExtensionMark) + ExtensionCommandDirective))));
+    throw Exception(MainInstructions(FMTLOAD(EXTENSION_DIRECTIVE_MISSING, (UnicodeString(&ExtensionMark, 1) + ExtensionCommandDirective))));
   }
 }
 
@@ -3558,37 +3823,37 @@ bool TCustomCommandType::ParseOption(const UnicodeString & Value, TOption & Opti
       if (KindName == L"label")
       {
         Option.Kind = okLabel;
-        Result = !Option.IsControl;
+        Result = !Option.GetIsControl();
       }
       else if (KindName == L"link")
       {
         Option.Kind = okLink;
-        Result = !Option.IsControl;
+        Result = !Option.GetIsControl();
       }
       else if (KindName == L"separator")
       {
         Option.Kind = okSeparator;
-        Result = !Option.IsControl;
+        Result = !Option.GetIsControl();
       }
       else if (KindName == L"group")
       {
         Option.Kind = okGroup;
-        Result = !Option.IsControl;
+        Result = !Option.GetIsControl();
       }
       else if (KindName == L"textbox")
       {
         Option.Kind = okTextBox;
-        Result = Option.IsControl;
+        Result = Option.GetIsControl();
       }
       else if (KindName == L"file")
       {
         Option.Kind = okFile;
-        Result = Option.IsControl;
+        Result = Option.GetIsControl();
       }
       else if (KindName == L"sessionlogfile")
       {
         Option.Kind = okFile;
-        Result = Option.IsControl;
+        Result = Option.GetIsControl();
         DefaultCaption = LoadStr(EXTENSION_SESSIONLOG_FILE);
         Option.FileCaption = LoadStr(EXTENSION_SESSIONLOG_CAPTION);
         Option.FileFilter = LoadStr(EXTENSION_SESSIONLOG_FILTER);
@@ -3599,22 +3864,22 @@ bool TCustomCommandType::ParseOption(const UnicodeString & Value, TOption & Opti
       else if (KindName == L"dropdownlist")
       {
         Option.Kind = okDropDownList;
-        Result = Option.IsControl;
+        Result = Option.GetIsControl();
       }
       else if (KindName == L"combobox")
       {
         Option.Kind = okComboBox;
-        Result = Option.IsControl;
+        Result = Option.GetIsControl();
       }
       else if (KindName == L"checkbox")
       {
         Option.Kind = okCheckBox;
-        Result = Option.IsControl;
+        Result = Option.GetIsControl();
       }
       else if (KindName == L"pausecheckbox")
       {
         Option.Kind = okCheckBox;
-        Result = Option.IsControl;
+        Result = Option.GetIsControl();
         DefaultCaption = LoadStr(EXTENSION_PAUSE_CHECKBOX);
         DefaultDefault = L"-pause";
         DefaultParams.push_back(L"-pause");
@@ -3638,7 +3903,7 @@ bool TCustomCommandType::ParseOption(const UnicodeString & Value, TOption & Opti
 
         if (Result)
         {
-          Option.Caption = WinConfiguration->ExtensionStringTranslation(Id, Option.Caption);
+          Option.Caption = WinConfiguration->ExtensionStringTranslation(FId, Option.Caption);
 
           if (CutTokenEx(Buf, Option.Default))
           {
@@ -3678,7 +3943,7 @@ const TCustomCommandType::TOption & TCustomCommandType::GetOption(int32_t Index)
 UnicodeString TCustomCommandType::GetOptionKey(
   const TCustomCommandType::TOption & Option, const UnicodeString & Site) const
 {
-  UnicodeString Result = Id + BACKSLASH + Option.Id;
+  UnicodeString Result = FId + BACKSLASH + Option.Id;
   if (FLAGSET(Option.Flags, ofSite))
   {
     Result += BACKSLASH + Site;
@@ -3689,7 +3954,7 @@ UnicodeString TCustomCommandType::GetOptionKey(
 bool TCustomCommandType::AnyOptionWithFlag(uint32_t Flag) const
 {
   bool Result = false;
-  for (int32_t Index = 0; !Result && (Index < OptionsCount); Index++)
+  for (int32_t Index = 0; !Result && (Index < GetOptionsCount()); Index++)
   {
     const TCustomCommandType::TOption & Option = GetOption(Index);
     Result = FLAGSET(Option.Flags, Flag);
@@ -3700,18 +3965,18 @@ bool TCustomCommandType::AnyOptionWithFlag(uint32_t Flag) const
 UnicodeString TCustomCommandType::GetCommandWithExpandedOptions(
   TStrings * CustomCommandOptions, const UnicodeString & Site) const
 {
-  UnicodeString Result = Command;
-  for (int32_t Index = 0; Index < OptionsCount; Index++)
+  UnicodeString Result = FCommand;
+  for (int32_t Index = 0; Index < GetOptionsCount(); Index++)
   {
     const TCustomCommandType::TOption & Option = GetOption(Index);
-    if (Option.IsControl)
+    if (Option.GetIsControl())
     {
       UnicodeString OptionKey = GetOptionKey(Option, Site);
       UnicodeString OptionValue;
       bool NeedEscape;
       if (CustomCommandOptions->IndexOfName(OptionKey) >= 0)
       {
-        OptionValue = CustomCommandOptions->Values[OptionKey];
+        OptionValue = CustomCommandOptions->Values(OptionKey);
         NeedEscape = true;
       }
       else
@@ -3724,7 +3989,7 @@ UnicodeString TCustomCommandType::GetCommandWithExpandedOptions(
       {
         OptionCommand = TCustomCommand::Escape(OptionCommand);
       }
-      Result = ReplaceText(Result, FORMAT(L"%%%s%%", (Option.Id)), OptionCommand);
+      Result = ReplaceStr(Result, FORMAT(L"%%%s%%", (Option.Id)), OptionCommand);
     }
   }
   return Result;
@@ -3849,8 +4114,8 @@ void TCustomCommandList::Load(THierarchicalStorage * Storage)
       for (int32_t Index = 0; Index < Names->GetCount(); Index++)
       {
         TCustomCommandType * Command = new TCustomCommandType();
-        Command->Name = Names->GetNames[Index];
-        Command->Command = Names->Values[Names->GetNames[Index]];
+        Command->Name = Names->GetNames(Index);
+        Command->Command = Names->Values(Names->GetNames(Index));
         FCommands->Add(Command);
       }
       Storage->CloseSubKey();
@@ -3876,7 +4141,7 @@ void TCustomCommandList::Load(THierarchicalStorage * Storage)
     for (int32_t Index = 0; Index < GetCount(); Index++)
     {
       TCustomCommandType * Command = GetCommand(Index);
-      Command->ShortCut = (Word)Storage->ReadInteger(Command->Name, Command->ShortCut);
+      Command->ShortCut = TShortCut((Word)Storage->ReadInteger(Command->Name, Command->ShortCut));
     }
     Storage->CloseSubKey();
   }
@@ -3941,7 +4206,7 @@ void TCustomCommandList::Add(const UnicodeString Name,
 
 void TCustomCommandList::Add(TCustomCommandType * Command)
 {
-  Insert(Count, Command);
+  Insert(GetCount(), Command);
 }
 
 void TCustomCommandList::Insert(int32_t Index, TCustomCommandType * Command)
@@ -3956,7 +4221,7 @@ void TCustomCommandList::Change(int32_t Index, TCustomCommandType * ACommand)
   if (!Command->Equals(ACommand))
   {
     delete Command;
-    FCommands->Items[Index] = ACommand;
+    FCommands->SetItem(Index, ACommand);
     Modify();
   }
   else
@@ -3976,11 +4241,13 @@ void TCustomCommandList::Move(int32_t CurIndex, int32_t NewIndex)
 
 void TCustomCommandList::Delete(int32_t Index)
 {
-  DebugAssert((Index >= 0) && (Index < Count));
+  DebugAssert((Index >= 0) && (Index < GetCount()));
   delete GetCommand(Index);
   FCommands->Delete(Index);
   Modify();
 }
+
+#if defined(__BORLANDC__)
 
 class TCustomCommandCompareFunc : public TCppInterfacedObject<TListSortCompareFunc>
 {
@@ -4022,10 +4289,14 @@ private:
   TStrings * FIds;
 };
 
+#endif // defined(__BORLANDC__)
+
 void TCustomCommandList::SortBy(TStrings * Ids)
 {
+#if defined(__BORLANDC__)
   TCustomCommandCompareFunc * Func = new TCustomCommandCompareFunc(Ids);
   FCommands->SortList(Func);
+#endif // defined(__BORLANDC__)
 }
 
 int32_t TCustomCommandList::GetCount() const
@@ -4101,7 +4372,7 @@ int32_t TCustomCommandList::FindIndexByFileName(const UnicodeString & FileName) 
   return -1;
 }
 
-void TCustomCommandList::ShortCuts(TShortCuts & ShortCuts) const
+void TCustomCommandList::ShortCuts(TShortCuts & ShortCuts)
 {
   for (int32_t Index = 0; Index < GetCount(); Index++)
   {
@@ -4113,12 +4384,41 @@ void TCustomCommandList::ShortCuts(TShortCuts & ShortCuts) const
   }
 }
 
-#if !defined(__BORLANDC__)
-// MSVC implementation: recrypt stored sessions directly.
-// Note: TTerminalManager is not available in NetBox (WinSCP GUI-only),
-// so active terminal recryption is skipped.
-void TWinConfiguration::RecryptPasswords(TStrings * RecryptPasswordErrors)
+// ============================================================================
+// Setup.cpp stubs for MSVC
+// ============================================================================
+
+UnicodeString GetNetVersionStr()
 {
-  GetStoredSessions()->RecryptPasswords(RecryptPasswordErrors);
+  return L"0";
 }
-#endif // !defined(__BORLANDC__)
+
+UnicodeString GetNetCoreVersionStr()
+{
+  return L"0";
+}
+
+UnicodeString GetPowerShellVersionStr()
+{
+  return L"0";
+}
+
+UnicodeString GetPowerShellCoreVersionStr()
+{
+  return L"0";
+}
+
+// ============================================================================
+// UserInterface.cpp RestoreColor/StoreColor for MSVC
+// ============================================================================
+
+TColor RestoreColor(const UnicodeString & CStr)
+{
+  return TColor(StrToInt(UnicodeString(L"$") + CStr));
+}
+
+UnicodeString StoreColor(TColor Color)
+{
+  return IntToHex(Color, 6);
+}
+

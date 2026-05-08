@@ -14,15 +14,20 @@
 #if !defined(__BORLANDC__)
 // MSVC compatibility definitions for types normally provided by Borland VCL
 enum TNortonLikeMode { nlKeyboard = 0, nlOff, nlOn };
-using TCompareCriterias = int;
-constexpr int ccTime = 1;
-constexpr int ccSize = 2;
+using TCompareCriterias = int32_t;
+constexpr int32_t ccTime = 1;
+constexpr int32_t ccSize = 2;
 using TColor = uint32_t; // COLORREF equivalent
 struct TFont {};
 enum TFormatBytesStyle { fbsAuto = 0, fbsBytes, fbsKB, fbsMB, fbsGB, fbKilobytes = fbsKB };
 enum TAssemblyLanguage { alIntel = 0, alATT, alCSharp = alIntel };
 enum TDirectoryViewStyle { dvsIcon = 0, dvsSmallIcon, dvsList, dvsReport, dvsThumbnail, dvsTile, dvsThumbof };
+#if defined(__BORLANDC__)
 constexpr int32_t USER_DEFAULT_SCREEN_DPI = 96;
+constexpr int32_t CSIDL_APPDATA = 0x001a;
+inline const UnicodeString DefaultFixedWidthFontName = L"Courier New";
+inline const int32_t DefaultFixedWidthFontSize = 10;
+#endif // #if defined(__BORLANDC__)
 
 template<typename T>
 inline T Min(T a, T b) { return (a < b) ? a : b; }
@@ -33,7 +38,7 @@ inline UnicodeString GetResourceModuleName(const UnicodeString & /*Name*/, const
 inline UnicodeString IniFileStorageNameForReading() { return L""; }
 inline bool DeleteFile(const UnicodeString & /*FileName*/) { return false; }
 
-struct TApplication { UnicodeString Name; };
+struct TApplication { UnicodeString Name; UnicodeString ExeName; };
 extern TApplication * Application;
 struct TScreen { int32_t WorkAreaWidth; int32_t WorkAreaHeight; };
 extern TScreen * Screen;
@@ -118,18 +123,18 @@ struct TScpCommanderConfiguration {
       C(NortonLikeMode) C(PreserveLocalDirectory)
       C(CompareBySize) C(CompareByTime) C(SwappedPanels)
       C(TreeOnLeft) C(ExplorerKeyboardShortcuts) C(SystemContextMenu)
-      C(OtherLocalPanelDirViewParams) C(OtherLocalPanelViewStyle) C(OtherLocalPanelLastPath) 0; };
+      C(OtherLocalPanelDirViewParams) C(OtherLocalPanelViewStyle) C(OtherLocalPanelLastPath) 0; }
 
   TCompareCriterias CompareCriterias()
   {
     TCompareCriterias Criterias;
     if (CompareByTime)
     {
-      Criterias << ccTime;
+      Criterias = Criterias << ccTime;
     }
     if (CompareBySize)
     {
-      Criterias << ccSize;
+      Criterias = Criterias << ccSize;
     }
     return Criterias;
   }
@@ -388,6 +393,7 @@ public:
 
 public:
   int32_t GetCount() const;
+  bool GetModified() const { return FModified; }
 
   void Modify();
 
@@ -559,6 +565,7 @@ private:
   bool FCustomCommandOptionsModified;
   int32_t FLastMachineInstallations;
   __property int32_t LastMachineInstallations = { read = FLastMachineInstallations, write = FLastMachineInstallations };
+
   int32_t FMachineInstallations;
   LCID FDefaultLocale;
   std::unique_ptr<TStrings> FExtensionTranslations;
@@ -678,7 +685,7 @@ private:
   void SetLoadingTooLongLimit(int32_t value);
   int32_t GetLoadingTooLongLimit();
   void SetFirstRun(const UnicodeString & value);
-  int32_t GetLocaleCompletenessTreshold();
+  int32_t GetLocaleCompletenessThreshold() const;
 
   bool GetDDExtInstalled();
   void AddVersionToHistory();
@@ -728,7 +735,7 @@ public:
   TWinConfiguration();
   virtual ~TWinConfiguration();
   void RecryptPasswords(TStrings * RecryptPasswordErrors);
-  bool GetUseMasterPassword() const; // defined in MasterPassword.cpp
+  virtual bool GetUseMasterPassword() const override; // defined in MasterPassword.cpp
   bool GetRefreshRemotePanel() { return FRefreshRemotePanel; }
   virtual void Default();
   void ClearTemporaryLoginData();
@@ -738,11 +745,11 @@ public:
   bool AnyTemporaryFolders();
   void CleanupTemporaryFolders();
   void CleanupTemporaryFolders(TStrings * Folders);
-  UnicodeString ExpandedTemporaryDirectory();
+  UnicodeString ExpandedTemporaryDirectory() const;
   void CheckDefaultTranslation();
   const TEditorPreferences * DefaultEditorForFile(const UnicodeString FileName, bool Local, const TFileMasks::TParams & MaskParams);
   virtual UnicodeString DecryptPassword(const RawByteString & Password, const UnicodeString & Key);
-  virtual RawByteString StronglyRecryptPassword(const RawByteString & Password, const UnicodeString & Key);
+  virtual RawByteString StronglyRecryptPassword(const RawByteString & APassword, const UnicodeString & Key);
   void SetMasterPassword(UnicodeString value);
   void ChangeMasterPassword(UnicodeString value, TStrings * RecryptPasswordErrors);
   bool ValidateMasterPassword(UnicodeString value, bool CountAttempt = true);
@@ -757,7 +764,7 @@ public:
   void DeleteWorkspaceFromJumpList(UnicodeString Workspace);
   void UpdateJumpList();
   virtual void UpdateStaticUsage();
-  void CustomCommandShortCuts(TShortCuts & ShortCuts) const;
+  void CustomCommandShortCuts(TShortCuts & ShortCuts);
   UnicodeString GetUserExtensionsPath();
   UnicodeString GetExtensionId(const UnicodeString & ExtensionPath);
   UnicodeString ExtensionStringTranslation(const UnicodeString & ExtensionId, const UnicodeString & S);
@@ -777,7 +784,7 @@ public:
   __property bool ShowHiddenFiles = { read = FShowHiddenFiles, write = SetShowHiddenFiles };
   __property TFormatBytesStyle FormatSizeBytes = { read = FFormatSizeBytes, write = SetFormatSizeBytes };
   __property TIncrementalSearch PanelSearch = { read = FPanelSearch, write = SetPanelSearch };
-  __property bool ShowInaccessibleDirectories = { read = FShowInaccessibleDirectories, write = SetShowInaccessibleDirectories };
+  __property bool ShowInaccesibleDirectories = { read = FShowInaccesibleDirectories, write = SetShowInaccesibleDirectories };
   __property TEditorConfiguration Editor = { read = FEditor, write = SetEditor };
   __property TQueueViewConfiguration QueueView = { read = FQueueView, write = SetQueueView };
   __property bool EnableQueueByDefault = { read = FEnableQueueByDefault, write = SetEnableQueueByDefault };
@@ -804,10 +811,12 @@ public:
   __property bool DDWarnLackOfTempSpace  = { read=FDDWarnLackOfTempSpace, write=SetDDWarnLackOfTempSpace };
   __property bool DDFakeFile = { read=FDDFakeFile, write=SetDDFakeFile };
   __property bool DDExtInstalled = { read=GetDDExtInstalled };
-  __property int32_t DDExtTimeout = { read=FDDExtTimeout, write=SetDDExtTimeout };
+  __property int DDExtTimeout = { read=FDDExtTimeout, write=SetDDExtTimeout };
   __property bool ConfirmClosingSession  = { read=FConfirmClosingSession, write=SetConfirmClosingSession };
   __property double DDWarnLackOfTempSpaceRatio  = { read=FDDWarnLackOfTempSpaceRatio, write=SetDDWarnLackOfTempSpaceRatio };
+#if defined(__BORLANDC__)
   __property TBookmarkList * Bookmarks[UnicodeString Key] = { read = GetBookmarks, write = SetBookmarks };
+#endif // defined(__BORLANDC__)
   __property TBookmarkList * SharedBookmarks = { read = GetSharedBookmarks, write = SetSharedBookmarks };
   __property bool EmbeddedSessions = { read = FEmbeddedSessions };
   __property bool ExpertMode = { read = FExpertMode, write = SetExpertMode };
@@ -832,13 +841,13 @@ public:
   __property TSessionTabNameFormat SessionTabNameFormat = { read = FSessionTabNameFormat, write = FSessionTabNameFormat };
   __property bool MinimizeToTray = { read = FMinimizeToTray, write = SetMinimizeToTray };
   __property bool BalloonNotifications = { read = FBalloonNotifications, write = SetBalloonNotifications };
-  __property uint32_t NotificationsTimeout = { read = FNotificationsTimeout, write = SetNotificationsTimeout };
-  __property uint32_t NotificationsStickTime = { read = FNotificationsStickTime, write = SetNotificationsStickTime };
+  __property unsigned int NotificationsTimeout = { read = FNotificationsTimeout, write = SetNotificationsTimeout };
+  __property unsigned int NotificationsStickTime = { read = FNotificationsStickTime, write = SetNotificationsStickTime };
   __property UnicodeString DefaultTranslationFile = { read = FDefaultTranslationFile };
   __property bool CopyParamAutoSelectNotice = { read = FCopyParamAutoSelectNotice, write = SetCopyParamAutoSelectNotice };
   __property bool LockToolbars = { read = FLockToolbars, write = SetLockToolbars };
   __property bool SelectiveToolbarText = { read = FSelectiveToolbarText, write = SetSelectiveToolbarText };
-  __property int32_t LargerToolbar = { read = FLargerToolbar, write = SetLargerToolbar };
+  __property int LargerToolbar = { read = FLargerToolbar, write = SetLargerToolbar };
   __property bool AutoOpenInPutty = { read = FAutoOpenInPutty, write = SetAutoOpenInPutty };
   __property bool RefreshRemotePanel = { read = FRefreshRemotePanel, write = SetRefreshRemotePanel };
   __property TDateTime RefreshRemotePanelInterval = { read = FRefreshRemotePanelInterval, write = SetRefreshRemotePanelInterval };
@@ -847,12 +856,12 @@ public:
   __property bool AlwaysSortDirectoriesByName = { read = FAlwaysSortDirectoriesByName, write = SetAlwaysSortDirectoriesByName };
   __property bool FullRowSelect = { read = FFullRowSelect, write = SetFullRowSelect };
   __property bool OfferedEditorAutoConfig = { read = FOfferedEditorAutoConfig, write = SetOfferedEditorAutoConfig };
-  __property int32_t LastMonitor = { read = GetLastMonitor, write = SetLastMonitor };
+  __property int LastMonitor = { read = GetLastMonitor, write = SetLastMonitor };
   __property const TEditorList * EditorList = { read = GetEditorList, write = SetEditorList };
   __property UnicodeString DefaultKeyFile = { read = GetDefaultKeyFile, write = FDefaultKeyFile };
   __property UnicodeString OpenedStoredSessionFolders = { read = FOpenedStoredSessionFolders, write = SetOpenedStoredSessionFolders };
   __property bool AutoImportedFromPuttyOrFilezilla = { read = FAutoImportedFromPuttyOrFilezilla, write = SetAutoImportedFromPuttyOrFilezilla };
-  __property int32_t GenerateUrlComponents = { read = FGenerateUrlComponents, write = SetGenerateUrlComponents };
+  __property int GenerateUrlComponents = { read = FGenerateUrlComponents, write = SetGenerateUrlComponents };
   __property TGenerateUrlCodeTarget GenerateUrlCodeTarget = { read = FGenerateUrlCodeTarget, write = SetGenerateUrlCodeTarget };
   __property TScriptFormat GenerateUrlScriptFormat = { read = FGenerateUrlScriptFormat, write = SetGenerateUrlScriptFormat };
   __property TAssemblyLanguage GenerateUrlAssemblyLanguage = { read = FGenerateUrlAssemblyLanguage, write = SetGenerateUrlAssemblyLanguage };
@@ -862,15 +871,15 @@ public:
   __property bool DefaultToNewRemoteTab = { read = FDefaultToNewRemoteTab, write = SetDefaultToNewRemoteTab };
   __property bool LocalIconsByExt = { read = FLocalIconsByExt, write = SetLocalIconsByExt };
   __property bool FlashTaskbar = { read = FFlashTaskbar, write = SetFlashTaskbar };
-  __property int32_t MaxSessions = { read = FMaxSessions, write = FMaxSessions };
+  __property int MaxSessions = { read = FMaxSessions, write = FMaxSessions };
   __property TLocaleFlagOverride BidiModeOverride = { read = FBidiModeOverride, write = SetBidiModeOverride };
   __property TLocaleFlagOverride FlipChildrenOverride = { read = FFlipChildrenOverride, write = SetFlipChildrenOverride };
   __property bool ShowTips = { read = FShowTips, write = SetShowTips };
   __property UnicodeString TipsSeen = { read = FTipsSeen, write = SetTipsSeen };
   __property TDateTime TipsShown = { read = FTipsShown, write = SetTipsShown };
   __property UnicodeString FileColors = { read = FFileColors, write = SetFileColors };
-  __property int32_t RunsSinceLastTip = { read = FRunsSinceLastTip, write = SetRunsSinceLastTip };
-  __property int32_t HonorDrivePolicy = { read = GetHonorDrivePolicy, write = SetHonorDrivePolicy };
+  __property int RunsSinceLastTip = { read = FRunsSinceLastTip, write = SetRunsSinceLastTip };
+  __property int HonorDrivePolicy = { read = GetHonorDrivePolicy, write = SetHonorDrivePolicy };
   __property bool UseABDrives = { read = GetUseABDrives, write = SetUseABDrives };
   __property TMasterPasswordPromptEvent OnMasterPasswordPrompt = { read = FOnMasterPasswordPrompt, write = FOnMasterPasswordPrompt };
   __property TStrings * CustomCommandOptions = { read = GetCustomCommandOptions, write = SetCustomCommandOptions };
@@ -880,19 +889,19 @@ public:
   __property bool UseIconUpdateThread = { read = FUseIconUpdateThread, write = SetUseIconUpdateThread };
   __property bool AllowWindowPrint = { read = FAllowWindowPrint, write = SetAllowWindowPrint };
   __property TStoreTransition StoreTransition = { read = FStoreTransition, write = SetStoreTransition };
-  __property int32_t QueueTransferLimitMax = { read = FQueueTransferLimitMax, write = SetQueueTransferLimitMax };
+  __property int QueueTransferLimitMax = { read = FQueueTransferLimitMax, write = SetQueueTransferLimitMax };
   __property bool HiContrast = { read = FHiContrast, write = SetHiContrast };
   __property bool EditorCheckNotModified = { read = FEditorCheckNotModified, write = SetEditorCheckNotModified };
   __property bool SessionTabCaptionTruncation = { read = FSessionTabCaptionTruncation, write = SetSessionTabCaptionTruncation };
-  __property int32_t LoadingTooLongLimit = { read = GetLoadingTooLongLimit, write = SetLoadingTooLongLimit };
+  __property int LoadingTooLongLimit = { read = GetLoadingTooLongLimit, write = SetLoadingTooLongLimit };
   __property UnicodeString RemoteThumbnailMask = { read = FRemoteThumbnailMask, write = FRemoteThumbnailMask };
-  __property int32_t RemoteThumbnailSizeLimit = { read = FRemoteThumbnailSizeLimit, write = FRemoteThumbnailSizeLimit };
+  __property int RemoteThumbnailSizeLimit = { read = FRemoteThumbnailSizeLimit, write = FRemoteThumbnailSizeLimit };
   __property UnicodeString FirstRun = { read = FFirstRun, write = SetFirstRun };
   __property LCID DefaultLocale = { read = FDefaultLocale };
-  __property int32_t LocaleCompletenessTreshold = { read = GetLocaleCompletenessTreshold };
+  __property int LocaleCompletenessTreshold = { read = GetLocaleCompletenessTreshold };
 };
 
-class TCustomCommandType
+class TCustomCommandType : public TObject
 {
 public:
   TCustomCommandType();
@@ -923,7 +932,7 @@ public:
     bool CanHavePatterns() const;
     bool HasPatterns(TCustomCommand * CustomCommandForOptions) const;
 
-  private:
+  public:
     bool GetIsControl() const;
   };
 
@@ -935,11 +944,18 @@ public:
   static UnicodeString GetExtensionId(const UnicodeString & Name);
 
   __property UnicodeString Name = { read = FName, write = FName };
+  UnicodeString& Name{FName};
   __property UnicodeString Command = { read = FCommand, write = FCommand };
+  UnicodeString& Command{FCommand};
   __property int32_t Params = { read = FParams, write = FParams };
+  int32_t& Params{FParams};
   __property TShortCut ShortCut = { read = FShortCut, write = FShortCut };
+  TShortCut& ShortCut{FShortCut};
+  UnicodeString GetId() const { return FId; }
+  void SetId(const UnicodeString & Value) { FId = Value; }
   __property UnicodeString Id = { read = FId, write = FId };
   __property UnicodeString FileName = { read = FFileName, write = FFileName };
+  UnicodeString& FileName{FFileName};
   __property UnicodeString Description = { read = FDescription, write = FDescription };
   __property UnicodeString HomePage = { read = FHomePage, write = FHomePage };
   __property UnicodeString OptionsPage = { read = FOptionsPage, write = FOptionsPage };
@@ -998,9 +1014,10 @@ public:
   bool Equals(const TCustomCommandList * Other) const;
   void Assign(const TCustomCommandList * Other);
 
-  void ShortCuts(TShortCuts & ShortCuts) const;
+  void ShortCuts(TShortCuts & ShortCuts);
 
-  __property bool Modified = { read = FModified };
+bool GetModified() const { return FModified; }
+__property bool Modified = { read = FModified };
   __property int32_t Count = { read = GetCount };
   __property const TCustomCommandType * Commands[int32_t Index] = { read = GetConstCommand };
 

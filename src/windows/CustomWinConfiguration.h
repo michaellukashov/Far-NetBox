@@ -27,7 +27,7 @@ struct TSynchronizeChecklistConfiguration
   UnicodeString WindowParams;
   UnicodeString ListParams;
   bool operator !=(TSynchronizeChecklistConfiguration & rhc)
-    { return C(WindowParams) C(ListParams) 0; };
+    { return C(WindowParams) C(ListParams) 0; }
 };
 typedef TSynchronizeChecklistConfiguration TFindFileConfiguration;
 
@@ -35,7 +35,7 @@ struct TConsoleWinConfiguration
 {
   UnicodeString WindowSize;
   bool operator !=(TConsoleWinConfiguration & rhc)
-    { return C(WindowSize) 0; };
+    { return C(WindowSize) 0; }
 };
 
 enum TIncrementalSearch { isOff = -1, isNameStartOnly, isName, isAll };
@@ -44,13 +44,18 @@ struct TLoginDialogConfiguration : public TConsoleWinConfiguration
 {
   TIncrementalSearch SiteSearch;
   bool operator !=(TLoginDialogConfiguration & rhc)
-    { return (TConsoleWinConfiguration::operator !=(rhc)) || C(SiteSearch) 0; };
+    { return (TConsoleWinConfiguration::operator !=(rhc)) || C(SiteSearch) 0; }
 };
 
 #undef C
 
 class TCustomWinConfiguration : public TGUIConfiguration
 {
+  NB_DISABLE_COPY(TCustomWinConfiguration)
+public:
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TCustomWinConfiguration); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCustomWinConfiguration) || TGUIConfiguration::is(Kind); }
+private:
 static const int MaxHistoryCount = 50;
 private:
   TInterface FInterface;
@@ -93,7 +98,7 @@ protected:
   void ClearHistory();
   virtual void DefaultHistory();
   void RecryptPasswords(TStrings * RecryptPasswordErrors);
-  virtual bool GetUseMasterPassword() = 0;
+  virtual bool GetUseMasterPassword() const = 0;
   UnicodeString FormatDefaultWindowParams(int Width, int Height);
   UnicodeString FormatDefaultWindowSize(int Width, int Height);
 
@@ -103,12 +108,14 @@ public:
   virtual void Default();
   virtual void AskForMasterPasswordIfNotSet() = 0;
   void AskForMasterPasswordIfNotSetAndNeededToPersistSessionData(TSessionData * SessionData);
-  static UnicodeString GetValidHistoryKey(UnicodeString Key);
+  static UnicodeString GetValidHistoryKey(const UnicodeString & AKey);
 
   __property TInterface Interface = { read = FInterface, write = SetInterface };
   __property TInterface AppliedInterface = { read = FAppliedInterface, write = FAppliedInterface };
   __property bool CanApplyInterfaceImmediately = { read = FCanApplyInterfaceImmediately, write = FCanApplyInterfaceImmediately };
+#if defined(__BORLANDC__)
   __property TStrings * History[UnicodeString Name] = { read = GetHistory, write = SetHistory };
+#endif // defined(__BORLANDC__)
   __property TSynchronizeChecklistConfiguration SynchronizeChecklist = { read = FSynchronizeChecklist, write = SetSynchronizeChecklist };
   __property TFindFileConfiguration FindFile = { read = FFindFile, write = SetFindFile };
   __property TConsoleWinConfiguration ConsoleWin = { read = FConsoleWin, write = SetConsoleWin };

@@ -12,26 +12,32 @@
 #include <PasTools.hpp>
 #include <Math.hpp>
 
+#if defined(__BORLANDC__)
 #pragma package(smart_init)
+#endif // defined(__BORLANDC__)
 
 TCustomWinConfiguration * CustomWinConfiguration = nullptr;
 
 class THistoryStrings : public TStringList
 {
 public:
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_THistoryStrings); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_THistoryStrings) || TStringList::is(Kind); }
+public:
   THistoryStrings() : TStringList()
   {
     FModified = false;
-  };
+  }
 
   __property bool Modified = { read = FModified, write = FModified };
+  bool& Modified{FModified};
 
 private:
-  bool FModified;
+  bool FModified{false};
 };
 
 TCustomWinConfiguration::TCustomWinConfiguration():
-  TGUIConfiguration()
+  TGUIConfiguration(OBJECT_CLASS_TCustomWinConfiguration)
 {
   FHistory = new TStringList();
   FEmptyHistory = new TStringList();
@@ -51,10 +57,10 @@ void TCustomWinConfiguration::ClearHistory()
   DebugAssert(FHistory != nullptr);
 
   THistoryStrings * HistoryStrings;
-  for (int Index = 0; Index < FHistory->Count; Index++)
+  for (int32_t Index = 0; Index < FHistory->Count; Index++)
   {
-    HistoryStrings = dynamic_cast<THistoryStrings *>(FHistory->Objects[Index]);
-    FHistory->Objects[Index] = nullptr;
+    HistoryStrings = nb::dyn_cast_or_null<THistoryStrings>(FHistory->Get(Index));
+    FHistory->SetObject(Index, nullptr);
     SAFE_DESTROY(HistoryStrings);
   }
   FHistory->Clear();
@@ -93,12 +99,18 @@ void TCustomWinConfiguration::DefaultHistory()
 
 UnicodeString TCustomWinConfiguration::FormatDefaultWindowSize(int Width, int Height)
 {
+#if defined(__BORLANDC__)
   return FORMAT(L"%d,%d,%s", (Width, Height, SaveDefaultPixelsPerInch()));
+#endif // defined(__BORLANDC__)
+  return UnicodeString();
 }
 
 UnicodeString TCustomWinConfiguration::FormatDefaultWindowParams(int Width, int Height)
 {
+#if defined(__BORLANDC__)
   return FORMAT(L"-1;-1;%d;%d;%d;%s", (Width, Height, int(wsNormal), SaveDefaultPixelsPerInch()));
+#endif // defined(__BORLANDC__)
+  return UnicodeString();
 }
 
 void TCustomWinConfiguration::Default()
@@ -106,6 +118,7 @@ void TCustomWinConfiguration::Default()
   TGUIConfiguration::Default();
 
   FInterface = FDefaultInterface;
+#if defined(__BORLANDC__)
   int WorkAreaWidthScaled = DimensionToDefaultPixelsPerInch(Screen->WorkAreaWidth);
   int WorkAreaHeightScaled = DimensionToDefaultPixelsPerInch(Screen->WorkAreaHeight);
   // Same as commander interface (really used only with /synchronize)
@@ -116,6 +129,7 @@ void TCustomWinConfiguration::Default()
   FSynchronizeChecklist.ListParams = L"1;1|150,1;100,1;80,1;130,1;25,1;100,1;80,1;130,1;@" + SaveDefaultPixelsPerInch() + L"|0;1;2;3;4;5;6;7";
   FFindFile.WindowParams = FormatDefaultWindowSize(646, 481);
   FFindFile.ListParams = L"1;1|125,1;181,1;80,1;122,1;@" + SaveDefaultPixelsPerInch() + L"|0;1;2;3|/1";
+#endif // defined(__BORLANDC__)
   FConsoleWin.WindowSize = FormatDefaultWindowSize(570, 430);
   FLoginDialog.WindowSize = FormatDefaultWindowSize(640, 430);
   FLoginDialog.SiteSearch = isName;
@@ -136,9 +150,9 @@ void TCustomWinConfiguration::Saved()
   TGUIConfiguration::Saved();
 
   THistoryStrings * HistoryStrings;
-  for (int Index = 0; Index < FHistory->Count; Index++)
+  for (int32_t Index = 0; Index < FHistory->Count; Index++)
   {
-    HistoryStrings = dynamic_cast<THistoryStrings *>(FHistory->Objects[Index]);
+    HistoryStrings = nb::dyn_cast_or_null<THistoryStrings>(FHistory->Get(Index));
     DebugAssert(HistoryStrings != nullptr);
     HistoryStrings->Modified = false;
   }
@@ -180,6 +194,7 @@ void TCustomWinConfiguration::SaveData(
   THierarchicalStorage * Storage, bool All)
 {
   TGUIConfiguration::SaveData(Storage, All);
+#if defined(__BORLANDC__)
 
   // duplicated from core\configuration.cpp
   #define KEY(TYPE, VAR) Storage->Write ## TYPE(LASTELEM(UnicodeString(TEXT(#VAR))), VAR)
@@ -269,12 +284,14 @@ void TCustomWinConfiguration::SaveData(
       }
     }
   }
+#endif // defined(__BORLANDC__)
 }
 
 void TCustomWinConfiguration::LoadData(
   THierarchicalStorage * Storage)
 {
   TGUIConfiguration::LoadData(Storage);
+#if defined(__BORLANDC__)
 
   FAppliedInterface = FInterface;
 
@@ -365,6 +382,7 @@ void TCustomWinConfiguration::LoadData(
       Storage->CloseSubKey();
     }
   }
+#endif // defined(__BORLANDC__)
 }
 
 void TCustomWinConfiguration::LoadAdmin(THierarchicalStorage * Storage)
@@ -375,8 +393,9 @@ void TCustomWinConfiguration::LoadAdmin(THierarchicalStorage * Storage)
 
 void TCustomWinConfiguration::RecryptPasswords(TStrings * RecryptPasswordErrors)
 {
-  TOperationVisualizer Visualizer;
+  TOperationVisualizer Visualizer(true);
 
+#if defined(__BORLANDC__)
   StoredSessions->RecryptPasswords(RecryptPasswordErrors);
 
   if (OnMasterPasswordRecrypt != nullptr)
@@ -396,6 +415,7 @@ void TCustomWinConfiguration::RecryptPasswords(TStrings * RecryptPasswordErrors)
       }
     }
   }
+#endif // defined(__BORLANDC__)
 }
 
 void TCustomWinConfiguration::AskForMasterPasswordIfNotSetAndNeededToPersistSessionData(
@@ -403,7 +423,7 @@ void TCustomWinConfiguration::AskForMasterPasswordIfNotSetAndNeededToPersistSess
 {
   if (!DisablePasswordStoring &&
       SessionData->HasAnyPassword() &&
-      UseMasterPassword)
+      GetUseMasterPassword())
   {
     AskForMasterPasswordIfNotSet();
   }
@@ -411,10 +431,12 @@ void TCustomWinConfiguration::AskForMasterPasswordIfNotSetAndNeededToPersistSess
 
 void TCustomWinConfiguration::SetInterface(TInterface value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(Interface);
+#endif // defined(__BORLANDC__)
 }
 
-void TCustomWinConfiguration::SetHistory(const UnicodeString Index,
+void TCustomWinConfiguration::SetHistory(const UnicodeString & Index,
   TStrings * value)
 {
   int I = FHistory->IndexOf(Index);
@@ -422,7 +444,7 @@ void TCustomWinConfiguration::SetHistory(const UnicodeString Index,
   THistoryStrings * HistoryStrings = nullptr;
   if (I >= 0)
   {
-    HistoryStrings = dynamic_cast<THistoryStrings *>(FHistory->Objects[I]);
+    HistoryStrings = nb::dyn_cast_or_null<THistoryStrings>(FHistory->Get(I));
     if (HistoryStrings->Equals(value))
     {
       HistoryStrings = nullptr;
@@ -452,15 +474,16 @@ void TCustomWinConfiguration::SetHistory(const UnicodeString Index,
   }
 }
 
-TStrings * TCustomWinConfiguration::GetHistory(const UnicodeString Index)
+TStrings * TCustomWinConfiguration::GetHistory(const UnicodeString & Index)
 {
-  int I = FHistory->IndexOf(Index);
-  return I >= 0 ? dynamic_cast<TStrings *>(FHistory->Objects[I]) : FEmptyHistory;
+  int32_t I = FHistory->IndexOf(Index);
+  return I >= 0 ? nb::dyn_cast_or_null<TStrings>(FHistory->Get(I)) : FEmptyHistory;
 }
 
-UnicodeString TCustomWinConfiguration::GetValidHistoryKey(UnicodeString Key)
+UnicodeString TCustomWinConfiguration::GetValidHistoryKey(const UnicodeString & AKey)
 {
-  for (int Index = 1; Index <= Key.Length(); Index++)
+  UnicodeString Key = AKey;
+  for (int32_t Index = 1; Index <= Key.Length(); Index++)
   {
     if (!IsLetter(Key[Index]) && !IsDigit(Key[Index]))
     {
@@ -478,7 +501,7 @@ UnicodeString TCustomWinConfiguration::GetValidHistoryKey(UnicodeString Key)
     Key.Delete(Key.Length(), 1);
   }
 
-  int P;
+  int32_t P;
   while ((P = Key.Pos(L"__")) > 0)
   {
     Key.Delete(P, 1);
@@ -489,32 +512,44 @@ UnicodeString TCustomWinConfiguration::GetValidHistoryKey(UnicodeString Key)
 
 void TCustomWinConfiguration::SetSynchronizeChecklist(TSynchronizeChecklistConfiguration value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(SynchronizeChecklist);
+#endif // defined(__BORLANDC__)
 }
 
 void TCustomWinConfiguration::SetFindFile(TFindFileConfiguration value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(FindFile);
+#endif // defined(__BORLANDC__)
 }
 
 void TCustomWinConfiguration::SetConsoleWin(TConsoleWinConfiguration value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(ConsoleWin);
+#endif // defined(__BORLANDC__)
 }
 
 void TCustomWinConfiguration::SetLoginDialog(TLoginDialogConfiguration value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(LoginDialog);
+#endif // defined(__BORLANDC__)
 }
 
 void TCustomWinConfiguration::SetConfirmExitOnCompletion(bool value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(ConfirmExitOnCompletion);
+#endif // defined(__BORLANDC__)
 }
 
 void TCustomWinConfiguration::SetSynchronizeSummary(bool value)
 {
+#if defined(__BORLANDC__)
   SET_CONFIG_PROPERTY(SynchronizeSummary);
+#endif // defined(__BORLANDC__)
 }
 
 UnicodeString TCustomWinConfiguration::GetDefaultFixedWidthFontName()
