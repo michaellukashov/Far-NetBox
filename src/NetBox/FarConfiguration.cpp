@@ -30,8 +30,8 @@ TFarConfiguration::TFarConfiguration(gsl::not_null<TCustomFarPlugin *> APlugin) 
   TGUIConfiguration(OBJECT_CLASS_TFarConfiguration),
   FFarPlugin(APlugin)
 {
-//  TFarConfiguration::Default();
-  //CacheFarSettings();
+  // TFarConfiguration::Default();
+  // CacheFarSettings();
   // from UserInterface.cpp
   // WinConfiguration = new TWinConfiguration();
 }
