@@ -450,6 +450,9 @@ TFTPFileSystem::~TFTPFileSystem() noexcept
 
 void TFTPFileSystem::Open()
 {
+
+  // Check for user cancellation before FTP connect
+  FTerminal->CheckForEsc();
   // on reconnect, typically there may be pending status messages from previous session
   DiscardMessages();
 
