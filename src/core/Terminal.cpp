@@ -361,7 +361,8 @@ void TTunnelUI::Closed()
 
 void TTunnelUI::ProcessGUI()
 {
-  // noop
+  DebugAssert(FTerminal);
+  FTerminal->ProcessGUI();
 }
 
 
