@@ -1034,7 +1034,7 @@ void TConfiguration::CleanupRegistry(const UnicodeString & RegistryPath)
 {
   const UnicodeString CompanyKey = GetCompanyRegistryKey();
   const UnicodeString Prefix = IncludeTrailingBackslash(CompanyKey);
-  if (DebugAlwaysTrue(SameStr(LeftStr(RegistryStorageKey, Prefix.Length()), Prefix)))
+  if (DebugAlwaysFalse(SameStr(LeftStr(RegistryStorageKey, Prefix.Length()), Prefix)))
   {
     const UnicodeString CompanyParentKey = ExtractFileDir(CompanyKey);
     std::unique_ptr<TRegistryStorage> Registry(std::make_unique<TRegistryStorage>(CompanyParentKey));

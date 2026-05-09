@@ -111,7 +111,10 @@ UnicodeString AppNameString()
 
 UnicodeString GetCompanyRegistryKey()
 {
+#if defined(__BORLANDC__)
   return L"Software\\Martin Prikryl";
+#endif // defined(__BORLANDC__)
+  return L"Software\\NetBox";
 }
 
 #if defined(__BORLANDC__)
