@@ -727,20 +727,29 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
     {
       CleanupDialog();
     }
-    else if ((Result == MGenerateUrl) && WinSCPFileSystem)
+    else if (Result == MGenerateUrl)
     {
-      DebugAssert(WinSCPFileSystem);
-      GenerateUrlDialog(WinSCPFileSystem->GetSessionData());
+      if (WinSCPFileSystem)
+      {
+        DebugAssert(WinSCPFileSystem);
+        GenerateUrlDialog(WinSCPFileSystem->GetSessionData());
+      }
     }
-    else if ((Result == MPutty) && WinSCPFileSystem)
+    else if (Result == MPutty)
     {
-      DebugAssert(WinSCPFileSystem);
-      WinSCPFileSystem->OpenSessionInPutty();
+      if (WinSCPFileSystem)
+      {
+        DebugAssert(WinSCPFileSystem);
+        WinSCPFileSystem->OpenSessionInPutty();
+      }
     }
-    else if ((Result == MEditHistory) && WinSCPFileSystem)
+    else if (Result == MEditHistory)
     {
-      DebugAssert(WinSCPFileSystem);
-      WinSCPFileSystem->EditHistory();
+      if (WinSCPFileSystem)
+      {
+        DebugAssert(WinSCPFileSystem);
+        WinSCPFileSystem->EditHistory();
+      }
     }
     else if (Result == MPageant || Result == MPuttygen)
     {
