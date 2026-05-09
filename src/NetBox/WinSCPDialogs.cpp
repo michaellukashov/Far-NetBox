@@ -3668,6 +3668,38 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   PasswordEdit->SetRight(CRect.Right - 12 - 2);
   PasswordEdit->SetVisible(true);
 
+  MakeOwnedObject<TFarSeparator>(this);
+
+  SetNextItemPosition(ipNewLine);
+
+  // Private &key file:
+  Text = MakeOwnedObject<TFarText>(this);
+  Text->SetCaption(GetMsg(NB_LOGIN_PRIVATE_KEY));
+  SetNextItemPosition(ipNewLine);
+
+  PrivateKeyEdit = MakeOwnedObject<TFarEdit>(this);
+  Text->SetEnabledFollow(PrivateKeyEdit);
+  PrivateKeyEdit->SetWidth(40);
+  PrivateKeyEdit->SetRight(CRect.Right - 12 - 2);
+  SetNextItemPosition(ipRight);
+  PrivateKeyBrowseBtn = MakeOwnedObject<TFarButton>(this);
+  PrivateKeyBrowseBtn->SetCaption(L"\u2026");
+  PrivateKeyBrowseBtn->SetOnClick(nb::bind(&TSessionDialog::PrivateKeyFileBrowseClick, this));
+  SetNextItemPosition(ipNewLine);
+
+  // Display Public Key
+  DisplayPublicKeyBtn = MakeOwnedObject<TFarButton>(this);
+  DisplayPublicKeyBtn->SetCaption(GetMsg(NB_LOGIN_DISPLAY_PUBLIC_KEY));
+  DisplayPublicKeyBtn->SetOnClick(nb::bind(&TSessionDialog::PrivateKeyViewButtonClick, this));
+
+  // Generate Key button (launch puttygen.exe)
+  SetNextItemPosition(ipRight);
+  GenerateKeyBtn = MakeOwnedObject<TFarButton>(this);
+  GenerateKeyBtn->SetCaption(GetMsg(NB_SESSION_GENERATE_KEY));
+  GenerateKeyBtn->SetOnClick(nb::bind(&TSessionDialog::GenerateKeyButtonClick, this));
+  SetNextItemPosition(ipNewLine);
+
+  MakeOwnedObject<TFarSeparator>(this);
 
   Text = MakeOwnedObject<TFarText>(this);
   Text->SetTop(CRect.Bottom - 3);
@@ -4653,31 +4685,6 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   AgentFwdCheck->SetCaption(GetMsg(NB_LOGIN_AUTH_AGENT_FWD));
   SetNextItemPosition(ipNewLine);
 
-  // Private &key file:
-  Text = MakeOwnedObject<TFarText>(this);
-  Text->SetCaption(GetMsg(NB_LOGIN_PRIVATE_KEY));
-  SetNextItemPosition(ipNewLine);
-
-  PrivateKeyEdit = MakeOwnedObject<TFarEdit>(this);
-  Text->SetEnabledFollow(PrivateKeyEdit);
-  PrivateKeyEdit->SetWidth(40);
-  SetNextItemPosition(ipRight);
-  PrivateKeyBrowseBtn = MakeOwnedObject<TFarButton>(this);
-  PrivateKeyBrowseBtn->SetCaption(L"\u2026");
-  PrivateKeyBrowseBtn->SetOnClick(nb::bind(&TSessionDialog::PrivateKeyFileBrowseClick, this));
-  SetNextItemPosition(ipNewLine);
-
-  // Display Public Key
-  DisplayPublicKeyBtn = MakeOwnedObject<TFarButton>(this);
-  DisplayPublicKeyBtn->SetCaption(GetMsg(NB_LOGIN_DISPLAY_PUBLIC_KEY));
-  DisplayPublicKeyBtn->SetOnClick(nb::bind(&TSessionDialog::PrivateKeyViewButtonClick, this));
-
-  // Generate Key button (launch puttygen.exe)
-  SetNextItemPosition(ipRight);
-  GenerateKeyBtn = MakeOwnedObject<TFarButton>(this);
-  GenerateKeyBtn->SetCaption(GetMsg(NB_SESSION_GENERATE_KEY));
-  GenerateKeyBtn->SetOnClick(nb::bind(&TSessionDialog::GenerateKeyButtonClick, this));
-  SetNextItemPosition(ipNewLine);
 
   // Detached Certificate
   DetachedCertificateLabel = MakeOwnedObject<TFarText>(this);
