@@ -386,6 +386,7 @@ TWinSCPPlugin * TWinSCPFileSystem::GetWinSCPPlugin()
 
 void TWinSCPFileSystem::Close()
 {
+  DEBUG_PRINTF("TWinSCPFileSystem::Close begin");
   SCOPE_EXIT
   {
     TCustomFarFileSystem::Close();
@@ -407,6 +408,7 @@ void TWinSCPFileSystem::Close()
       }
     }
   }
+  DEBUG_PRINTF("TWinSCPFileSystem::Close end");
 }
 
 void TWinSCPFileSystem::GetOpenPanelInfoEx(OPENPANELINFO_FLAGS & Flags,

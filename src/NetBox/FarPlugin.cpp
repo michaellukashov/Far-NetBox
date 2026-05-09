@@ -165,7 +165,7 @@ TCustomFarPlugin::TCustomFarPlugin(TObjectClassId Kind, HINSTANCE HInst) noexcep
 
 TCustomFarPlugin::~TCustomFarPlugin() noexcept
 {
-  // DEBUG_PRINTF("end");
+  DEBUG_PRINTF("begin");
   DebugAssert(FTopDialog == nullptr);
 
   ResetCachedInfo();
@@ -181,7 +181,7 @@ TCustomFarPlugin::~TCustomFarPlugin() noexcept
     TObject * Object = FSavedTitles->Get(Index);
     SAFE_DESTROY(Object);
   }
-  // DEBUG_PRINTF("end");
+  DEBUG_PRINTF("end");
 }
 
 bool TCustomFarPlugin::HandlesFunction(THandlesFunction /*Function*/) const
