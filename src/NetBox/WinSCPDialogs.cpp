@@ -2285,13 +2285,18 @@ TGenerateUrlDialog::TGenerateUrlDialog(TCustomFarPlugin * AFarPlugin,
 
   SetNextItemPosition(ipNewLine);
 
+  // Standard buttons
+  AddStandardButtons();
+
   // --- Script Tab controls (group = tabScript) ---
   SetDefaultGroup(tabScript);
 
+  SetNextItemPosition(ipNewLine);
   TFarText * FormatLabel = MakeOwnedObject<TFarText>(this);
   FormatLabel->SetCaption(GetMsg(NB_GENERATE_URL_SCRIPT_FORMAT_LABEL));
   FormatLabel->SetGroup(tabScript);
 
+  SetNextItemPosition(ipNewLine);
   FScriptFormatCombo = MakeOwnedObject<TFarComboBox>(this);
   FScriptFormatCombo->SetGroup(tabScript);
   FScriptFormatCombo->GetItems()->Add(GetMsg(NB_GENERATE_URL_SCRIPT_FORMAT_BATCH));
@@ -2319,7 +2324,7 @@ TGenerateUrlDialog::TGenerateUrlDialog(TCustomFarPlugin * AFarPlugin,
   FScriptResultEdit->SetWidth(60);
   FScriptResultEdit->SetReadOnly(true);
 
-  SetNextItemPosition(ipRight);
+  SetNextItemPosition(ipNewLine);
 
   FScriptClipboardBtn = MakeOwnedObject<TFarButton>(this);
   FScriptClipboardBtn->SetCaption(GetMsg(NB_GENERATE_URL_CLIPBOARD));
@@ -2328,8 +2333,17 @@ TGenerateUrlDialog::TGenerateUrlDialog(TCustomFarPlugin * AFarPlugin,
 
   SetNextItemPosition(ipNewLine);
 
-  // Standard buttons
-  AddStandardButtons();
+  // Adjust positions
+  const TRect CRect = GetClientRect();
+  ButtonSeparator->SetTop(CRect.Bottom - 1);
+
+  OkButton->SetGroup(tabUrl);
+  CancelButton->SetGroup(tabUrl);
+  OkButton->SetTop(CRect.Bottom);
+  CancelButton->SetTop(CRect.Bottom);
+  OkButton->SetCenterGroup(true);
+  CancelButton->SetCenterGroup(true);
+  OkButton->SetDefault(true);
 
   // Initial state
   FUserCheck->SetChecked(true);
@@ -2354,7 +2368,7 @@ int32_t TGenerateUrlDialog::AddTab(int32_t TabID, const UnicodeString & TabCapti
   return GetItemIdx(Tab);
 }
 
-void TGenerateUrlDialog::ClipboardButtonClick(TFarButton * /*Sender*/, bool & /*Close*/)
+void TGenerateUrlDialog::ClipboardButtonClick(TFarButton * /*Sender*/, bool & Close)
 {
   if (!FUrlResultEdit) return;
   const UnicodeString Url = FUrlResultEdit->GetText();
@@ -2362,6 +2376,7 @@ void TGenerateUrlDialog::ClipboardButtonClick(TFarButton * /*Sender*/, bool & /*
   {
     FarPlugin->FarCopyToClipboard(Url);
   }
+  Close = false;
 }
 
 void TGenerateUrlDialog::TabClick(TFarButton * Sender, bool & Close)
@@ -2374,7 +2389,7 @@ void TGenerateUrlDialog::TabClick(TFarButton * Sender, bool & Close)
   Close = false;
 }
 
-void TGenerateUrlDialog::ScriptClipboardButtonClick(TFarButton * /*Sender*/, bool & /*Close*/)
+void TGenerateUrlDialog::ScriptClipboardButtonClick(TFarButton * /*Sender*/, bool & Close)
 {
   if (!FScriptResultEdit) return;
   const UnicodeString Script = FScriptResultEdit->GetText();
@@ -2382,6 +2397,7 @@ void TGenerateUrlDialog::ScriptClipboardButtonClick(TFarButton * /*Sender*/, boo
   {
     FarPlugin->FarCopyToClipboard(Script);
   }
+  Close = false;
 }
 
 void TGenerateUrlDialog::Change()
