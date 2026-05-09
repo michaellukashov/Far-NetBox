@@ -6027,7 +6027,7 @@ _int64 CFtpControlSocket::GetSpeedLimit(enum transferDirection direction, CTime 
   return ( _int64)1000000000000;
 }
 
-_int64 CFtpControlSocket::GetAbleToUDSize( bool &beenWaiting, CTime &curTime, _int64 &curLimit, nb::list_t<CFtpControlSocket::t_ActiveList>::iterator &iter, enum transferDirection direction, int nBufSize)
+_int64 CFtpControlSocket::GetAbleToUDSize(bool &beenWaiting, CTime &curTime, _int64 &curLimit, nb::list_t<CFtpControlSocket::t_ActiveList>::iterator iter, enum transferDirection direction, int nBufSize)
 {
   beenWaiting = false;
 
@@ -6069,6 +6069,7 @@ _int64 CFtpControlSocket::GetAbleToUDSize( bool &beenWaiting, CTime &curTime, _i
             break;
         if (iter == m_InstanceList[direction].end())
           return 0;
+        DebugAssert(iter->pOwner == this);
       }
     }
     ableToRead = iter->nBytesAvailable;

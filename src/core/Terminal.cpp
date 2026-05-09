@@ -843,15 +843,8 @@ void TParallelOperation::WaitFor()
       {
         // propagate the total progress incremented by the parallel operations
         FMainOperationProgress->Progress();
-        if (FClientsZeroEvent != nullptr)
-        {
-          ::WaitForSingleObject(FClientsZeroEvent, 200);
-          ::ResetEvent(FClientsZeroEvent);
-        }
-        else
-        {
-          Sleep(200);
-        }
+        ::WaitForSingleObject(FClientsZeroEvent, 200);
+        ::ResetEvent(FClientsZeroEvent);
       }
     }
     while (!Done);
@@ -1561,7 +1554,10 @@ void TTerminal::FingerprintScan(UnicodeString & SHA256, UnicodeString & SHA1, Un
 
 void TTerminal::Open()
 {
-  AnySession = true;
+  {
+    const TGuard Guard(*CoreMainCriticalSection);
+    AnySession = true;
+  }
   Configuration->Usage->Inc(L"SessionOpens");
   TAutoNestingCounter OpeningCounter(FOpening);
   ReflectSettings();
@@ -7831,6 +7827,7 @@ void TTerminal::CopyParallel(TParallelOperation * ParallelOperation, TFileOperat
       }
       else if (GotNext == 0)
       {
+        // Event-based wait first; Sleep only if no directory was created within 100ms
         if (!ParallelOperation->WaitForDirectoryCreated(100))
         {
           Sleep(100);

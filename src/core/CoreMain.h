@@ -9,6 +9,7 @@ extern TConfiguration * Configuration;
 extern TStoredSessionList * StoredSessions;
 #endif // defined(__BORLANDC__)
 extern bool AnySession;
+extern TCriticalSection * CoreMainCriticalSection;
 extern TApplicationLog * ApplicationLog;
 #define APPLOG_INTERNAL(S) if (ApplicationLog && ApplicationLog->Logging) ApplicationLog->Log(S)
 #define AppLog(S) APPLOG_INTERNAL(S)

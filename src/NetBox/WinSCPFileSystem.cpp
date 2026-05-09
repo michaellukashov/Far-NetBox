@@ -3623,6 +3623,16 @@ void TWinSCPFileSystem::LogAuthentication(
 void TWinSCPFileSystem::TerminalInformation(
   TTerminal * Terminal, const UnicodeString & AStr, int32_t Phase, const UnicodeString & /*Additional*/)
 {
+  if (::GetCurrentThreadId() != FMainThreadId)
+  {
+    DEBUG_PRINTFA("::GetCurrentThreadId() != FMainThreadId");
+    TINYLOG_WARNING(g_tinylog) << TLogContext::Format()
+        << "TerminalInformation skipped: worker thread "
+        << std::to_string(::GetCurrentThreadId()) << " != main "
+        << std::to_string(FMainThreadId);
+    return;
+  }
+
   if (Phase != 0)
   {
     bool mustLog = false;
@@ -3691,6 +3701,16 @@ void TWinSCPFileSystem::TerminalStartReadDirectory(TObject * /*Sender*/)
 void TWinSCPFileSystem::TerminalReadDirectoryProgress(
   TObject * /*Sender*/, int32_t Progress, int32_t /*ResolvedLinks*/, bool & Cancel)
 {
+  if (::GetCurrentThreadId() != FMainThreadId)
+  {
+    DEBUG_PRINTFA("::GetCurrentThreadId() != FMainThreadId");
+    TINYLOG_WARNING(g_tinylog) << TLogContext::Format()
+        << "TerminalReadDirectoryProgress skipped: worker thread "
+        << std::to_string(::GetCurrentThreadId()) << " != main "
+        << std::to_string(FMainThreadId);
+    return;
+  }
+
   if (Progress < 0)
   {
     if (!FNoProgress && (Progress == -2))

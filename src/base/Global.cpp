@@ -75,11 +75,10 @@ TCriticalSection * TracingCriticalSection = nullptr;
 bool TracingInMemory = false;
 HANDLE TracingThread = nullptr;
 // Thread-safety inventory (debug-only):
-// - TraceFile / IsTracing: mutable; currently unprotected in DoDirectTrace/DoTrace.
+// - TraceFile / IsTracing: guarded by TracingCriticalSection in WriteTraceBuffer and SetTraceFile.
 // - TracingCriticalSection: created on first SetTraceFile() call; leaf lock.
 // - CallstackTls: set once during startup; read without lock (TLS index).
 // - TracingInMemory / TracingThread: set during startup; no worker access.
-
 #define DirectTrace(MESSAGE) \
   DoDirectTrace(GetCurrentThreadId(), TEXT(__FILE__), TEXT(__FUNC__), __LINE__, (MESSAGE))
 // Map to DirectTrace(MESSAGE) to enable tracing of in-memory tracing
@@ -102,21 +101,16 @@ inline static UTF8String TraceFormat(const TDateTime & Time, DWORD Thread, const
 
 inline static void WriteTraceBuffer(const char * Buffer, size_t Length)
 {
-  if (TraceFile != nullptr)
+  if (TracingCriticalSection != nullptr)
   {
-    DWORD Written;
-    if (TracingCriticalSection != nullptr)
+    const TGuard Guard(*TracingCriticalSection);
+    if (TraceFile != nullptr)
     {
-      const TGuard Guard(*TracingCriticalSection);
-      ::WriteFile(TraceFile, Buffer, static_cast<DWORD>(Length), &Written, nullptr);
-    }
-    else
-    {
+      DWORD Written;
       ::WriteFile(TraceFile, Buffer, static_cast<DWORD>(Length), &Written, nullptr);
     }
   }
 }
-
 inline static void DoDirectTrace(DWORD Thread, const wchar_t * SourceFile,
   const wchar_t * Func, int32_t Line, const wchar_t * Message)
 {
@@ -126,12 +120,13 @@ inline static void DoDirectTrace(DWORD Thread, const wchar_t * SourceFile,
 
 void SetTraceFile(HANDLE ATraceFile)
 {
-  TraceFile = ATraceFile;
-  IsTracing = (TraceFile != nullptr);
   if (TracingCriticalSection == nullptr)
   {
     TracingCriticalSection = new TCriticalSection();
   }
+  const TGuard Guard(*TracingCriticalSection);
+  TraceFile = ATraceFile;
+  IsTracing = (TraceFile != nullptr);
 }
 
 void CleanupTracing()

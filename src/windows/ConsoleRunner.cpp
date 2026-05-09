@@ -429,6 +429,7 @@ int TOwnConsole::Choice(
       if (Result == 0)
       {
         unsigned int TimerSlice = 50;
+        // busy-wait fallback: console input polling with timer-based timeout
         Sleep(TimerSlice);
         if (Timer > 0)
         {
@@ -497,6 +498,7 @@ void TOwnConsole::WaitBeforeExit()
     {
       break;
     }
+    // busy-wait fallback: console input polling with message processing
     Sleep(50);
     ProcessMessages();
   }
@@ -1077,6 +1079,7 @@ int TNullConsole::Choice(
   int Result;
   if (Timeouting)
   {
+    // busy-wait fallback: null console implementation always returns timeout
     Sleep(Timer);
     Result = Timeouted;
   }
@@ -1717,6 +1720,7 @@ void TConsoleRunner::ScriptTerminalQueryUser(TObject * /*Sender*/,
         // Not to get preliminary "host is not responding" messages to .NET assembly
         if (FConsole->HasFlag(cfNoInteractiveInput) && (Timer > 0))
         {
+          // busy-wait fallback: non-interactive mode, wait full timer before returning
           Sleep(Timer);
           AnswerIndex = -2;
         }
@@ -2798,6 +2802,7 @@ int DumpCallstack(TConsole * Console, TProgramParams * Params)
     int Timeout = 30;
     while (!FileExists(FileName))
     {
+      // busy-wait fallback: waiting for external process to create dump file
       Sleep(1000);
       Timeout--;
       if (Timeout == 0)

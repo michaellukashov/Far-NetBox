@@ -1845,6 +1845,7 @@ void TIniFileStorage::Flush()
         Retry = (Error == ERROR_SHARING_VIOLATION) && (Trying < 2000);
         if (Retry)
         {
+          // busy-wait fallback: defensive retry on file sharing violation
           const int32_t Step = 100;
           Sleep(Step);
           Trying += Step;

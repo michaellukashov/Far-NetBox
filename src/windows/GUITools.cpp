@@ -215,6 +215,7 @@ void TPuttyCleanupThread::Finalize()
         return;
       }
     }
+    // busy-wait fallback: polling for thread instance destruction
     Sleep(100);
   }
 }
@@ -273,6 +274,7 @@ void TPuttyCleanupThread::Execute()
 
       if (Continue)
       {
+        // busy-wait fallback: polling until cleanup timer expires
         Sleep(400);
       }
     }

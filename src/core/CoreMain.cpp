@@ -21,7 +21,7 @@ TStoredSessionList * StoredSessions = nullptr;
 #endif // defined(__BORLANDC__)
 TApplicationLog * ApplicationLog = nullptr;
 bool AnySession = false;
-
+TCriticalSection * CoreMainCriticalSection = nullptr;
 TQueryButtonAlias::TQueryButtonAlias() noexcept :
   OnSubmit(nullptr),
   GroupWith(-1)
@@ -171,6 +171,7 @@ static bool StoredSessionsInitialized = false;
 
 TStoredSessionList * GetStoredSessions(bool * JustLoaded)
 {
+  const TGuard Guard(*CoreMainCriticalSection);
 #define SET_LOADED(Value) do { if (JustLoaded != nullptr) *JustLoaded = Value; } while(0)
   static TStoredSessionList * StoredSessions = nullptr;
   if (StoredSessionsInitialized)
@@ -202,6 +203,7 @@ TStoredSessionList * GetStoredSessions(bool * JustLoaded)
 
 void DeleteStoredSessions()
 {
+  const TGuard Guard(*CoreMainCriticalSection);
   if (StoredSessionsInitialized)
   {
     TStoredSessionList * StoredSessions = GetStoredSessions();
@@ -264,6 +266,7 @@ void CoreLoad()
 }
 void CoreInitialize()
 {
+  CoreMainCriticalSection = new TCriticalSection();
   WinInitialize();
   Randomize();
   CryptographyInitialize();
@@ -310,6 +313,10 @@ void CoreFinalize()
 #endif // defined(__BORLANDC__)
 
   CryptographyFinalize();
+
+  delete CoreMainCriticalSection;
+  CoreMainCriticalSection = nullptr;
+
   WinFinalize();
 }
 
@@ -325,6 +332,7 @@ void CoreMaintenanceTask()
 
 void CoreUpdateFinalStaticUsage()
 {
+  const TGuard Guard(*CoreMainCriticalSection);
   if (!AnySession)
   {
     GetConfiguration()->Usage->Inc(L"RunsWithoutSession");
