@@ -792,14 +792,14 @@ void TWinSCPPlugin::HandleException(Exception * E, OPERATION_MODES OpMode)
 {
   if (((OpMode & OPM_FIND) == 0) || nb::isa<EFatal>(E))
   {
-    OutputDebugStringA("[NetBox] TWinSCPPlugin::HandleException ENTER\n");
+    DEBUG_PRINTFA("TWinSCPPlugin::HandleException ENTER");
     // Release the global plugin lock before showing a modal dialog.
     // Far may dispatch keyboard events to plugin exports while the dialog
     // message loop runs; holding the lock would cause a deadlock.
     TUnguard Unguard(GetCriticalSection());
-    OutputDebugStringA("[NetBox] TWinSCPPlugin::HandleException lock released\n");
+    DEBUG_PRINTFA("TWinSCPPlugin::HandleException lock released");
     ShowExtendedException(E);
-    OutputDebugStringA("[NetBox] TWinSCPPlugin::HandleException dialog closed\n");
+    DEBUG_PRINTFA("TWinSCPPlugin::HandleException dialog closed");
   }
 }
 

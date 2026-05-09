@@ -212,7 +212,7 @@ void DeleteStoredSessions()
 
 void CoreLoad()
 {
-  OutputDebugStringA("[NetBox] CoreLoad ENTER\n");
+  DEBUG_PRINTFA("CoreLoad ENTER");
   bool SessionList = false;
   std::unique_ptr<THierarchicalStorage> SessionsStorage(GetConfiguration()->CreateScpStorage(SessionList));
   THierarchicalStorage * ConfigStorage{nullptr};
@@ -236,7 +236,7 @@ void CoreLoad()
   }
   catch(Exception & E)
   {
-    OutputDebugStringA("[NetBox] CoreLoad exception — calling ShowExtendedException\n");
+    DEBUG_PRINTFA("CoreLoad exception - calling ShowExtendedException");
     ShowExtendedException(&E);
   }
 
@@ -256,11 +256,11 @@ void CoreLoad()
   }
   catch(Exception & E)
   {
-    OutputDebugStringA("[NetBox] CoreLoad stored sessions exception\n");
+    DEBUG_PRINTFA("CoreLoad stored sessions exception");
     ShowExtendedException(&E);
   }
 #endif // defined(__BORLANDC__)
-  OutputDebugStringA("[NetBox] CoreLoad LEAVE\n");
+  DEBUG_PRINTFA("CoreLoad LEAVE");
 }
 void CoreInitialize()
 {

@@ -64,9 +64,7 @@ static void LogConsoleMode(const char * Label)
   DWORD Mode = 0;
   if (GetConsoleMode(hInput, &Mode))
   {
-    char Buf[256];
-    snprintf(Buf, sizeof(Buf),
-      "[NetBox] ConsoleMode %s: 0x%08X (LINE=%s ECHO=%s PROCESSED=%s WINDOW=%s MOUSE=%s EXTENDED=%s)\n",
+    DEBUG_PRINTFA("ConsoleMode %s: 0x%08X (LINE=%s ECHO=%s PROCESSED=%s WINDOW=%s MOUSE=%s EXTENDED=%s)",
       Label, Mode,
       (Mode & ENABLE_LINE_INPUT) ? "yes" : "no",
       (Mode & ENABLE_ECHO_INPUT) ? "yes" : "no",
@@ -74,13 +72,10 @@ static void LogConsoleMode(const char * Label)
       (Mode & ENABLE_WINDOW_INPUT) ? "yes" : "no",
       (Mode & ENABLE_MOUSE_INPUT) ? "yes" : "no",
       (Mode & ENABLE_EXTENDED_FLAGS) ? "yes" : "no");
-    OutputDebugStringA(Buf);
   }
   else
   {
-    OutputDebugStringA("[NetBox] ConsoleMode ");
-    OutputDebugStringA(Label);
-    OutputDebugStringA(": FAILED\n");
+    DEBUG_PRINTFA("ConsoleMode %s: FAILED", Label);
   }
 }
 
@@ -89,10 +84,10 @@ extern "C" {
 struct TExportTracer {
   const char * FName;
   explicit TExportTracer(const char * Name) noexcept : FName(Name) {
-    OutputDebugStringA("[NetBox] ENTER "); OutputDebugStringA(Name); OutputDebugStringA("\n");
+    DEBUG_PRINTFA("ENTER %s", Name);
   }
   ~TExportTracer() noexcept {
-    OutputDebugStringA("[NetBox] LEAVE "); OutputDebugStringA(FName); OutputDebugStringA("\n");
+    DEBUG_PRINTFA("LEAVE %s", FName);
   }
   NB_DISABLE_COPY(TExportTracer)
 };
@@ -212,12 +207,12 @@ intptr_t WINAPI ProcessPanelInputW(const struct ProcessPanelInputInfo * Info)
 {
   LogConsoleMode("BEFORE-ProcessPanelInputW");
   const TExportTracer Tracer("ProcessPanelInputW");
-  OutputDebugStringA("[NetBox] ProcessPanelInputW: about to acquire lock\n");
+  DEBUG_PRINTFA("ProcessPanelInputW: about to acquire lock");
   DebugAssert(Info && FarPlugin);
   const TFarPluginGuard Guard;
-  OutputDebugStringA("[NetBox] ProcessPanelInputW: lock acquired, calling ProcessPanelInput\n");
+  DEBUG_PRINTFA("ProcessPanelInputW: lock acquired, calling ProcessPanelInput");
   const intptr_t Result = FarPlugin->ProcessPanelInput(Info);
-  OutputDebugStringA("[NetBox] ProcessPanelInputW: returning\n");
+  DEBUG_PRINTFA("ProcessPanelInputW: returning");
   LogConsoleMode("AFTER-ProcessPanelInputW");
   return Result;
 }

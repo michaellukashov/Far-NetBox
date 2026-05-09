@@ -1,55 +1,52 @@
-# Far3 Plugin Startup Deadlock Fix
+# Far3 Plugin Startup Hang Investigation
 
 > **Bug:** Far Manager 3 hangs when a key is pressed during NetBox plugin startup.
-> **Fixed:** 2026-05-12
+> **Status:** Resolved — root cause identified as Far3 startup race condition, fixed in Far3 6682.
+> **Investigated:** 2026-05-12
 > **Component:** Plugin initialization (`NetBox.cpp`, `FarPlugin.cpp`, `WinSCPPlugin.cpp`)
 
 ---
 
 ## Symptom
 
-When Far Manager 3 loads the NetBox plugin (during startup or when opening the plugin menu for the first time), pressing any key causes the entire Far3 process to hang indefinitely. The process must be killed from Task Manager.
+When Far Manager 3 loads the NetBox plugin during startup, pressing any key before the file panels appear causes the entire Far3 process to hang indefinitely. The process must be killed from Task Manager.
+
+Key observations:
+- Hang **only** occurs if a key is pressed **during** Far3 startup (before panels appear)
+- Hang **never** occurs after Far3 has fully loaded and panels are visible
+- Hang **does not** reproduce under a debugger (timing-sensitive Heisenbug)
+- Hang **does not** reproduce with Far3 version 3.0.6682.0 x64 or later
+
+---
 
 ## Root Cause
 
-All Far plugin exports (`SetStartupInfoW`, `GetPluginInfoW`, `ProcessPanelInputW`, etc.) are protected by `TFarPluginGuard`, which acquires a **global plugin-level critical section** (`TCustomFarPlugin::FCriticalSection`) for the entire duration of the export call.
+The hang is a **timing-sensitive race condition in Far3's startup sequence**, not a NetBox plugin deadlock. Investigation showed:
 
-During initialization:
+1. **NetBox initialization completes successfully** — `SetStartupInfoW` and `GetPluginInfoW` both enter and leave normally
+2. **No NetBox export is invoked** when the key is pressed — no `ProcessPanelInputW`, `ProcessPanelEventW`, or `ProcessSynchroEventW` traces appear in DebugView
+3. **The hang is upstream of the plugin** — Far3 itself becomes unresponsive before dispatching the key event to any plugin
+4. **Console mode is correct** — `ENABLE_LINE_INPUT` is not set, ruling out a cooked-mode console read
+5. **Far3 6682 fixes the issue** — the hang disappears in newer Far3 builds
 
-1. `GetPluginInfoW` calls `CoreInitializeOnce()`
-2. `CoreInitializeOnce()` loads sessions, initializes crypto/PuTTY/FileZilla/neon
-3. If any step throws an exception, the catch block in `TCustomFarPlugin::GetPluginInfo` calls `HandleException()`
-4. `HandleException()` opens a **modal dialog** (`Message()` / `ShowExtendedException()`)
-5. The dialog runs a message loop that pumps keyboard input
-6. If the user presses a key that Far routes to `ProcessPanelInputW`, that export tries to acquire the **same global lock**
-7. **Deadlock:** `ProcessPanelInputW` waits for the lock; the main thread is stuck in the dialog loop holding the lock
+### Why NetBox Triggered It
 
-```
-Main thread (holds global lock):
-  GetPluginInfoW
-    CoreInitializeOnce
-      catch → HandleException
-        Message() / ShowExtendedException()
-          DialogRun() → pumps messages
-            [user presses key]
-              ProcessPanelInputW tries to acquire global lock → BLOCKS
-```
+NetBox opens `CONIN$` (console input) during `CreatePlugin()` and starts a background idle thread (`TPluginIdleThread`). The combination of:
+- `CONIN$` handle ownership
+- Background thread posting `FE_IDLE` synchro events
+- Far3 reading console input during its own startup (startup macros, initial key state)
 
-## Why Keys Specifically
+...creates a narrow timing window where a key press during startup triggers a race in Far3's console input handling or plugin load reentrancy.
 
-Keyboard events are the most aggressive input source:
-- They are buffered by Windows and rapidly generated
-- Far's console input reader (`ReadConsoleInput`) produces `INPUT_RECORD`s
-- Unlike mouse clicks (which have a clear target window), keyboard events may be routed through the panel → plugin chain even when a dialog is active, especially for global shortcuts
-- If the dialog is a plugin dialog (`TFarDialog`), it runs inside Far's `DialogRun`, which may not fully suppress panel-level key processing for certain keys
+---
 
-## Fix
+## NetBox Defensive Changes
 
-Apply `TUnguard` (temporary lock release) in `HandleException` before showing any modal dialog.
+Although the root cause was in Far3, the investigation produced several defensive improvements that remain in the codebase:
 
-### Code Changes
+### 1. `TUnguard` Lock Release in `HandleException`
 
-#### `src/NetBox/FarPlugin.cpp` — `TCustomFarPlugin::HandleException`
+Applied `TUnguard` (temporary lock release) in both `TCustomFarPlugin::HandleException` and `TWinSCPPlugin::HandleException` before showing modal dialogs. This prevents a **genuine deadlock** if an exception occurs during initialization while the global plugin lock is held:
 
 ```cpp
 void TCustomFarPlugin::HandleException(Exception * E, OPERATION_MODES /*OpMode*/)
@@ -63,25 +60,20 @@ void TCustomFarPlugin::HandleException(Exception * E, OPERATION_MODES /*OpMode*/
 }
 ```
 
-#### `src/NetBox/WinSCPPlugin.cpp` — `TWinSCPPlugin::HandleException`
-
-```cpp
-void TWinSCPPlugin::HandleException(Exception * E, OPERATION_MODES OpMode)
-{
-  if (((OpMode & OPM_FIND) == 0) || nb::isa<EFatal>(E))
-  {
-    // Release the global plugin lock before showing a modal dialog.
-    // Far may dispatch keyboard events to plugin exports while the dialog
-    // message loop runs; holding the lock would cause a deadlock.
-    TUnguard Unguard(GetCriticalSection());
-    ShowExtendedException(E);
-  }
-}
-```
-
-#### `src/base/Global.h` / `Global.cpp` — `TUnguard` accepts `const` reference
+### 2. `TUnguard` Const-Correctness Fix
 
 Changed `TUnguard` constructor to accept `const TCriticalSection &` (matching `TGuard`), since `TCriticalSection::Enter()` and `Leave()` are `const` methods using `mutable` internal state.
+
+### 3. Diagnostic Instrumentation (`DEBUG_PRINTFA`)
+
+Added `DEBUG_PRINTFA`-based trace instrumentation to key initialization and export paths for future debugging:
+- `TExportTracer` RAII struct in `NetBox.cpp` — logs ENTER/LEAVE for all Far exports
+- `LogConsoleMode()` helper — traces console input mode flags at export boundaries
+- `CheckForEsc()` traces — logs console input event counts and ESC detection
+- `CoreLoad`, `SetStartupInfo`, `GetPluginInfo` traces
+- Idle thread `FE_IDLE` synchro posting trace
+
+---
 
 ## Prevention Guidelines
 
@@ -114,29 +106,26 @@ void SomeExport()
 }                         // lock released here
 ```
 
-## Debugging This Pattern
+---
 
-If you suspect a similar deadlock:
+## Debugging Startup Hangs
 
-1. **Attach WinDbg** to the hung `Far.exe` process
-2. **List all thread stacks:**
-   ```
-   ~* kb
-   ```
-3. **List locked critical sections:**
-   ```
-   !cs -l
-   ```
-4. **Identify the owner thread** of the contested critical section
-5. **Check if the owner thread** is inside a dialog/message loop (`DialogRun`, `Message`, etc.)
-6. **Check if any waiting thread** is inside a plugin export (`ProcessPanelInputW`, etc.)
+If you suspect a similar startup-only hang:
 
-If the owner is in a dialog and the waiter is in an export, you have an init-phase deadlock.
+1. **Start DebugView** as Administrator — capture plugin trace output
+2. **Start Far3** — do not press any key until panels appear
+3. **Verify initialization** — check for ENTER/LEAVE pairs for `SetStartupInfoW` and `GetPluginInfoW`
+4. **Press the problematic key** — observe if any plugin export traces appear
+5. **If no export traces appear** — the hang is upstream in Far3, not in the plugin
+6. **Attach WinDbg** to the hung `Far.exe` process and run `~0 kb` to capture the main thread stack
+7. **Check Far3 version** — try updating to the latest Far3 build; the issue may already be fixed
+
+---
 
 ## Testing Checklist
 
 - [ ] Start Far3 with NetBox plugin — no hang
-- [ ] Press keys rapidly during plugin load — no hang
+- [ ] Press keys rapidly during plugin load — no hang (on Far3 >= 6682)
 - [ ] Open a session (SFTP/FTP) — connects normally
 - [ ] Open plugin menu and settings dialog — works
 - [ ] Trigger a config error (e.g., corrupt `NetBox.xml`), restart Far — error dialog appears without hang
