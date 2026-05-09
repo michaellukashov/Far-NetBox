@@ -792,7 +792,14 @@ void TWinSCPPlugin::HandleException(Exception * E, OPERATION_MODES OpMode)
 {
   if (((OpMode & OPM_FIND) == 0) || nb::isa<EFatal>(E))
   {
+    OutputDebugStringA("[NetBox] TWinSCPPlugin::HandleException ENTER\n");
+    // Release the global plugin lock before showing a modal dialog.
+    // Far may dispatch keyboard events to plugin exports while the dialog
+    // message loop runs; holding the lock would cause a deadlock.
+    TUnguard Unguard(GetCriticalSection());
+    OutputDebugStringA("[NetBox] TWinSCPPlugin::HandleException lock released\n");
     ShowExtendedException(E);
+    OutputDebugStringA("[NetBox] TWinSCPPlugin::HandleException dialog closed\n");
   }
 }
 
@@ -1087,6 +1094,12 @@ void TWinSCPPlugin::CleanupConfiguration()
   }
 }
 
+// CoreInitializeOnce runs during GetPluginInfoW (plugin menu construction).
+// If initialization throws, the exception is caught by GetPluginInfo and
+// HandleException is called. HandleException now uses TUnguard to release
+// the global plugin lock before showing the error dialog, preventing a
+// deadlock when Far dispatches keyboard events while the dialog is open.
+// See docs/far3-plugin-init-deadlock.md for full analysis.
 void TWinSCPPlugin::CoreInitializeOnce()
 {
   if (!FInitialized)

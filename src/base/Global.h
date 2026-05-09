@@ -44,11 +44,11 @@ class NB_CORE_EXPORT TUnguard
   NB_DISABLE_COPY(TUnguard)
 public:
   TUnguard() = delete;
-  explicit TUnguard(TCriticalSection & ACriticalSection) noexcept;
+  explicit TUnguard(const TCriticalSection & ACriticalSection) noexcept;
   ~TUnguard() noexcept;
 
 private:
-  TCriticalSection & FCriticalSection;
+  const TCriticalSection & FCriticalSection;
 };
 
 #if defined(__clang__) | defined(_MSC_VER)

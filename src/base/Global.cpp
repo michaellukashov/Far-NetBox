@@ -53,7 +53,7 @@ TGuard::~TGuard() noexcept
 
 // TUnguard
 
-TUnguard::TUnguard(TCriticalSection & ACriticalSection) noexcept :
+TUnguard::TUnguard(const TCriticalSection & ACriticalSection) noexcept :
   FCriticalSection(ACriticalSection)
 {
   FCriticalSection.Leave();

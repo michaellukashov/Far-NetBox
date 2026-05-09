@@ -47,13 +47,16 @@ public:
     {
       while (!FCheckCondition)
       {
+
         const int Result = pthread_cond_timedwait(&FCond, &FMutex, Timeout);
         if ((Result == WAIT_TIMEOUT) && IsActive() && !IsFinished() && FPlugin && FPlugin->GetPluginHandle())
         {
 
           // Marshal idle processing to the main thread via the sanctioned synchro path.
+          OutputDebugStringA("[NetBox] IdleThread: posting FE_IDLE synchro\n");
           FPlugin->PostMainThreadSynchro(nullptr);
         }
+
       }
       FCheckCondition = false;
       Timeout = IsActive() ? FMillisecs : INFINITE;
@@ -143,8 +146,10 @@ TCustomFarPlugin::TCustomFarPlugin(TObjectClassId Kind, HINSTANCE HInst) noexcep
   FFarStandardFunctions.StructSize = sizeof(FFarStandardFunctions);
 
   // far\Examples\Compare\compare.cpp
+  OutputDebugStringA("[NetBox] Opening CONIN$ handle\n");
   FConsoleInput = ::CreateFile(L"CONIN$", GENERIC_READ, FILE_SHARE_READ, nullptr,
     OPEN_EXISTING, 0, nullptr);
+  OutputDebugStringA("[NetBox] CONIN$ handle opened\n");
   FConsoleOutput = ::CreateFile(L"CONOUT$", GENERIC_READ | GENERIC_WRITE,
     FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING, 0, nullptr);
   if (ConsoleWindowState() == SW_SHOWNORMAL)
@@ -191,6 +196,7 @@ VersionInfo TCustomFarPlugin::GetMinFarVersion() const
 
 void TCustomFarPlugin::SetStartupInfo(const struct PluginStartupInfo * Info)
 {
+  OutputDebugStringA("[NetBox] SetStartupInfo ENTER\n");
   try
   {
     ResetCachedInfo();
@@ -223,6 +229,7 @@ void TCustomFarPlugin::SetStartupInfo(const struct PluginStartupInfo * Info)
     FTIdleThread = std::make_unique<TPluginIdleThread>(this, 400);
     FTIdleThread->InitIdleThread("NetBox IdleThread");
   }
+  OutputDebugStringA("[NetBox] SetStartupInfo LEAVE\n");
 }
 
 void TCustomFarPlugin::ExitFAR()
@@ -231,6 +238,7 @@ void TCustomFarPlugin::ExitFAR()
 
 void TCustomFarPlugin::GetPluginInfo(struct PluginInfo * Info)
 {
+  OutputDebugStringA("[NetBox] GetPluginInfo ENTER\n");
   try
   {
     ResetCachedInfo();
@@ -280,6 +288,7 @@ void TCustomFarPlugin::GetPluginInfo(struct PluginInfo * Info)
     DEBUG_PRINTF("before HandleException");
     HandleException(&E);
   }
+  OutputDebugStringA("[NetBox] GetPluginInfo LEAVE\n");
 }
 
 void TCustomFarPlugin::PostMainThreadSynchro(void * Param) const
@@ -1719,7 +1728,14 @@ void TCustomFarPlugin::RestoreScreen(HANDLE & Screen)
 void TCustomFarPlugin::HandleException(Exception * E, OPERATION_MODES /*OpMode*/)
 {
   DebugAssert(E);
+  OutputDebugStringA("[NetBox] HandleException ENTER\n");
+  // Release the global plugin lock before showing a modal dialog.
+  // Far may dispatch keyboard events to plugin exports while the dialog
+  // message loop runs; holding the lock would cause a deadlock.
+  TUnguard Unguard(GetCriticalSection());
+  OutputDebugStringA("[NetBox] HandleException lock released, showing dialog\n");
   Message(FMSG_WARNING | FMSG_MB_OK, L"", E ? E->Message : L"");
+  OutputDebugStringA("[NetBox] HandleException dialog closed\n");
 }
 
 UnicodeString TCustomFarPlugin::GetMsg(intptr_t MsgId) const
@@ -1741,6 +1757,7 @@ UnicodeString TCustomFarPlugin::GetMsg(intptr_t MsgId) const
 
 bool TCustomFarPlugin::CheckForEsc() const
 {
+  OutputDebugStringA("[NetBox] CheckForEsc ENTER\n");
   static uint32_t LastTicks;
   const uint32_t Ticks = ::GetTickCount();
   if ((LastTicks == 0) || (Ticks - LastTicks > 500))
@@ -1750,6 +1767,7 @@ bool TCustomFarPlugin::CheckForEsc() const
     DWORD EventCount = 0;
     if (!::GetNumberOfConsoleInputEvents(FConsoleInput, &EventCount) || (EventCount == 0))
     {
+      OutputDebugStringA("[NetBox] CheckForEsc: no events\n");
       return false;
     }
 
@@ -1758,6 +1776,7 @@ bool TCustomFarPlugin::CheckForEsc() const
     DWORD ReadCount = 0;
     if (!::ReadConsoleInput(FConsoleInput, Events.data(), EventCount, &ReadCount))
     {
+      OutputDebugStringA("[NetBox] CheckForEsc: ReadConsoleInput failed\n");
       return false;
     }
     Events.resize(ReadCount);
@@ -1785,8 +1804,13 @@ bool TCustomFarPlugin::CheckForEsc() const
       ::WriteConsoleInput(FConsoleInput, NonEscEvents.data(), static_cast<DWORD>(NonEscEvents.size()), &Written);
     }
 
+    char Buf[128];
+    snprintf(Buf, sizeof(Buf), "[NetBox] CheckForEsc: read %lu events, found ESC=%s, wrote back %zu\n",
+      ReadCount, FoundEsc ? "yes" : "no", NonEscEvents.size());
+    OutputDebugStringA(Buf);
     return FoundEsc;
   }
+  OutputDebugStringA("[NetBox] CheckForEsc: throttled\n");
   return false;
 }
 void TCustomFarPlugin::FlushEscBuffer() const
