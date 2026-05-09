@@ -965,7 +965,7 @@ bool TWinSCPPlugin::ConfirmationsConfigurationDialog()
   ConfirmCommandSessionCheck->SetEnabledDependencyNegative(SilentModeCheck);
   ConfirmResumeCheck->SetEnabledDependencyNegative(SilentModeCheck);
   ConfirmSynchronizedBrowsingCheck->SetEnabledDependencyNegative(SilentModeCheck);
-  Dialog->AddStandardButtons();
+  Dialog->AddStandardButtons(1);
 
   TFarConfiguration * FarConfiguration = GetFarConfiguration();
   ConfirmOverwritingCheck->SetSelected(!FarConfiguration->GetConfirmOverwritingOverride() ?
@@ -10893,6 +10893,7 @@ TQueueDialog::TQueueDialog(gsl::not_null<TCustomFarPlugin *> AFarPlugin,
 {
   TFarDialog::InitDialog();
   SetSize(TPoint(80, 23)); // TODO: check actual configuration
+  const TRect CRect = GetClientRect();
   const int32_t ListHeight = GetClientSize().y - 4;
 
   SetCaption(GetMsg(NB_QUEUE_TITLE));
@@ -10900,12 +10901,16 @@ TQueueDialog::TQueueDialog(gsl::not_null<TCustomFarPlugin *> AFarPlugin,
   TFarText * Text = MakeOwnedObject<TFarText>(this);
   Text->SetCaption(GetMsg(NB_QUEUE_HEADER));
 
+  SetNextItemPosition(ipNewLine);
   TFarSeparator * Separator = MakeOwnedObject<TFarSeparator>(this);
   const int32_t ListTop = Separator->GetBottom();
 
+  SetNextItemPosition(ipNewLine);
   Separator = MakeOwnedObject<TFarSeparator>(this);
-  Separator->Move(0, ListHeight);
+  // Separator->Move(0, ListHeight);
+  Separator->Move(0, CRect.Height() - 3);
 
+  SetNextItemPosition(ipNewLine);
   ExecuteButton = MakeOwnedObject<TFarButton>(this);
   ExecuteButton->SetCaption(GetMsg(NB_QUEUE_EXECUTE));
   ExecuteButton->SetOnClick(nb::bind(&TQueueDialog::OperationButtonClick, this));
@@ -10938,7 +10943,7 @@ TQueueDialog::TQueueDialog(gsl::not_null<TCustomFarPlugin *> AFarPlugin,
 
   QueueListBox = MakeOwnedObject<TFarListBox>(this);
   QueueListBox->SetTop(ListTop + 1);
-  QueueListBox->SetHeight(ListHeight);
+  QueueListBox->SetHeight(ListHeight - 1);
   QueueListBox->SetNoBox(true);
   QueueListBox->SetFocus();
 }
