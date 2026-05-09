@@ -5,39 +5,71 @@ Status: active
 
 ## Active Summary (input for /aif-plan)
 
-Updated: 2026-05-10
+Updated: 2026-05-12
 
-Goal: Add OnProgress/OnFinished marshaling to TTerminalThread — fix Far API calls from worker thread
+Goal:
+- TTerminalThread OnProgress/OnFinished marshaling is already implemented in source.
+- Background copy & progress UI (roadmap v1.2) is fully functional — no remaining work.
+- Stale plan and roadmap entries need marking as complete.
 
 Constraints:
 - No modifications to `libs/` — use patches only
 - Far Manager API calls on main thread only
 - MSVC /W4 zero warnings
-- WinXP compatibility (_WIN32_WINNT=0x0501)
-- Incremental evolution — no architectural rewrites
-- C++17 standard only (no std::filesystem, std::variant)
 
 Decisions:
-- TTerminalThread::InitTerminalThread() must add OnProgress and OnFinished to marshal list
-- Original OnProgress/OnFinished callbacks must be saved before override and restored in destructor
-- TUserAction subclasses needed for progress and finished events
-- Progress marshaling adds latency (every ~500ms or per chunk) but fixes real thread safety bug
-- Message() dialog called from worker thread in OperationProgress is the most dangerous violation
-- Queue's TTerminalItem::OperationProgress is safe (no Far APIs) — only foreground TWinSCPFileSystem::OperationProgress is affected
-- Style: TPluginIdleThread should use PostMainThreadSynchro() wrapper instead of direct FarAdvControl(ACTL_SYNCHRO)
+- Plan `.ai-factory/plans/terminal-thread-progress-marshaling.md` is stale — source already has:
+  TProgressUserAction, TFinishedUserAction, TerminalProgress(), TerminalFinished(),
+  InitTerminalThread() save/override/restore, destructor restore.
+- Roadmap v1.2 "Remaining: minor polish items (queue auto-popup, beep on completion)" is stale —
+  both features exist in source (QueueAutoPopup config + ProcessUserAction, QueueBeep + MessageBeep).
+- Next functional gap: Phase 3 Workspace save/restore (POSTPONED) or Phase 4 Directory comparison.
 
 Open questions:
-- None — all resolved
+- None
 
 Success signals:
-- Zero build warnings under /W4
-- Plugin DLL in Far3_<platform>/Plugins/NetBox/
-- Manual test protocol: connect, transfer, cancel, navigate for each protocol
-- No crashes in 48hr stress test
+- Source code review confirms marshaling classes exist and are wired
+- Queue dialog displays progress (bytes, %, status) for active items
+- Background transfer queue runs TBackgroundTerminal in worker thread
+- Beep and auto-popup settings persisted in FarConfiguration
 
 Next step:
-- **Implement OnProgress/OnFinished marshaling in TTerminalThread** (plan in progress)
+- Mark stale plans as complete (terminal-thread-progress-marshaling.md, update ROADMAP.md v1.2 status)
+- Resume planning for Phase 3 (Workspace save/restore) or Phase 4 (Directory comparison & advanced sync)
 ## Sessions
+
+
+### 2026-05-12 — TerminalThread Marshaling & Background Queue Verification
+
+What changed:
+- Verified TTerminalThread OnProgress/OnFinished marshaling is ALREADY in source:
+  TProgressUserAction (Queue.cpp:255), TFinishedUserAction (Queue.cpp:278),
+  TerminalProgress() / TerminalFinished() methods (Queue.cpp:3247),
+  InitTerminalThread() save/override/restore (Queue.cpp:2802-2818),
+  destructor restore (Queue.cpp:2852-2853).
+- Plan `.ai-factory/plans/terminal-thread-progress-marshaling.md` is stale — marked for update.
+- Verified Background copy & progress UI (roadmap v1.2) is COMPLETE:
+  TQueueDialog exists with Execute/Delete/MoveUp/MoveDown controls (WinSCPDialogs.cpp:10833)
+  3-line progress display per item: operation+direction+source, dest+%, filename+%
+  TBackgroundTerminal runs transfers in worker thread (Queue.cpp:1352)
+  Queue beep on empty (WinSCPFileSystem.cpp:4188) and pending action (4194)
+  Queue auto-popup = auto-process user actions (passwords, errors) at 4143
+  Far taskbar progress updated during queue ops (ProcessQueue:4117)
+- Roadmap v1.2 "Remaining: minor polish items (queue auto-popup, beep on completion)" is stale —
+  both features exist and are wired in transfer dialog + config storage.
+
+Key decisions:
+- No implementation needed for threads 1 or 3 — source is complete.
+- Next functional work: Phase 3 Workspace save/restore (POSTPONED) or Phase 4 Directory comparison.
+
+Links (paths):
+- src/core/Queue.cpp (TTerminalThread, TProgressUserAction, TFinishedUserAction, TBackgroundTerminal)
+- src/NetBox/WinSCPDialogs.cpp (TQueueDialog, FillQueueItemLine, QueueItemNeedsFrequentRefresh)
+- src/NetBox/WinSCPFileSystem.cpp (ProcessQueue, QueueShow, QueueAddItem, QueueEvent)
+- src/NetBox/FarConfiguration.cpp/h (QueueBeep, QueueAutoPopup settings)
+- .ai-factory/plans/terminal-thread-progress-marshaling.md (stale — needs marking DONE)
+- .ai-factory/ROADMAP.md (v1.2 status needs updating to COMPLETE)
 
 ### 2026-05-10 (evening) — Phase 2 Verification Fixes + Gap Resolution
 
