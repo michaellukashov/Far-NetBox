@@ -7512,7 +7512,7 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
   TFarBox * Box = MakeOwnedObject<TFarBox>(GetDialog());
   Box->SetLeft(0);
   Box->SetTop(0);
-  Box->SetHeight(1);
+  Box->SetBottom(Box->GetTop());
   Add(Box);
   Box->SetWidth(TMWidth + 2);
   Box->SetCaption(GetMsg(NB_TRANSFER_MODE));
@@ -7524,12 +7524,16 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
   Box->SetLeft(Box->GetLeft() - 2);
   Box->SetRight(Box->GetRight() + 1);
   Box->SetCaption(GetMsg(NB_TRANSFER_UPLOAD_OPTIONS));
+  // Box->SetHeight(1);
+  Box->SetTop(0);
+  Box->SetBottom(Box->GetTop());
 
   GetDialog()->SetNextItemPosition(ipNewLine);
 
   TMTextButton = MakeOwnedObject<TFarRadioButton>(GetDialog());
   TMTextButton->SetLeft(1);
   Add(TMTextButton);
+  // TMTextButton->SetContainer(Box);
   int32_t TMTop = TMTextButton->GetTop();
   TMTextButton->SetCaption(GetMsg(NB_TRANSFER_MODE_TEXT));
   TMTextButton->SetEnabled(
@@ -7957,7 +7961,8 @@ TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
   TFarDialog::InitDialog();
   DebugAssert(FFileList);
   constexpr int32_t DlgLength = 78;
-  SetSize(TPoint(DlgLength, 12 + (FLAGCLEAR(FOptions, coTempTransfer) ? 4 : 0)));
+  SetSize(TPoint(DlgLength, 16 + (FLAGCLEAR(FOptions, coTempTransfer) ? 4 : 0)));
+  // const TRect CRect = GetClientRect();
 
   SetCaption(GetMsg(Move ? NB_MOVE_TITLE : NB_COPY_TITLE));
 
@@ -7973,12 +7978,16 @@ TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
   TFarSeparator * Separator = MakeOwnedObject<TFarSeparator>(this);
   Separator->SetCaption(GetMsg(NB_COPY_PARAM_GROUP));
 
+  // Transfer settings list
   CopyParamLister = MakeOwnedObject<TFarLister>(this);
   CopyParamLister->SetHeight(3);
   CopyParamLister->SetLeft(GetBorderBox()->GetLeft() + 1);
   CopyParamLister->SetTabStop(false);
   CopyParamLister->SetOnMouseClick(nb::bind(&TCopyDialog::CopyParamListerClick, this));
 
+  MakeOwnedObject<TFarSeparator>(this);
+
+  // Presets
   SetNextItemPosition(ipNewLine);
   TFarText * PresetLabel = MakeOwnedObject<TFarText>(this);
   PresetLabel->SetCaption(GetMsg(NB_TRANSFER_PRESET_LABEL));
@@ -8000,7 +8009,6 @@ TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
     PresetCombo->SetItemIndex(0);
   }
   SetNextItemPosition(ipNewLine);
-
   MakeOwnedObject<TFarSeparator>(this);
 
   if (FLAGCLEAR(FOptions, coTempTransfer))
@@ -8028,14 +8036,15 @@ TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
   SaveSettingsCheck = MakeOwnedObject<TFarCheckBox>(this);
   SaveSettingsCheck->SetCaption(GetMsg(NB_TRANSFER_REUSE_SETTINGS));
 
+  // Transfer settings button and OK/Cancel buttons
   MakeOwnedObject<TFarSeparator>(this);
-
+  // Separator->SetPosition(CRect.Bottom - 1);
   TFarButton * Button = MakeOwnedObject<TFarButton>(this);
   Button->SetCaption(GetMsg(NB_TRANSFER_SETTINGS_BUTTON));
   Button->SetResult(-1);
   Button->SetCenterGroup(true);
   Button->SetOnClick(nb::bind(&TCopyDialog::TransferSettingsButtonClick, this));
-  Button->SetTop(GetBorderBox()->GetBottom() - 3);
+  // Button->SetTop(GetBorderBox()->GetBottom() - 1);
 
   SetNextItemPosition(ipRight);
 
