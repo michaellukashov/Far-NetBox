@@ -422,7 +422,7 @@ void ExecuteProcessAndReadOutput(const UnicodeString & Command, UnicodeString & 
       if (BytesAvail > 0)
       {
         char Buffer[4096];
-        DWORD BytesToRead = std::min(BytesAvail, static_cast<unsigned long>(sizeof(Buffer)));
+        DWORD BytesToRead = nb::Min(BytesAvail, static_cast<unsigned long>(sizeof(Buffer)));
         DWORD BytesRead;
         if (ReadFile(PipeRead, Buffer, BytesToRead, &BytesRead, nullptr))
         {

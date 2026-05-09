@@ -8953,7 +8953,7 @@ void TTerminal::Sink(
 
     // Suppose same data size to transfer as to write
     // (not true with ASCII transfer)
-    int64_t TransferSize = (CopyParam->PartSize >= 0) ? CopyParam->PartSize : (UltimateFile->Size - std::max(0LL, CopyParam->PartOffset));
+    int64_t TransferSize = (CopyParam->PartSize >= 0) ? CopyParam->PartSize : (UltimateFile->Size - nb::Max(0LL, CopyParam->PartOffset));
     AOperationProgress->SetLocalSize(TransferSize);
     if (IsFileEncrypted(AFileName))
     {

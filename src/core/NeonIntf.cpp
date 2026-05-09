@@ -635,7 +635,7 @@ UnicodeString NeonTlsSessionInfo(
 
 static int32_t TlsVersionToOpenssl(TTlsVersion TlsVersion)
 {
-  TlsVersion = (TTlsVersion)std::min((TTlsVersion)std::max(TlsVersion, tlsMin), tlsMax);
+  TlsVersion = (TTlsVersion)nb::Min((TTlsVersion)nb::Max(TlsVersion, tlsMin), tlsMax);
   switch (TlsVersion)
   {
     case tls10: return TLS1_VERSION;

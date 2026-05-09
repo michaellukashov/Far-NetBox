@@ -2485,7 +2485,7 @@ bool TSecureShell::EventSelectLoop(uint32_t MSec, bool ReadEventRequired,
       do
       {
         CheckConnection();
-        uint32_t TimeoutStep = std::min(GUIUpdateInterval, Timeout);
+        uint32_t TimeoutStep = nb::Min(GUIUpdateInterval, Timeout);
         if (toplevel_callback_pending(GetCallbackSet()))
         {
           TimeoutStep = 0;

@@ -430,7 +430,7 @@ void TMessageTimeout::ApplicationMessage(TMsg & Msg, bool & DebugUsedArg(Handled
 void TMessageTimeout::MouseMove()
 {
   TPoint CursorPos = Mouse->CursorPos;
-  int Delta = std::max(std::abs(FOrigCursorPos.X - CursorPos.X), std::abs(FOrigCursorPos.Y - CursorPos.Y));
+  int Delta = nb::Max(std::abs(FOrigCursorPos.X - CursorPos.X), std::abs(FOrigCursorPos.Y - CursorPos.Y));
 
   int Threshold = 8;
   if (DebugAlwaysTrue(FButton != nullptr))
@@ -442,7 +442,7 @@ void TMessageTimeout::MouseMove()
   {
     FOrigCursorPos = CursorPos;
     const uint32_t SuspendTime = 30 * MSecsPerSec;
-    FTimeout = std::max(FOrigTimeout, SuspendTime);
+    FTimeout = nb::Max(FOrigTimeout, SuspendTime);
     UpdateButton();
   }
 }

@@ -3593,7 +3593,7 @@ void TSFTPFileSystem::DoStartup()
       TSFTPPacket Packet(SSH_FXP_EXTENDED, FCodePage);
       Packet.AddString(RawByteString(SFTP_EXT_LIMITS));
       SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_EXTENDED_REPLY);
-      uint32_t MaxPacketSize = nb::ToUInt32(std::min(static_cast<int64_t>(std::numeric_limits<uint32_t>::max()), Packet.GetInt64()));
+      uint32_t MaxPacketSize = nb::ToUInt32(nb::Min(static_cast<int64_t>(std::numeric_limits<uint32_t>::max()), Packet.GetInt64()));
       FTerminal->LogEvent(FORMAT(L"Limiting packet size to server's limit of %d + %d bytes",
         nb::ToInt32(MaxPacketSize), nb::ToInt32(PacketPayload)));
       FMaxPacketSize = MaxPacketSize + PacketPayload;
@@ -5931,7 +5931,7 @@ void TSFTPFileSystem::Sink(
         {
           QueueLen = 1;
         }
-        const int64_t Offset = OperationProgress->TransferredSize + std::max(CopyParam->PartOffset, 0LL);
+        const int64_t Offset = OperationProgress->TransferredSize + nb::Max(CopyParam->PartOffset, 0LL);
         Queue.Init(QueueLen, RemoteHandle, Offset, CopyParam->PartSize, OperationProgress);
 
         bool Eof = false;

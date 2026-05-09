@@ -670,7 +670,7 @@ void TExternalConsole::SendEvent(int Timeout)
   {
     unsigned int End = GetTickCount();
     unsigned int Duration = End - Start;
-    FMaxSend = std::max(Duration, FMaxSend);
+    FMaxSend = nb::Max(Duration, FMaxSend);
   }
   if (Result != WAIT_OBJECT_0)
   {
@@ -976,7 +976,7 @@ void TExternalConsole::TransferOut(const unsigned char * Data, size_t Len)
     try
     {
       CommStruct->Event = TConsoleCommStruct::TRANSFEROUT;
-      unsigned int BlockLen = std::min(Len - Offset, sizeof(CommStruct->TransferEvent.Data));
+      unsigned int BlockLen = nb::Min(Len - Offset, sizeof(CommStruct->TransferEvent.Data));
       memcpy(CommStruct->TransferEvent.Data, Data + Offset, BlockLen);
       CommStruct->TransferEvent.Len = BlockLen;
       Offset += BlockLen;
@@ -998,7 +998,7 @@ size_t TExternalConsole::TransferIn(unsigned char * Data, size_t Len)
   while ((Result == Offset) && (Offset < Len))
   {
     TConsoleCommStruct * CommStruct;
-    size_t BlockLen = std::min(Len - Offset, sizeof(CommStruct->TransferEvent.Data));
+    size_t BlockLen = nb::Min(Len - Offset, sizeof(CommStruct->TransferEvent.Data));
 
     CommStruct = GetCommStruct();
     try
@@ -2414,7 +2414,7 @@ void Usage(TConsole * Console)
   TSwitchesUsage::const_iterator Index = SwitchesUsage.begin();
   while (Index != SwitchesUsage.end())
   {
-    MaxSwitchLen = std::max(Index->first.Length(), MaxSwitchLen);
+    MaxSwitchLen = nb::Max(Index->first.Length(), MaxSwitchLen);
     ++Index;
   }
 

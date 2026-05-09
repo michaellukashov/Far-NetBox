@@ -2022,9 +2022,8 @@ TCleanupDialog::TCleanupDialog(TCustomFarPlugin * AFarPlugin) :
 
   // Layout
   const int32_t ItemCount = static_cast<int32_t>(FCleanupItems.size());
-  const int32_t Height = std::max(ItemCount + 5, 8);
+  const int32_t Height = nb::Max(ItemCount + 5, 11);
   SetSize(TPoint(70, Height));
-  SetCaption(GetMsg(NB_CLEANUP_TITLE));
 
   // Checkbox per cleanup category
   for (int32_t Index = 0; Index < ItemCount; Index++)
@@ -2054,6 +2053,8 @@ TCleanupDialog::TCleanupDialog(TCustomFarPlugin * AFarPlugin) :
 
   // Standard OK/Cancel buttons
   AddStandardButtons();
+
+  SetCaption(GetMsg(NB_CLEANUP_TITLE));
 }
 
 void TCleanupDialog::SelectAllButtonClick(TFarButton * /*Sender*/, bool & /*Close*/)
@@ -2090,7 +2091,8 @@ void TCleanupDialog::UpdateControls()
       break;
     }
   }
-  OkButton->SetEnabled(AnyChecked);
+  if (OkButton)
+    OkButton->SetEnabled(AnyChecked);
 }
 
 bool TCleanupDialog::Execute()

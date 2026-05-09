@@ -1085,7 +1085,7 @@ S3Status TS3FileSystem::LibS3XmlDataCallback(int32_t BufferSize, const char * Bu
 int32_t TS3FileSystem::LibS3XmlDataToCallback(int32_t BufferSize, char * Buffer, void * CallbackData)
 {
   TLibS3XmlCallbackData & Data = *static_cast<TLibS3XmlCallbackData *>(CallbackData);
-  const int32_t Len = std::min(Data.Contents.Length(), BufferSize);
+  const int32_t Len = nb::Min(Data.Contents.Length(), BufferSize);
   nbstr_memcpy(Buffer, Data.Contents.c_str(), Len);
   Data.Contents.Delete(1, Len);
   return Len;
@@ -2609,7 +2609,7 @@ int32_t TS3FileSystem::LibS3MultipartCommitPutObjectDataCallback(int32_t BufferS
   int32_t Result = 0;
   if (Data.Remaining > 0)
   {
-    Result = std::min(BufferSize, Data.Remaining);
+    Result = nb::Min(BufferSize, Data.Remaining);
     nbstr_memcpy(Buffer, Data.Message.c_str() + Data.Message.Length() - Data.Remaining, Result);
     Data.Remaining -= Result;
   }
@@ -2684,8 +2684,8 @@ void TS3FileSystem::Source(
       0
     };
 
-  const int32_t Parts = std::min(S3MaxMultiPartChunks, std::max(1, nb::ToInt32((AHandle.Size + S3MinMultiPartChunkSize - 1) / S3MinMultiPartChunkSize)));
-  const int32_t ChunkSize = std::max(S3MinMultiPartChunkSize, nb::ToInt32((AHandle.Size + Parts - 1) / Parts));
+  const int32_t Parts = nb::Min(S3MaxMultiPartChunks, nb::Max(1, nb::ToInt32((AHandle.Size + S3MinMultiPartChunkSize - 1) / S3MinMultiPartChunkSize)));
+  const int32_t ChunkSize = nb::Max(S3MinMultiPartChunkSize, nb::ToInt32((AHandle.Size + Parts - 1) / Parts));
   DebugAssert((ChunkSize == S3MinMultiPartChunkSize) || (AHandle.Size > nb::ToInt64(S3MaxMultiPartChunks) * S3MinMultiPartChunkSize));
 
   bool Multipart = (Parts > 1);
@@ -2749,8 +2749,8 @@ void TS3FileSystem::Source(
           S3PutObjectHandler UploadPartHandler =
             { CreateResponseHandlerCustom(LibS3MultipartResponsePropertiesCallback), LibS3PutObjectDataCallback };
           const int64_t Remaining = Stream->Size() - Stream->Position();
-          const int32_t RemainingInt = nb::ToInt32(std::min(nb::ToInt64(std::numeric_limits<int32_t>::max()), Remaining));
-          const int32_t PartLength = std::min(ChunkSize, RemainingInt);
+          const int32_t RemainingInt = nb::ToInt32(nb::Min(nb::ToInt64(std::numeric_limits<int32_t>::max()), Remaining));
+          const int32_t PartLength = nb::Min(ChunkSize, RemainingInt);
           FTerminal->LogEvent(FORMAT("Uploading part %d [%s]", Part, IntToStr(PartLength)));
           S3_upload_part(
             &BucketContext, StrToS3(Key), &PutProperties, &UploadPartHandler, nb::ToInt32(Part), MultipartUploadId.c_str(),
