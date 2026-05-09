@@ -189,6 +189,7 @@ function(netbox_define_core_sources)
     windows/UserInterface.cpp
     windows/WinInterface.cpp
     windows/CustomWinConfiguration.cpp
+    # windows/VCLCommon.cpp
   PARENT_SCOPE)
 endfunction()
 

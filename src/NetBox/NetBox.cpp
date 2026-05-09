@@ -15,7 +15,7 @@ static HINSTANCE HInstanceDLL;
 // extern void TermExtensionModule();
 extern TCustomFarPlugin * CreateFarPlugin(HINSTANCE HInst);
 extern void DestroyFarPlugin(TCustomFarPlugin *& Plugin);
-
+extern void CleanupVCLCommon();
 // TFarPluginGuard acquires the global plugin lock for the entire export call.
 // CRITICAL: any modal dialog or message loop run while this lock is held
 // will deadlock if Far dispatches a keyboard/mouse event to another plugin
@@ -41,6 +41,7 @@ void CreatePlugin()
 void DestroyPlugin()
 {
   DestroyFarPlugin(FarPlugin);
+  // CleanupVCLCommon();
   TermExtensionModule();
 }
 
