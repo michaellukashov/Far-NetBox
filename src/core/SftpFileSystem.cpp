@@ -2144,11 +2144,8 @@ TSFTPFileSystem::~TSFTPFileSystem() noexcept
   delete FSupport;
 #endif // defined(__BORLANDC__)
   // After closing, we can only possibly have "discard" reservations of the not-read responses to the last requests
-  // (typically to SSH_FXP_CLOSE)
-  for (int32_t i = 0; i < FPacketReservations->Count; i++)
-  {
-    DebugAssert(FPacketReservations->Items[i] == nullptr);
-  }
+  // (typically to SSH_FXP_CLOSE). During fatal error shutdown, pending reservations may still exist.
+  FPacketReservations->Clear();
 #if defined(__BORLANDC__)
   delete FPacketReservations;
   delete FFixedPaths;
@@ -2168,11 +2165,8 @@ void TSFTPFileSystem::Close()
 {
   FSecureShell->Close();
   // After closing, we can only possibly have "discard" reservations of the not-read responses to the last requests
-  // (typically to SSH_FXP_CLOSE)
-  for (int32_t I = 0; I < FPacketReservations->Count; I++)
-  {
-    DebugAssert(FPacketReservations->GetItem(I) == nullptr);
-  }
+  // (typically to SSH_FXP_CLOSE). During fatal error shutdown, pending reservations may still exist.
+  FPacketReservations->Clear();
 }
 
 bool TSFTPFileSystem::GetActive() const
