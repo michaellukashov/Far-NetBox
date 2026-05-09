@@ -2267,8 +2267,7 @@ TGenerateUrlDialog::TGenerateUrlDialog(TCustomFarPlugin * AFarPlugin,
   FUrlResultEdit->SetWidth(60);
   FUrlResultEdit->SetReadOnly(true);
 
-  SetNextItemPosition(ipRight);
-
+  SetNextItemPosition(ipNewLine);
   FClipboardBtn = MakeOwnedObject<TFarButton>(this);
   FClipboardBtn->SetCaption(GetMsg(NB_GENERATE_URL_CLIPBOARD));
   FClipboardBtn->SetGroup(tabUrl);
