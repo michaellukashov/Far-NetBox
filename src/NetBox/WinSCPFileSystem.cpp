@@ -3535,6 +3535,24 @@ void TWinSCPFileSystem::Disconnect()
   TINYLOG_DEBUG(g_tinylog) << TLogContext::Format()
       << " Keepalive thread destroyed";
   DebugAssert(FSynchronizeController == nullptr);
+  // Defensive cleanup: if authentication/progress/synchronization screen was saved
+  // but never restored (e.g. connection aborted during auth), restore it now.
+  if (FAuthenticationSaveScreenHandle)
+  {
+    GetWinSCPPlugin()->ClearConsoleTitle();
+    GetWinSCPPlugin()->RestoreScreen(FAuthenticationSaveScreenHandle);
+    FAuthenticationLog.reset();
+  }
+  if (FProgressSaveScreenHandle)
+  {
+    GetWinSCPPlugin()->RestoreScreen(FProgressSaveScreenHandle);
+    GetWinSCPPlugin()->ClearConsoleTitle();
+  }
+  if (FSynchronizationSaveScreenHandle)
+  {
+    GetWinSCPPlugin()->ClearConsoleTitle();
+    GetWinSCPPlugin()->RestoreScreen(FSynchronizationSaveScreenHandle);
+  }
   DebugAssert(!FAuthenticationSaveScreenHandle);
   DebugAssert(!FProgressSaveScreenHandle);
   DebugAssert(!FSynchronizationSaveScreenHandle);
