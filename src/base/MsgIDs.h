@@ -1,1345 +1,1345 @@
 #pragma once
 enum MsgIDs {
-    NB_PLUGIN_NAME,
-    NB_PLUGIN_TITLE,
+    NB_PLUGIN_NAME,  // "NetBox"
+    NB_PLUGIN_TITLE,  // "NetBox"
 
-    NB_SESSION_NAME_COL_TITLE,
-    NB_STORED_SESSION_TITLE,
+    NB_SESSION_NAME_COL_TITLE,  // "Session name"
+    NB_STORED_SESSION_TITLE,  // "NetBox: Stored sessions"
 
-    NB_STATUS_CLOSED,
-    NB_STATUS_INITWINSOCK,
-    NB_STATUS_LOOKUPHOST,
-    NB_STATUS_CONNECT,
-    NB_STATUS_AUTHENTICATE,
-    NB_STATUS_AUTHENTICATED,
-    NB_STATUS_STARTUP,
-    NB_STATUS_OPEN_DIRECTORY,
-    NB_STATUS_READY,
+    NB_STATUS_CLOSED,  // "Connection terminated."
+    NB_STATUS_INITWINSOCK,  // "Initialization..."
+    NB_STATUS_LOOKUPHOST,  // "Searching host..."
+    NB_STATUS_CONNECT,  // "Connecting to host..."
+    NB_STATUS_AUTHENTICATE,  // "Authenticating..."
+    NB_STATUS_AUTHENTICATED,  // "Authenticated."
+    NB_STATUS_STARTUP,  // "Starting the session..."
+    NB_STATUS_OPEN_DIRECTORY,  // "Reading remote directory..."
+    NB_STATUS_READY,  // "Session started."
 
-    MSG_TITLE_CONFIRMATION,
-    MSG_TITLE_INFORMATION,
-    MSG_TITLE_ERROR,
-    MSG_TITLE_WARNING,
+    MSG_TITLE_CONFIRMATION,  // "Confirmation"
+    MSG_TITLE_INFORMATION,  // "Information"
+    MSG_TITLE_ERROR,  // "Error"
+    MSG_TITLE_WARNING,  // "Warning"
 
-    MSG_BUTTON_Yes,
-    MSG_BUTTON_No,
-    MSG_BUTTON_OK,
-    MSG_BUTTON_Cancel,
-    MSG_BUTTON_Abort,
-    MSG_BUTTON_Retry,
-    MSG_BUTTON_Ignore,
-    MSG_BUTTON_All,
-    MSG_BUTTON_NoToAll,
-    MSG_BUTTON_YesToAll,
-    MSG_BUTTON_Help,
-    MSG_BUTTON_Skip,
-    MSG_BUTTON_Prev,
-    MSG_BUTTON_Next,
-    MSG_BUTTON_Append,
+    MSG_BUTTON_Yes,  // "&Yes"
+    MSG_BUTTON_No,  // "&No"
+    MSG_BUTTON_OK,  // "&Ok"
+    MSG_BUTTON_Cancel,  // "&Cancel"
+    MSG_BUTTON_Abort,  // "A&bort"
+    MSG_BUTTON_Retry,  // "&Retry"
+    MSG_BUTTON_Ignore,  // "&Ignore"
+    MSG_BUTTON_All,  // "A&ll"
+    MSG_BUTTON_NoToAll,  // "N&o to All"
+    MSG_BUTTON_YesToAll,  // "Yes to A&ll"
+    MSG_BUTTON_Help,  // "&Help"
+    MSG_BUTTON_Skip,  // "&Skip"
+    MSG_BUTTON_Prev,  // "&Previous"
+    MSG_BUTTON_Next,  // "&Next"
+    MSG_BUTTON_Append,  // "A&ppend"
 
-    MSG_BUTTON_CLOSE,
-    MSG_CHECK_NEVER_ASK_AGAIN,
-    MSG_CHECK_NEVER_SHOW_AGAIN,
-    MSG_BUTTON_TIMEOUT,
+    MSG_BUTTON_CLOSE,  // "Close"
+    MSG_CHECK_NEVER_ASK_AGAIN,  // "Never ask me a&gain"
+    MSG_CHECK_NEVER_SHOW_AGAIN,  // "Never show this message a&gain"
+    MSG_BUTTON_TIMEOUT,  // "%s (%d s)"
 
-    NB_GROUP_COL_TITLE,
-    NB_RIGHTS_COL_TITLE,
-    NB_RIGHTS_OCTAL_COL_TITLE,
-    NB_LINK_TO_COL_TITLE,
+    NB_GROUP_COL_TITLE,  // "Group"
+    NB_RIGHTS_COL_TITLE,  // "Rights"
+    NB_RIGHTS_OCTAL_COL_TITLE,  // "Rights"
+    NB_LINK_TO_COL_TITLE,  // "Link target"
 
-    NB_NEW_SESSION_KEYBAR,
-    NB_NEW_SESSION_HINT,
-    NB_EXPORT_SESSION_KEYBAR,
-    NB_COPY_SESSION_KEYBAR,
-    NB_RENAME_SESSION_KEYBAR,
-    NB_EDIT_HISTORY_KEYBAR,
-    NB_OPEN_DIRECTORY_KEYBAR,
-    NB_COPY_TO_FILE_KEYBAR,
-    NB_MOVE_TO_FILE_KEYBAR,
-    NB_RENAME_FILE_KEYBAR,
+    NB_NEW_SESSION_KEYBAR,  // "NewSes"
+    NB_NEW_SESSION_HINT,  // "Press Shift-F4 to add new stored session"
+    NB_EXPORT_SESSION_KEYBAR,  // "Export"
+    NB_COPY_SESSION_KEYBAR,  // "Duplicate"
+    NB_RENAME_SESSION_KEYBAR,  // "Rename"
+    NB_EDIT_HISTORY_KEYBAR,  // "EditHs"
+    NB_OPEN_DIRECTORY_KEYBAR,  // "OpenFld"
+    NB_COPY_TO_FILE_KEYBAR,  // "Duplicate"
+    NB_MOVE_TO_FILE_KEYBAR,  // "MoveTo"
+    NB_RENAME_FILE_KEYBAR,  // "Rename"
 
-    NB_WARN_FATAL_ERROR,
-    NB_CREATE_LOCAL_DIR_ERROR,
-    NB_CREATE_LOCAL_DIRECTORY,
-    NB_CANCEL_OPERATION2,
-    NB_EDIT_MASK_ERROR,
-    NB_VIEW_FROM_FIND_NOT_SUPPORTED,
-    NB_PENDING_QUEUE_ITEMS,
-    NB_GSSAPI_NOT_INSTALLED,
-    NB_WATCH_ERROR_DIRECTORY,
-    NB_WATCH_ERROR_GENERAL,
-    NB_PERFORM_ON_COMMAND_SESSION,
-    NB_NO_FILES_SELECTED,
-    NB_CREATE_TEMP_DIR_ERROR,
-    NB_SAVE_PASSWORD,
-    NB_OLD_FAR,
-    NB_SAVE_SYNCHRONIZE_MODE,
-    NB_SYNCHRONISE_BEFORE_KEEPUPTODATE,
-    NB_SYNCHRONIZE_BROWSING_ON,
-    NB_SYNCHRONIZE_BROWSING_OFF,
-    NB_SYNCHRONIZE_BROWSING_LOCAL_PATH_REQUIRED,
-    NB_SYNC_DIR_BROWSE_ERROR,
-    NB_SYNC_DIR_BROWSE_CREATE,
-    NB_DELETE_LOCAL_FILE_ERROR,
-    NB_TOO_MANY_WATCH_DIRECTORIES,
-    NB_DIRECTORY_READING_CANCELLED,
-    NB_FTP_PASV_MODE_REQUIRED,
-    NB_EDITOR_ALREADY_LOADED,
+    NB_WARN_FATAL_ERROR,  // "%s\n \nWarning: Aborting this operation will close connection!"
+    NB_CREATE_LOCAL_DIR_ERROR,  // "Can't create folder '%s'."
+    NB_CREATE_LOCAL_DIRECTORY,  // "Directory '%s' doesn't exist. Create?"
+    NB_CANCEL_OPERATION2,  // "**Cancel current operation?**"
+    NB_EDIT_MASK_ERROR,  // "'%s' is invalid mask"
+    NB_VIEW_FROM_FIND_NOT_SUPPORTED,  // "View from find dialog is not supported"
+    NB_PENDING_QUEUE_ITEMS,  // "You are about to close WinSCP plugin, while having some queued background transfers. Do you want to show queue list?\n \nWarning: Pressing 'Cancel' will terminate all transfers immediately."
+    NB_GSSAPI_NOT_INSTALLED,  // "MIT Kerberos 5 GSSAPI not found. You need to install it before using this feature."
+    NB_WATCH_ERROR_DIRECTORY,  // "Error watching for changes."
+    NB_WATCH_ERROR_GENERAL,  // "Error watching for changes in directory '%s'."
+    NB_PERFORM_ON_COMMAND_SESSION,  // "Current %s session does not support command you request. Separate shell session may be opened to process the command. Do you want to open separate shell session?\n \nNote: The server must provide Unix-like shell and the shell must use same path syntax as current %s session."
+    NB_NO_FILES_SELECTED,  // "There are no files selected."
+    NB_CREATE_TEMP_DIR_ERROR,  // "Cannot create temporary directory '%s'."
+    NB_SAVE_PASSWORD,  // "You are about to store session with filled password.\n \nSaved passwords are stored in a manner that they can easily be recovered. It is not possible to securely encrypt passwords in a way that still allows for automatic use. Do not use the save password feature if you are not absolutely sure of the physical and electronic security of the system on which you are storing passwords.\n \nIf you do not save password along with other session options, you will be prompted for it once you attempt to open the stored session.\n \nSave the password anyway?"
+    NB_OLD_FAR,  // "Plugin requires FAR %s or later."
+    NB_SAVE_SYNCHRONIZE_MODE,  // "You have overridden pre-selected synchronization direction. By default the direction is determined from file panel that was active before you run the synchronize function.\n \nDo you want to make direction you have selected the default?"
+    NB_SYNCHRONISE_BEFORE_KEEPUPTODATE,  // "Do you want to perform full synchronization of the remote directory first?\n \nFunction 'Keep remote directory up to date' works correctly only, if the remote directory is synchronized with the local one before it starts.\n"
+    NB_SYNCHRONIZE_BROWSING_ON,  // "Synchronized browsing enabled."
+    NB_SYNCHRONIZE_BROWSING_OFF,  // "Synchronized browsing disabled."
+    NB_SYNCHRONIZE_BROWSING_LOCAL_PATH_REQUIRED,  // "Synchronized browsing is supported only against regular panel."
+    NB_SYNC_DIR_BROWSE_ERROR,  // "Cannot open corresponding directory in the opposite panel. Directory browsing synchronization failed. It has been turned off."
+    NB_SYNC_DIR_BROWSE_CREATE,  // "Cannot open corresponding directory in the opposite panel.\n \nDo you want to try to create directory '%s'?"
+    NB_DELETE_LOCAL_FILE_ERROR,  // "Error deleting file '%s'."
+    NB_TOO_MANY_WATCH_DIRECTORIES,  // "More than %d directories and subdirectories found. Watching for changes in large number of directories can significantly degrade performance of the computer.\n \nDo you want to scan for another up to %d directories?"
+    NB_DIRECTORY_READING_CANCELLED,  // "Operation not completed"
+    NB_FTP_PASV_MODE_REQUIRED,  // "Passive mode must be enabled when FTP connection through proxy is selected."
+    NB_EDITOR_ALREADY_LOADED,  // "%s\nalready loaded. How to open this file?"
 
-    NB_COPY_PARAM_GROUP,
-    NB_TRANSFER_SETTINGS_BUTTON,
+    NB_COPY_PARAM_GROUP,  // " Transfer settings "
+    NB_TRANSFER_SETTINGS_BUTTON,  // "Transfer settin&gs..."
 
-    NB_CREATE_FOLDER_TITLE,
-    NB_CREATE_FOLDER_PROMPT,
-    NB_CREATE_FOLDER_ATTRIBUTES,
-    NB_CREATE_FOLDER_SET_RIGHTS,
-    NB_CREATE_FOLDER_REUSE_SETTINGS,
+    NB_CREATE_FOLDER_TITLE,  // "Make folder"
+    NB_CREATE_FOLDER_PROMPT,  // "New &folder name:"
+    NB_CREATE_FOLDER_ATTRIBUTES,  // " Attributes "
+    NB_CREATE_FOLDER_SET_RIGHTS,  // "Set pe&rmissions"
+    NB_CREATE_FOLDER_REUSE_SETTINGS,  // "Use &same settings next time"
 
-    NB_COPY_TITLE,
-    NB_COPY_FILE_PROMPT,
-    NB_COPY_FILES_PROMPT,
-    NB_MOVE_TITLE,
-    NB_MOVE_FILE_PROMPT,
-    NB_MOVE_FILES_PROMPT,
+    NB_COPY_TITLE,  // "Copy"
+    NB_COPY_FILE_PROMPT,  // "Co&py \"
+    NB_COPY_FILES_PROMPT,  // "Co&py %d items to:"
+    NB_MOVE_TITLE,  // "Move"
+    NB_MOVE_FILE_PROMPT,  // "Mo&ve \"
+    NB_MOVE_FILES_PROMPT,  // "Mo&ve %d items to:"
 
-    NB_READING_DIRECTORY_TITLE,
-    NB_CHANGING_DIRECTORY_TITLE,
+    NB_READING_DIRECTORY_TITLE,  // "Reading directory"
+    NB_CHANGING_DIRECTORY_TITLE,  // "Changing directory"
 
-    NB_DELETE_FILE_CONFIRM,
-    NB_DELETE_FILES_CONFIRM,
-    NB_RECYCLE_FILE_CONFIRM,
-    NB_RECYCLE_FILES_CONFIRM,
+    NB_DELETE_FILE_CONFIRM,  // "Do you wish to delete the file %s"
+    NB_DELETE_FILES_CONFIRM,  // "Do you wish to delete %d items"
+    NB_RECYCLE_FILE_CONFIRM,  // "Do you wish to move to the Recycle Bin the file %s"
+    NB_RECYCLE_FILES_CONFIRM,  // "Do you wish to move to the Recycle Bin %d items"
 
-    NB_PROGRESS_COPY,
-    NB_PROGRESS_MOVE,
-    NB_PROGRESS_DELETE,
-    NB_PROGRESS_SETPROPERTIES,
-    NB_PROGRESS_CALCULATE_SIZE,
-    NB_PROGRESS_REMOTE_MOVE,
-    NB_PROGRESS_REMOTE_COPY,
-    NB_PROGRESS_GETPROPERTIES,
-    NB_PROGRESS_CALCULATE_CHECKSUM,
+    NB_PROGRESS_COPY,  // "Copying"
+    NB_PROGRESS_MOVE,  // "Moving"
+    NB_PROGRESS_DELETE,  // "Deleting"
+    NB_PROGRESS_SETPROPERTIES,  // "Setting properties"
+    NB_PROGRESS_CALCULATE_SIZE,  // "Calculating directory size"
+    NB_PROGRESS_REMOTE_MOVE,  // "Moving"
+    NB_PROGRESS_REMOTE_COPY,  // "Copying"
+    NB_PROGRESS_GETPROPERTIES,  // "Getting properties"
+    NB_PROGRESS_CALCULATE_CHECKSUM,  // "Calculating file checksum"
 
-    NB_PROGRESS_FILE_LABEL,
-    NB_TARGET_DIR_LABEL,
-    NB_START_TIME_LABEL,
-    NB_TIME_ELAPSED_LABEL,
-    NB_BYTES_TRANSFERRED_LABEL,
-    NB_CPS_LABEL,
-    NB_TIME_LEFT_LABEL,
+    NB_PROGRESS_FILE_LABEL,  // "File:   "
+    NB_TARGET_DIR_LABEL,  // "Target: "
+    NB_START_TIME_LABEL,  // "Start time:"
+    NB_TIME_ELAPSED_LABEL,  // "Elapsed:"
+    NB_BYTES_TRANSFERRED_LABEL,  // "Transferred:"
+    NB_CPS_LABEL,  // "CPS:"
+    NB_TIME_LEFT_LABEL,  // "Left:"
 
-    NB_CANCEL_OPERATION_FATAL2,
-    NB_CANCEL_OPERATION,
+    NB_CANCEL_OPERATION_FATAL2,  // "Cancel file transfer?\n \nOperation can't be canceled in the middle of file transfer.\nPress 'Yes' to cancel file transfer and to close connection.\nPress 'No' to finish current file transfer.\nPress 'Cancel' to continue operation."
+    NB_CANCEL_OPERATION,  // "Cancel current operation?"
 
-    NB_NOT_SUPPORTED,
-    NB_OPERATION_NOT_SUPPORTED,
-    NB_CANNOT_INIT_SESSION,
+    NB_NOT_SUPPORTED,  // "Not supported"
+    NB_OPERATION_NOT_SUPPORTED,  // "Current protocol %s does not support required operation."
+    NB_CANNOT_INIT_SESSION,  // "Cannot initialize session '%s'."
 
-    NB_SESSION_ALREADY_EXISTS_ERROR,
-    NB_NEW_SESSION_NAME_TITLE,
-    NB_NEW_SESSION_NAME_PROMPT,
-    NB_DELETE_SESSIONS_CONFIRM,
-    NB_EXPORT_SESSION_TITLE,
-    NB_EXPORT_SESSION_PROMPT,
-    NB_EXPORT_SESSIONS_PROMPT,
-    NB_IMPORT_SESSIONS_PROMPT,
-    NB_IMPORT_SESSIONS_EMPTY,
-    NB_DUPLICATE_SESSION_TITLE,
-    NB_DUPLICATE_SESSION_PROMPT,
-    NB_RENAME_SESSION_TITLE,
-    NB_RENAME_SESSION_PROMPT,
+    NB_SESSION_ALREADY_EXISTS_ERROR,  // "Session named '%s' already exists."
+    NB_NEW_SESSION_NAME_TITLE,  // "Save session as"
+    NB_NEW_SESSION_NAME_PROMPT,  // "Save session as:"
+    NB_DELETE_SESSIONS_CONFIRM,  // "Do you wish to delete selected session(s)"
+    NB_EXPORT_SESSION_TITLE,  // "Export"
+    NB_EXPORT_SESSION_PROMPT,  // "Export session \"
+    NB_EXPORT_SESSIONS_PROMPT,  // "Export %d session(s) to:"
+    NB_IMPORT_SESSIONS_PROMPT,  // "Import session(s) from selected file(s)?"
+    NB_IMPORT_SESSIONS_EMPTY,  // "File \"
+    NB_DUPLICATE_SESSION_TITLE,  // "Duplicate session"
+    NB_DUPLICATE_SESSION_PROMPT,  // "New session name:"
+    NB_RENAME_SESSION_TITLE,  // "Rename session"
+    NB_RENAME_SESSION_PROMPT,  // "New session name:"
 
-    NB_CONFIG_INTERFACE,
-    NB_CONFIG_CONFIRMATIONS,
-    NB_CONFIG_TRANSFER,
-    NB_CONFIG_BACKGROUND,
-    NB_CONFIG_ENDURANCE,
-    NB_CONFIG_TRANSFER_EDITOR,
-    NB_CONFIG_LOGGING,
-    NB_CONFIG_ABOUT,
-    NB_CONFIG_INTEGRATION,
-    NB_CONFIG_SECURITY,
-    NB_CONFIG_PANEL,
+    NB_CONFIG_INTERFACE,  // "&Interface settings"
+    NB_CONFIG_CONFIRMATIONS,  // "&Confirmations"
+    NB_CONFIG_TRANSFER,  // "&Transfer settings"
+    NB_CONFIG_BACKGROUND,  // "&Background transfers"
+    NB_CONFIG_ENDURANCE,  // "En&durance settings"
+    NB_CONFIG_TRANSFER_EDITOR,  // "&Editor/viewer settings"
+    NB_CONFIG_LOGGING,  // "&Logging settings"
+    NB_CONFIG_ABOUT,  // "&About"
+    NB_CONFIG_INTEGRATION,  // "I&ntegration settings"
+    NB_CONFIG_SECURITY,  // "&Security"
+    NB_CONFIG_PANEL,  // "&Panel settings"
 
-    NB_CONFIG_DISKS_MENU,
-    NB_CONFIG_PLUGINS_MENU,
-    NB_CONFIG_PLUGINS_MENU_COMMANDS,
-    NB_CONFIG_SESSION_NAME_IN_TITLE,
-    NB_CONFIG_COMMAND_PREFIXES,
-    NB_CONFIG_PANEL_MODE_GROUP,
-    NB_CONFIG_PANEL_MODE_CHECK,
-    NB_CONFIG_PANEL_MODE_TYPES,
-    NB_CONFIG_PANEL_MODE_WIDTHS,
-    NB_CONFIG_PANEL_MODE_STATUS_TYPES,
-    NB_CONFIG_PANEL_MODE_STATUS_WIDTHS,
-    NB_CONFIG_PANEL_MODE_FULL_SCREEN,
-    NB_CONFIG_PANEL_MODE_HINT,
-    NB_CONFIG_PANEL_MODE_HINT2,
-    NB_CONFIG_AUTO_READ_DIRECTORY_AFTER_OP,
+    NB_CONFIG_DISKS_MENU,  // "Add to &Disks menu"
+    NB_CONFIG_PLUGINS_MENU,  // "Add to &Plugins menu"
+    NB_CONFIG_PLUGINS_MENU_COMMANDS,  // "Add &commands to Plugins menu (Alt-Shift-W)"
+    NB_CONFIG_SESSION_NAME_IN_TITLE,  // "Show &session name in window title"
+    NB_CONFIG_COMMAND_PREFIXES,  // "&Command line prefixes (separated by comma):"
+    NB_CONFIG_PANEL_MODE_GROUP,  // " Custom \"
+    NB_CONFIG_PANEL_MODE_CHECK,  // "&Use custom settings for \"
+    NB_CONFIG_PANEL_MODE_TYPES,  // "Column &types"
+    NB_CONFIG_PANEL_MODE_WIDTHS,  // "Column &widths"
+    NB_CONFIG_PANEL_MODE_STATUS_TYPES,  // "Status &line column types"
+    NB_CONFIG_PANEL_MODE_STATUS_WIDTHS,  // "Status l&ine column widths"
+    NB_CONFIG_PANEL_MODE_FULL_SCREEN,  // "&Full screen mode"
+    NB_CONFIG_PANEL_MODE_HINT,  // "Use standard Far column types, plus G (group),"
+    NB_CONFIG_PANEL_MODE_HINT2,  // "R (rights), RO (octal format) and L (symlink target)"
+    NB_CONFIG_AUTO_READ_DIRECTORY_AFTER_OP,  // "Auto&matically refresh directory after operation"
 
-    NB_ABOUT_VERSION,
-    NB_ABOUT_PRODUCT_VERSION,
-    NB_ABOUT_HOMEPAGE,
-    NB_ABOUT_FORUM,
-    NB_ABOUT_URL,
+    NB_ABOUT_VERSION,  // "Version %s build %d"
+    NB_ABOUT_PRODUCT_VERSION,  // "Based on %s version %s"
+    NB_ABOUT_HOMEPAGE,  // "&Homepage"
+    NB_ABOUT_FORUM,  // "&Support forum"
+    NB_ABOUT_URL,  // "http://winscp.net/"
 
-    NB_LOGIN_EDIT,
-    NB_LOGIN_ADD,
-    NB_LOGIN_CONNECT,
-    NB_LOGIN_CONNECT_BUTTON,
-    NB_LOGIN_TAB_SESSION,
-    NB_LOGIN_TAB_ENVIRONMENT,
-    NB_LOGIN_TAB_DIRECTORIES,
-    NB_LOGIN_TAB_SCP,
-    NB_LOGIN_TAB_SFTP,
-    NB_LOGIN_TAB_FTP,
-    NB_LOGIN_TAB_FTPS,
-    NB_LOGIN_TAB_SSH,
-    NB_LOGIN_TAB_S3,
-    NB_LOGIN_TAB_CONNECTION,
-    NB_LOGIN_TAB_TUNNEL,
-    NB_LOGIN_TAB_PROXY,
-    NB_LOGIN_TAB_BUGS,
-    NB_LOGIN_TAB_AUTH,
-    NB_LOGIN_TAB_KEX,
-    NB_LOGIN_TAB_WEBDAV,
-    NB_LOGIN_GROUP_SESSION,
-    NB_LOGIN_HOST_NAME,
-    NB_LOGIN_PORT_NUMBER,
-    NB_LOGIN_LOGIN_TYPE,
-    NB_LOGIN_LOGIN_TYPE_ANONYMOUS,
-    NB_LOGIN_LOGIN_TYPE_NORMAL,
-    NB_LOGIN_USER_NAME,
-    NB_LOGIN_PASSWORD,
-    NB_LOGIN_S3_ACCESS_KEY,
-    NB_LOGIN_S3_SECRET_ACCESS_KEY,
-    NB_LOGIN_S3_CA_CERTIFICATE,
-    NB_LOGIN_PRIVATE_KEY,
-    NB_LOGIN_GROUP_PROTOCOL,
-    NB_LOGIN_TRANSFER_PROTOCOL,
-    NB_LOGIN_SCP,
-    NB_LOGIN_SFTP,
-    NB_LOGIN_FTP,
-    NB_LOGIN_WEBDAV,
-    NB_LOGIN_S3,
-    NB_LOGIN_ALLOW_SCP_FALLBACK,
-    NB_LOGIN_INSECURE,
-    NB_LOGIN_TAB_HINT1,
-    NB_LOGIN_TAB_HINT2,
-    NB_LOGIN_DIRECTORIES_GROUP,
-    NB_LOGIN_UPDATE_DIRECTORIES,
-    NB_LOGIN_DIRECTORY_OPTIONS_GROUP,
-    NB_LOGIN_CACHE_DIRECTORIES,
-    NB_LOGIN_CACHE_DIRECTORY_CHANGES,
-    NB_LOGIN_PRESERVE_DIRECTORY_CHANGES,
-    NB_LOGIN_RESOLVE_SYMLINKS,
-    NB_LOGIN_REMOTE_DIRECTORY,
-    NB_LOGIN_ENVIRONMENT_GROUP,
-    NB_LOGIN_EOL_TYPE,
-    NB_LOGIN_DST_MODE_GROUP,
-    NB_LOGIN_DST_MODE_UNIX,
-    NB_LOGIN_DST_MODE_WIN,
-    NB_LOGIN_DST_MODE_KEEP,
-    NB_LOGIN_SSH_GROUP,
-    NB_LOGIN_COMPRESSION,
-    NB_LOGIN_ENCRYPTION_GROUP,
-    NB_LOGIN_CIPHER,
-    NB_LOGIN_UP,
-    NB_LOGIN_DOWN,
-    NB_LOGIN_SSH2DES,
-    NB_CIPHER_NAME_WARN,
-    NB_CIPHER_NAME_3DES,
-    NB_CIPHER_NAME_BLOWFISH,
-    NB_CIPHER_NAME_AES,
-    NB_CIPHER_NAME_DES,
-    NB_CIPHER_NAME_ARCFOUR,
-    NB_CIPHER_NAME_CHACHA20,
-    NB_CIPHER_NAME_AESGCM,
-    NB_LOGIN_SHELL_GROUP,
-    NB_LOGIN_SHELL_SHELL,
-    NB_LOGIN_SHELL_SHELL_DEFAULT,
-    NB_LOGIN_SHELL_RETURN_VAR,
-    NB_LOGIN_SHELL_RETURN_VAR_AUTODETECT,
-    NB_LOGIN_SCP_LS_OPTIONS_GROUP,
-    NB_LOGIN_IGNORE_LS_WARNINGS,
-    NB_LOGIN_LISTING_COMMAND,
-    NB_LOGIN_SCP_LS_FULL_TIME_AUTO,
-    NB_LOGIN_SCP_OPTIONS,
-    NB_LOGIN_LOOKUP_USER_GROUPS,
-    NB_LOGIN_CLEAR_NATIONAL_VARS,
-    NB_LOGIN_CLEAR_ALIASES,
-    NB_LOGIN_SCP1_COMPATIBILITY,
-    NB_LOGIN_TIME_DIFFERENCE,
-    NB_LOGIN_TIME_DIFFERENCE_HOURS,
-    NB_LOGIN_TIME_DIFFERENCE_MINUTES,
-    NB_LOGIN_TIMEOUTS_GROUP,
-    NB_LOGIN_TIMEOUT,
-    NB_LOGIN_TIMEOUT_SECONDS,
-    NB_LOGIN_PING_GROUP,
-    NB_LOGIN_PING_OFF,
-    NB_LOGIN_PING_NULL_PACKET,
-    NB_LOGIN_PING_DUMMY_COMMAND,
-    NB_LOGIN_PING_INTERVAL,
-    NB_LOGIN_IP_GROUP,
-    NB_LOGIN_IP_AUTO,
-    NB_LOGIN_IP_V4,
-    NB_LOGIN_IP_V6,
-    NB_LOGIN_CODE_PAGE,
-    NB_LOGIN_PROXY_GROUP,
-    NB_LOGIN_PROXY_METHOD,
-    NB_LOGIN_PROXY_NONE,
-    NB_LOGIN_PROXY_SOCKS4,
-    NB_LOGIN_PROXY_SOCKS5,
-    NB_LOGIN_PROXY_HTTP,
-    NB_LOGIN_PROXY_TELNET,
-    NB_LOGIN_PROXY_LOCAL,
-    NB_LOGIN_PROXY_SYSTEM,
+    NB_LOGIN_EDIT,  // "Edit session"
+    NB_LOGIN_ADD,  // "Add session"
+    NB_LOGIN_CONNECT,  // "Connect session"
+    NB_LOGIN_CONNECT_BUTTON,  // "Co&nnect"
+    NB_LOGIN_TAB_SESSION,  // "Session"
+    NB_LOGIN_TAB_ENVIRONMENT,  // "Environment"
+    NB_LOGIN_TAB_DIRECTORIES,  // "Directories"
+    NB_LOGIN_TAB_SCP,  // "SCP/Shell"
+    NB_LOGIN_TAB_SFTP,  // "SFTP"
+    NB_LOGIN_TAB_FTP,  // "FTP(S)"
+    NB_LOGIN_TAB_FTPS,  // "FTPS"
+    NB_LOGIN_TAB_SSH,  // "SSH"
+    NB_LOGIN_TAB_S3,  // "S3"
+    NB_LOGIN_TAB_CONNECTION,  // "Connection"
+    NB_LOGIN_TAB_TUNNEL,  // "Tunnel"
+    NB_LOGIN_TAB_PROXY,  // "Proxy"
+    NB_LOGIN_TAB_BUGS,  // "Bugs"
+    NB_LOGIN_TAB_AUTH,  // "Authentication"
+    NB_LOGIN_TAB_KEX,  // "KEX|Key exchange"
+    NB_LOGIN_TAB_WEBDAV,  // "WebDAV"
+    NB_LOGIN_GROUP_SESSION,  // " Session "
+    NB_LOGIN_HOST_NAME,  // "&Host name:"
+    NB_LOGIN_PORT_NUMBER,  // "Po&rt number:"
+    NB_LOGIN_LOGIN_TYPE,  // "&Login type:"
+    NB_LOGIN_LOGIN_TYPE_ANONYMOUS,  // "Anonymous"
+    NB_LOGIN_LOGIN_TYPE_NORMAL,  // "Normal"
+    NB_LOGIN_USER_NAME,  // "&User name:"
+    NB_LOGIN_PASSWORD,  // "&Password:"
+    NB_LOGIN_S3_ACCESS_KEY,  // "&Access key ID:"
+    NB_LOGIN_S3_SECRET_ACCESS_KEY,  // "&Secret access key:"
+    NB_LOGIN_S3_CA_CERTIFICATE,  // "CA certificate (PEM):"
+    NB_LOGIN_PRIVATE_KEY,  // "Private &key file:"
+    NB_LOGIN_GROUP_PROTOCOL,  // " Protocol "
+    NB_LOGIN_TRANSFER_PROTOCOL,  // "&File protocol:"
+    NB_LOGIN_SCP,  // "SCP"
+    NB_LOGIN_SFTP,  // "SFTP"
+    NB_LOGIN_FTP,  // "FTP"
+    NB_LOGIN_WEBDAV,  // "WebDAV"
+    NB_LOGIN_S3,  // "Amazon S3"
+    NB_LOGIN_ALLOW_SCP_FALLBACK,  // "Allow &SCP fallback"
+    NB_LOGIN_INSECURE,  // "Insecure"
+    NB_LOGIN_TAB_HINT1,  // "Use buttons on top or Ctrl+PgUp and Ctrl+PgDn keys to "
+    NB_LOGIN_TAB_HINT2,  // "display additional session options."
+    NB_LOGIN_DIRECTORIES_GROUP,  // " Directories "
+    NB_LOGIN_UPDATE_DIRECTORIES,  // "Re&member last used directory"
+    NB_LOGIN_DIRECTORY_OPTIONS_GROUP,  // " Directory reading options "
+    NB_LOGIN_CACHE_DIRECTORIES,  // "Cache &visited remote directories"
+    NB_LOGIN_CACHE_DIRECTORY_CHANGES,  // "Cache &directory changes"
+    NB_LOGIN_PRESERVE_DIRECTORY_CHANGES,  // "&Permanent cache"
+    NB_LOGIN_RESOLVE_SYMLINKS,  // "Resolve &symbolic links"
+    NB_LOGIN_REMOTE_DIRECTORY,  // "&Remote directory:"
+    NB_LOGIN_ENVIRONMENT_GROUP,  // " Server environment "
+    NB_LOGIN_EOL_TYPE,  // "&End-of-line characters (if not known):     "
+    NB_LOGIN_DST_MODE_GROUP,  // " Daylight saving time "
+    NB_LOGIN_DST_MODE_UNIX,  // "Adjust remote timestamp to local co&nventions (Unix)"
+    NB_LOGIN_DST_MODE_WIN,  // "Adjust remote timestamp with &DST (Windows)"
+    NB_LOGIN_DST_MODE_KEEP,  // "Preser&ve remote timestamp (Unix)"
+    NB_LOGIN_SSH_GROUP,  // " SSH protocol options "
+    NB_LOGIN_COMPRESSION,  // "Enable &compression"
+    NB_LOGIN_ENCRYPTION_GROUP,  // " Encryption options "
+    NB_LOGIN_CIPHER,  // "&Encryption cipher selection policy:"
+    NB_LOGIN_UP,  // "&Up  "
+    NB_LOGIN_DOWN,  // "&Down"
+    NB_LOGIN_SSH2DES,  // "Enable legacy use of &single-DES in SSH-2"
+    NB_CIPHER_NAME_WARN,  // "-- warn below here --"
+    NB_CIPHER_NAME_3DES,  // "3DES"
+    NB_CIPHER_NAME_BLOWFISH,  // "Blowfish"
+    NB_CIPHER_NAME_AES,  // "AES"
+    NB_CIPHER_NAME_DES,  // "DES"
+    NB_CIPHER_NAME_ARCFOUR,  // "Arcfour"
+    NB_CIPHER_NAME_CHACHA20,  // "ChaCha20"
+    NB_CIPHER_NAME_AESGCM,  // "AES-GCM"
+    NB_LOGIN_SHELL_GROUP,  // " Shell "
+    NB_LOGIN_SHELL_SHELL,  // "S&hell:                "
+    NB_LOGIN_SHELL_SHELL_DEFAULT,  // "Default"
+    NB_LOGIN_SHELL_RETURN_VAR,  // "&Return code variable: "
+    NB_LOGIN_SHELL_RETURN_VAR_AUTODETECT,  // "Autodetect"
+    NB_LOGIN_SCP_LS_OPTIONS_GROUP,  // " Directory listing "
+    NB_LOGIN_IGNORE_LS_WARNINGS,  // "Ignore LS &warnings"
+    NB_LOGIN_LISTING_COMMAND,  // "Listing &command:      "
+    NB_LOGIN_SCP_LS_FULL_TIME_AUTO,  // "Try to get &full timestamp"
+    NB_LOGIN_SCP_OPTIONS,  // " Other options "
+    NB_LOGIN_LOOKUP_USER_GROUPS,  // "Lookup &user groups"
+    NB_LOGIN_CLEAR_NATIONAL_VARS,  // "Clear &national variables"
+    NB_LOGIN_CLEAR_ALIASES,  // "Clear a&liases     "
+    NB_LOGIN_SCP1_COMPATIBILITY,  // "Use scp&2 with scp1 compat."
+    NB_LOGIN_TIME_DIFFERENCE,  // "Server time&zone offset: "
+    NB_LOGIN_TIME_DIFFERENCE_HOURS,  // "hours"
+    NB_LOGIN_TIME_DIFFERENCE_MINUTES,  // "minutes"
+    NB_LOGIN_TIMEOUTS_GROUP,  // " Timeouts "
+    NB_LOGIN_TIMEOUT,  // "Server &response timeout:"
+    NB_LOGIN_TIMEOUT_SECONDS,  // "seconds (0 - no timeout)"
+    NB_LOGIN_PING_GROUP,  // " Keepalives "
+    NB_LOGIN_PING_OFF,  // "&Off"
+    NB_LOGIN_PING_NULL_PACKET,  // "Sending of &null SSH packets"
+    NB_LOGIN_PING_DUMMY_COMMAND,  // "Executing &dummy protocol commands"
+    NB_LOGIN_PING_INTERVAL,  // "Seconds &between keepalives:"
+    NB_LOGIN_IP_GROUP,  // " Internet protocol version "
+    NB_LOGIN_IP_AUTO,  // "A&uto"
+    NB_LOGIN_IP_V4,  // "IPv&4"
+    NB_LOGIN_IP_V6,  // "IPv&6"
+    NB_LOGIN_CODE_PAGE,  // "&Charset encoding for filenames:"
+    NB_LOGIN_PROXY_GROUP,  // " Proxy "
+    NB_LOGIN_PROXY_METHOD,  // "Proxy &type: "
+    NB_LOGIN_PROXY_NONE,  // "None"
+    NB_LOGIN_PROXY_SOCKS4,  // "SOCKS4"
+    NB_LOGIN_PROXY_SOCKS5,  // "SOCKS5"
+    NB_LOGIN_PROXY_HTTP,  // "HTTP"
+    NB_LOGIN_PROXY_TELNET,  // "Telnet"
+    NB_LOGIN_PROXY_LOCAL,  // "Local"
+    NB_LOGIN_PROXY_SYSTEM,  // "System settings"
 
-    NB_LOGIN_PROXY_FTP_SITE,
-    NB_LOGIN_PROXY_FTP_PROXYUSER_USERHOST,
-    NB_LOGIN_PROXY_FTP_OPEN_HOST,
-    NB_LOGIN_PROXY_FTP_PROXYUSER_USERUSER,
-    NB_LOGIN_PROXY_FTP_USER_USERHOST,
-    NB_LOGIN_PROXY_FTP_PROXYUSER_HOST,
-    NB_LOGIN_PROXY_FTP_USERHOST_PROXYUSER,
-    NB_LOGIN_PROXY_FTP_USER_USERPROXYUSERHOST,
+    NB_LOGIN_PROXY_FTP_SITE,  // "SITE %host"
+    NB_LOGIN_PROXY_FTP_PROXYUSER_USERHOST,  // "USER %proxyuser, USER %user@%host"
+    NB_LOGIN_PROXY_FTP_OPEN_HOST,  // "OPEN %host"
+    NB_LOGIN_PROXY_FTP_PROXYUSER_USERUSER,  // "USER %proxyuser, USER %user"
+    NB_LOGIN_PROXY_FTP_USER_USERHOST,  // "USER %user@%host"
+    NB_LOGIN_PROXY_FTP_PROXYUSER_HOST,  // "USER %proxyuser@%host"
+    NB_LOGIN_PROXY_FTP_USERHOST_PROXYUSER,  // "USER %user@%host %proxyuser"
+    NB_LOGIN_PROXY_FTP_USER_USERPROXYUSERHOST,  // "USER %user@%proxyuser@%host"
 
-    NB_LOGIN_PROXY_HOST,
-    NB_LOGIN_PROXY_PORT,
-    NB_LOGIN_PROXY_USERNAME,
-    NB_LOGIN_PROXY_PASSWORD,
-    NB_LOGIN_PROXY_SETTINGS_GROUP,
-    NB_LOGIN_PROXY_TELNET_COMMAND,
-    NB_LOGIN_PROXY_LOCAL_COMMAND,
-    NB_LOGIN_PROXY_LOCALHOST,
-    NB_LOGIN_PROXY_DNS,
-    NB_LOGIN_PROXY_DNS_NO,
-    NB_LOGIN_PROXY_DNS_AUTO,
-    NB_LOGIN_PROXY_DNS_YES,
-    NB_LOGIN_BUGS_GROUP,
-    NB_LOGIN_BUGS_IGNORE1,
-    NB_LOGIN_BUGS_PLAIN_PW1,
-    NB_LOGIN_BUGS_RSA1,
-    NB_LOGIN_BUGS_HMAC2,
-    NB_LOGIN_BUGS_DERIVE_KEY2,
-    NB_LOGIN_BUGS_RSA_PAD2,
-    NB_LOGIN_BUGS_PKSESSID2,
-    NB_LOGIN_BUGS_REKEY2,
-    NB_LOGIN_BUGS_AUTO,
-    NB_LOGIN_BUGS_OFF,
-    NB_LOGIN_BUGS_ON,
-    NB_LOGIN_AUTH_SSH_NO_USER_AUTH,
-    NB_LOGIN_AUTH_GROUP,
-    NB_LOGIN_AUTH_TRY_AGENT,
-    NB_LOGIN_AUTH_KI,
-    NB_LOGIN_AUTH_KI_PASSWORD,
-    NB_LOGIN_AUTH_AGENT_FWD,
-    NB_LOGIN_AUTH_GSSAPI_PARAMS_GROUP,
-    NB_LOGIN_AUTH_ATTEMPT_GSSAPI_AUTHENTICATION,
-    NB_LOGIN_AUTH_ALLOW_GSSAPI_CREDENTIAL_DELEGATION,
-    NB_LOGIN_AUTH_GSSAPI,
-    NB_LOGIN_AUTH_GSSAPI_SERVER_REALM,
-    NB_LOGIN_AUTH_PARAMS_GROUP,
-    NB_LOGIN_RECYCLE_BIN_GROUP,
-    NB_LOGIN_RECYCLE_BIN_DELETE,
-    NB_LOGIN_RECYCLE_BIN_OVERWRITE,
-    NB_LOGIN_RECYCLE_BIN_LABEL,
-    NB_LOGIN_SFTP_PROTOCOL_GROUP,
-    NB_LOGIN_SFTP_SERVER,
-    NB_LOGIN_SFTP_SERVER_DEFAULT,
-    NB_LOGIN_SFTP_MAX_VERSION,
-    NB_LOGIN_UTF,
-    NB_LOGIN_SFTP_BUGS_GROUP,
-    NB_LOGIN_SFTP_BUGS_SYMLINK,
-    NB_LOGIN_SFTP_BUGS_SIGNED_TS,
-    NB_LOGIN_SFTP_MIN_PACKET_SIZE,
-    NB_LOGIN_SFTP_MAX_PACKET_SIZE,
-    NB_LOGIN_KEX_OPTIONS_GROUP,
-    NB_LOGIN_KEX_LIST,
-    NB_LOGIN_KEX_REEXCHANGE_GROUP,
-    NB_LOGIN_KEX_REKEY_TIME,
-    NB_LOGIN_KEX_REKEY_DATA,
-    NB_KEX_NAME_WARN,
-    NB_KEX_NAME_DHGROUP1_BITS,
-    NB_KEX_NAME_DHGROUP14_BITS,
-    NB_KEX_NAME_DHGROUP15_BITS,
-    NB_KEX_NAME_DHGROUP16_BITS,
-    NB_KEX_NAME_DHGROUP17_BITS,
-    NB_KEX_NAME_DHGROUP18_BITS,
-    NB_KEX_NAME_DHGEX,
-    NB_KEX_NAME_RSA,
-    NB_KEX_NAME_ECDH,
-    NB_KEX_NAME_NTRU_HYBRID,
-    NB_KEX_NAME_MLKEM_25519_HYBRID,
-    NB_KEX_NAME_MLKEM_NIST_HYBRID,
-    NB_LOGIN_AUTHORIZED_KEYS,
-    NB_LOGIN_KEY_WITH_CERTIFICATE,
-    NB_CERTIFICATE_ADDED,
-    NB_SSH_HOST_CA_EDIT,
-    NB_SSH_HOST_CA_ADD,
-    NB_SSH_HOST_CA_NAME,
-    NB_SSH_HOST_CA_PUBLIC_KEY,
-    NB_SSH_HOST_CA_PUBLIC_HOSTS,
-    NB_SSH_HOST_CA_BROWSE,
-    NB_SSH_HOST_CA_NO_KEY,
-    NB_SSH_HOST_CA_BROWSE_TITLE,
-    NB_SSH_HOST_CA_BROWSE_FILTER,
-    NB_SSH_HOST_CA_LOAD_ERROR,
-    NB_SSH_HOST_CA_SIGNATURE_TYPES,
-    NB_SSH_HOST_CA_SIGNATURES,
-    NB_SSH_HOST_CA_NO_HOSTS,
-    NB_SSH_HOST_CA_HOSTS_INVALID,
-    NB_LOGIN_NOT_SHOWING_AGAIN,
+    NB_LOGIN_PROXY_HOST,  // "Pro&xy host name:"
+    NB_LOGIN_PROXY_PORT,  // "Po&rt number:"
+    NB_LOGIN_PROXY_USERNAME,  // "&User name:"
+    NB_LOGIN_PROXY_PASSWORD,  // "&Password:"
+    NB_LOGIN_PROXY_SETTINGS_GROUP,  // " Proxy settings "
+    NB_LOGIN_PROXY_TELNET_COMMAND,  // "Telnet co&mmand:     "
+    NB_LOGIN_PROXY_LOCAL_COMMAND,  // "Local proxy co&mmand:"
+    NB_LOGIN_PROXY_LOCALHOST,  // "Co&nsider proxying local host connections"
+    NB_LOGIN_PROXY_DNS,  // "Do &DNS name lookup at proxy end:"
+    NB_LOGIN_PROXY_DNS_NO,  // "No"
+    NB_LOGIN_PROXY_DNS_AUTO,  // "Auto"
+    NB_LOGIN_PROXY_DNS_YES,  // "Yes"
+    NB_LOGIN_BUGS_GROUP,  // " Detection of known bugs in SSH servers   "
+    NB_LOGIN_BUGS_IGNORE1,  // "Chokes on SSH-1 &ignore messages:         "
+    NB_LOGIN_BUGS_PLAIN_PW1,  // "Refuses all SSH-1 pass&word camouflage:   "
+    NB_LOGIN_BUGS_RSA1,  // "Chokes on SSH-1 &RSA authentication:      "
+    NB_LOGIN_BUGS_HMAC2,  // "Miscomputes SSH-2 H&MAC keys:             "
+    NB_LOGIN_BUGS_DERIVE_KEY2,  // "Miscomputes SSH-2 &encryption keys:       "
+    NB_LOGIN_BUGS_RSA_PAD2,  // "Requires &padding on SSH-2 RSA signatures:"
+    NB_LOGIN_BUGS_PKSESSID2,  // "Misuses the sessio&n ID in SSH-2 PK auth: "
+    NB_LOGIN_BUGS_REKEY2,  // "Handles SSH-2 &key re-exchange badly:     "
+    NB_LOGIN_BUGS_AUTO,  // "Auto"
+    NB_LOGIN_BUGS_OFF,  // "Off"
+    NB_LOGIN_BUGS_ON,  // "On"
+    NB_LOGIN_AUTH_SSH_NO_USER_AUTH,  // "&Bypass authentication entirely (SSH-2)"
+    NB_LOGIN_AUTH_GROUP,  // " Authentication options "
+    NB_LOGIN_AUTH_TRY_AGENT,  // "Attempt authentication using &Pageant"
+    NB_LOGIN_AUTH_KI,  // "Attempt 'keyboard-&interactive' authentication (SSH-2)"
+    NB_LOGIN_AUTH_KI_PASSWORD,  // "Respond with pass&word to the first prompt"
+    NB_LOGIN_AUTH_AGENT_FWD,  // "Allow agent &forwarding"
+    NB_LOGIN_AUTH_GSSAPI_PARAMS_GROUP,  // " GSSAPI "
+    NB_LOGIN_AUTH_ATTEMPT_GSSAPI_AUTHENTICATION,  // "Attempt &GSSAPI authentication (SSH-2)"
+    NB_LOGIN_AUTH_ALLOW_GSSAPI_CREDENTIAL_DELEGATION,  // "Allow GSSAPI &credential delegation"
+    NB_LOGIN_AUTH_GSSAPI,  // "Attempt &GSSAPI/SSPI authentication (SSH-2)"
+    NB_LOGIN_AUTH_GSSAPI_SERVER_REALM,  // "Ser&vice principal name (GSSAPI/SSPI):"
+    NB_LOGIN_AUTH_PARAMS_GROUP,  // " Authentication parameters "
+    NB_LOGIN_RECYCLE_BIN_GROUP,  // " Recycle bin "
+    NB_LOGIN_RECYCLE_BIN_DELETE,  // "&Preserve deleted remote files to recycle bin"
+    NB_LOGIN_RECYCLE_BIN_OVERWRITE,  // "Preserve &overwritten remote files to bin (SFTP only)"
+    NB_LOGIN_RECYCLE_BIN_LABEL,  // "&Remote recycle bin:"
+    NB_LOGIN_SFTP_PROTOCOL_GROUP,  // " Protocol options "
+    NB_LOGIN_SFTP_SERVER,  // "SFTP ser&ver:          "
+    NB_LOGIN_SFTP_SERVER_DEFAULT,  // "Default"
+    NB_LOGIN_SFTP_MAX_VERSION,  // "&Preferred SFTP protocol version:                "
+    NB_LOGIN_UTF,  // "&UTF-8 encoding for filenames:              "
+    NB_LOGIN_SFTP_BUGS_GROUP,  // " Detection of known bugs in SFTP servers "
+    NB_LOGIN_SFTP_BUGS_SYMLINK,  // "&Reverses order of symlink command arguments:    "
+    NB_LOGIN_SFTP_BUGS_SIGNED_TS,  // "&Misinterprets file timestamps prior to 1970:    "
+    NB_LOGIN_SFTP_MIN_PACKET_SIZE,  // "M&in packet size:"
+    NB_LOGIN_SFTP_MAX_PACKET_SIZE,  // "M&ax packet size:"
+    NB_LOGIN_KEX_OPTIONS_GROUP,  // " Key exchange algorithm options "
+    NB_LOGIN_KEX_LIST,  // "Algorithm selection &policy:"
+    NB_LOGIN_KEX_REEXCHANGE_GROUP,  // " Options controlling key re-exchange "
+    NB_LOGIN_KEX_REKEY_TIME,  // "Max &minutes before rekey (0 for no limit):"
+    NB_LOGIN_KEX_REKEY_DATA,  // "Ma&x data before rekey (0 for no limit):   "
+    NB_KEX_NAME_WARN,  // "-- warn below here --"
+    NB_KEX_NAME_DHGROUP1_BITS,  // "Diffie-Hellman group 1 (1024-bit)"
+    NB_KEX_NAME_DHGROUP14_BITS,  // "Diffie-Hellman group 14 (2048-bit)"
+    NB_KEX_NAME_DHGROUP15_BITS,  // "Diffie-Hellman group 15 (3072-bit)"
+    NB_KEX_NAME_DHGROUP16_BITS,  // "Diffie-Hellman group 16 (4096-bit)"
+    NB_KEX_NAME_DHGROUP17_BITS,  // "Diffie-Hellman group 17 (6144-bit)"
+    NB_KEX_NAME_DHGROUP18_BITS,  // "Diffie-Hellman group 18 (8192-bit)"
+    NB_KEX_NAME_DHGEX,  // "Diffie-Hellman group exchange"
+    NB_KEX_NAME_RSA,  // "RSA-based key exchange"
+    NB_KEX_NAME_ECDH,  // "ECDH key exchange"
+    NB_KEX_NAME_NTRU_HYBRID,  // "NTRU Prime / Curve25519 hybrid kex"
+    NB_KEX_NAME_MLKEM_25519_HYBRID,  // "ML-KEM / Curve25519 hybrid kex"
+    NB_KEX_NAME_MLKEM_NIST_HYBRID,  // "ML-KEM / NIST ECDH hybrid kex"
+    NB_LOGIN_AUTHORIZED_KEYS,  // "Public key for pasting into OpenSSH authorized_keys file:"
+    NB_LOGIN_KEY_WITH_CERTIFICATE,  // "**This key contains an OpenSSH certificate.**\nIt is not supposed to be added to OpenSSH authorized_keys file."
+    NB_CERTIFICATE_ADDED,  // "Matching certificate was detected in '%s' and added to the converted key file."
+    NB_SSH_HOST_CA_EDIT,  // "Edit trusted host certificate authority"
+    NB_SSH_HOST_CA_ADD,  // "Add trusted host certificate authority"
+    NB_SSH_HOST_CA_NAME,  // "&Name:"
+    NB_SSH_HOST_CA_PUBLIC_KEY,  // "Public &key:"
+    NB_SSH_HOST_CA_PUBLIC_HOSTS,  // "Valid &hosts this key is trusted to certify:"
+    NB_SSH_HOST_CA_BROWSE,  // "B&rowse..."
+    NB_SSH_HOST_CA_NO_KEY,  // "No public key specified."
+    NB_SSH_HOST_CA_BROWSE_TITLE,  // "Select public key file of certification authority"
+    NB_SSH_HOST_CA_BROWSE_FILTER,  // "Public key files (*.pub)|*.pub|All Files (*.*)|*.*"
+    NB_SSH_HOST_CA_LOAD_ERROR,  // "Unable to load public key from '%s'"
+    NB_SSH_HOST_CA_SIGNATURE_TYPES,  // "Signature types (RSA keys only):"
+    NB_SSH_HOST_CA_SIGNATURES,  // "SHA-&1|SHA-&256|SHA-&512"
+    NB_SSH_HOST_CA_NO_HOSTS,  // "No validity expression configured."
+    NB_SSH_HOST_CA_HOSTS_INVALID,  // "Error in validity expression."
+    NB_LOGIN_NOT_SHOWING_AGAIN,  // "**Stop showing Login dialog automatically?** Please confirm if you really want to WinSCP stop showing Login dialog automatically on startup and when the last session is closed.\n\nIf you change your mind later, you can revert this in Preferences on Environment > Window page.\n\nTo open the Login dialog manually, go to Tabs > New Tab [> Remote Tab] or use corresponding toolbar button."
 
     // Security dialog
-    NB_SECURITY_MASTER_PASSWORD_GROUP,
-    NB_SECURITY_USE_MASTER_PASSWORD,
-    NB_SECURITY_CHANGE_MASTER_PASSWORD,
-    NB_SECURITY_SESSION_PASSWORD_GROUP,
-    NB_SECURITY_REMEMBER_PASSWORD,
-    NB_SECURITY_SSH_HOST_CA_GROUP,
-    NB_SECURITY_SSH_HOST_CA_FROM_PUTTY,
-    NB_SECURITY_SSH_HOST_CA_NAME_COL,
-    NB_SECURITY_SSH_HOST_CA_HOSTS_COL,
-    NB_SECURITY_SSH_HOST_CA_ADD_BTN,
-    NB_SECURITY_SSH_HOST_CA_EDIT_BTN,
-    NB_SECURITY_SSH_HOST_CA_REMOVE_BTN,
+    NB_SECURITY_MASTER_PASSWORD_GROUP,  // " Master password "
+    NB_SECURITY_USE_MASTER_PASSWORD,  // "&Use master password"
+    NB_SECURITY_CHANGE_MASTER_PASSWORD,  // "Chan&ge master password..."
+    NB_SECURITY_SESSION_PASSWORD_GROUP,  // " Session password "
+    NB_SECURITY_REMEMBER_PASSWORD,  // "Remember password for &duration of session"
+    NB_SECURITY_SSH_HOST_CA_GROUP,  // " Trusted host certification authorities "
+    NB_SECURITY_SSH_HOST_CA_FROM_PUTTY,  // "&Load authorities from PuTTY"
+    NB_SECURITY_SSH_HOST_CA_NAME_COL,  // "Name"
+    NB_SECURITY_SSH_HOST_CA_HOSTS_COL,  // "Hosts"
+    NB_SECURITY_SSH_HOST_CA_ADD_BTN,  // "&Add..."
+    NB_SECURITY_SSH_HOST_CA_EDIT_BTN,  // "&Edit..."
+    NB_SECURITY_SSH_HOST_CA_REMOVE_BTN,  // "&Remove"
 
-    NB_LOGIN_TUNNEL_GROUP,
-    NB_LOGIN_TUNNEL_TUNNEL,
-    NB_LOGIN_TUNNEL_SESSION_GROUP,
-    NB_LOGIN_TUNNEL_OPTIONS_GROUP,
-    NB_LOGIN_TUNNEL_LOCAL_PORT_NUMBER,
-    NB_LOGIN_TUNNEL_LOCAL_PORT_NUMBER_AUTOASSIGN,
-    NB_LOGIN_ENVIRONMENT_UNIX,
-    NB_LOGIN_ENVIRONMENT_WINDOWS,
-    NB_LOGIN_CONNECTION_GROUP,
-    NB_LOGIN_FTP_PASV_MODE,
-    NB_LOGIN_SSH_OPTIMIZE_BUFFER_SIZE,
+    NB_LOGIN_TUNNEL_GROUP,  // " Tunnel "
+    NB_LOGIN_TUNNEL_TUNNEL,  // "&Connect through SSH tunnel"
+    NB_LOGIN_TUNNEL_SESSION_GROUP,  // " Host to setup tunnel on "
+    NB_LOGIN_TUNNEL_OPTIONS_GROUP,  // " Tunnel options "
+    NB_LOGIN_TUNNEL_LOCAL_PORT_NUMBER,  // "&Local tunnel port:"
+    NB_LOGIN_TUNNEL_LOCAL_PORT_NUMBER_AUTOASSIGN,  // "Autoselect"
+    NB_LOGIN_ENVIRONMENT_UNIX,  // "Uni&x"
+    NB_LOGIN_ENVIRONMENT_WINDOWS,  // "&Windows"
+    NB_LOGIN_CONNECTION_GROUP,  // " Connection "
+    NB_LOGIN_FTP_PASV_MODE,  // "&Passive mode"
+    NB_LOGIN_SSH_OPTIMIZE_BUFFER_SIZE,  // "Optimize connection &buffer size"
 
-    NB_LOGIN_FTP_ALLOW_EMPTY_PASSWORD,
-    NB_LOGIN_FTP_USE_MLSD,
-    NB_LOGIN_FTP_GROUP,
-    NB_LOGIN_FTP_DUPFF,
-    NB_LOGIN_FTP_UNDUPFF,
-    NB_LOGIN_FTP_SSLSESSIONREUSE,
-    NB_LOGIN_FTP_ENCRYPTION,
-    NB_LOGIN_FTP_USE_PLAIN_FTP,
-    NB_LOGIN_FTP_REQUIRE_IMPLICIT_FTP,
-    NB_LOGIN_FTP_REQUIRE_EXPLICIT_FTP,
-    NB_LOGIN_FTP_POST_LOGIN_COMMANDS,
-    NB_LOGIN_TLS_CERTIFICATE_FILE,
+    NB_LOGIN_FTP_ALLOW_EMPTY_PASSWORD,  // "&Allow empty password"
+    NB_LOGIN_FTP_USE_MLSD,  // "Use &MLSD command for directory listing"
+    NB_LOGIN_FTP_GROUP,  // " Protocol options "
+    NB_LOGIN_FTP_DUPFF,  // "Du&p FF in commands"
+    NB_LOGIN_FTP_UNDUPFF,  // "&UnDup FF from PWD"
+    NB_LOGIN_FTP_SSLSESSIONREUSE,  // "&Session ID re-use"
+    NB_LOGIN_FTP_ENCRYPTION,  // "&Encryption:"
+    NB_LOGIN_FTP_USE_PLAIN_FTP,  // "No encryption"
+    NB_LOGIN_FTP_REQUIRE_IMPLICIT_FTP,  // "TLS/SSL Implicit encryption"
+    NB_LOGIN_FTP_REQUIRE_EXPLICIT_FTP,  // "TLS/SSL Explicit encryption"
+    NB_LOGIN_FTP_POST_LOGIN_COMMANDS,  // "Post login &commands:"
+    NB_LOGIN_TLS_CERTIFICATE_FILE,  // "TLS client &certificate:"
 
-    NB_LOGIN_WEBDAV_GROUP,
+    NB_LOGIN_WEBDAV_GROUP,  // " WebDAV protocol options "
 
-    NB_PROPERTIES_CAPTION,
-    NB_PROPERTIES_PROMPT,
-    NB_PROPERTIES_PROMPT_FILES,
-    NB_PROPERTIES_OWNER_RIGHTS,
-    NB_PROPERTIES_GROUP_RIGHTS,
-    NB_PROPERTIES_OTHERS_RIGHTS,
-    NB_PROPERTIES_READ_RIGHTS,
-    NB_PROPERTIES_WRITE_RIGHTS,
-    NB_PROPERTIES_EXECUTE_RIGHTS,
-    NB_PROPERTIES_RIGHTS,
-    NB_PROPERTIES_OCTAL,
-    NB_PROPERTIES_DIRECTORIES_X,
-    NB_PROPERTIES_OWNER,
-    NB_PROPERTIES_GROUP,
-    NB_PROPERTIES_RECURSIVE,
-    NB_PROPERTIES_NONE_RIGHTS,
-    NB_PROPERTIES_DEFAULT_RIGHTS,
-    NB_PROPERTIES_ALL_RIGHTS,
-    NB_PROPERTIES_SETUID_RIGHTS,
-    NB_PROPERTIES_SETGID_RIGHTS,
-    NB_PROPERTIES_STICKY_BIT_RIGHTS,
-    NB_PROPERTIES_LINKTO,
+    NB_PROPERTIES_CAPTION,  // "Attributes"
+    NB_PROPERTIES_PROMPT,  // "Change file attributes for"
+    NB_PROPERTIES_PROMPT_FILES,  // "selected objects (%d)"
+    NB_PROPERTIES_OWNER_RIGHTS,  // "O&wner "
+    NB_PROPERTIES_GROUP_RIGHTS,  // "Grou&p "
+    NB_PROPERTIES_OTHERS_RIGHTS,  // "Ot&hers"
+    NB_PROPERTIES_READ_RIGHTS,  // "R"
+    NB_PROPERTIES_WRITE_RIGHTS,  // "W"
+    NB_PROPERTIES_EXECUTE_RIGHTS,  // "X"
+    NB_PROPERTIES_RIGHTS,  // " Permissions "
+    NB_PROPERTIES_OCTAL,  // "Oct&al:"
+    NB_PROPERTIES_DIRECTORIES_X,  // "Add &X to directories"
+    NB_PROPERTIES_OWNER,  // "&Owner:"
+    NB_PROPERTIES_GROUP,  // "&Group:"
+    NB_PROPERTIES_RECURSIVE,  // "Set attributes &recursively"
+    NB_PROPERTIES_NONE_RIGHTS,  // "&None"
+    NB_PROPERTIES_DEFAULT_RIGHTS,  // "&Default"
+    NB_PROPERTIES_ALL_RIGHTS,  // "A&ll"
+    NB_PROPERTIES_SETUID_RIGHTS,  // "Set UID   "
+    NB_PROPERTIES_SETGID_RIGHTS,  // "Set GID   "
+    NB_PROPERTIES_STICKY_BIT_RIGHTS,  // "Sticky bit"
+    NB_PROPERTIES_LINKTO,  // "Link to:"
 
-    NB_TRANSFER_MODE_TEXT,
-    NB_TRANSFER_MODE_BINARY,
-    NB_TRANSFER_MODE_AUTOMATIC,
-    NB_TRANSFER_MODE_MASK,
-    NB_TRANSFER_MODE,
-    NB_TRANSFER_FILENAME_MODIFICATION,
-    NB_TRANSFER_FILENAME_NOCHANGE,
-    NB_TRANSFER_FILENAME_UPPERCASE,
-    NB_TRANSFER_FILENAME_LOWERCASE,
-    NB_TRANSFER_FILENAME_FIRSTUPPERCASE,
-    NB_TRANSFER_FILENAME_LOWERCASESHORT,
-    NB_TRANSFER_FILENAME_REPLACE_INVALID,
-    NB_TRANSFER_PRESERVE_RIGHTS,
-    NB_TRANSFER_PRESERVE_TIMESTAMP,
-    NB_TRANSFER_PRESERVE_READONLY,
-    NB_TRANSFER_REUSE_SETTINGS,
-    NB_TRANSFER_QUEUE,
-    NB_TRANSFER_QUEUE_NO_CONFIRMATION,
-    NB_TRANSFER_NEWER_ONLY,
-    NB_TRANSFER_CLEAR_ARCHIVE,
-    NB_TRANSFER_OTHER,
-    NB_TRANSFER_FILE_MASK,
-    NB_TRANSFER_EXCLUDE,
-    NB_TRANSFER_INCLUDE,
-    NB_TRANSFER_UPLOAD_OPTIONS,
-    NB_TRANSFER_DOWNLOAD_OPTIONS,
-    NB_TRANSFER_COMMON_OPTIONS,
-    NB_TRANSFER_PRESERVE_PERM_ERRORS,
-    NB_TRANSFER_CALCULATE_SIZE,
-    NB_TRANSFER_SPEED,
+    NB_TRANSFER_MODE_TEXT,  // "&Text (plain text, html, ...)"
+    NB_TRANSFER_MODE_BINARY,  // "&Binary (archives, doc, ...)"
+    NB_TRANSFER_MODE_AUTOMATIC,  // "Automat&ic"
+    NB_TRANSFER_MODE_MASK,  // "Transfer following files in t&ext mode"
+    NB_TRANSFER_MODE,  // "Transfer mode"
+    NB_TRANSFER_FILENAME_MODIFICATION,  // "Filename modification"
+    NB_TRANSFER_FILENAME_NOCHANGE,  // "&No change     "
+    NB_TRANSFER_FILENAME_UPPERCASE,  // "&Upper case"
+    NB_TRANSFER_FILENAME_LOWERCASE,  // "Lo&wer case"
+    NB_TRANSFER_FILENAME_FIRSTUPPERCASE,  // "&First upper   "
+    NB_TRANSFER_FILENAME_LOWERCASESHORT,  // "Lower case &8.3"
+    NB_TRANSFER_FILENAME_REPLACE_INVALID,  // "&Replace \\:*\"
+    NB_TRANSFER_PRESERVE_RIGHTS,  // "&Set permissions"
+    NB_TRANSFER_PRESERVE_TIMESTAMP,  // "Preserve timesta&mp"
+    NB_TRANSFER_PRESERVE_READONLY,  // "Preserve rea&d-only"
+    NB_TRANSFER_REUSE_SETTINGS,  // "Use &same settings next time"
+    NB_TRANSFER_QUEUE,  // "Transfer on background (add to &queue)"
+    NB_TRANSFER_QUEUE_NO_CONFIRMATION,  // "No &confirmations"
+    NB_TRANSFER_NEWER_ONLY,  // "&New and updated file(s) only"
+    NB_TRANSFER_CLEAR_ARCHIVE,  // "Clear 'Archi&ve' attribute"
+    NB_TRANSFER_OTHER,  // " Other "
+    NB_TRANSFER_FILE_MASK,  // "File mas&k (example: *|.svn/):"
+    NB_TRANSFER_EXCLUDE,  // "Exclude"
+    NB_TRANSFER_INCLUDE,  // "Include"
+    NB_TRANSFER_UPLOAD_OPTIONS,  // "Upload options"
+    NB_TRANSFER_DOWNLOAD_OPTIONS,  // "Download options"
+    NB_TRANSFER_COMMON_OPTIONS,  // "Common options"
+    NB_TRANSFER_PRESERVE_PERM_ERRORS,  // "&Ignore permission errors"
+    NB_TRANSFER_CALCULATE_SIZE,  // "&Calculate total size"
+    NB_TRANSFER_SPEED,  // "Sp&eed (KB/s):"
 
-    NB_STRING_LINK_EDIT_CAPTION,
-    NB_STRING_LINK_ADD_CAPTION,
-    NB_STRING_LINK_FILE,
-    NB_STRING_LINK_POINT_TO,
-    NB_STRING_LINK_SYMLINK,
+    NB_STRING_LINK_EDIT_CAPTION,  // "Edit link"
+    NB_STRING_LINK_ADD_CAPTION,  // "Add link"
+    NB_STRING_LINK_FILE,  // "&Link file:"
+    NB_STRING_LINK_POINT_TO,  // "&Point link to:"
+    NB_STRING_LINK_SYMLINK,  // "Sy&mbolic link"
 
-    NB_REMOTE_MOVE_TITLE,
-    NB_REMOTE_MOVE_FILE,
-    NB_REMOTE_MOVE_FILES,
+    NB_REMOTE_MOVE_TITLE,  // "Move"
+    NB_REMOTE_MOVE_FILE,  // "Move file '%s' to remote directory:"
+    NB_REMOTE_MOVE_FILES,  // "Move %d files to remote directory:"
 
-    NB_REMOTE_COPY_TITLE,
-    NB_REMOTE_COPY_FILE,
-    NB_REMOTE_COPY_FILES,
+    NB_REMOTE_COPY_TITLE,  // "Duplicate"
+    NB_REMOTE_COPY_FILE,  // "Duplicate file '%s' to remote directory:"
+    NB_REMOTE_COPY_FILES,  // "Duplicate %d files to remote directory:"
 
-    NB_RENAME_FILE_TITLE,
-    NB_RENAME_FILE,
+    NB_RENAME_FILE_TITLE,  // "Rename"
+    NB_RENAME_FILE,  // "Rename file '%s' to:"
 
-    NB_SERVER_PASSWORD_HIDE_TYPING,
-    NB_SERVER_PASSWORD_NOTE1,
-    NB_SERVER_PASSWORD_NOTE2,
-    NB_PASSWORD_SHOW_PROMPT,
-    NB_PASSWORD_SAVE,
+    NB_SERVER_PASSWORD_HIDE_TYPING,  // "&Hide typing"
+    NB_SERVER_PASSWORD_NOTE1,  // "Note: This prompt is issued by the server. It is part of"
+    NB_SERVER_PASSWORD_NOTE2,  // "either keyboard-interactive, TIS or Cryptocard authentication."
+    NB_PASSWORD_SHOW_PROMPT,  // "&Full prompt"
+    NB_PASSWORD_SAVE,  // "&Change stored password to this one"
 
-    NB_LOGGING_ENABLE,
-    NB_LOGGING_OPTIONS_GROUP,
-    NB_LOGGING_LOG_PROTOCOL,
-    NB_LOGGING_LOG_PROTOCOL_0,
-    NB_LOGGING_LOG_PROTOCOL_1,
-    NB_LOGGING_LOG_PROTOCOL_2,
-    NB_LOGGING_LOG_PROTOCOL_3,
-    NB_LOGGING_LOG_TO_FILE,
-    NB_LOGGING_LOG_FILE_APPEND,
-    NB_LOGGING_LOG_FILE_OVERWRITE,
-    NB_LOGGING_LOG_VIEW_GROUP,
-    NB_LOGGING_LOG_VIEW_COMPLETE,
-    NB_LOGGING_LOG_VIEW_LINES,
-    NB_LOGGING_LOG_VIEW_LINES2,
-    NB_LOGGING_LOG_FILE_HINT1,
-    NB_LOGGING_LOG_FILE_HINT2,
+    NB_LOGGING_ENABLE,  // "&Enable logging"
+    NB_LOGGING_OPTIONS_GROUP,  // " Logging options "
+    NB_LOGGING_LOG_PROTOCOL,  // "Logging &level:"
+    NB_LOGGING_LOG_PROTOCOL_0,  // "Normal"
+    NB_LOGGING_LOG_PROTOCOL_1,  // "Debug 1"
+    NB_LOGGING_LOG_PROTOCOL_2,  // "Debug 2"
+    NB_LOGGING_LOG_PROTOCOL_3,  // "Debug 3"
+    NB_LOGGING_LOG_TO_FILE,  // "Log to &file:"
+    NB_LOGGING_LOG_FILE_APPEND,  // "&Append"
+    NB_LOGGING_LOG_FILE_OVERWRITE,  // "O&verwrite"
+    NB_LOGGING_LOG_VIEW_GROUP,  // " In log viewer display (and keep in memory) "
+    NB_LOGGING_LOG_VIEW_COMPLETE,  // "&Complete session"
+    NB_LOGGING_LOG_VIEW_LINES,  // "Only &last"
+    NB_LOGGING_LOG_VIEW_LINES2,  // "lines"
+    NB_LOGGING_LOG_FILE_HINT1,  // "&&Y year; &&M month; &&D day; &&T time; &&H hostname"
+    NB_LOGGING_LOG_FILE_HINT2,  // "&&S session name; Example: C:\\&&S&&T.log"
 
     NB_CONFIRMATIONS_CONFIRM_OVERWRITING, // "&Overwriting of files (? = use FAR settings)"
-    NB_CONFIRMATIONS_CONTINUE_ON_ERROR,
-    NB_CONFIRMATIONS_CONFIRM_RESUME,
-    NB_CONFIRMATIONS_OPEN_COMMAND_SESSION,
-    NB_CONFIRMATIONS_SYNCHRONIZED_BROWSING,
+    NB_CONFIRMATIONS_CONTINUE_ON_ERROR,  // "Continue on &error (advanced users)"
+    NB_CONFIRMATIONS_CONFIRM_RESUME,  // "&Transfer resuming"
+    NB_CONFIRMATIONS_OPEN_COMMAND_SESSION,  // "Opening separate &shell session"
+    NB_CONFIRMATIONS_SYNCHRONIZED_BROWSING,  // "Synchronized &browsing"
 
-    NB_TRANSFER_RESUME,
-    NB_TRANSFER_RESUME_ON,
-    NB_TRANSFER_RESUME_SMART,
-    NB_TRANSFER_RESUME_THRESHOLD_UNIT,
-    NB_TRANSFER_RESUME_OFF,
-    NB_TRANSFER_SESSION_REOPEN_GROUP,
-    NB_TRANSFER_SESSION_REOPEN_AUTO_LABEL,
-    NB_TRANSFER_SESSION_REOPEN_AUTO_LABEL2,
-    NB_TRANSFER_SESSION_REOPEN_NUMBER_OF_RETRIES_LABEL,
-    NB_TRANSFER_SESSION_REOPEN_NUMBER_OF_RETRIES_LABEL2,
-    NB_TRANSFER_SESSION_TIMEOUTS_GROUP,
-    NB_TRANSFER_SESSION_TIMEOUTS_WAIT_TIMEOUT_LABEL,
-    NB_TRANSFER_SESSION_TIMEOUTS_WAIT_TIMEOUT_LABEL2,
+    NB_TRANSFER_RESUME,  // " Enable transfer resume/transfer to temporary filename for "
+    NB_TRANSFER_RESUME_ON,  // "A&ll files (not recommended)"
+    NB_TRANSFER_RESUME_SMART,  // "Files abo&ve"
+    NB_TRANSFER_RESUME_THRESHOLD_UNIT,  // "KB"
+    NB_TRANSFER_RESUME_OFF,  // "Di&sable"
+    NB_TRANSFER_SESSION_REOPEN_GROUP,  // " Automatic reconnect "
+    NB_TRANSFER_SESSION_REOPEN_AUTO_LABEL,  // "&Reconnect after"
+    NB_TRANSFER_SESSION_REOPEN_AUTO_LABEL2,  // "seconds"
+    NB_TRANSFER_SESSION_REOPEN_NUMBER_OF_RETRIES_LABEL,  // "Ma&ximum number of retries: "
+    NB_TRANSFER_SESSION_REOPEN_NUMBER_OF_RETRIES_LABEL2,  // "(0-99)"
+    NB_TRANSFER_SESSION_TIMEOUTS_GROUP,  // " Timeouts "
+    NB_TRANSFER_SESSION_TIMEOUTS_WAIT_TIMEOUT_LABEL,  // "Wait for reply dialog timeout: "
+    NB_TRANSFER_SESSION_TIMEOUTS_WAIT_TIMEOUT_LABEL2,  // "seconds"
 
-    NB_TRANSFER_EDITOR_DOWNLOAD,
-    NB_TRANSFER_EDITOR_DOWNLOAD_DEFAULT,
-    NB_TRANSFER_EDITOR_DOWNLOAD_OPTIONS,
+    NB_TRANSFER_EDITOR_DOWNLOAD,  // " When downloading to editor/viewer "
+    NB_TRANSFER_EDITOR_DOWNLOAD_DEFAULT,  // "Use default &download options"
+    NB_TRANSFER_EDITOR_DOWNLOAD_OPTIONS,  // "Display download &options dialog"
 
-    NB_TRANSFER_EDITOR_UPLOAD,
-    NB_TRANSFER_EDITOR_UPLOAD_SAME,
-    NB_TRANSFER_EDITOR_UPLOAD_OPTIONS,
-    NB_TRANSFER_EDITOR_UPLOAD_ON_SAVE,
-    NB_TRANSFER_EDITOR_MULTIPLE,
+    NB_TRANSFER_EDITOR_UPLOAD,  // " When uploading from editor "
+    NB_TRANSFER_EDITOR_UPLOAD_SAME,  // "Use sa&me options as for download"
+    NB_TRANSFER_EDITOR_UPLOAD_OPTIONS,  // "Display &upload options dialog"
+    NB_TRANSFER_EDITOR_UPLOAD_ON_SAVE,  // "Upload after every &save"
+    NB_TRANSFER_EDITOR_MULTIPLE,  // "&Allow more than one edited file"
 
-    NB_TRANSFER_QUEUE_LIMIT,
-    NB_TRANSFER_QUEUE_DEFAULT,
-    NB_TRANSFER_AUTO_POPUP,
-    NB_TRANSFER_QUEUE_BEEP,
-    NB_TRANSFER_REMEMBER_PASSWORD,
+    NB_TRANSFER_QUEUE_LIMIT,  // "Maximal &number of transfers"
+    NB_TRANSFER_QUEUE_DEFAULT,  // "&Transfer on background by default"
+    NB_TRANSFER_AUTO_POPUP,  // "&Automatically popup prompts when idle"
+    NB_TRANSFER_QUEUE_BEEP,  // "&Beep when queue empties or transfer requires attention"
+    NB_TRANSFER_REMEMBER_PASSWORD,  // "Reuse &password of the main session"
 
-    NB_TRANSFER_PRESET_LABEL,
-    NB_TRANSFER_PRESET_DEFAULT,
-    NB_TRANSFER_PRESET_TEXT_ASCII,
-    NB_TRANSFER_PRESET_BINARY_ALL,
-    NB_TRANSFER_PRESET_NO_PRESERVE_TIME,
+    NB_TRANSFER_PRESET_LABEL,  // "Preset"
+    NB_TRANSFER_PRESET_DEFAULT,  // "Default"
+    NB_TRANSFER_PRESET_TEXT_ASCII,  // "Text files (ASCII)"
+    NB_TRANSFER_PRESET_BINARY_ALL,  // "Binary all"
+    NB_TRANSFER_PRESET_NO_PRESERVE_TIME,  // "No preserve time"
 
-    NB_MENU_COMMANDS,
-    NB_MENU_COMMANDS_LOG,
-    NB_MENU_COMMANDS_ATTRIBUTES,
-    NB_MENU_COMMANDS_LINK,
-    NB_MENU_COMMANDS_CONFIGURE,
-    NB_MENU_COMMANDS_INFORMATION,
-    NB_MENU_COMMANDS_PUTTY,
-    NB_MENU_COMMANDS_PUTTYGEN,
-    NB_MENU_COMMANDS_PAGEANT,
-    NB_MENU_COMMANDS_OPEN_DIRECTORY,
-    NB_MENU_COMMANDS_ADD_BOOKMARK,
-    NB_MENU_COMMANDS_HOME_DIRECTORY,
-    NB_MENU_COMMANDS_APPLY_COMMAND,
-    NB_MENU_COMMANDS_CLEAR_CACHES,
-    NB_MENU_COMMANDS_FULL_SYNCHRONIZE,
-    NB_MENU_COMMANDS_QUEUE,
-    NB_MENU_COMMANDS_SYNCHRONIZE,
-    NB_MENU_COMMANDS_SYNCHRONIZE_BROWSING,
-    NB_MENU_COMMANDS_EDIT_HISTORY,
-    NB_MENU_COMMANDS_CLEANUP,
-    NB_MENU_COMMANDS_GENERATE_URL,
-    NB_MENU_COMMANDS_LOCATION_PROFILES,
-    NB_SERVER_PROTOCOL_INFORMATION,
-    NB_SERVER_INFORMATION_GROUP,
-    NB_SERVER_SSH_IMPLEMENTATION,
-    NB_SERVER_CIPHER,
-    NB_SERVER_COMPRESSION,
-    NB_SERVER_FS_PROTOCOL,
-    NB_SERVER_HOST_KEY_MD5,
-    NB_SERVER_HOST_KEY_SHA256,
-    NB_SERVER_CERT_SHA1,
-    NB_SERVER_CERT_SHA256,
-    NB_PROTOCOL_INFORMATION_GROUP,
-    NB_PROTOCOL_MODE_CHANGING,
-    NB_PROTOCOL_OWNER_GROUP_CHANGING,
-    NB_PROTOCOL_ANY_COMMAND,
-    NB_PROTOCOL_SYMBOLIC_HARD_LINK,
-    NB_PROTOCOL_USER_GROUP_LISTING,
-    NB_PROTOCOL_REMOTE_COPY,
-    NB_PROTOCOL_CHECKING_SPACE_AVAILABLE,
-    NB_PROTOCOL_NATIVE_TEXT_MODE,
-    NB_PROTOCOL_INFO_GROUP,
-    NB_SPACE_AVAILABLE_GROUP,
-    NB_SPACE_AVAILABLE_PATH,
-    NB_SPACE_AVAILABLE_CHECK_SPACE,
-    NB_SPACE_AVAILABLE_BYTES_UNKNOWN,
-    NB_SPACE_AVAILABLE_BYTES_ON_DEVICE,
-    NB_SPACE_AVAILABLE_UNUSED_BYTES_ON_DEVICE,
-    NB_SPACE_AVAILABLE_BYTES_AVAILABLE_TO_USER,
-    NB_SPACE_AVAILABLE_UNUSED_BYTES_AVAILABLE_TO_USER,
-    NB_SPACE_AVAILABLE_BYTES_PER_ALLOCATION_UNIT,
-    NB_SERVER_PROTOCOL_TAB_PROTOCOL,
-    NB_SERVER_PROTOCOL_TAB_CAPABILITIES,
-    NB_SERVER_PROTOCOL_TAB_SPACE_AVAILABLE,
-    NB_SERVER_PROTOCOL_COPY_CLIPBOARD,
-    NB_SERVER_REMOTE_SYSTEM,
-    NB_SERVER_SESSION_PROTOCOL,
-    NB_PROTOCOL_PROTOCOL_ANY_COMMAND,
-    NB_PROTOCOL_CALCULATING_CHECKSUM,
+    NB_MENU_COMMANDS,  // "NetBox commands"
+    NB_MENU_COMMANDS_LOG,  // "Display session log &file"
+    NB_MENU_COMMANDS_ATTRIBUTES,  // "View/change file a&ttributes  Ctrl-A"
+    NB_MENU_COMMANDS_LINK,  // "Create/edit &link             Alt-F6"
+    NB_MENU_COMMANDS_CONFIGURE,  // "&Configure"
+    NB_MENU_COMMANDS_INFORMATION,  // "Server and protocol &information"
+    NB_MENU_COMMANDS_PUTTY,  // "Open in &Putty"
+    NB_MENU_COMMANDS_PUTTYGEN,  // "PuTTY&gen: key generator"
+    NB_MENU_COMMANDS_PAGEANT,  // "Pagea&nt: authentication agent"
+    NB_MENU_COMMANDS_OPEN_DIRECTORY,  // "&Open directory               Alt-Shift-F12"
+    NB_MENU_COMMANDS_ADD_BOOKMARK,  // "Add &bookmark"
+    NB_MENU_COMMANDS_HOME_DIRECTORY,  // "&Home directory"
+    NB_MENU_COMMANDS_APPLY_COMMAND,  // "Apply co&mmand                Ctrl-G"
+    NB_MENU_COMMANDS_CLEAR_CACHES,  // "Clea&r caches"
+    NB_MENU_COMMANDS_FULL_SYNCHRONIZE,  // "&Synchronize"
+    NB_MENU_COMMANDS_QUEUE,  // "&Queue                        Alt-Shift-Q"
+    NB_MENU_COMMANDS_SYNCHRONIZE,  // "&Keep Remote Directory Up To Date"
+    NB_MENU_COMMANDS_SYNCHRONIZE_BROWSING,  // "Synchronize bro&wsing         Ctrl-Alt-B"
+    NB_MENU_COMMANDS_EDIT_HISTORY,  // "&Edit history                 Alt-Shift-F11"
+    NB_MENU_COMMANDS_CLEANUP,  // "&Cleanup Configuration"
+    NB_MENU_COMMANDS_GENERATE_URL,  // "Generate &URL"
+    NB_MENU_COMMANDS_LOCATION_PROFILES,  // "Location &Profiles"
+    NB_SERVER_PROTOCOL_INFORMATION,  // "Server and protocol information"
+    NB_SERVER_INFORMATION_GROUP,  // " Server information "
+    NB_SERVER_SSH_IMPLEMENTATION,  // "SSH implementation:"
+    NB_SERVER_CIPHER,  // "Encryption algorithm:"
+    NB_SERVER_COMPRESSION,  // "Compression:"
+    NB_SERVER_FS_PROTOCOL,  // "File transfer protocol:"
+    NB_SERVER_HOST_KEY_MD5,  // "Server host key fingerprint (MD5):"
+    NB_SERVER_HOST_KEY_SHA256,  // "Server host key fingerprint (SHA256):"
+    NB_SERVER_CERT_SHA1,  // "Server certificate fingerprint (SHA1):"
+    NB_SERVER_CERT_SHA256,  // "Server certificate fingerprint (SHA256):"
+    NB_PROTOCOL_INFORMATION_GROUP,  // " Protocol capabilities/information "
+    NB_PROTOCOL_MODE_CHANGING,  // "Can change permissions:"
+    NB_PROTOCOL_OWNER_GROUP_CHANGING,  // "Can change owner/group:"
+    NB_PROTOCOL_ANY_COMMAND,  // "Can execute arbitrary command:"
+    NB_PROTOCOL_SYMBOLIC_HARD_LINK,  // "Can create symlink/hardlink:"
+    NB_PROTOCOL_USER_GROUP_LISTING,  // "Can lookup user groups:"
+    NB_PROTOCOL_REMOTE_COPY,  // "Can duplicate remote files:"
+    NB_PROTOCOL_CHECKING_SPACE_AVAILABLE,  // "Can check available space:"
+    NB_PROTOCOL_NATIVE_TEXT_MODE,  // "Native text (ASCII) mode transfers:"
+    NB_PROTOCOL_INFO_GROUP,  // " Additional protocol information "
+    NB_SPACE_AVAILABLE_GROUP,  // " Space available "
+    NB_SPACE_AVAILABLE_PATH,  // "Pa&th"
+    NB_SPACE_AVAILABLE_CHECK_SPACE,  // "C&heck space"
+    NB_SPACE_AVAILABLE_BYTES_UNKNOWN,  // "Unknown"
+    NB_SPACE_AVAILABLE_BYTES_ON_DEVICE,  // "Total bytes on device:"
+    NB_SPACE_AVAILABLE_UNUSED_BYTES_ON_DEVICE,  // "Free bytes on device:"
+    NB_SPACE_AVAILABLE_BYTES_AVAILABLE_TO_USER,  // "Total bytes for user:"
+    NB_SPACE_AVAILABLE_UNUSED_BYTES_AVAILABLE_TO_USER,  // "Free bytes for user:"
+    NB_SPACE_AVAILABLE_BYTES_PER_ALLOCATION_UNIT,  // "Bytes per allocation unit:"
+    NB_SERVER_PROTOCOL_TAB_PROTOCOL,  // "&Protocol"
+    NB_SERVER_PROTOCOL_TAB_CAPABILITIES,  // "Capa&bilities"
+    NB_SERVER_PROTOCOL_TAB_SPACE_AVAILABLE,  // "Space &available"
+    NB_SERVER_PROTOCOL_COPY_CLIPBOARD,  // "&Copy to Clipboard"
+    NB_SERVER_REMOTE_SYSTEM,  // "Remote system:"
+    NB_SERVER_SESSION_PROTOCOL,  // "Session protocol:"
+    NB_PROTOCOL_PROTOCOL_ANY_COMMAND,  // "Protocol commands only"
+    NB_PROTOCOL_CALCULATING_CHECKSUM,  // "Can calculate file checksum:"
 
-    NB_INTEGRATION_PUTTY,
-    NB_INTEGRATION_PUTTY_PASSWORD,
-    NB_INTEGRATION_PAGEANT,
-    NB_INTEGRATION_PUTTYGEN,
-    NB_INTEGRATION_TELNET_FOR_FTP_IN_PUTTY,
+    NB_INTEGRATION_PUTTY,  // "&Putty path"
+    NB_INTEGRATION_PUTTY_PASSWORD,  // "&Remember session password and pass it to PuTTY"
+    NB_INTEGRATION_PAGEANT,  // "Page&ant path"
+    NB_INTEGRATION_PUTTYGEN,  // "PuTTY&gen path"
+    NB_INTEGRATION_TELNET_FOR_FTP_IN_PUTTY,  // "Open &Telnet sessions in PuTTY for FTP sessions"
 
-    NB_OPEN_DIRECTORY_BROWSE_CAPTION,
-    NB_OPEN_DIRECTORY_ADD_BOOKMARK_ACTION,
-    NB_OPEN_DIRECTORY_REMOVE,
-    NB_OPEN_DIRECTORY_UP,
-    NB_OPEN_DIRECTORY_DOWN,
-    NB_OPEN_DIRECTORY_HELP,
+    NB_OPEN_DIRECTORY_BROWSE_CAPTION,  // "Open directory"
+    NB_OPEN_DIRECTORY_ADD_BOOKMARK_ACTION,  // "Manage bookmarks"
+    NB_OPEN_DIRECTORY_REMOVE,  // "&Remove"
+    NB_OPEN_DIRECTORY_UP,  // "&Up    "
+    NB_OPEN_DIRECTORY_DOWN,  // "&Down  "
+    NB_OPEN_DIRECTORY_HELP,  // "Del - remove, Ctrl-Enter - command line, Ctrl-Ins - clipboard"
 
-    NB_APPLY_COMMAND_TITLE,
-    NB_APPLY_COMMAND_PROMPT,
-    NB_APPLY_COMMAND_APPLY_TO_DIRECTORIES,
-    NB_APPLY_COMMAND_RECURSIVE,
-    NB_APPLY_COMMAND_HINT1,
-    NB_APPLY_COMMAND_HINT2,
-    NB_APPLY_COMMAND_HINT3,
-    NB_APPLY_COMMAND_HINT4,
-    NB_APPLY_COMMAND_HINT5,
-    NB_APPLY_COMMAND_HINT_LOCAL,
-    NB_APPLY_COMMAND_PARAM_TITLE,
-    NB_APPLY_COMMAND_PARAM_PROMPT,
-    NB_APPLY_COMMAND_REMOTE_COMMAND,
-    NB_APPLY_COMMAND_LOCAL_COMMAND,
-    NB_APPLY_COMMAND_SHOW_RESULTS,
-    NB_APPLY_COMMAND_COPY_RESULTS,
-    NB_CUSTOM_COMMAND_SELECTED_UNMATCH,
-    NB_CUSTOM_COMMAND_SELECTED_UNMATCH1,
-    NB_CUSTOM_COMMAND_PAIRS_DOWNLOAD_FAILED,
-    NB_APPLY_COMMAND_LOCAL_PATH_REQUIRED,
+    NB_APPLY_COMMAND_TITLE,  // "Apply command"
+    NB_APPLY_COMMAND_PROMPT,  // "Enter &command to process selected files"
+    NB_APPLY_COMMAND_APPLY_TO_DIRECTORIES,  // "&Apply to directories   "
+    NB_APPLY_COMMAND_RECURSIVE,  // "&Execute recursively"
+    NB_APPLY_COMMAND_HINT1,  // "Patterns: !! - exclamation mark; ! - file name"
+    NB_APPLY_COMMAND_HINT2,  // "!&& - list of selected files (quoted, space-delimited)"
+    NB_APPLY_COMMAND_HINT3,  // "!/ - current remote path; !@ - current hostname"
+    NB_APPLY_COMMAND_HINT4,  // "!U - current username; !P - current password (if known)"
+    NB_APPLY_COMMAND_HINT5,  // "!?prompt[\]?default! - prompts user for parameter value"
+    NB_APPLY_COMMAND_HINT_LOCAL,  // "Local command patterns: !^! - file name from local panel"
+    NB_APPLY_COMMAND_PARAM_TITLE,  // "Apply command parameter"
+    NB_APPLY_COMMAND_PARAM_PROMPT,  // "Apply command parameter value:"
+    NB_APPLY_COMMAND_REMOTE_COMMAND,  // "&Remote command         "
+    NB_APPLY_COMMAND_LOCAL_COMMAND,  // "&Local command"
+    NB_APPLY_COMMAND_SHOW_RESULTS,  // "&Show results in console"
+    NB_APPLY_COMMAND_COPY_RESULTS,  // "Copy results to clip&board"
+    NB_CUSTOM_COMMAND_SELECTED_UNMATCH,  // "To use entered command only one file must be selected in one panel to execute the command with the file for each selected file in an opposite panel. Alternatively same number of files can be selected in both panels to execute the command for file pairs."
+    NB_CUSTOM_COMMAND_SELECTED_UNMATCH1,  // "To use entered custom command only one file must be selected in local panel."
+    NB_CUSTOM_COMMAND_PAIRS_DOWNLOAD_FAILED,  // "Some of the selected remote files were not downloaded. The entered command must be executed for pairs of file, what is thus not possible."
+    NB_APPLY_COMMAND_LOCAL_PATH_REQUIRED,  // "Local command can be executed only against regular panel."
 
-    NB_SYNCHRONIZE_LOCAL_PATH_REQUIRED,
-    NB_COMPARE_NO_DIFFERENCES,
-    NB_FULL_SYNCHRONIZE_TITLE,
-    NB_FULL_SYNCHRONIZE_LOCAL_LABEL,
-    NB_FULL_SYNCHRONIZE_REMOTE_LABEL,
-    NB_FULL_SYNCHRONIZE_DIRECTION_GROUP,
-    NB_FULL_SYNCHRONIZE_LOCAL,
-    NB_FULL_SYNCHRONIZE_REMOTE,
-    NB_FULL_SYNCHRONIZE_BOTH,
-    NB_FULL_SYNCHRONIZE_MODE_GROUP,
-    NB_FULL_SYNCHRONIZE_GROUP,
-    NB_FULL_SYNCHRONIZE_CRITERIONS_GROUP,
-    NB_SYNCHRONIZE_SYNCHRONIZE_FILES,
-    NB_SYNCHRONIZE_MIRROR_FILES,
-    NB_SYNCHRONIZE_SYNCHRONIZE_TIMESTAMPS,
-    NB_SYNCHRONIZE_DELETE,
-    NB_SYNCHRONIZE_NO_CONFIRMATION,
-    NB_SYNCHRONIZE_EXISTING_ONLY,
-    NB_SYNCHRONIZE_REUSE_SETTINGS,
-    NB_SYNCHRONIZE_PREVIEW_CHANGES,
-    NB_SYNCHRONIZE_SYNCHRONIZE,
-    NB_SYNCHRONIZE_BY_TIME,
-    NB_SYNCHRONIZE_BY_SIZE,
-    NB_SYNCHRONIZE_SELECTED_ONLY,
-    NB_SYNCHRONIZE_SAME_SIZE,
+    NB_SYNCHRONIZE_LOCAL_PATH_REQUIRED,  // "Synchronization is supported only against regular panel."
+    NB_COMPARE_NO_DIFFERENCES,  // "No differences found."
+    NB_FULL_SYNCHRONIZE_TITLE,  // "Synchronize"
+    NB_FULL_SYNCHRONIZE_LOCAL_LABEL,  // "Lo&cal directory:"
+    NB_FULL_SYNCHRONIZE_REMOTE_LABEL,  // "Remo&te directory:"
+    NB_FULL_SYNCHRONIZE_DIRECTION_GROUP,  // " Direction/Target directory "
+    NB_FULL_SYNCHRONIZE_LOCAL,  // "&Local"
+    NB_FULL_SYNCHRONIZE_REMOTE,  // "&Remote      "
+    NB_FULL_SYNCHRONIZE_BOTH,  // "&Both             "
+    NB_FULL_SYNCHRONIZE_MODE_GROUP,  // " Mode "
+    NB_FULL_SYNCHRONIZE_GROUP,  // " Synchronize options "
+    NB_FULL_SYNCHRONIZE_CRITERIONS_GROUP,  // " Compare criteria "
+    NB_SYNCHRONIZE_SYNCHRONIZE_FILES,  // "Synchronize &files"
+    NB_SYNCHRONIZE_MIRROR_FILES,  // "&Mirror files"
+    NB_SYNCHRONIZE_SYNCHRONIZE_TIMESTAMPS,  // "Synchronize &timestamps"
+    NB_SYNCHRONIZE_DELETE,  // "&Delete files             "
+    NB_SYNCHRONIZE_NO_CONFIRMATION,  // "&No confirmations"
+    NB_SYNCHRONIZE_EXISTING_ONLY,  // "&Existing files only  "
+    NB_SYNCHRONIZE_REUSE_SETTINGS,  // "Use same &options next time"
+    NB_SYNCHRONIZE_PREVIEW_CHANGES,  // "Pre&view changes          "
+    NB_SYNCHRONIZE_SYNCHRONIZE,  // "Synchronize on s&tart"
+    NB_SYNCHRONIZE_BY_TIME,  // "&Modification time        "
+    NB_SYNCHRONIZE_BY_SIZE,  // "File si&ze"
+    NB_SYNCHRONIZE_SELECTED_ONLY,  // "Selected files o&nly"
+    NB_SYNCHRONIZE_SAME_SIZE,  // "Same si&ze only"
 
-    NB_SYNCHRONIZE_TITLE,
-    NB_SYNCHRONIZE_SYCHRONIZING,
-    NB_SYNCHRONIZE_LOCAL_LABEL,
-    NB_SYNCHRONIZE_REMOTE_LABEL,
-    NB_SYNCHRONIZE_RECURSIVE,
-    NB_SYNCHRONIZE_GROUP,
-    NB_SYNCHRONIZE_START_BUTTON,
-    NB_SYNCHRONIZE_STOP_BUTTON,
+    NB_SYNCHRONIZE_TITLE,  // "Keep remote directory up to date"
+    NB_SYNCHRONIZE_SYCHRONIZING,  // "Keeping remote directory up to date ..."
+    NB_SYNCHRONIZE_LOCAL_LABEL,  // "&Watch for changes in the local directory ..."
+    NB_SYNCHRONIZE_REMOTE_LABEL,  // "... &and automatically reflect them on the remote directory"
+    NB_SYNCHRONIZE_RECURSIVE,  // "Update s&ubdirectories    "
+    NB_SYNCHRONIZE_GROUP,  // " Upload options "
+    NB_SYNCHRONIZE_START_BUTTON,  // "&Start"
+    NB_SYNCHRONIZE_STOP_BUTTON,  // "&Stop"
 
-    NB_SYNCHRONIZE_PROGRESS_TITLE,
-    NB_SYNCHRONIZE_PROGRESS_COMPARE_TITLE,
-    NB_SYNCHRONIZE_PROGRESS_LOCAL,
-    NB_SYNCHRONIZE_PROGRESS_REMOTE,
-    NB_SYNCHRONIZE_PROGRESS_START_TIME,
+    NB_SYNCHRONIZE_PROGRESS_TITLE,  // "Synchronizing"
+    NB_SYNCHRONIZE_PROGRESS_COMPARE_TITLE,  // "Comparing"
+    NB_SYNCHRONIZE_PROGRESS_LOCAL,  // "Local:        "
+    NB_SYNCHRONIZE_PROGRESS_REMOTE,  // "Remote:       "
+    NB_SYNCHRONIZE_PROGRESS_START_TIME,  // "Start time:   "
     NB_SYNCHRONIZE_PROGRESS_ELAPSED, // "Time elapsed: "
 
     NB_COPY_PARAM_CUSTOM_TITLE, // "Transfer settings"
 
     NB_QUEUE_TITLE, // "Queue"
-    NB_QUEUE_HEADER,
+    NB_QUEUE_HEADER,  // "Oper.  Source/Destination/File                           Trans/Progr"
     NB_QUEUE_SHOW, // " &Show  "
-    NB_QUEUE_EXECUTE,
-    NB_QUEUE_DELETE,
-    NB_QUEUE_MOVE_UP,
-    NB_QUEUE_MOVE_DOWN,
-    NB_QUEUE_CLOSE,
-    NB_QUEUE_PAUSE,
-    NB_QUEUE_RESUME,
-    NB_QUEUE_COPY,
-    NB_QUEUE_MOVE,
-    NB_QUEUE_DOWNLOAD,
-    NB_QUEUE_UPLOAD,
-    NB_QUEUE_CONNECTING,
-    NB_QUEUE_QUERY,
-    NB_QUEUE_ERROR,
-    NB_QUEUE_PROMPT,
-    NB_QUEUE_PENDING,
-    NB_QUEUE_PENDING_ITEMS,
-    NB_QUEUE_CALCULATING_SIZE,
-    NB_QUEUE_PAUSED,
+    NB_QUEUE_EXECUTE,  // "&Execute"
+    NB_QUEUE_DELETE,  // "&Cancel"
+    NB_QUEUE_MOVE_UP,  // "&Up"
+    NB_QUEUE_MOVE_DOWN,  // "Do&wn"
+    NB_QUEUE_CLOSE,  // "Close"
+    NB_QUEUE_PAUSE,  // "&Suspend"
+    NB_QUEUE_RESUME,  // "&Resume "
+    NB_QUEUE_COPY,  // "C"
+    NB_QUEUE_MOVE,  // "M"
+    NB_QUEUE_DOWNLOAD,  // ""
+    NB_QUEUE_UPLOAD,  // ""
+    NB_QUEUE_CONNECTING,  // "Connecting..."
+    NB_QUEUE_QUERY,  // "Query"
+    NB_QUEUE_ERROR,  // "Error"
+    NB_QUEUE_PROMPT,  // "Prompt"
+    NB_QUEUE_PENDING,  // "Waiting..."
+    NB_QUEUE_PENDING_ITEMS,  // "There are still some queued background transfers. Do you want to wait for transfers to complete?\n \nWarning: Pressing 'Cancel' will terminate all transfers immediately."
+    NB_QUEUE_CALCULATING_SIZE,  // "Calculating..."
+    NB_QUEUE_PAUSED,  // "Suspended"
 
-    NB_BANNER_TITLE,
-    NB_BANNER_NEVER_SHOW_AGAIN,
-    NB_BANNER_CONTINUE,
+    NB_BANNER_TITLE,  // "Authentication Banner - %s"
+    NB_BANNER_NEVER_SHOW_AGAIN,  // "&Never show this banner again"
+    NB_BANNER_CONTINUE,  // "Continue"
 
-    NB_CHECKLIST_TITLE,
-    NB_CHECKLIST_HEADER,
-    NB_CHECKLIST_ACTIONS,
-    NB_CHECKLIST_CHECKED,
-    NB_CHECKLIST_CHECK_ALL,
-    NB_CHECKLIST_UNCHECK_ALL,
-    NB_CHECKLIST_MAXIMIZE,
-    NB_CHECKLIST_RESTORE,
+    NB_CHECKLIST_TITLE,  // "Synchronization checklist"
+    NB_CHECKLIST_HEADER,  // "Name|Local dir.|Size|Changed||Remote dir.|Size|Changed"
+    NB_CHECKLIST_ACTIONS,  // "*|*| | |X|X"
+    NB_CHECKLIST_CHECKED,  // " %d of %d "
+    NB_CHECKLIST_CHECK_ALL,  // "Check &all"
+    NB_CHECKLIST_UNCHECK_ALL,  // "Uncheck a&ll"
+    NB_CHECKLIST_MAXIMIZE,  // "&maximize"
+    NB_CHECKLIST_RESTORE,  // "&restore"
 
-    NB_EDITOR_CURRENT,
-    NB_EDITOR_NEW_INSTANCE,
-    NB_EDITOR_NEW_INSTANCE_RO,
+    NB_EDITOR_CURRENT,  // "&Current"
+    NB_EDITOR_NEW_INSTANCE,  // "&New instance"
+    NB_EDITOR_NEW_INSTANCE_RO,  // "&Read-only"
 
-    NB_CREATING_FOLDER,
+    NB_CREATING_FOLDER,  // "Creating folder"
 
-    NB_MENU_EDIT_HISTORY,
+    NB_MENU_EDIT_HISTORY,  // "Edit history"
 
-    NB_IMPORTED_SESSIONS_INFO,
+    NB_IMPORTED_SESSIONS_INFO,  // "Imported %d sessions"
 
-    NB_StringTitle,
+    NB_StringTitle,  // "NetBox"
 
-    NB_StringOK,
-    NB_StringCancel,
+    NB_StringOK,  // "OK"
+    NB_StringCancel,  // "Cancel"
 
-    NB_StringSession,
-    NB_StringProxy,
+    NB_StringSession,  // " Session "
+    NB_StringProxy,  // " Proxy "
 
     //Edit link dialog
-    NB_StringEdCrtTitle,
-    NB_StringEdEdtTitle,
-    NB_StringEdName,
-    NB_StringEdURL,
-    NB_StringEdCP,
-    NB_StringEdAuth,
-    NB_StringEdAuthUser,
-    NB_StringEdAuthPsw,
-    NB_StringEdAuthPromptPsw,
-    NB_StringEdAuthShowPsw,
-    NB_StringEdAuthCert,
-    NB_StringEdErrURLEmpty,
-    NB_StringEdErrURLInvalid,
-    NB_StringEdErrNameEmpty,
-    NB_StringEdErrNameInvalid,
+    NB_StringEdCrtTitle,  // "Create session link"
+    NB_StringEdEdtTitle,  // "Edit session link"
+    NB_StringEdName,  // "Session name:"
+    NB_StringEdURL,  // "&URL:"
+    NB_StringEdCP,  // "Code page:"
+    NB_StringEdAuth,  // " Authentication "
+    NB_StringEdAuthUser,  // "User name:"
+    NB_StringEdAuthPsw,  // "Password (user/private key):"
+    NB_StringEdAuthPromptPsw,  // "Prompt for password upon connection"
+    NB_StringEdAuthShowPsw,  // "Show password"
+    NB_StringEdAuthCert,  // "Private key file (.ppk):"
+    NB_StringEdErrURLEmpty,  // "URL can not be empty"
+    NB_StringEdErrURLInvalid,  // "Invalid URL"
+    NB_StringEdErrNameEmpty,  // "The session name can not be empty"
+    NB_StringEdErrNameInvalid,  // "The session name contains restricted symbols (<>:\"
 
     //Configure menu
-    NB_StringSettingsMenuTitle,
-    NB_StringMainSettingsMenuTitle,
-    NB_StringProxySettingsMenuTitle,
-    NB_StringLoggingSettingsMenuTitle,
-    NB_StringAboutMenuTitle,
+    NB_StringSettingsMenuTitle,  // "NetBox - settings"
+    NB_StringMainSettingsMenuTitle,  // "Main settings"
+    NB_StringProxySettingsMenuTitle,  // "Proxy settings"
+    NB_StringLoggingSettingsMenuTitle,  // "Logging settings"
+    NB_StringAboutMenuTitle,  // "About"
 
     //Main configure dialog
-    NB_StringCfgAddToDM,
-    NB_StringCfgAddToPM,
-    NB_StringCfgUseOwnKey,
-    NB_StringCfgPrefix,
-    NB_StringCfgAltPrefixes,
-    NB_StringCfgTimeout,
-    NB_StringCfgSessionsPath,
+    NB_StringCfgAddToDM,  // "Add to disk menu"
+    NB_StringCfgAddToPM,  // "Add to panels plugin menu"
+    NB_StringCfgUseOwnKey,  // "Use own encryption key"
+    NB_StringCfgPrefix,  // "Prefix:"
+    NB_StringCfgAltPrefixes,  // "Handle prefixes ftp, http, ..."
+    NB_StringCfgTimeout,  // "Default timeout (sec):"
+    NB_StringCfgSessionsPath,  // "Saved sessions directory:"
 
     //Proxy configure dialog
-    NB_StringProxySettingsDialogTitle,
-    NB_StringProxySettingsProxyType,
-    NB_proxyTypeItem1,
-    NB_proxyTypeItem2,
-    NB_proxyTypeItem3,
-    NB_proxyTypeItem4,
+    NB_StringProxySettingsDialogTitle,  // "NetBox - Proxy settings"
+    NB_StringProxySettingsProxyType,  // "Proxy type:"
+    NB_proxyTypeItem1,  // "None"
+    NB_proxyTypeItem2,  // "SOCKS4"
+    NB_proxyTypeItem3,  // "SOCKS5"
+    NB_proxyTypeItem4,  // "HTTP"
 
-    NB_StringProxySettingsProxyHost,
-    NB_StringProxySettingsProxyPort,
-    NB_StringProxySettingsProxyLogin,
-    NB_StringProxySettingsProxyPassword,
+    NB_StringProxySettingsProxyHost,  // "Proxy host name:"
+    NB_StringProxySettingsProxyPort,  // "Port number:"
+    NB_StringProxySettingsProxyLogin,  // "User name:"
+    NB_StringProxySettingsProxyPassword,  // "Password:"
 
     //Logging configure dialog
-    NB_StringLoggingDialogTitle,
-    NB_StringLoggingDialogEnableLogging,
-    NB_StringLoggingOptionsSeparatorTitle,
-    NB_StringLoggingOptionsLevel,
-    NB_StringLoggingOptionsLevelItem1,
-    NB_StringLoggingOptionsLevelItem2,
-    NB_StringLoggingOptionsLevelItem3,
-    NB_StringLoggingDialogLogToFile,
-    NB_StringLogFileName,
+    NB_StringLoggingDialogTitle,  // "NetBox - Logging settings"
+    NB_StringLoggingDialogEnableLogging,  // "Enable logging"
+    NB_StringLoggingOptionsSeparatorTitle,  // " Logging options "
+    NB_StringLoggingOptionsLevel,  // "Logging level:"
+    NB_StringLoggingOptionsLevelItem1,  // "Debug 1"
+    NB_StringLoggingOptionsLevelItem2,  // "Debug 2"
+    NB_StringLoggingOptionsLevelItem3,  // "Debug 3"
+    NB_StringLoggingDialogLogToFile,  // "Log to file:"
+    NB_StringLogFileName,  // "C:\NetBox.log"
 
     //About menu
-    NB_StringAboutDialogTitle,
-    NB_StringPluginDescriptionText,
-    NB_StringPluginVersion,
-    NB_StringPluginDescriptionClose,
+    NB_StringAboutDialogTitle,  // "NetBox - About"
+    NB_StringPluginDescriptionText,  // "SFTP/FTP/SCP/WebDAV/S3 client for Far 3.0"
+    NB_StringPluginVersion,  // "Version %s"
+    NB_StringPluginDescriptionClose,  // "Close"
 
     //Prompt to crypto key
-    NB_StringSessionPwd,
+    NB_StringSessionPwd,  // "Enter password for read saved sessions:"
 
     //Create directory dialog
-    NB_StringMKDirTitle,
-    NB_StringMKDirName,
+    NB_StringMKDirTitle,  // "Create directory"
+    NB_StringMKDirName,  // "Directory name:"
 
     //Delete items dialog
-    NB_StringDelTitle,
-    NB_StringDelQuestion,
-    NB_StringDelQuestSession,
-    NB_StringDelQuestFolder,
-    NB_StringDelQuestFile,
-    NB_StringDelSelected,
-    NB_StringDelBtnDelete,
+    NB_StringDelTitle,  // "Delete"
+    NB_StringDelQuestion,  // "Do you wish to delete"
+    NB_StringDelQuestSession,  // "the session link?"
+    NB_StringDelQuestFolder,  // "the folder?"
+    NB_StringDelQuestFile,  // "the file?"
+    NB_StringDelSelected,  // "selected items?"
+    NB_StringDelBtnDelete,  // "Delete"
 
     //Copy dialog
-    NB_StringCopyTitle,
-    NB_StringCopyPath,
-    NB_StringCopySelected,
-    NB_StringCopyBtnCopy,
+    NB_StringCopyTitle,  // "Copy"
+    NB_StringCopyPath,  // "Copy %s to:"
+    NB_StringCopySelected,  // "selected items"
+    NB_StringCopyBtnCopy,  // "Copy"
 
     //Move dialog
-    NB_StringMoveTitle,
-    NB_StringMovePath,
-    NB_StringMoveSelected,
-    NB_StringMoveBtnCopy,
+    NB_StringMoveTitle,  // "Move"
+    NB_StringMovePath,  // "Move %s to:"
+    NB_StringMoveSelected,  // "selected items"
+    NB_StringMoveBtnCopy,  // "Move"
 
     //Progress titles
-    NB_StringPrgConnect,
-    NB_StringPrgChangeDir,
-    NB_StringPrgGetList,
-    NB_StringPrgRcvFile,
-    NB_StringPrgSendFile,
-    NB_StringPrgTo,
-    NB_StringPrgDelete,
+    NB_StringPrgConnect,  // "Establish connection with %s..."
+    NB_StringPrgChangeDir,  // "Changing directory to \"
+    NB_StringPrgGetList,  // "Get directory listing for %s..."
+    NB_StringPrgRcvFile,  // "Receiving file"
+    NB_StringPrgSendFile,  // "Sending file"
+    NB_StringPrgTo,  // "to"
+    NB_StringPrgDelete,  // "Delete..."
 
     //Error messages
-    NB_StringErrKeyFile,
-    NB_StringErrEstablish,
-    NB_StringErrCreateDir,
-    NB_StringErrChangeDir,
-    NB_StringErrListDir,
-    NB_StringErrCopyFile,
-    NB_StringErrRenameMove,
-    NB_StringErrDeleteFile,
-    NB_StringErrDeleteDir,
+    NB_StringErrKeyFile,  // "Unable to load private key file\n%s"
+    NB_StringErrEstablish,  // "Unable to establish connection with host\n%s"
+    NB_StringErrCreateDir,  // "Unable to create directory\n%s"
+    NB_StringErrChangeDir,  // "Unable to change directory to\n%s"
+    NB_StringErrListDir,  // "Unable to get directory listing\n%s"
+    NB_StringErrCopyFile,  // "Unable to copy file from\n%s\nto\n%s"
+    NB_StringErrRenameMove,  // "Unable to rename/move\n%s\nto\n%s"
+    NB_StringErrDeleteFile,  // "Unable to delete file\n%s"
+    NB_StringErrDeleteDir,  // "Unable to delete directory\n%s"
 
-    NB_StringOperationCanceledByUser,
+    NB_StringOperationCanceledByUser,  // "Operation canceled by user"
 
-    NB_StringCreateNewSessionItem,
+    NB_StringCreateNewSessionItem,  // "Press Shift-F4 to create new session item"
 
-    NB_StringSSLErrorContinue,
+    NB_StringSSLErrorContinue,  // "Certificate verification error: %s\nContinue anyway?"
 
     // TextCore1.rc
-    MSG_CORE_ERROR_STRINGS,
-    MSG_KEY_NOT_VERIFIED,
-    MSG_CONNECTION_FAILED,
-    MSG_USER_TERMINATED,
-    MSG_LOST_CONNECTION,
-    MSG_CANT_DETECT_RETURN_CODE,
-    MSG_COMMAND_FAILED,
-    MSG_COMMAND_FAILED_CODEONLY,
-    MSG_INVALID_OUTPUT_ERROR,
-    MSG_READ_CURRENT_DIR_ERROR,
-    MSG_SKIP_STARTUP_MESSAGE_ERROR,
-    MSG_CHANGE_DIR_ERROR,
-    MSG_LIST_DIR_ERROR,
-    MSG_LIST_LINE_ERROR,
-    MSG_RIGHTS_ERROR,
-    MSG_CLEANUP_CONFIG_ERROR,
-    MSG_CLEANUP_CACHES_ERROR,
-    MSG_CLEANUP_SEEDFILE_ERROR,
-    MSG_CLEANUP_SESSIONS_ERROR,
-    MSG_DETECT_RETURNVAR_ERROR,
-    MSG_LOOKUP_GROUPS_ERROR,
-    MSG_FILE_NOT_EXISTS,
-    MSG_CANT_GET_ATTRS,
-    MSG_OPENFILE_ERROR,
-    MSG_READ_ERROR,
-    MSG_COPY_FATAL,
-    MSG_TOREMOTE_COPY_ERROR,
-    MSG_TOLOCAL_COPY_ERROR,
-    MSG_SCP_EMPTY_LINE,
-    MSG_SCP_ILLEGAL_TIME_FORMAT,
-    MSG_SCP_INVALID_CONTROL_RECORD,
-    MSG_COPY_ERROR,
-    MSG_SCP_ILLEGAL_FILE_DESCRIPTOR,
-    MSG_NOT_DIRECTORY_ERROR,
-    MSG_CREATE_DIR_ERROR,
-    MSG_CREATE_FILE_ERROR,
-    MSG_WRITE_ERROR,
-    MSG_CANT_SET_ATTRS,
-    MSG_REMOTE_ERROR,
-    MSG_DELETE_FILE_ERROR,
-    MSG_LOG_GEN_ERROR,
-    MSG_LOG_OPENERROR,
-    MSG_RENAME_FILE_ERROR,
-    MSG_RENAME_CREATE_FILE_EXISTS,
-    MSG_RENAME_CREATE_DIR_EXISTS,
-    MSG_CHANGE_HOMEDIR_ERROR,
-    MSG_UNALIAS_ALL_ERROR,
-    MSG_UNSET_NATIONAL_ERROR,
-    MSG_FIRST_LINE_EXPECTED,
-    MSG_CLEANUP_INIFILE_ERROR,
-    MSG_AUTHENTICATION_LOG,
-    MSG_AUTHENTICATION_FAILED,
-    MSG_NOT_CONNECTED,
-    MSG_SAVE_KEY_ERROR,
-    MSG_SSH_EXITCODE,
-    MSG_SFTP_INVALID_TYPE,
-    MSG_SFTP_VERSION_NOT_SUPPORTED,
-    MSG_SFTP_MESSAGE_NUMBER,
-    MSG_SFTP_STATUS_OK,
-    MSG_SFTP_STATUS_EOF,
-    MSG_SFTP_STATUS_NO_SUCH_FILE,
-    MSG_SFTP_STATUS_PERMISSION_DENIED,
-    MSG_SFTP_STATUS_FAILURE,
-    MSG_SFTP_STATUS_BAD_MESSAGE,
-    MSG_SFTP_STATUS_NO_CONNECTION,
-    MSG_SFTP_STATUS_CONNECTION_LOST,
-    MSG_SFTP_STATUS_OP_UNSUPPORTED,
-    MSG_SFTP_ERROR_FORMAT3,
-    MSG_SFTP_STATUS_UNKNOWN,
-    MSG_READ_SYMLINK_ERROR,
-    MSG_EMPTY_DIRECTORY,
-    MSG_SFTP_NON_ONE_FXP_NAME_PACKET,
-    MSG_SFTP_REALPATH_ERROR,
-    MSG_CHANGE_PROPERTIES_ERROR,
-    MSG_SFTP_INITIALIZE_ERROR,
-    MSG_TIMEZONE_ERROR,
-    MSG_SFTP_CREATE_FILE_ERROR,
-    MSG_SFTP_OPEN_FILE_ERROR,
-    MSG_SFTP_CLOSE_FILE_ERROR,
-    MSG_NOT_FILE_ERROR,
-    MSG_RENAME_AFTER_RESUME_ERROR,
-    MSG_CREATE_LINK_ERROR,
-    MSG_INVALID_SHELL_COMMAND,
-    MSG_SFTP_SERVER_MESSAGE_UNSUPPORTED,
-    MSG_INVALID_OCTAL_PERMISSIONS,
-    MSG_SFTP_INVALID_EOL,
-    MSG_SFTP_UNKNOWN_FILE_TYPE,
-    MSG_SFTP_STATUS_INVALID_HANDLE,
-    MSG_SFTP_STATUS_NO_SUCH_PATH,
-    MSG_SFTP_STATUS_FILE_ALREADY_EXISTS,
-    MSG_SFTP_STATUS_WRITE_PROTECT,
-    MSG_SFTP_STATUS_NO_MEDIA,
-    MSG_DECODE_UTF_ERROR,
-    MSG_CUSTOM_COMMAND_ERROR,
-    MSG_LOCALE_LOAD_ERROR,
-    MSG_SFTP_INCOMPLETE_BEFORE_EOF,
-    MSG_CALCULATE_SIZE_ERROR,
-    MSG_SFTP_PACKET_TOO_BIG,
-    MSG_SCP_INIT_ERROR,
-    MSG_DUPLICATE_BOOKMARK,
-    MSG_MOVE_FILE_ERROR,
-    MSG_SFTP_PACKET_TOO_BIG_INIT_EXPLAIN,
-    MSG_PRESERVE_TIME_PERM_ERROR3,
-    MSG_ACCESS_VIOLATION_ERROR3,
-    MSG_SFTP_STATUS_NO_SPACE_ON_FILESYSTEM,
-    MSG_SFTP_STATUS_QUOTA_EXCEEDED,
-    MSG_SFTP_STATUS_UNKNOWN_PRINCIPAL,
-    MSG_COPY_FILE_ERROR,
-    MSG_CUSTOM_COMMAND_UNTERMINATED,
-    MSG_CUSTOM_COMMAND_UNKNOWN,
-    MSG_CUSTOM_COMMAND_FILELIST_ERROR,
+    MSG_CORE_ERROR_STRINGS,  // "CORE_ERROR"
+    MSG_KEY_NOT_VERIFIED,  // "Host key wasn't verified!"
+    MSG_CONNECTION_FAILED,  // "Connection failed."
+    MSG_USER_TERMINATED,  // "Terminated by user."
+    MSG_LOST_CONNECTION,  // "Lost connection."
+    MSG_CANT_DETECT_RETURN_CODE,  // "Can't detect command return code."
+    MSG_COMMAND_FAILED,  // "Command '%s'\nfailed with return code %d and the following error message."
+    MSG_COMMAND_FAILED_CODEONLY,  // "Command failed with return code %d."
+    MSG_INVALID_OUTPUT_ERROR,  // "Command '%s' failed with invalid output '%s'."
+    MSG_READ_CURRENT_DIR_ERROR,  // "Error getting name of current remote directory."
+    MSG_SKIP_STARTUP_MESSAGE_ERROR,  // "Error skipping startup message. Your shell is probably incompatible with the application (BASH is recommended)."
+    MSG_CHANGE_DIR_ERROR,  // "Error changing directory to '%s'."
+    MSG_LIST_DIR_ERROR,  // "Error listing directory '%s'."
+    MSG_LIST_LINE_ERROR,  // "Unexpected directory listing line '%s'."
+    MSG_RIGHTS_ERROR,  // "Invalid rights description '%s'"
+    MSG_CLEANUP_CONFIG_ERROR,  // "Error cleaning up general configuration."
+    MSG_CLEANUP_CACHES_ERROR,  // "Error cleaning up caches."
+    MSG_CLEANUP_SEEDFILE_ERROR,  // "Error cleaning up random seed file."
+    MSG_CLEANUP_SESSIONS_ERROR,  // "Error cleaning up cached host keys."
+    MSG_DETECT_RETURNVAR_ERROR,  // "Error detecting variable containing return code of last command."
+    MSG_LOOKUP_GROUPS_ERROR,  // "Error looking up user groups."
+    MSG_FILE_NOT_EXISTS,  // "File or folder '%s' does not exist."
+    MSG_CANT_GET_ATTRS,  // "Can't get attributes of file '%s'."
+    MSG_OPENFILE_ERROR,  // "Can't open file '%s'."
+    MSG_READ_ERROR,  // "Error reading file '%s'."
+    MSG_COPY_FATAL,  // "Copying file '%s' fatally failed."
+    MSG_TOREMOTE_COPY_ERROR,  // "Copying files to remote side failed."
+    MSG_TOLOCAL_COPY_ERROR,  // "Copying files from remote side failed."
+    MSG_SCP_EMPTY_LINE,  // "SCP protocol error: Unexpected newline"
+    MSG_SCP_ILLEGAL_TIME_FORMAT,  // "SCP protocol error: Illegal time format"
+    MSG_SCP_INVALID_CONTROL_RECORD,  // "SCP protocol error: Invalid control record (%c; %s)"
+    MSG_COPY_ERROR,  // "Copying file '%s' failed."
+    MSG_SCP_ILLEGAL_FILE_DESCRIPTOR,  // "SCP protocol error: Illegal file descriptor format"
+    MSG_NOT_DIRECTORY_ERROR,  // "'%s' is not folder!"
+    MSG_CREATE_DIR_ERROR,  // "Error creating folder '%s'."
+    MSG_CREATE_FILE_ERROR,  // "Can't create file '%s'."
+    MSG_WRITE_ERROR,  // "Error writing to file '%s'"
+    MSG_CANT_SET_ATTRS,  // "Can't set attributes of file '%s'."
+    MSG_REMOTE_ERROR,  // "Received error message from remote side: '%s'"
+    MSG_DELETE_FILE_ERROR,  // "Error deleting file '%s'."
+    MSG_LOG_GEN_ERROR,  // "Error occurred during logging. It's been turned off."
+    MSG_LOG_OPENERROR,  // "Can't open log file '%s'."
+    MSG_RENAME_FILE_ERROR,  // "Error renaming file '%s' to '%s'."
+    MSG_RENAME_CREATE_FILE_EXISTS,  // "File with name '%s' already exists."
+    MSG_RENAME_CREATE_DIR_EXISTS,  // "Directory with name '%s' already exists."
+    MSG_CHANGE_HOMEDIR_ERROR,  // "Error changing directory to home directory."
+    MSG_UNALIAS_ALL_ERROR,  // "Error clearing all aliases."
+    MSG_UNSET_NATIONAL_ERROR,  // "Error clearing national user variables."
+    MSG_FIRST_LINE_EXPECTED,  // "Unexpected input from server: %s"
+    MSG_CLEANUP_INIFILE_ERROR,  // "Error cleaning up INI file."
+    MSG_AUTHENTICATION_LOG,  // "Authentication log (see session log for details):\n%s\n"
+    MSG_AUTHENTICATION_FAILED,  // "Authentication failed."
+    MSG_NOT_CONNECTED,  // "Connection has been unexpectedly closed."
+    MSG_SAVE_KEY_ERROR,  // "Error saving key to file '%s'."
+    MSG_SSH_EXITCODE,  // "Server sent command exit status %d."
+    MSG_SFTP_INVALID_TYPE,  // "SFTP protocol violation: Invalid response message type (%d)."
+    MSG_SFTP_VERSION_NOT_SUPPORTED,  // "Version of SFTP server (%d) is not supported. Supported versions are %d to %d."
+    MSG_SFTP_MESSAGE_NUMBER,  // "SFTP protocol violation: Invalid message number %d (expected %d)."
+    MSG_SFTP_STATUS_OK,  // "Unexpected OK response."
+    MSG_SFTP_STATUS_EOF,  // "Unexpected EOF response."
+    MSG_SFTP_STATUS_NO_SUCH_FILE,  // "No such file or directory."
+    MSG_SFTP_STATUS_PERMISSION_DENIED,  // "Permission denied."
+    MSG_SFTP_STATUS_FAILURE,  // "General failure (server should provide error description)."
+    MSG_SFTP_STATUS_BAD_MESSAGE,  // "Bad message (badly formatted packet or protocol incompatibility)."
+    MSG_SFTP_STATUS_NO_CONNECTION,  // "No connection."
+    MSG_SFTP_STATUS_CONNECTION_LOST,  // "Connection lost."
+    MSG_SFTP_STATUS_OP_UNSUPPORTED,  // "The server does not support the operation."
+    MSG_SFTP_ERROR_FORMAT3,  // "%s\nError code: %d\nError message from server%s: %s"
+    MSG_SFTP_STATUS_UNKNOWN,  // "Unknown status code."
+    MSG_READ_SYMLINK_ERROR,  // "Error reading symbolic link '%s'."
+    MSG_EMPTY_DIRECTORY,  // "Server returned empty listing for directory '%s'."
+    MSG_SFTP_NON_ONE_FXP_NAME_PACKET,  // "Received SSH_FXP_NAME packet with zero or multiple records."
+    MSG_SFTP_REALPATH_ERROR,  // "Cannot get real path for '%s'."
+    MSG_CHANGE_PROPERTIES_ERROR,  // "Cannot change properties of file '%s'."
+    MSG_SFTP_INITIALIZE_ERROR,  // "Cannot initialize SFTP protocol. Is the host running an SFTP server?"
+    MSG_TIMEZONE_ERROR,  // "Cannot read time zone information"
+    MSG_SFTP_CREATE_FILE_ERROR,  // "Cannot create remote file '%s'."
+    MSG_SFTP_OPEN_FILE_ERROR,  // "Cannot open remote file '%s'."
+    MSG_SFTP_CLOSE_FILE_ERROR,  // "Cannot close remote file '%s'."
+    MSG_NOT_FILE_ERROR,  // "'%s' is not file!"
+    MSG_RENAME_AFTER_RESUME_ERROR,  // "Transfer was successfully finished, but temporary transfer file '%s' could not be renamed to target file name '%s'. If the problem persists, you may try to turn off transfer resume support."
+    MSG_CREATE_LINK_ERROR,  // "Cannot create link '%s'."
+    MSG_INVALID_SHELL_COMMAND,  // "Invalid command '%s'."
+    MSG_SFTP_SERVER_MESSAGE_UNSUPPORTED,  // "None"
+    MSG_INVALID_OCTAL_PERMISSIONS,  // "'%s' is not valid permission in octal format."
+    MSG_SFTP_INVALID_EOL,  // "Server requires unsupported end-of-line sequence (%s)."
+    MSG_SFTP_UNKNOWN_FILE_TYPE,  // "Unknown file type (%d)"
+    MSG_SFTP_STATUS_INVALID_HANDLE,  // "Invalid handle."
+    MSG_SFTP_STATUS_NO_SUCH_PATH,  // "The file path does not exist or is invalid."
+    MSG_SFTP_STATUS_FILE_ALREADY_EXISTS,  // "File already exists."
+    MSG_SFTP_STATUS_WRITE_PROTECT,  // "The file is on read-only media, or the media is write protected."
+    MSG_SFTP_STATUS_NO_MEDIA,  // "There is no media available in the drive."
+    MSG_DECODE_UTF_ERROR,  // "Error decoding UTF-8 string."
+    MSG_CUSTOM_COMMAND_ERROR,  // "Error executing custom command '%s' on file '%s'."
+    MSG_LOCALE_LOAD_ERROR,  // "Cannot load locale %d."
+    MSG_SFTP_INCOMPLETE_BEFORE_EOF,  // "Received incomplete data packet before end of file."
+    MSG_CALCULATE_SIZE_ERROR,  // "Error calculating size of directory '%s'."
+    MSG_SFTP_PACKET_TOO_BIG,  // "Received too large (%d B) SFTP packet. Max supported packet size is %d B."
+    MSG_SCP_INIT_ERROR,  // "Cannot execute SCP to start transfer. Please make sure that SCP is installed on the server and path to it is included in PATH. You may also try SFTP instead of SCP."
+    MSG_DUPLICATE_BOOKMARK,  // "Location Profile with name '%s' already exists."
+    MSG_MOVE_FILE_ERROR,  // "Error moving file '%s' to '%s'."
+    MSG_SFTP_PACKET_TOO_BIG_INIT_EXPLAIN,  // "%s\n \nThe error is typically caused by message printed from startup script (like .profile). The message may start with %s."
+    MSG_PRESERVE_TIME_PERM_ERROR3,  // "**Upload of file '%s' was successful, but error occurred while setting the permissions and/or timestamp.**\n\nIf the problem persists, turn off setting permissions or preserving timestamp. Alternatively you can turn on 'Ignore permission errors' option."
+    MSG_ACCESS_VIOLATION_ERROR3,  // "Invalid access to memory."
+    MSG_SFTP_STATUS_NO_SPACE_ON_FILESYSTEM,  // "There is insufficient free space on the filesystem."
+    MSG_SFTP_STATUS_QUOTA_EXCEEDED,  // "Operation cannot be completed because it would exceed the user's storage quota."
+    MSG_SFTP_STATUS_UNKNOWN_PRINCIPAL,  // "Principal (%s) is unknown to the server."
+    MSG_COPY_FILE_ERROR,  // "Error copying file '%s' to '%s'."
+    MSG_CUSTOM_COMMAND_UNTERMINATED,  // "Unterminated pattern '%c' starting at %d."
+    MSG_CUSTOM_COMMAND_UNKNOWN,  // "Unknown pattern '%c' starting at %d."
+    MSG_CUSTOM_COMMAND_FILELIST_ERROR,  // "Cannot combine file name pattern (starting at %d) with file list pattern (starting at %d)."
 
-    MSG_UNKNOWN_SOCKET_STATUS,
-    MSG_DELETE_ON_RESUME_ERROR,
-    MSG_SFTP_PACKET_ERROR,
-    MSG_ITEM_NAME_INVALID,
-    MSG_SFTP_STATUS_LOCK_CONFLICT,
-    MSG_SFTP_STATUS_DIR_NOT_EMPTY,
-    MSG_SFTP_STATUS_NOT_A_DIRECTORY,
-    MSG_SFTP_STATUS_INVALID_FILENAME,
-    MSG_SFTP_STATUS_LINK_LOOP,
-    MSG_SFTP_STATUS_CANNOT_DELETE,
-    MSG_SFTP_STATUS_INVALID_PARAMETER,
-    MSG_SFTP_STATUS_FILE_IS_A_DIRECTORY,
-    MSG_SFTP_STATUS_BYTE_RANGE_LOCK_CONFLICT,
-    MSG_SFTP_STATUS_BYTE_RANGE_LOCK_REFUSED,
-    MSG_SFTP_STATUS_DELETE_PENDING,
-    MSG_SFTP_STATUS_FILE_CORRUPT,
-    MSG_KEY_TYPE_UNKNOWN2,
-    MSG_KEY_TYPE_UNSUPPORTED2,
-    MSG_KEY_TYPE_SSH1,
-    MSG_SFTP_OVERWRITE_FILE_ERROR2,
-    MSG_SFTP_OVERWRITE_DELETE_BUTTON,
-    MSG_SPACE_AVAILABLE_ERROR,
-    MSG_TUNNEL_NO_FREE_PORT,
-    MSG_EVENT_SELECT_ERROR,
-    MSG_UNEXPECTED_CLOSE_ERROR,
-    MSG_TUNNEL_ERROR,
-    MSG_CHECKSUM_ERROR,
-    MSG_INTERNAL_ERROR,
-    MSG_NOTSUPPORTED,
-    MSG_FTP_ACCESS_DENIED,
-    MSG_FTP_CREDENTIAL_PROMPT,
-    MSG_FTP_RESPONSE_ERROR,
+    MSG_UNKNOWN_SOCKET_STATUS,  // "Cannot determine status of socket (%d)."
+    MSG_DELETE_ON_RESUME_ERROR,  // "Error deleting file '%s'. After resumable file upload the existing destination file must be deleted. If you do not have permissions to delete file destination file, you need to disable resumable file transfers."
+    MSG_SFTP_PACKET_ERROR,  // "Error decoding SFTP packet (%d, %d, %d)."
+    MSG_ITEM_NAME_INVALID,  // "Invalid name '%s'. Name cannot contain '%s'."
+    MSG_SFTP_STATUS_LOCK_CONFLICT,  // "The file could not be opened because it is locked by another process."
+    MSG_SFTP_STATUS_DIR_NOT_EMPTY,  // "The directory is not empty."
+    MSG_SFTP_STATUS_NOT_A_DIRECTORY,  // "The specified file is not a directory."
+    MSG_SFTP_STATUS_INVALID_FILENAME,  // "The filename is not valid."
+    MSG_SFTP_STATUS_LINK_LOOP,  // "Too many symbolic links encountered."
+    MSG_SFTP_STATUS_CANNOT_DELETE,  // "The file cannot be deleted."
+    MSG_SFTP_STATUS_INVALID_PARAMETER,  // "One of the parameters was out of range, or the parameters specified cannot be used together."
+    MSG_SFTP_STATUS_FILE_IS_A_DIRECTORY,  // "The specified file was a directory in a context where a directory cannot be used."
+    MSG_SFTP_STATUS_BYTE_RANGE_LOCK_CONFLICT,  // "Byte range lock conflict."
+    MSG_SFTP_STATUS_BYTE_RANGE_LOCK_REFUSED,  // "Byte range lock refused."
+    MSG_SFTP_STATUS_DELETE_PENDING,  // "An operation was attempted on a file for which a delete operation is pending."
+    MSG_SFTP_STATUS_FILE_CORRUPT,  // "The file is corrupt; an filesystem integrity check should be run."
+    MSG_KEY_TYPE_UNKNOWN2,  // "File '%s' does not contain private key in known format."
+    MSG_KEY_TYPE_UNSUPPORTED2,  // "**Private key file '%s' contains key in %s format. WinSCP supports only PuTTY (.ppk) format.**"
+    MSG_KEY_TYPE_SSH1,  // "Private key file '%s' contains key in deprecated SSH-1 format."
+    MSG_SFTP_OVERWRITE_FILE_ERROR2,  // "Cannot overwrite remote file '%s'.$$\n \nPress 'Delete' to delete the file and create new one instead of overwriting it.$$"
+    MSG_SFTP_OVERWRITE_DELETE_BUTTON,  // "&Delete"
+    MSG_SPACE_AVAILABLE_ERROR,  // "Error checking space available for path '%s'."
+    MSG_TUNNEL_NO_FREE_PORT,  // "Cannot find free local listening port number for tunnel in range %d to %d."
+    MSG_EVENT_SELECT_ERROR,  // "Cannot setup network event (error %d)."
+    MSG_UNEXPECTED_CLOSE_ERROR,  // "Server unexpectedly closed network connection."
+    MSG_TUNNEL_ERROR,  // "Error while tunneling the connection.\n \n%s"
+    MSG_CHECKSUM_ERROR,  // "Error calculating checksum for file '%s'."
+    MSG_INTERNAL_ERROR,  // "Internal error %s (%s)."
+    MSG_NOTSUPPORTED,  // "Operation not supported."
+    MSG_FTP_ACCESS_DENIED,  // "Access denied."
+    MSG_FTP_CREDENTIAL_PROMPT,  // "Prompting for credentials..."
+    MSG_FTP_RESPONSE_ERROR,  // "Invalid response to %s command '%s'."
 
-    MSG_TRANSFER_ERROR,
-    MSG_EXECUTE_APP_ERROR,
-    MSG_FILE_NOT_FOUND,
-    MSG_DOCUMENT_WAIT_ERROR,
-    MSG_SPEED_INVALID,
-    MSG_CERT_ERR_DEPTH_ZERO_SELF_SIGNED_CERT,
-    MSG_CERT_ERR_ERROR_IN_CERT_NOT_AFTER_FIELD,
-    MSG_CERT_ERR_ERROR_IN_CERT_NOT_BEFORE_FIELD,
-    MSG_CERT_ERR_INVALID_CA,
-    MSG_CERT_ERR_INVALID_PURPOSE,
-    MSG_CERT_ERR_KEYUSAGE_NO_CERTSIGN,
-    MSG_CERT_ERR_PATH_LENGTH_EXCEEDED,
-    MSG_CERT_ERR_SELF_SIGNED_CERT_IN_CHAIN,
-    MSG_CERT_ERR_UNABLE_TO_DECODE_ISSUER_PUBLIC_KEY,
-    MSG_CERT_ERR_UNABLE_TO_DECRYPT_CERT_SIGNATURE,
-    MSG_CERT_ERR_UNABLE_TO_GET_ISSUER_CERT,
-    MSG_CERT_ERR_UNABLE_TO_GET_ISSUER_CERT_LOCALLY,
-    MSG_CERT_ERR_UNABLE_TO_VERIFY_LEAF_SIGNATURE,
-    MSG_CERT_ERR_UNKNOWN,
-    MSG_CERT_ERRDEPTH,
-    MSG_MASK_ERROR,
-    MSG_FTP_CANNOT_OPEN_ACTIVE_CONNECTION2,
-    MSG_CORE_DELETE_LOCAL_FILE_ERROR,
-    MSG_URL_OPTION_BOOL_VALUE_ERROR,
+    MSG_TRANSFER_ERROR,  // "Error transferring file '%s'."
+    MSG_EXECUTE_APP_ERROR,  // "Cannot execute '%s'."
+    MSG_FILE_NOT_FOUND,  // "File '%s' not found."
+    MSG_DOCUMENT_WAIT_ERROR,  // "Error waiting for document to close."
+    MSG_SPEED_INVALID,  // "'%s' is not a valid speed limit."
+    MSG_CERT_ERR_DEPTH_ZERO_SELF_SIGNED_CERT,  // "Self-signed certificate."
+    MSG_CERT_ERR_ERROR_IN_CERT_NOT_AFTER_FIELD,  // "Format error in certificate's valid until field."
+    MSG_CERT_ERR_ERROR_IN_CERT_NOT_BEFORE_FIELD,  // "Format error in certificate's valid from field."
+    MSG_CERT_ERR_INVALID_CA,  // "Invalid CA certificate."
+    MSG_CERT_ERR_INVALID_PURPOSE,  // "Unsupported certificate purpose."
+    MSG_CERT_ERR_KEYUSAGE_NO_CERTSIGN,  // "Key usage does not include certificate signing."
+    MSG_CERT_ERR_PATH_LENGTH_EXCEEDED,  // "Path length constraint exceeded."
+    MSG_CERT_ERR_SELF_SIGNED_CERT_IN_CHAIN,  // "Self-signed certificate in certificate chain."
+    MSG_CERT_ERR_UNABLE_TO_DECODE_ISSUER_PUBLIC_KEY,  // "Unable to decode issuer public key."
+    MSG_CERT_ERR_UNABLE_TO_DECRYPT_CERT_SIGNATURE,  // "Unable to decrypt certificate signature."
+    MSG_CERT_ERR_UNABLE_TO_GET_ISSUER_CERT,  // "Unable to get issuer certificate."
+    MSG_CERT_ERR_UNABLE_TO_GET_ISSUER_CERT_LOCALLY,  // "Unable to get local issuer certificate."
+    MSG_CERT_ERR_UNABLE_TO_VERIFY_LEAF_SIGNATURE,  // "Unable to verify the first certificate."
+    MSG_CERT_ERR_UNKNOWN,  // "Unknown certificate verification error."
+    MSG_CERT_ERRDEPTH,  // "The error occurred at a depth of %d in the certificate chain."
+    MSG_MASK_ERROR,  // "Mask is invalid near '%s'."
+    MSG_FTP_CANNOT_OPEN_ACTIVE_CONNECTION2,  // "The server cannot open connection in active mode. If you are behind a NAT router, you may need to specify an external IP address. Alternatively, consider switching to passive mode."
+    MSG_CORE_DELETE_LOCAL_FILE_ERROR,  // "Error deleting file '%s'."
+    MSG_URL_OPTION_BOOL_VALUE_ERROR,  // "Invalid switch value '%s'. Valid values are 'on' and 'off'."
 
-    MSG_NET_TRANSL_NO_ROUTE2,
-    MSG_NET_TRANSL_CONN_ABORTED,
-    MSG_NET_TRANSL_HOST_NOT_EXIST2,
-    MSG_NET_TRANSL_PACKET_GARBLED,
-    MSG_REPORT_ERROR,
-    MSG_TLS_CERT_DECODE_ERROR,
-    MSG_FIND_FILE_ERROR,
-    MSG_CERT_NAME_MISMATCH,
+    MSG_NET_TRANSL_NO_ROUTE2,  // "Network error: No route to host '%HOST%'."
+    MSG_NET_TRANSL_CONN_ABORTED,  // "Network error: Software caused connection abort"
+    MSG_NET_TRANSL_HOST_NOT_EXIST2,  // "Host '%HOST%' does not exist."
+    MSG_NET_TRANSL_PACKET_GARBLED,  // "Incoming packet was garbled on decryption"
+    MSG_REPORT_ERROR,  // "%s\n\nPlease help us improving WinSCP by reporting the error on WinSCP support forum."
+    MSG_TLS_CERT_DECODE_ERROR,  // "Error decoding TLS/SSL certificate (%s)."
+    MSG_FIND_FILE_ERROR,  // "Error retrieving file list for '%s'."
+    MSG_CERT_NAME_MISMATCH,  // "Certificate was not issued for this server. You might be connecting to a server that is pretending to be '%s'."
 
-    MSG_CERT_ERR_BAD_CHAIN,
-    MSG_CERT_OK,
-    MSG_CERT_ERR_CERT_CHAIN_TOO_LONG,
-    MSG_CERT_ERR_CERT_HAS_EXPIRED,
-    MSG_CERT_ERR_CERT_NOT_YET_VALID,
-    MSG_CERT_ERR_CERT_REJECTED,
-    MSG_CERT_ERR_CERT_SIGNATURE_FAILURE,
-    MSG_CERT_ERR_CERT_UNTRUSTED,
-    MSG_REQUEST_REDIRECTED,
-    MSG_TOO_MANY_REDIRECTS,
-    MSG_REDIRECT_LOOP,
-    MSG_INVALID_URL,
-    MSG_PROXY_AUTHENTICATION_FAILED,
-    MSG_CONFIGURED_KEY_NOT_MATCH,
-    MSG_SFTP_STATUS_OWNER_INVALID,
-    MSG_SFTP_STATUS_GROUP_INVALID,
-    MSG_SFTP_STATUS_NO_MATCHING_BYTE_RANGE_LOCK,
-    MSG_KEY_TYPE_UNOPENABLE,
-    MSG_UNKNOWN_CHECKSUM,
-    MSG_ALG_NOT_VERIFIED,
-    MSG_SFTP_STATUS_4,
-    MSG_CERTIFICATE_OPEN_ERROR,
-    MSG_CERTIFICATE_READ_ERROR,
-    MSG_CERTIFICATE_DECODE_ERROR_INFO,
-    MSG_CERTIFICATE_DECODE_ERROR,
-    MSG_CERTIFICATE_PUBLIC_KEY_NOT_FOUND,
-    MSG_LOCK_FILE_ERROR,
-    MSG_UNLOCK_FILE_ERROR,
-    MSG_NOT_LOCKED,
-    MSG_KEY_SAVE_ERROR,
-    MSG_NEON_INIT_FAILED2,
-    MSG_SCRIPT_AMBIGUOUS_SLASH_IN_PATH,
-    MSG_CERT_IP_CANNOT_VERIFY,
-    MSG_HOSTKEY_NOT_CONFIGURED,
-    MSG_UNENCRYPTED_REDIRECT,
-    MSG_HTTP_ERROR2,
-    MSG_FILEZILLA_SITE_MANAGER_NOT_FOUND,
-    MSG_FILEZILLA_NO_SITES,
-    MSG_FILEZILLA_SITE_NOT_EXIST,
-    MSG_SFTP_AS_FTP_ERROR,
-    MSG_LOG_FATAL_ERROR,
-    MSG_UNREQUESTED_FILE,
+    MSG_CERT_ERR_BAD_CHAIN,  // "Some certificates in certificate chain are invalid."
+    MSG_CERT_OK,  // "Certificate is valid."
+    MSG_CERT_ERR_CERT_CHAIN_TOO_LONG,  // "Certificate chain too long."
+    MSG_CERT_ERR_CERT_HAS_EXPIRED,  // "Certificate has expired."
+    MSG_CERT_ERR_CERT_NOT_YET_VALID,  // "Certificate is not yet valid."
+    MSG_CERT_ERR_CERT_REJECTED,  // "Certificate rejected."
+    MSG_CERT_ERR_CERT_SIGNATURE_FAILURE,  // "Certificate signature failure."
+    MSG_CERT_ERR_CERT_UNTRUSTED,  // "Certificate not trusted."
+    MSG_REQUEST_REDIRECTED,  // "WebDAV resource moved to '%s'."
+    MSG_TOO_MANY_REDIRECTS,  // "Too many redirects."
+    MSG_REDIRECT_LOOP,  // "Redirect loop detected."
+    MSG_INVALID_URL,  // "Invalid URL '%s'."
+    MSG_PROXY_AUTHENTICATION_FAILED,  // "Proxy authentication failed."
+    MSG_CONFIGURED_KEY_NOT_MATCH,  // "Host key does not match configured key '%s'!"
+    MSG_SFTP_STATUS_OWNER_INVALID,  // "The name specified can not be assigned as an owner of a file."
+    MSG_SFTP_STATUS_GROUP_INVALID,  // "The name specified can not be assigned as the primary group of a file."
+    MSG_SFTP_STATUS_NO_MATCHING_BYTE_RANGE_LOCK,  // "The requested operation could not be completed because the specified byte range lock has not been granted."
+    MSG_KEY_TYPE_UNOPENABLE,  // "Private key file '%s' does not exist or cannot be opened."
+    MSG_UNKNOWN_CHECKSUM,  // "Checksum algorithm '%s' is not supported."
+    MSG_ALG_NOT_VERIFIED,  // "The %s %s was not verified!"
+    MSG_SFTP_STATUS_4,  // "Common reasons for the Error code 4 are:\n- Renaming a file to a name of already existing file.\n- Creating a directory that already exists.\n- Moving a remote file to a different filesystem (HDD).\n- Uploading a file to a full filesystem (HDD).\n- Exceeding a user disk quota."
+    MSG_CERTIFICATE_OPEN_ERROR,  // "Cannot open certificate '%s'."
+    MSG_CERTIFICATE_READ_ERROR,  // "Cannot read certificate '%s'."
+    MSG_CERTIFICATE_DECODE_ERROR_INFO,  // "Error decoding certificate."
+    MSG_CERTIFICATE_DECODE_ERROR,  // "Error decoding certificate '%s'."
+    MSG_CERTIFICATE_PUBLIC_KEY_NOT_FOUND,  // "Certificate file '%s' does not contain a public key and no corresponding .crt/.cer file was found."
+    MSG_LOCK_FILE_ERROR,  // "Error locking file '%s'."
+    MSG_UNLOCK_FILE_ERROR,  // "Error unlocking file '%s'."
+    MSG_NOT_LOCKED,  // "File '%s' is not locked."
+    MSG_KEY_SAVE_ERROR,  // "Error saving key to file \"
+    MSG_NEON_INIT_FAILED2,  // "Neon HTTP library initialization failed, cannot open session."
+    MSG_SCRIPT_AMBIGUOUS_SLASH_IN_PATH,  // "Selecting files using a path ending with slash is ambiguous. Remove the slash to select the folder. Append * mask to select all files in the folder."
+    MSG_CERT_IP_CANNOT_VERIFY,  // "When connecting using an IP address, it is not possible to verify if the certificate was issued for the server. Use a hostname instead of the IP address."
+    MSG_HOSTKEY_NOT_CONFIGURED,  // "Expected host key was not configured, use -hostkey switch."
+    MSG_UNENCRYPTED_REDIRECT,  // "Redirected to an unencrypted URL."
+    MSG_HTTP_ERROR2,  // "Received response %d '%s' from %s"
+    MSG_FILEZILLA_SITE_MANAGER_NOT_FOUND,  // "FileZilla site manager file not found (%s)."
+    MSG_FILEZILLA_NO_SITES,  // "No sites found in FileZilla site manager file (%s)."
+    MSG_FILEZILLA_SITE_NOT_EXIST,  // "FileZilla site '%s' was not found."
+    MSG_SFTP_AS_FTP_ERROR,  // "You cannot connect to an SFTP server using an FTP protocol. Please select the correct protocol."
+    MSG_LOG_FATAL_ERROR,  // "Error occurred during logging. Cannot continue."
+    MSG_UNREQUESTED_FILE,  // "Server sent a file that was not requested."
 
-    MSG_SIZE_INVALID,
-    MSG_KNOWN_HOSTS_NOT_FOUND,
-    MSG_KNOWN_HOSTS_NO_SITES,
-    MSG_HOSTKEY_NOT_MATCH_CLIPBOARD,
-    MSG_S3_ERROR_RESOURCE,
-    MSG_S3_ERROR_FURTHER_DETAILS,
-    MSG_S3_ERROR_EXTRA_DETAILS,
-    MSG_S3_STATUS_ACCESS_DENIED,
-    MSG_DUPLICATE_FOLDER_NOT_SUPPORTED,
-    MSG_MISSING_TARGET_BUCKET,
-    MSG_S3_UPLOAD_NEED_FILENAME,
+    MSG_SIZE_INVALID,  // "'%s' is not a valid size."
+    MSG_KNOWN_HOSTS_NOT_FOUND,  // "OpenSSH known_hosts file not found."
+    MSG_KNOWN_HOSTS_NO_SITES,  // "No host keys found in known_hosts."
+    MSG_HOSTKEY_NOT_MATCH_CLIPBOARD,  // "Contents of the clipboard does not match the host key nor its fingerprint."
+    MSG_S3_ERROR_RESOURCE,  // "Resource: %s"
+    MSG_S3_ERROR_FURTHER_DETAILS,  // "Further details: %s"
+    MSG_S3_ERROR_EXTRA_DETAILS,  // "Extra Details: "
+    MSG_S3_STATUS_ACCESS_DENIED,  // "Access denied."
+    MSG_DUPLICATE_FOLDER_NOT_SUPPORTED,  // "Direct duplication of folders is not supported. Use a duplication via a local temporary copy."
+    MSG_MISSING_TARGET_BUCKET,  // "Specify target bucket."
+    MSG_S3_UPLOAD_NEED_FILENAME,  // "Cannot upload to bucket '%s': S3 requires a filename (object name). Use format: /bucket-name/file.txt"
 
-    MSG_CORE_CONFIRMATION_STRINGS,
-    MSG_CONFIRM_PROLONG_TIMEOUT3,
-    MSG_PROMPT_KEY_PASSPHRASE,
-    MSG_PROMPT_FILE_OVERWRITE,
-    MSG_DIRECTORY_OVERWRITE,
-    MSG_CIPHER_TYPE_BOTH2,
-    MSG_CIPHER_TYPE_CS2,
-    MSG_CIPHER_TYPE_SC2,
-    MSG_RESUME_TRANSFER2,
-    MSG_PARTIAL_BIGGER_THAN_SOURCE,
-    MSG_APPEND_OR_RESUME2,
-    MSG_FILE_OVERWRITE_DETAILS,
-    MSG_READ_ONLY_OVERWRITE,
-    MSG_LOCAL_FILE_OVERWRITE2,
-    MSG_REMOTE_FILE_OVERWRITE2,
-    MSG_TIMEOUT_STILL_WAITING3,
-    MSG_RECONNECT_BUTTON,
-    MSG_RENAME_BUTTON,
-    MSG_TUNNEL_SESSION_NAME,
-    MSG_PASSWORD_TITLE,
-    MSG_PASSPHRASE_TITLE,
-    MSG_SERVER_PROMPT_TITLE,
-    MSG_USERNAME_TITLE,
-    MSG_USERNAME_PROMPT2,
-    MSG_SERVER_PROMPT_TITLE2,
-    MSG_NEW_PASSWORD_TITLE,
-    MSG_PROMPT_PROMPT,
-    MSG_TIS_INSTRUCTION,
-    MSG_CRYPTOCARD_INSTRUCTION,
-    MSG_PASSWORD_PROMPT,
-    MSG_KEYBINTER_INSTRUCTION,
-    MSG_NEW_PASSWORD_CURRENT_PROMPT,
-    MSG_NEW_PASSWORD_NEW_PROMPT,
-    MSG_NEW_PASSWORD_CONFIRM_PROMPT,
-    MSG_TUNNEL_INSTRUCTION,
-    MSG_RENAME_TITLE,
-    MSG_RENAME_PROMPT2,
-    MSG_VERIFY_CERT_PROMPT3,
-    MSG_VERIFY_CERT_CONTACT,
-    MSG_VERIFY_CERT_CONTACT_LIST,
-    MSG_CERT_TEXT2,
-    MSG_CERTIFICATE_PASSPHRASE_PROMPT,
-    MSG_CERTIFICATE_PASSPHRASE_TITLE,
-    MSG_KEY_TYPE_CONVERT4,
-    MSG_MULTI_FILES_TO_ONE,
-    MSG_KEY_EXCHANGE_ALG,
-    MSG_KEYKEY_TYPE,
-    MSG_S3_ACCESS_KEY_ID_TITLE,
-    MSG_S3_ACCESS_KEY_ID_PROMPT,
-    MSG_S3_SECRET_ACCESS_KEY_TITLE,
-    MSG_S3_SECRET_ACCESS_KEY_PROMPT,
+    MSG_CORE_CONFIRMATION_STRINGS,  // "CORE_CONFIRMATION"
+    MSG_CONFIRM_PROLONG_TIMEOUT3,  // "Host is not communicating for %d seconds.\n\nWait for another %d seconds?"
+    MSG_PROMPT_KEY_PASSPHRASE,  // "&Passphrase for key '%s':"
+    MSG_PROMPT_FILE_OVERWRITE,  // "File '%s' already exists. Overwrite?"
+    MSG_DIRECTORY_OVERWRITE,  // "Directory '%s' already exists. Overwrite?"
+    MSG_CIPHER_TYPE_BOTH2,  // "cipher"
+    MSG_CIPHER_TYPE_CS2,  // "client-to-server cipher"
+    MSG_CIPHER_TYPE_SC2,  // "server-to-client cipher"
+    MSG_RESUME_TRANSFER2,  // "**Do you want to resume file transfer?**\n\nTarget directory contains partially transferred file '%s'.\n\nNote: Answering 'No' would delete partially transferred file and restart transfer."
+    MSG_PARTIAL_BIGGER_THAN_SOURCE,  // "Target directory contains partially transferred file '%s', which is bigger than a source file. The file will be deleted."
+    MSG_APPEND_OR_RESUME2,  // "**Do you want to append file '%s' at the end of existing file?**\n\nPress 'No' to resume file transfer instead."
+    MSG_FILE_OVERWRITE_DETAILS,  // "%s\n \nNew:      \t%s bytes, %s\nExisting: \t%s bytes, %s"
+    MSG_READ_ONLY_OVERWRITE,  // "File '%s' is read-only. Overwrite?"
+    MSG_LOCAL_FILE_OVERWRITE2,  // "**Overwrite local file '%s'?**\n\nDestination directory already contains file '%s'.\nChoose, if you want to overwrite the file or skip this transfer and keep existing file."
+    MSG_REMOTE_FILE_OVERWRITE2,  // "**Overwrite remote file '%s'?**\n\nDestination directory already contains file '%s'.\nChoose, if you want to overwrite the file or skip this transfer and keep existing file."
+    MSG_TIMEOUT_STILL_WAITING3,  // "Host is not communicating for more than %d seconds.\nStill waiting...\n\nNote: If the problem repeats, try turning off 'Optimize connection buffer size'. (Disabled by default.)"
+    MSG_RECONNECT_BUTTON,  // "&Reconnect"
+    MSG_RENAME_BUTTON,  // "New na&me"
+    MSG_TUNNEL_SESSION_NAME,  // "Tunnel for %s"
+    MSG_PASSWORD_TITLE,  // "Password"
+    MSG_PASSPHRASE_TITLE,  // "Key passphrase"
+    MSG_SERVER_PROMPT_TITLE,  // "Server prompt"
+    MSG_USERNAME_TITLE,  // "Username"
+    MSG_USERNAME_PROMPT2,  // "&Username:"
+    MSG_SERVER_PROMPT_TITLE2,  // "Server prompt: %s"
+    MSG_NEW_PASSWORD_TITLE,  // "New password"
+    MSG_PROMPT_PROMPT,  // "&Response:"
+    MSG_TIS_INSTRUCTION,  // "Using TIS authentication.%s"
+    MSG_CRYPTOCARD_INSTRUCTION,  // "Using CryptoCard authentication.%s"
+    MSG_PASSWORD_PROMPT,  // "&Password: "
+    MSG_KEYBINTER_INSTRUCTION,  // "Using keyboard-interactive authentication.%s"
+    MSG_NEW_PASSWORD_CURRENT_PROMPT,  // "&Current password:"
+    MSG_NEW_PASSWORD_NEW_PROMPT,  // "&New password:"
+    MSG_NEW_PASSWORD_CONFIRM_PROMPT,  // "Confirm new &password:"
+    MSG_TUNNEL_INSTRUCTION,  // "Tunnel session authentication"
+    MSG_RENAME_TITLE,  // "Transfer under different name"
+    MSG_RENAME_PROMPT2,  // "&New name:"
+    MSG_VERIFY_CERT_PROMPT3,  // "**The server's certificate is not known. You have no guarantee that the server is the computer you think it is.**\n\nServer's certificate details follow:\n\n%s\n\nIf you trust this certificate, press Yes. To connect without storing certificate, press No. To abandon the connection press Cancel.\n\nContinue connecting and store the certificate?"
+    MSG_VERIFY_CERT_CONTACT,  // "- Organization: %s\n|- Location: %s\n|- Other: %s\n"
+    MSG_VERIFY_CERT_CONTACT_LIST,  // "%s, %s"
+    MSG_CERT_TEXT2,  // "Issuer:\n%s\nSubject:\n%s\nValid: %s - %s\n\nFingerprints:\n- SHA-256: %s\n- SHA-1: %s\n\nSummary: %s"
+    MSG_CERTIFICATE_PASSPHRASE_PROMPT,  // "&Passphrase for client certificate:"
+    MSG_CERTIFICATE_PASSPHRASE_TITLE,  // "Client certificate passphrase"
+    MSG_KEY_TYPE_CONVERT4,  // "**Do you want to convert %s private key to PuTTY format?**\n\n%s"
+    MSG_MULTI_FILES_TO_ONE,  // "**Are you sure you want to transfer multiple files to a single file '%s' in a directory '%s'?**\n\nThe files will overwrite one another.\n\nIf you actually want to transfer all files to a directory '%s', keeping their name, make sure you terminate the path with a slash."
+    MSG_KEY_EXCHANGE_ALG,  // "key-exchange algorithm"
+    MSG_KEYKEY_TYPE,  // "host key type"
+    MSG_S3_ACCESS_KEY_ID_TITLE,  // "Access key ID"
+    MSG_S3_ACCESS_KEY_ID_PROMPT,  // "A&ccess key ID:"
+    MSG_S3_SECRET_ACCESS_KEY_TITLE,  // "Secret access key"
+    MSG_S3_SECRET_ACCESS_KEY_PROMPT,  // "Secret access &key:"
 
-    MSG_CORE_INFORMATION_STRINGS,
-    MSG_YES_STR,
-    MSG_NO_STR,
-    MSG_SESSION_INFO_TIP2,
-    MSG_VERSION2,
-    MSG_CLOSED_ON_COMPLETION,
-    MSG_SFTP_PROTOCOL_NAME2,
-    MSG_FS_RENAME_NOT_SUPPORTED,
-    MSG_SFTP_NO_EXTENSION_INFO,
-    MSG_SFTP_EXTENSION_INFO,
-    MSG_APPEND_BUTTON,
-    MSG_YES_TO_NEWER_BUTTON,
+    MSG_CORE_INFORMATION_STRINGS,  // "CORE_INFORMATION"
+    MSG_YES_STR,  // "Yes"
+    MSG_NO_STR,  // "No"
+    MSG_SESSION_INFO_TIP2,  // "Host: %s\nUser name: %s\nPrivate key file: %s\nTransfer protocol: %s"
+    MSG_VERSION2,  // "Version %s (Build %d)"
+    MSG_CLOSED_ON_COMPLETION,  // "Operation was successfully completed. Connection was closed."
+    MSG_SFTP_PROTOCOL_NAME2,  // "SFTP-%d"
+    MSG_FS_RENAME_NOT_SUPPORTED,  // "The version of SFTP protocol does not allow file renaming."
+    MSG_SFTP_NO_EXTENSION_INFO,  // "The server does not support any SFTP extension."
+    MSG_SFTP_EXTENSION_INFO,  // "The server supports these SFTP extensions:"
+    MSG_APPEND_BUTTON,  // "A&ppend"
+    MSG_YES_TO_NEWER_BUTTON,  // "Ne&wer only"
 
-    MSG_SKIP_ALL_BUTTON,
+    MSG_SKIP_ALL_BUTTON,  // "Ski&p all"
 
-    MSG_COPY_PARAM_PRESET_ASCII,
-    MSG_COPY_PARAM_PRESET_BINARY,
-    MSG_COPY_PARAM_PRESET_EXCLUDE,
-    MSG_COPY_INFO_TRANSFER_TYPE2,
-    MSG_COPY_INFO_FILENAME,
-    MSG_COPY_INFO_PERMISSIONS,
-    MSG_COPY_INFO_ADD_X_TO_DIRS,
-    MSG_COPY_INFO_TIMESTAMP,
-    MSG_COPY_INFO_FILE_MASK,
-    MSG_COPY_INFO_CLEAR_ARCHIVE,
-    MSG_COPY_INFO_DONT_REPLACE_INV_CHARS,
-    MSG_COPY_INFO_DONT_PRESERVE_TIME,
-    MSG_COPY_INFO_DONT_CALCULATE_SIZE,
-    MSG_COPY_INFO_DEFAULT,
-    MSG_COPY_RULE_HOSTNAME,
-    MSG_COPY_RULE_USERNAME,
-    MSG_COPY_RULE_REMOTE_DIR,
-    MSG_COPY_RULE_LOCAL_DIR,
-    MSG_SYNCHRONIZE_SCAN,
-    MSG_SYNCHRONIZE_START,
-    MSG_SYNCHRONIZE_CHANGE,
-    MSG_SYNCHRONIZE_UPLOADED,
-    MSG_SYNCHRONIZE_DELETED,
-    MSG_COPY_INFO_NOT_USABLE,
-    MSG_COPY_INFO_IGNORE_PERM_ERRORS,
-    MSG_AUTH_TRANSL_USERNAME,
-    MSG_AUTH_TRANSL_KEYB_INTER,
-    MSG_AUTH_TRANSL_PUBLIC_KEY,
-    MSG_AUTH_TRANSL_WRONG_PASSPHRASE,
-    MSG_AUTH_TRANSL_ACCESS_DENIED,
-    MSG_AUTH_TRANSL_PUBLIC_KEY_AGENT,
-    MSG_AUTH_TRANSL_TRY_PUBLIC_KEY,
-    MSG_AUTH_PASSWORD,
-    MSG_OPEN_TUNNEL,
-    MSG_STATUS_CLOSED,
-    MSG_STATUS_LOOKUPHOST,
-    MSG_STATUS_CONNECT,
-    MSG_STATUS_AUTHENTICATE,
-    MSG_STATUS_AUTHENTICATED,
-    MSG_STATUS_STARTUP,
-    MSG_STATUS_READY,
-    MSG_STATUS_OPEN_DIRECTORY,
-    MSG_USING_TUNNEL,
-    MSG_AUTH_TRANSL_KEY_REFUSED,
-    MSG_PFWD_TRANSL_ADMIN,
-    MSG_PFWD_TRANSL_CONNECT,
-    MSG_NET_TRANSL_REFUSED2,
-    MSG_NET_TRANSL_RESET,
-    MSG_NET_TRANSL_TIMEOUT2,
-    MSG_SESSION_INFO_TIP_NO_SSH,
-    MSG_RESUME_BUTTON,
-    MSG_FTP_NO_FEATURE_INFO,
-    MSG_FTP_FEATURE_INFO,
-    MSG_COPY_INFO_CPS_LIMIT2,
-    MSG_COPY_KEY_BUTTON,
-    MSG_UPDATE_KEY_BUTTON,
-    MSG_ADD_KEY_BUTTON,
-    MSG_COPY_INFO_PRESERVE_READONLY,
+    MSG_COPY_PARAM_PRESET_ASCII,  // "&Text"
+    MSG_COPY_PARAM_PRESET_BINARY,  // "&Binary"
+    MSG_COPY_PARAM_PRESET_EXCLUDE,  // "&Exclude temporaries"
+    MSG_COPY_INFO_TRANSFER_TYPE2,  // "Transfer type: %s|Binary|Text|Automatic (%s)|Automatic"
+    MSG_COPY_INFO_FILENAME,  // "Filename modification: %s|No change|Upper case|Lower case|First upper case|Lower case 8.3"
+    MSG_COPY_INFO_PERMISSIONS,  // "Set permissions: %s"
+    MSG_COPY_INFO_ADD_X_TO_DIRS,  // "Add X to directories"
+    MSG_COPY_INFO_TIMESTAMP,  // "Preserve timestamp"
+    MSG_COPY_INFO_FILE_MASK,  // "File mask: %s"
+    MSG_COPY_INFO_CLEAR_ARCHIVE,  // "Clear 'Archive' attribute"
+    MSG_COPY_INFO_DONT_REPLACE_INV_CHARS,  // "Do not replace invalid characters"
+    MSG_COPY_INFO_DONT_PRESERVE_TIME,  // "Do not preserve timestamp"
+    MSG_COPY_INFO_DONT_CALCULATE_SIZE,  // "Do not calculate transfer size"
+    MSG_COPY_INFO_DEFAULT,  // "Default transfer settings"
+    MSG_COPY_RULE_HOSTNAME,  // "Hostname: %s"
+    MSG_COPY_RULE_USERNAME,  // "Username: %s"
+    MSG_COPY_RULE_REMOTE_DIR,  // "Remote directory: %s"
+    MSG_COPY_RULE_LOCAL_DIR,  // "Local directory: %s"
+    MSG_SYNCHRONIZE_SCAN,  // "Scanning '%s' for subdirectories..."
+    MSG_SYNCHRONIZE_START,  // "Watching for changes in %d directories..."
+    MSG_SYNCHRONIZE_CHANGE,  // "Change in '%s' detected."
+    MSG_SYNCHRONIZE_UPLOADED,  // "File '%s' uploaded."
+    MSG_SYNCHRONIZE_DELETED,  // "File '%s' deleted."
+    MSG_COPY_INFO_NOT_USABLE,  // "%s configured transfer settings cannot be used in current context|Some|All"
+    MSG_COPY_INFO_IGNORE_PERM_ERRORS,  // "Ignore permission errors"
+    MSG_AUTH_TRANSL_USERNAME,  // "Using username \"
+    MSG_AUTH_TRANSL_KEYB_INTER,  // "Using keyboard-interactive authentication."
+    MSG_AUTH_TRANSL_PUBLIC_KEY,  // "Authenticating with public key \"
+    MSG_AUTH_TRANSL_WRONG_PASSPHRASE,  // "Wrong passphrase."
+    MSG_AUTH_TRANSL_ACCESS_DENIED,  // "Access denied."
+    MSG_AUTH_TRANSL_PUBLIC_KEY_AGENT,  // "Authenticating with public key \"
+    MSG_AUTH_TRANSL_TRY_PUBLIC_KEY,  // "Trying public key authentication."
+    MSG_AUTH_PASSWORD,  // "Authenticating with pre-entered password."
+    MSG_OPEN_TUNNEL,  // "Opening tunnel..."
+    MSG_STATUS_CLOSED,  // "Connection terminated."
+    MSG_STATUS_LOOKUPHOST,  // "Searching for host..."
+    MSG_STATUS_CONNECT,  // "Connecting to host..."
+    MSG_STATUS_AUTHENTICATE,  // "Authenticating..."
+    MSG_STATUS_AUTHENTICATED,  // "Authenticated."
+    MSG_STATUS_STARTUP,  // "Starting the session..."
+    MSG_STATUS_READY,  // "Session started."
+    MSG_STATUS_OPEN_DIRECTORY,  // "Reading remote directory..."
+    MSG_USING_TUNNEL,  // "Connecting through tunnel..."
+    MSG_AUTH_TRANSL_KEY_REFUSED,  // "Server refused our key."
+    MSG_PFWD_TRANSL_ADMIN,  // "Administratively prohibited (%s)."
+    MSG_PFWD_TRANSL_CONNECT,  // "Connect failed (%s)."
+    MSG_NET_TRANSL_REFUSED2,  // "Network error: Connection to '%HOST%' refused."
+    MSG_NET_TRANSL_RESET,  // "Network error: Connection reset by peer."
+    MSG_NET_TRANSL_TIMEOUT2,  // "Network error: Connection to '%HOST%' timed out."
+    MSG_SESSION_INFO_TIP_NO_SSH,  // "Host: %s\nUser name: %s\nTransfer protocol: %s"
+    MSG_RESUME_BUTTON,  // "&Resume"
+    MSG_FTP_NO_FEATURE_INFO,  // "The server does not support any additional FTP feature."
+    MSG_FTP_FEATURE_INFO,  // "The server supports these FTP additional features:"
+    MSG_COPY_INFO_CPS_LIMIT2,  // "Transfer speed limit: %u KB/s"
+    MSG_COPY_KEY_BUTTON,  // "&Copy Key"
+    MSG_UPDATE_KEY_BUTTON,  // "&Update"
+    MSG_ADD_KEY_BUTTON,  // "&Add"
+    MSG_COPY_INFO_PRESERVE_READONLY,  // "Preserve read-only"
 
-    MSG_SPEED_UNLIMITED,
-    MSG_FTPS_IMPLICIT,
-    MSG_FTPS_EXPLICIT,
+    MSG_SPEED_UNLIMITED,  // "Unlimited"
+    MSG_FTPS_IMPLICIT,  // "TLS/SSL Implicit encryption"
+    MSG_FTPS_EXPLICIT,  // "TLS/SSL Explicit encryption"
 
-    MSG_HOSTKEY,
+    MSG_HOSTKEY,  // "Host key fingerprint is %s."
 
-    MSG_COPY_PARAM_NEWER_ONLY,
-    MSG_FTP_SUGGESTION,
+    MSG_COPY_PARAM_NEWER_ONLY,  // "&New and updated files only"
+    MSG_FTP_SUGGESTION,  // "The server rejected SFTP connection, but it listens for FTP connections.\n\nDid you want to use FTP protocol instead of SFTP? Prefer using encryption."
 
-    MSG_ANY_HOSTKEY,
-    MSG_ANY_CERTIFICATE,
+    MSG_ANY_HOSTKEY,  // "WARNING! Giving up security and accepting any host key as configured!"
+    MSG_ANY_CERTIFICATE,  // "WARNING! Giving up security and accepting any certificate as configured!"
 
-    MSG_COPY_INFO_REMOVE_CTRLZ,
-    MSG_COPY_INFO_REMOVE_BOM,
+    MSG_COPY_INFO_REMOVE_CTRLZ,  // "Remove EOF mark"
+    MSG_COPY_INFO_REMOVE_BOM,  // "Remove BOM"
 
-    MSG_VERSION_BUILD,
-    MSG_VERSION_DEV_BUILD,
-    MSG_VERSION_DEBUG_BUILD,
-    MSG_VERSION_DONT_DISTRIBUTE,
-    MSG_WEBDAV_EXTENSION_INFO,
-    MSG_COPY_PARAM_PRESET_EXCLUDE_ALL_DIR,
-    MSG_SCRIPT_CHECKSUM_DESC,
-    MSG_CLIENT_CERTIFICATE_LOADING,
-    MSG_NEED_CLIENT_CERTIFICATE,
-    MSG_LOCKED,
-    MSG_EXECUTABLE,
-    MSG_SCRIPT_CMDLINE_PARAMETERS,
-    MSG_SCRIPTING_USE_HOSTKEY,
-    MSG_SCRIPT_SITE_WARNING,
-    MSG_CODE_SESSION_OPTIONS,
-    MSG_CODE_CONNECT,
-    MSG_CODE_PS_ADD_TYPE,
-    MSG_COPY_INFO_PRESERVE_TIME_DIRS,
-    MSG_TEXT_FILE_ENCODING,
-    MSG_AND_STR,
-    MSG_AUTH_CHANGING_PASSWORD,
-    MSG_PASTE_KEY_BUTTON,
-    MSG_SCRIPT_CP_DESC,
-    MSG_TIME_UNKNOWN,
-    MSG_KEY_DETAILS,
-    MSG_COPY_KEY_ACTION,
-    MSG_COPY_CERTIFICATE_ACTION,
+    MSG_VERSION_BUILD,  // "Build"
+    MSG_VERSION_DEV_BUILD,  // "Dev Build"
+    MSG_VERSION_DEBUG_BUILD,  // "Debug Build"
+    MSG_VERSION_DONT_DISTRIBUTE,  // "- Do NOT distribute"
+    MSG_WEBDAV_EXTENSION_INFO,  // "The server supports these WebDAV extensions:"
+    MSG_COPY_PARAM_PRESET_EXCLUDE_ALL_DIR,  // "Exclude &directories"
+    MSG_SCRIPT_CHECKSUM_DESC,  // "Calculates checksum of remote file"
+    MSG_CLIENT_CERTIFICATE_LOADING,  // "Loading client certificate..."
+    MSG_NEED_CLIENT_CERTIFICATE,  // "Server asks for authentication with a client certificate."
+    MSG_LOCKED,  // "Locked"
+    MSG_EXECUTABLE,  // "Executable"
+    MSG_SCRIPT_CMDLINE_PARAMETERS,  // "Scripting does not use standalone parameters. The parameters you have specified on command-line will not be used. Your command-line syntax is probably wrong."
+    MSG_SCRIPTING_USE_HOSTKEY,  // "In scripting, you should use a -hostkey switch to configure the expected host key."
+    MSG_SCRIPT_SITE_WARNING,  // "In scripting you should not rely on saved sites, use this command instead:"
+    MSG_CODE_SESSION_OPTIONS,  // "Set up session options"
+    MSG_CODE_CONNECT,  // "Connect"
+    MSG_CODE_PS_ADD_TYPE,  // "Load WinSCP .NET assembly"
+    MSG_COPY_INFO_PRESERVE_TIME_DIRS,  // "%s (including directories)"
+    MSG_TEXT_FILE_ENCODING,  // "The file must be in UTF-8 or UTF-16 encoding."
+    MSG_AND_STR,  // "%s and %s"
+    MSG_AUTH_CHANGING_PASSWORD,  // "Changing password."
+    MSG_PASTE_KEY_BUTTON,  // "&Paste key"
+    MSG_SCRIPT_CP_DESC,  // "Duplicates remote file"
+    MSG_TIME_UNKNOWN,  // "Unknown"
+    MSG_KEY_DETAILS,  // "    Algorithm:\t%s\n    SHA-256:\t%s\n    MD5:\t%s"
+    MSG_COPY_KEY_ACTION,  // "&Copy key fingerprints to clipboard"
+    MSG_COPY_CERTIFICATE_ACTION,  // "&Copy certificate fingerprint to clipboard"
 
-    MSG_CORE_VARIABLE_STRINGS,
-    MSG_PUTTY_BASED_ON,
-    MSG_PUTTY_VERSION,
-    MSG_PUTTY_COPYRIGHT,
-    MSG_PUTTY_URL,
-    MSG_FILEZILLA_BASED_ON2,
-    MSG_FILEZILLA_VERSION,
-    MSG_FILEZILLA_COPYRIGHT2,
-    MSG_FILEZILLA_URL,
-    MSG_OPENSSL_BASED_ON,
-    MSG_OPENSSL_COPYRIGHT2,
-    MSG_OPENSSL_VERSION2,
-    MSG_OPENSSL_URL,
-    MSG_NEON_BASED_ON,
-    MSG_NEON_COPYRIGHT,
-    MSG_NEON_URL,
-    MSG_EXPAT_BASED_ON,
-    MSG_EXPAT_URL,
-    MSG_PUTTY_LICENSE_URL,
-    MSG_MAIN_MSG_TAG,
-    MSG_INTERACTIVE_MSG_TAG,
+    MSG_CORE_VARIABLE_STRINGS,  // "CORE_VARIABLE"
+    MSG_PUTTY_BASED_ON,  // "SSH and SCP code based on PuTTY %s"
+    MSG_PUTTY_VERSION,  // "0.81"
+    MSG_PUTTY_COPYRIGHT,  // "Copyright © 1997-2024 Simon Tatham"
+    MSG_PUTTY_URL,  // "http://www.chiark.greenend.org.uk/~sgtatham/putty/"
+    MSG_FILEZILLA_BASED_ON2,  // "FTP code based on FileZilla"
+    MSG_FILEZILLA_VERSION,  // "2.2.32"
+    MSG_FILEZILLA_COPYRIGHT2,  // "Copyright © Tim Kosse"
+    MSG_FILEZILLA_URL,  // "http://filezilla-project.org/"
+    MSG_OPENSSL_BASED_ON,  // "This product includes software developed by the OpenSSL Project for use in the OpenSSL Toolkit %s."
+    MSG_OPENSSL_COPYRIGHT2,  // "Copyright © 1998-2024 The OpenSSL Project"
+    MSG_OPENSSL_VERSION2,  // "3.3.7"
+    MSG_OPENSSL_URL,  // "http://www.openssl.org/"
+    MSG_NEON_BASED_ON,  // "WebDAV code based on neon library %s"
+    MSG_NEON_COPYRIGHT,  // "Copyright © 1999-2025 Joe Orton"
+    MSG_NEON_URL,  // "http://www.webdav.org/neon/"
+    MSG_EXPAT_BASED_ON,  // "eXpat library %s"
+    MSG_EXPAT_URL,  // "http://www.libexpat.org/"
+    MSG_PUTTY_LICENSE_URL,  // "http://www.chiark.greenend.org.uk/~sgtatham/putty/licence.html"
+    MSG_MAIN_MSG_TAG,  // "**"
+    MSG_INTERACTIVE_MSG_TAG,  // "$$"
 
-    MSG_WINSCPFAR_NAME,
-    MSG_WINSCP_VERSION,
-    MSG_WINSCPFAR_VERSION,
-    MSG_WINSCPFAR_BASED_ON,
-    MSG_WINSCPFAR_BASED_VERSION,
-    MSG_WINSCPFAR_BASED_COPYRIGHT,
+    MSG_WINSCPFAR_NAME,  // "WinSCP"
+    MSG_WINSCP_VERSION,  // "6.5.6"
+    MSG_WINSCPFAR_VERSION,  // "1.6.2"
+    MSG_WINSCPFAR_BASED_ON,  // "Based on WinSCPFar: SFTP/FTP/SCP client for Far 1.75"
+    MSG_WINSCPFAR_BASED_VERSION,  // " Version %s"
+    MSG_WINSCPFAR_BASED_COPYRIGHT,  // "Copyright © 2000-2025 Martin Přikryl"
 
     // TextsCore2.rc
-    MSG_UNKNOWN_KEY4,
-    MSG_DIFFERENT_KEY5,
-    MSG_OLD_KEY,
+    MSG_UNKNOWN_KEY4,  // "**Continue connecting to an unknown server and \nadd its host key to a cache?**\n\nThe server's host key was not found in the cache. You have no guarantee that the server is the computer you think it is.\n\nThe server's %s key details are:\n\n%s\n\nIf you trust this host, press Yes. To connect without adding host key to the cache, press No. To abandon the connection press Cancel."
+    MSG_DIFFERENT_KEY5,  // "**WARNING - POTENTIAL SECURITY BREACH!**\n\nThe server's host key does not match the one WinSCP has in cache. This means that either the server administrator has changed the host key, the server presents different key under certain circumstance, or you have actually connected to another computer pretending to be the server.\n\nThe new %s key details are:\n\n%s\n\nIf you were expecting this change, trust the new key and want to continue connecting to the server, either press Update to update cache, or press Add to add the new key to the cache while keeping the old one(s). If you want to carry on connecting but without updating the cache, press Skip. If you want to abandon the connection completely, press Cancel. Pressing Cancel is the ONLY guaranteed safe choice."
+    MSG_OLD_KEY,  // "You are loading an SSH-2 private key which has an old version of the file format. This means your key file is not fully tamperproof. We recommend you convert your key to the new format.\n\nYou can perform this conversion by loading the key into PuTTYgen and then saving it again."
 
     // rtlconsts.rc
-    MSG_SDuplicateString,
+    MSG_SDuplicateString,  // "String list does not allow duplicates"
 
-    MSG_SListCountError,
-    MSG_SListIndexError,
+    MSG_SListCountError,  // "List count out of bounds (%d)"
+    MSG_SListIndexError,  // "List index out of bounds (%d)"
 
-    MSG_SMemoryStreamError,
+    MSG_SMemoryStreamError,  // "Out of memory while expanding memory stream"
 
-    MSG_SReadError,
+    MSG_SReadError,  // "Stream read error"
 
-    MSG_SSortedListError,
+    MSG_SSortedListError,  // "Operation not allowed on sorted list"
 
-    MSG_STimeEncodeError,
+    MSG_STimeEncodeError,  // "Invalid argument to time encode"
 
-    MSG_SWriteError,
+    MSG_SWriteError,  // "Stream write error"
 
-    MSG_SNotImplemented,
-    MSG_SOSError,
-    MSG_SUnkOSError,
+    MSG_SNotImplemented,  // "Not implemented. Code: %d"
+    MSG_SOSError,  // "System Error. Code: %d.\n%s"
+    MSG_SUnkOSError,  // "A call to an OS function failed"
 
-    MSG_SDateEncodeError,
-    MSG_SCannotOpenClipboard,
+    MSG_SDateEncodeError,  // "Invalid argument to date encode"
+    MSG_SCannotOpenClipboard,  // "Cannot open clipboard"
 
-    MSG_IDS_ERRORMSG_TIMEOUT,
-    MSG_IDS_STATUSMSG_DISCONNECTED,
+    MSG_IDS_ERRORMSG_TIMEOUT,  // "Timeout detected."
+    MSG_IDS_STATUSMSG_DISCONNECTED,  // "Disconnected from server"
 
     MSG_CONVERTKEY_SAVE_TITLE, // "Save converted private key"
     MSG_CONVERTKEY_SAVE_FILTER, // "PuTTY Private Key Files (*.ppk)|*.ppk|All files (*.*)|*.*"
@@ -1347,113 +1347,113 @@ enum MsgIDs {
 
     MSG_STACK_TRACE, // "Stack trace:"
 
-    MSG_NO_FILES_SELECTED,
+    MSG_NO_FILES_SELECTED,  // "No files selected"
 
-    NB_S3_DEFAULTREGION,
-    NB_S3_URLSTYLE,
-    NB_S3_REQUESTERPAYS,
-    NB_S3_AUTHENTICATION,
-    NB_S3_SESSIONTOKEN,
+    NB_S3_DEFAULTREGION,  // "&Default region:"
+    NB_S3_URLSTYLE,  // "&URL style:"
+    NB_S3_REQUESTERPAYS,  // "Requester &pays"
+    NB_S3_AUTHENTICATION,  // "Authentication"
+    NB_S3_SESSIONTOKEN,  // "&Session token:"
 
-    MSG_FTP_LISTING_PARSE_FAILED,
+    MSG_FTP_LISTING_PARSE_FAILED,  // "Cannot read directory listing from this FTP server.\nTry connecting to a subdirectory instead."
     // Master Password configuration
-    NB_MASTER_PASSWORD_CAPTION,
-    NB_MASTER_PASSWORD_CURRENT,
-    NB_MASTER_PASSWORD_NEW,
-    NB_MASTER_PASSWORD_CONFIRM,
-    NB_MASTER_PASSWORD_INCORRECT,
-    NB_MASTER_PASSWORD_DIFFERENT,
-    NB_MASTER_PASSWORD_SIMPLE2,
-    NB_MASTER_PASSWORD_CHANGED,
-    NB_MASTER_PASSWORD_SET2,
-    NB_MASTER_PASSWORD_CLEARED2,
-    NB_MASTER_PASSWORD_LOCKOUT,
-    NB_MASTER_PASSWORD_RECRYPT_CHANGE,
-    NB_MASTER_PASSWORD_RECRYPT_SET,
-    NB_MASTER_PASSWORD_RECRYPT_CLEAR,
+    NB_MASTER_PASSWORD_CAPTION,  // "Master password"
+    NB_MASTER_PASSWORD_CURRENT,  // "&Current master password:"
+    NB_MASTER_PASSWORD_NEW,  // "&New master password:"
+    NB_MASTER_PASSWORD_CONFIRM,  // "&Re-enter master password:"
+    NB_MASTER_PASSWORD_INCORRECT,  // "You did not enter the correct current master password."
+    NB_MASTER_PASSWORD_DIFFERENT,  // "New and re-entered master passwords are not the same."
+    NB_MASTER_PASSWORD_SIMPLE2,  // "**Your password is too simple and may not provide enough security against dictionary or brute force attacks.\nAre you sure you want to use it?**\n\nNote: good passwords have at least six characters and contain both lowercase and uppercase letters, numbers and special characters, such as delimiters, symbols, letters with accent, etc."
+    NB_MASTER_PASSWORD_CHANGED,  // "Master password successfully changed."
+    NB_MASTER_PASSWORD_SET2,  // "**Master password successfully set.**\n\nYour stored passwords are secured by AES cipher now."
+    NB_MASTER_PASSWORD_CLEARED2,  // "**You have deleted your master password.**\n\nYour stored passwords are not secured now."
+    NB_MASTER_PASSWORD_LOCKOUT,  // "Too many failed attempts. Please wait %d seconds."
+    NB_MASTER_PASSWORD_RECRYPT_CHANGE,  // "Password changed, but %d session(s) could not be recrypted."
+    NB_MASTER_PASSWORD_RECRYPT_SET,  // "Password set, but %d session(s) could not be recrypted."
+    NB_MASTER_PASSWORD_RECRYPT_CLEAR,  // "Password cleared, but %d session(s) could not be recrypted."
 
-    NB_TLS_MIN_VERSION,
-    NB_TLS_MAX_VERSION,
-    NB_S3_LOAD_CA_CERT,
-    NB_S3_SAVE_CA_CERT,
-    NB_S3_INVALID_PEM,
-    NB_S3_LOAD_ERROR,
-    NB_S3_SAVE_ERROR,
-    NB_LOGIN_AUTH_DETACHED_CERTIFICATE_LABEL,
-    NB_LOGIN_DISPLAY_PUBLIC_KEY,
-    NB_LOGIN_KEX_GSSAPI,
-    NB_S3_ROLE_ARN,
-    NB_S3_ROLE_SESSION_NAME,
-    NB_S3_CREDENTIALS_ENV,
-    NB_S3_PROFILE,
-    NB_S3_GENERAL_NAME,
-    NB_LOGIN_TAB_TLS,
-    NB_TLS_OPTIONS,
-    NB_LOGIN_WEBDAV_LIBERAL_ESC,
-    NB_LOGIN_SFTP_REAL_PATH,
-    NB_LOGIN_SFTP_POSIX_RENAME,
-    NB_LOGIN_FTP_LIST_ALL,
-    NB_LOGIN_FTP_FORCE_PASV_IP,
-    NB_LOGIN_FTP_HOST_COMMAND,
-    NB_LOGIN_FTP_ACCOUNT,
-    NB_LOGIN_FTP_VMS_ALL_REVISIONS,
-    NB_SESSION_GENERATE_KEY,
-    NB_CLEANUP_TITLE,
-    NB_CLEANUP_CONFIG,
-    NB_CLEANUP_SESSIONS,
-    NB_CLEANUP_CACHES,
-    NB_CLEANUP_INIFILE,
-    NB_CLEANUP_SEEDFILE,
-    NB_CLEANUP_TEMP_FOLDERS,
-    NB_CLEANUP_CHECK_ALL,
-    NB_CLEANUP_DESELECT_ALL,
+    NB_TLS_MIN_VERSION,  // "Minimum TLS version:"
+    NB_TLS_MAX_VERSION,  // "Maximum TLS version:"
+    NB_S3_LOAD_CA_CERT,  // "&Load"
+    NB_S3_SAVE_CA_CERT,  // "&Save"
+    NB_S3_INVALID_PEM,  // "The selected file does not contain a valid PEM certificate."
+    NB_S3_LOAD_ERROR,  // "Failed to load the CA certificate file."
+    NB_S3_SAVE_ERROR,  // "Failed to save the CA certificate file."
+    NB_LOGIN_AUTH_DETACHED_CERTIFICATE_LABEL,  // "Certificate to &use with the private key:"
+    NB_LOGIN_DISPLAY_PUBLIC_KEY,  // "&Display Public Key"
+    NB_LOGIN_KEX_GSSAPI,  // "Attempt GSSAPI key exchange"
+    NB_S3_ROLE_ARN,  // "&Role ARN:"
+    NB_S3_ROLE_SESSION_NAME,  // "Role &session name:"
+    NB_S3_CREDENTIALS_ENV,  // "Credentials from A&WS environment"
+    NB_S3_PROFILE,  // "&Profile:"
+    NB_S3_GENERAL_NAME,  // "General S3"
+    NB_LOGIN_TAB_TLS,  // "TLS/SSL"
+    NB_TLS_OPTIONS,  // "TLS options"
+    NB_LOGIN_WEBDAV_LIBERAL_ESC,  // "&Tolerate non-encoded special characters in filenames"
+    NB_LOGIN_SFTP_REAL_PATH,  // "&Canonicalize paths on the server"
+    NB_LOGIN_SFTP_POSIX_RENAME,  // "&Use POSIX rename"
+    NB_LOGIN_FTP_LIST_ALL,  // "&Support for listing of hidden files:"
+    NB_LOGIN_FTP_FORCE_PASV_IP,  // "&Force IP address for passive mode connections:"
+    NB_LOGIN_FTP_HOST_COMMAND,  // "Use &HOST command to select host on the server"
+    NB_LOGIN_FTP_ACCOUNT,  // "&Account:"
+    NB_LOGIN_FTP_VMS_ALL_REVISIONS,  // "Display all file &revisions on VMS servers"
+    NB_SESSION_GENERATE_KEY,  // "Generate &Key"
+    NB_CLEANUP_TITLE,  // "Cleanup Configuration"
+    NB_CLEANUP_CONFIG,  // "&Configuration"
+    NB_CLEANUP_SESSIONS,  // "&Stored sessions"
+    NB_CLEANUP_CACHES,  // "&Caches"
+    NB_CLEANUP_INIFILE,  // "&INI file"
+    NB_CLEANUP_SEEDFILE,  // "&Random seed file"
+    NB_CLEANUP_TEMP_FOLDERS,  // "&Temporary folders"
+    NB_CLEANUP_CHECK_ALL,  // "Select &all"
+    NB_CLEANUP_DESELECT_ALL,  // "&Deselect all"
 
     // Generate URL Dialog
-    NB_GENERATE_URL_TITLE,
-    NB_GENERATE_URL_URL_TAB,
-    NB_GENERATE_URL_SCRIPT_TAB,
-    NB_GENERATE_URL_USER_CHECK,
-    NB_GENERATE_URL_PASSWORD_CHECK,
-    NB_GENERATE_URL_HOSTKEY_CHECK,
-    NB_GENERATE_URL_REMOTE_DIR_CHECK,
-    NB_GENERATE_URL_CREATE_SESSION_CHECK,
-    NB_GENERATE_URL_RAW_SETTINGS_CHECK,
-    NB_GENERATE_URL_SAVE_EXTENSION_CHECK,
-    NB_GENERATE_URL_CLIPBOARD,
-    NB_GENERATE_URL_RESULT_LABEL,
-    NB_GENERATE_URL_SCRIPT_FORMAT_LABEL,
-    NB_GENERATE_URL_SCRIPT_FORMAT_BATCH,
-    NB_GENERATE_URL_SCRIPT_FORMAT_CMDLINE,
-    NB_GENERATE_URL_SCRIPT_FORMAT_POWERSHELL,
-    NB_GENERATE_URL_SCRIPT_OPEN_SESSION,
-    NB_GENERATE_URL_SCRIPT_PUT_FILES,
-    NB_GENERATE_URL_SCRIPT_GET_FILES,
-    NB_GENERATE_URL_SCRIPT_SESSION_MODE,
-    NB_GENERATE_URL_SCRIPT_TRANSFER_MODE,
+    NB_GENERATE_URL_TITLE,  // "Generate &URL"
+    NB_GENERATE_URL_URL_TAB,  // "&URL"
+    NB_GENERATE_URL_SCRIPT_TAB,  // "S&cript"
+    NB_GENERATE_URL_USER_CHECK,  // "Include &username"
+    NB_GENERATE_URL_PASSWORD_CHECK,  // "Include &password"
+    NB_GENERATE_URL_HOSTKEY_CHECK,  // "Include &host key"
+    NB_GENERATE_URL_REMOTE_DIR_CHECK,  // "Include &remote directory"
+    NB_GENERATE_URL_CREATE_SESSION_CHECK,  // "Create &session"
+    NB_GENERATE_URL_RAW_SETTINGS_CHECK,  // "Include &raw settings"
+    NB_GENERATE_URL_SAVE_EXTENSION_CHECK,  // "Save &extension"
+    NB_GENERATE_URL_CLIPBOARD,  // "Copy to &clipboard"
+    NB_GENERATE_URL_RESULT_LABEL,  // "&Result:"
+    NB_GENERATE_URL_SCRIPT_FORMAT_LABEL,  // "&Format:"
+    NB_GENERATE_URL_SCRIPT_FORMAT_BATCH,  // "Batch file"
+    NB_GENERATE_URL_SCRIPT_FORMAT_CMDLINE,  // "Command line"
+    NB_GENERATE_URL_SCRIPT_FORMAT_POWERSHELL,  // "PowerShell"
+    NB_GENERATE_URL_SCRIPT_OPEN_SESSION,  // "Open session"
+    NB_GENERATE_URL_SCRIPT_PUT_FILES,  // "Upload files"
+    NB_GENERATE_URL_SCRIPT_GET_FILES,  // "Download files"
+    NB_GENERATE_URL_SCRIPT_SESSION_MODE,  // "Session mode"
+    NB_GENERATE_URL_SCRIPT_TRANSFER_MODE,  // "Transfer mode"
 
     // Location Profiles Dialog
-    NB_LOCATION_PROFILES_TITLE,
-    NB_LOCATION_PROFILES_SESSION_TAB,
-    NB_LOCATION_PROFILES_SHARED_TAB,
-    NB_LOCATION_PROFILES_LOCAL_DIR,
-    NB_LOCATION_PROFILES_REMOTE_DIR,
-    NB_LOCATION_PROFILES_ADD,
-    NB_LOCATION_PROFILES_REMOVE,
-    NB_LOCATION_PROFILES_RENAME,
-    NB_LOCATION_PROFILES_OPEN,
+    NB_LOCATION_PROFILES_TITLE,  // "Location &Profiles"
+    NB_LOCATION_PROFILES_SESSION_TAB,  // "&Session profiles"
+    NB_LOCATION_PROFILES_SHARED_TAB,  // "&Shared profiles"
+    NB_LOCATION_PROFILES_LOCAL_DIR,  // "&Local directory:"
+    NB_LOCATION_PROFILES_REMOTE_DIR,  // "&Remote directory:"
+    NB_LOCATION_PROFILES_ADD,  // "&Add"
+    NB_LOCATION_PROFILES_REMOVE,  // "&Remove"
+    NB_LOCATION_PROFILES_RENAME,  // "&Rename"
+    NB_LOCATION_PROFILES_OPEN,  // "&Open"
 
     // CopyParamCustom
-    NB_COPY_PRESET_CUSTOM,
-    NB_CONFIRMATIONS_SILENT_MODE,
+    NB_COPY_PRESET_CUSTOM,  // "Custom"
+    NB_CONFIRMATIONS_SILENT_MODE,  // "Silent mode (suppress all confirmations)"
 
     // Location Profiles InputBox prompts
-    NB_LOCATION_BOOKMARK_NAME_PROMPT,
-    NB_LOCATION_BOOKMARK_RENAME_PROMPT,
+    NB_LOCATION_BOOKMARK_NAME_PROMPT,  // "Bookmark name:"
+    NB_LOCATION_BOOKMARK_RENAME_PROMPT,  // "New name:"
 
     // Location Profiles remove confirmation
-    NB_LOCATION_PROFILES_REMOVE_CONFIRM,
+    NB_LOCATION_PROFILES_REMOVE_CONFIRM,  // "Do you wish to remove bookmark '%s'"
     // Compare Directories
-    NB_MENU_COMMANDS_COMPARE_DIRECTORIES,
-    NB_COMPARE_DIRECTORIES_TITLE,
-    NB_COMPARE_DIRECTORIES_NO_DIFFERENCES,
+    NB_MENU_COMMANDS_COMPARE_DIRECTORIES,  // "Compare directories"
+    NB_COMPARE_DIRECTORIES_TITLE,  // "Compare Directories"
+    NB_COMPARE_DIRECTORIES_NO_DIFFERENCES,  // "No differences found."
 };
