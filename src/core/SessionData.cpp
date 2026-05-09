@@ -3907,11 +3907,6 @@ UnicodeString TSessionData::GenerateSessionUrl(uint32_t Flags) const
 {
   UnicodeString Url;
 
-  if (FLAGSET(Flags, sufSpecific))
-  {
-    Url += WinSCPProtocolPrefix;
-  }
-
   Url += GetProtocolUrl(FLAGSET(Flags, sufHttpForWebDAV));
 
   // Add username only if it was somehow explicitly specified (so not with S3CredentialsEnv), but if it was, add it in the expanded form.
@@ -3978,7 +3973,23 @@ UnicodeString TSessionData::GenerateSessionUrl(uint32_t Flags) const
   {
     Url += L":" + IntToStr(PortNumber);
   }
-  Url += SLASH;
+  if (FLAGSET(Flags, sufSpecific) && !FRemoteDirectory.IsEmpty())
+  {
+    UnicodeString RemoteDir = FRemoteDirectory;
+    if (!RemoteDir.IsEmpty() && (RemoteDir[1] != L'/'))
+    {
+      RemoteDir = L"/" + RemoteDir;
+    }
+    Url += EncodeUrlPath(RemoteDir);
+    if (Url[Url.Length()] != L'/')
+    {
+      Url += L'/';
+    }
+  }
+  else
+  {
+    Url += SLASH;
+  }
 
   return Url;
 }
