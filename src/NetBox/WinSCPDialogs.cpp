@@ -7979,7 +7979,7 @@ TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
   CopyParamLister->SetTabStop(false);
   CopyParamLister->SetOnMouseClick(nb::bind(&TCopyDialog::CopyParamListerClick, this));
 
-  SetNextItemPosition(ipRight);
+  SetNextItemPosition(ipNewLine);
   TFarText * PresetLabel = MakeOwnedObject<TFarText>(this);
   PresetLabel->SetCaption(GetMsg(NB_TRANSFER_PRESET_LABEL));
   PresetCombo = MakeOwnedObject<TFarComboBox>(this);
@@ -8035,6 +8035,7 @@ TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
   Button->SetResult(-1);
   Button->SetCenterGroup(true);
   Button->SetOnClick(nb::bind(&TCopyDialog::TransferSettingsButtonClick, this));
+  Button->SetTop(GetBorderBox()->GetBottom() - 3);
 
   SetNextItemPosition(ipRight);
 
