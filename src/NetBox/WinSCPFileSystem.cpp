@@ -3493,7 +3493,7 @@ bool TWinSCPFileSystem::Connect(TSessionData * Data)
     // HandleException(&E);
     bool Reopen = false;
     const EFatal * Fatal = nb::dyn_cast_or_null<EFatal>(&E);
-    if ((Fatal == nullptr) || !Fatal->GetReopenQueried())
+    if ((Fatal != nullptr) && !Fatal->GetReopenQueried())
     {
       // FTerminal->ShowExtendedException(&E);
       Reopen = FTerminal->QueryReopen(&E, 0, nullptr);

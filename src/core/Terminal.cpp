@@ -2571,9 +2571,12 @@ NORETURN void TTerminal::TerminalError(
 bool TTerminal::DoQueryReopen(Exception * E)
 {
   EFatal * Fatal = nb::dyn_cast_or_null<EFatal>(E);
-  DebugAssert(Fatal != nullptr);
+  if (Fatal == nullptr)
+  {
+    return false;
+  }
   bool Result = false;
-  if ((Fatal != nullptr) && Fatal->GetReopenQueried())
+  if (Fatal->GetReopenQueried())
   {
     Result = false;
   }
