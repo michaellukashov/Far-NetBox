@@ -6428,6 +6428,7 @@ TSynchronizeChecklist * TTerminal::SynchronizeCollect(const UnicodeString & Loca
     LogEvent(1, L"Silent mode: spNoConfirmation flag added");
   }
   TValueRestorer<bool> UseBusyCursorRestorer(FUseBusyCursor, false);
+  nb::used(UseBusyCursorRestorer);
   FUseBusyCursor = false;
 
   std::unique_ptr<TSynchronizeChecklist> Checklist(std::make_unique<TSynchronizeChecklist>());
@@ -6589,7 +6590,8 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & ALocalDirect
   TSynchronizeDirectoryEvent && OnSynchronizeDirectory, TSynchronizeOptions * Options,
   int32_t AFlags, TSynchronizeChecklist * Checklist)
 {
-  TSynchronizeData Data;
+  DebugAssert(CopyParam != nullptr);
+  TSynchronizeData Data{};
 
   Data.LocalDirectory = ::IncludeTrailingBackslash(ALocalDirectory);
   Data.RemoteDirectory = base::UnixIncludeTrailingBackslash(ARemoteDirectory);

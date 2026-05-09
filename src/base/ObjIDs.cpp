@@ -161,5 +161,6 @@ const TObjectClassId OBJECT_CLASS_TBackgroundTerminal = static_cast<TObjectClass
 const TObjectClassId OBJECT_CLASS_TDialogIdleThread = static_cast<TObjectClassId>(nb::counter_id());
 const TObjectClassId OBJECT_CLASS_TConsoleTitleParam = static_cast<TObjectClassId>(nb::counter_id());
 const TObjectClassId OBJECT_CLASS_TKeepAliveThread = static_cast<TObjectClassId>(nb::counter_id());
+const TObjectClassId OBJECT_CLASS_TSyncPoller = static_cast<TObjectClassId>(nb::counter_id());
 
 } // extern "C"

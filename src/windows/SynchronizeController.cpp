@@ -5,7 +5,7 @@
 #include <Common.h>
 #include <RemoteFiles.h>
 #include <Terminal.h>
-#include <DiscMon.hpp>
+#include <Queue.h>
 #include <Exceptions.h>
 #include "GUIConfiguration.h"
 #include "CoreMain.h"
@@ -16,13 +16,160 @@
 #pragma package(smart_init)
 #endif // defined(__BORLANDC__)
 
+
+// ============================================================================
+// TSyncPoller — FindFirstChangeNotification-based directory watcher
+// ============================================================================
+
+class TSyncPoller final : public TSimpleThread
+{
+  NB_DISABLE_COPY(TSyncPoller)
+public:
+  TSyncPoller() = delete;
+  explicit TSyncPoller(const UnicodeString & Directory, bool Recursive,
+    TSynchronizeThreadsEvent OnSynchronizeThreads,
+    TThreadMethod OnChange, TSynchronizeInvalidEvent OnInvalid) noexcept;
+  virtual ~TSyncPoller() noexcept override;
+
+  void StartPoller();
+  void StopPoller();
+
+protected:
+  virtual void Execute() override;
+
+private:
+  UnicodeString FDirectory;
+  bool FRecursive{false};
+  TSynchronizeThreadsEvent FOnSynchronizeThreads;
+  TThreadMethod FOnChange;
+  TSynchronizeInvalidEvent FOnInvalid;
+  HANDLE FChangeHandle{INVALID_HANDLE_VALUE};
+  HANDLE FStopEvent{INVALID_HANDLE_VALUE};
+  bool FStarted{false};
+
+  bool OpenNotification();
+  void CloseNotification();
+};
+
+TSyncPoller::TSyncPoller(const UnicodeString & Directory, bool Recursive,
+  TSynchronizeThreadsEvent OnSynchronizeThreads,
+  TThreadMethod OnChange, TSynchronizeInvalidEvent OnInvalid) noexcept :
+  TSimpleThread(OBJECT_CLASS_TSyncPoller),
+  FDirectory(Directory),
+  FRecursive(Recursive),
+  FOnSynchronizeThreads(OnSynchronizeThreads),
+  FOnChange(OnChange),
+  FOnInvalid(OnInvalid)
+{
+}
+
+TSyncPoller::~TSyncPoller() noexcept
+{
+  StopPoller();
+}
+
+void TSyncPoller::StartPoller()
+{
+  DebugAssert(!FStarted);
+  FStopEvent = ::CreateEvent(nullptr, TRUE, FALSE, nullptr);
+  TSimpleThread::InitSimpleThread("NetBox Sync Poller");
+  Start();
+  FStarted = true;
+}
+
+void TSyncPoller::StopPoller()
+{
+  if (FStarted)
+  {
+    // Set stop event but do NOT WaitFor here.
+    // WaitFor would deadlock if the thread is blocked in
+    // TFarDialog::Synchronize() waiting for the main thread.
+    // The thread will exit naturally when it sees the stop event.
+    ::SetEvent(FStopEvent);
+    FStarted = false;
+  }
+}
+
+bool TSyncPoller::OpenNotification()
+{
+  FChangeHandle = ::FindFirstChangeNotification(
+    FDirectory.c_str(),
+    FRecursive,
+    FILE_NOTIFY_CHANGE_FILE_NAME |
+    FILE_NOTIFY_CHANGE_DIR_NAME |
+    FILE_NOTIFY_CHANGE_LAST_WRITE);
+  return FChangeHandle != INVALID_HANDLE_VALUE;
+}
+
+void TSyncPoller::CloseNotification()
+{
+  if (FChangeHandle != INVALID_HANDLE_VALUE)
+  {
+    ::FindCloseChangeNotification(FChangeHandle);
+    FChangeHandle = INVALID_HANDLE_VALUE;
+  }
+}
+
+void TSyncPoller::Execute()
+{
+  if (!OpenNotification())
+  {
+    if (FOnInvalid)
+      FOnInvalid(nullptr, FDirectory, L"Failed to open directory notification");
+    return;
+  }
+
+  const DWORD PollInterval = nb::Min<DWORD>(
+    static_cast<DWORD>(GetGUIConfiguration()->GetKeepUpToDateChangeDelay()), 2000u);
+  HANDLE Handles[] = { FChangeHandle, FStopEvent };
+
+  while (!IsFinished())
+  {
+    const DWORD WaitResult = ::WaitForMultipleObjects(
+      _countof(Handles), Handles, FALSE, PollInterval);
+
+    if (WaitResult == WAIT_OBJECT_0)  // Change detected
+    {
+      // Marshal to main thread for sync
+      if (FOnSynchronizeThreads)
+      {
+        FOnSynchronizeThreads(this, FOnChange);
+      }
+
+      // Re-arm immediately (per design decision)
+      if (!::FindNextChangeNotification(FChangeHandle))
+      {
+        // Handle invalidated (e.g., directory deleted) — reopen
+        CloseNotification();
+        if (!OpenNotification())
+        {
+          if (FOnInvalid)
+            FOnInvalid(nullptr, FDirectory, L"Lost directory notification");
+          break;
+        }
+      }
+    }
+    else if (WaitResult == WAIT_OBJECT_0 + 1)  // Stop event
+    {
+      break;
+    }
+    // WAIT_TIMEOUT — loop and re-wait
+  }
+
+  CloseNotification();
+}
+
+// ============================================================================
+// TSynchronizeController implementation
+// ============================================================================
+
 TSynchronizeController::TSynchronizeController(
   TSynchronizeEvent AOnSynchronize, TSynchronizeInvalidEvent AOnSynchronizeInvalid,
   TSynchronizeTooManyDirectoriesEvent AOnTooManyDirectories) noexcept :
   FOnSynchronize(AOnSynchronize),
   FOptions(nullptr),
   FOnSynchronizeThreads(nullptr),
-  FSynchronizeMonitor(nullptr),
+  FSyncPoller(nullptr),
   FSynchronizeAbort(nullptr),
   FOnSynchronizeInvalid(AOnSynchronizeInvalid),
   FOnTooManyDirectories(AOnTooManyDirectories),
@@ -32,7 +179,7 @@ TSynchronizeController::TSynchronizeController(
   FOnSynchronize = AOnSynchronize;
   FOnSynchronizeInvalid = AOnSynchronizeInvalid;
   FOnTooManyDirectories = AOnTooManyDirectories;
-  FSynchronizeMonitor = nullptr;
+  FSyncPoller = nullptr;
   FSynchronizeAbort = nullptr;
   FSynchronizeLog = nullptr;
   FOptions = nullptr;
@@ -40,13 +187,13 @@ TSynchronizeController::TSynchronizeController(
 
 TSynchronizeController::~TSynchronizeController() noexcept
 {
-  DebugAssert(FSynchronizeMonitor == nullptr);
+  DebugAssert(FSyncPoller == nullptr);
 }
 
 void TSynchronizeController::StartStop(TObject * /*Sender*/,
   bool Start, const TSynchronizeParamType & Params, const TCopyParamType & CopyParam,
   TSynchronizeOptions * Options,
-  TSynchronizeAbortEvent OnAbort, TSynchronizeThreadsEvent /*OnSynchronizeThreads*/,
+  TSynchronizeAbortEvent OnAbort, TSynchronizeThreadsEvent OnSynchronizeThreads,
   TSynchronizeLogEvent OnSynchronizeLog)
 {
   if (Start)
@@ -79,45 +226,49 @@ void TSynchronizeController::StartStop(TObject * /*Sender*/,
         SynchronizeLog(slScan,
           FMTLOAD(SYNCHRONIZE_SCAN, FSynchronizeParams.LocalDirectory));
       }
-      ThrowNotImplemented(256);
-      /*
-      // FIXME
-      FSynchronizeMonitor = new TDiscMonitor(nb::dyn_cast_or_null<TComponent>(Sender));
-      FSynchronizeMonitor->SubTree = false;
-      TMonitorFilters Filters;
-      Filters << moFilename << moLastWrite;
-      if (FLAGSET(FSynchronizeParams.Options, soRecurse))
+      FOnSynchronizeThreads = OnSynchronizeThreads;
+
+      // Create callback for polling — marshals SynchronizeChange to main thread
+      TThreadMethod ChangeCallback = nb::bind(
+        &TSynchronizeController::DoSynchronizeChange, this);
+
+      FSyncPoller = new TSyncPoller(
+        FSynchronizeParams.LocalDirectory,
+        FLAGSET(FSynchronizeParams.Options, soRecurse),
+        OnSynchronizeThreads,
+        ChangeCallback,
+        nb::bind(&TSynchronizeController::DoSynchronizeInvalid, this));
+
+      SynchronizeLog(slStart, FMTLOAD(SYNCHRONIZE_START, 1));
+
+      try
       {
-        Filters << moDirName;
+        FSyncPoller->StartPoller();
       }
-      FSynchronizeMonitor->Filters = Filters;
-      FSynchronizeMonitor->MaxDirectories = 0;
-      FSynchronizeMonitor->ChangeDelay = GUIConfiguration->KeepUpToDateChangeDelay;
-      FSynchronizeMonitor->OnTooManyDirectories = SynchronizeTooManyDirectories;
-      FSynchronizeMonitor->OnDirectoriesChange = SynchronizeDirectoriesChange;
-      FSynchronizeMonitor->OnFilter = SynchronizeFilter;
-      FSynchronizeMonitor->AddDirectory(FSynchronizeParams.LocalDirectory,
-        FLAGSET(FSynchronizeParams.Options, soRecurse));
-      FSynchronizeMonitor->OnChange = SynchronizeChange;
-      FSynchronizeMonitor->OnInvalid = SynchronizeInvalid;
-      FSynchronizeMonitor->OnSynchronize = OnSynchronizeThreads;
-      // get count before open to avoid thread issues
-      int Directories = FSynchronizeMonitor->Directories->Count;
-      FSynchronizeMonitor->Open();
-      SynchronizeLog(slStart, FMTLOAD(SYNCHRONIZE_START, Directories));
-      */
+      catch (...)
+      {
+        SAFE_DESTROY(FSyncPoller);
+        throw;
+      }
     }
     catch (...)
     {
-      // FIXME SAFE_DESTROY(FSynchronizeMonitor);
-      ThrowNotImplemented(257);
+      if (FSyncPoller != nullptr)
+      {
+        FSyncPoller->StopPoller();
+        SAFE_DESTROY(FSyncPoller);
+      }
       throw;
     }
   }
   else
   {
     FOptions = nullptr;
-    // SAFE_DESTROY(FSynchronizeMonitor);
+    if (FSyncPoller != nullptr)
+    {
+      FSyncPoller->StopPoller();
+      SAFE_DESTROY(FSyncPoller);
+    }
   }
 }
 
@@ -200,13 +351,31 @@ void TSynchronizeController::SynchronizeChange(
 
 void TSynchronizeController::SynchronizeAbort(bool Close)
 {
-  if (FSynchronizeMonitor != nullptr)
+  if (FSyncPoller != nullptr)
   {
-    // FIXME FSynchronizeMonitor->Close();
-    ThrowNotImplemented(258);
+    FSyncPoller->StopPoller();
+    SAFE_DESTROY(FSyncPoller);
   }
   DebugAssert(FSynchronizeAbort);
   FSynchronizeAbort(nullptr, Close);
+}
+
+
+void TSynchronizeController::NotifySynchronizeChange(const UnicodeString & Directory)
+{
+  FSubdirsChanged = false;
+  SynchronizeChange(this, Directory, FSubdirsChanged);
+}
+
+void TSynchronizeController::DoSynchronizeChange()
+{
+  NotifySynchronizeChange(FSynchronizeParams.LocalDirectory);
+}
+
+void TSynchronizeController::DoSynchronizeInvalid(TSynchronizeController * /*Sender*/,
+  const UnicodeString & Directory, const UnicodeString & ErrorStr)
+{
+  SynchronizeInvalid(this, Directory, ErrorStr);
 }
 
 void TSynchronizeController::LogOperation(TSynchronizeOperation Operation,

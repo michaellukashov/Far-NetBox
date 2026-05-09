@@ -1712,7 +1712,7 @@ void TWinSCPFileSystem::Synchronize()
   TFarPanelInfo ** AnotherPanel = GetAnotherPanelInfo();
   RequireLocalPanel(*AnotherPanel, GetMsg(NB_SYNCHRONIZE_LOCAL_PATH_REQUIRED));
 
-  TSynchronizeParamType Params;
+  TSynchronizeParamType Params{};
   Params.LocalDirectory = (*AnotherPanel)->GetCurrentDirectory();
   Params.RemoteDirectory = FTerminal->GetCurrentDirectory();
   const int32_t UnusedParams = (GetGUIConfiguration()->GetSynchronizeParams() &
@@ -1767,9 +1767,11 @@ void TWinSCPFileSystem::CompareDirectories()
 
   try
   {
+    const TCopyParamType & CopyParam = static_cast<TCopyParamType &>(GetGUIConfiguration()->GetDefaultCopyParam());
+    // const DWORD CopyParamAttrs = GetTerminal()->UsableCopyParamAttrs(0).Upload;
     int32_t Params = TTerminal::spTimestamp;
     std::unique_ptr<TSynchronizeChecklist> Checklist(FTerminal->SynchronizeCollect(
-      LocalDir, RemoteDir, TTerminal::smBoth, nullptr, Params, nullptr, nullptr));
+      LocalDir, RemoteDir, TTerminal::smBoth, &CopyParam, Params, nullptr, nullptr));
     if (Checklist && Checklist->GetCount() > 0)
     {
       SynchronizeChecklistDialog(Checklist.get(), TTerminal::smBoth, Params, LocalDir, RemoteDir);

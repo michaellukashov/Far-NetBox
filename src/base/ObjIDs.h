@@ -156,6 +156,7 @@ extern const TObjectClassId OBJECT_CLASS_TBackgroundTerminal;
 extern const TObjectClassId OBJECT_CLASS_TDialogIdleThread;
 extern const TObjectClassId OBJECT_CLASS_TConsoleTitleParam;
 extern const TObjectClassId OBJECT_CLASS_TKeepAliveThread;
+extern const TObjectClassId OBJECT_CLASS_TSyncPoller;
 
 } // extern "C"
 
