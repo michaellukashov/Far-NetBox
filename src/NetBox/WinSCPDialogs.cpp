@@ -2465,11 +2465,7 @@ UnicodeString TGenerateUrlDialog::GenerateScript() const
     return UnicodeString();
   }
   const int32_t FormatIndex = FScriptFormatCombo->GetItemIndex();
-  UnicodeString ExeName = ::ChangeFileExt(base::ExtractFileName(GetConfiguration()->GetProductVersion(), false), UnicodeString());
-  if (ExeName.IsEmpty())
-  {
-    ExeName = L"netbox";
-  }
+  UnicodeString ExeName = L"netbox";
   UnicodeString ExePath = L"\"" + ExeName + L".com\"";
 
   // Build open command arguments
