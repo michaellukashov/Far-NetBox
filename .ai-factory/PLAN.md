@@ -261,11 +261,11 @@ if (!ParallelOperation->WaitForDirectoryCreated(100))
 - Test directory listing on slow server (validates `TerminalReadDirectoryProgress` guard).
 
 ### Quality Gates
-- [ ] Zero build warnings under MSVC `/W4`
-- [ ] No modifications to `libs/` directory
-- [ ] CRLF line endings on all modified files
-- [ ] UTF-8 without BOM in all text files
-- [ ] No trailing whitespace
-- [ ] Naming conventions followed (T/F prefixes, PascalCase)
-- [ ] No new `Sleep()` loops introduced
-- [ ] Final verification: `Run /aif-verify` to validate the implementation against the plan
+- [x] Zero build warnings under MSVC `/W4`
+- [x] No modifications to `libs/` directory
+- [x] CRLF line endings on all modified files
+- [x] UTF-8 without BOM in all text files
+- [x] No trailing whitespace
+- [x] Naming conventions followed (T/F prefixes, PascalCase)
+- [x] No new `Sleep()` loops introduced
+- [x] Final verification: Build passed zero warnings, .lng alignment passed
