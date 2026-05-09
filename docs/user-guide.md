@@ -24,6 +24,22 @@ Cryptography based on OpenSSL 3.3.7 Copyright (c) 1998-2025 The OpenSSL Project
 | **WebDAV** | Web-based Distributed Authoring and Versioning |
 | **S3**   | Amazon Simple Storage Service (TLS version selection and custom CA certificate support) |
 
+
+## Esc Cancel During Session Initialization
+
+When connecting to a remote server, you can press **Esc** to cancel the connection attempt:
+
+| Protocol | Behavior |
+|----------|----------|
+| **SSH/SFTP/SCP** | Esc is checked repeatedly during the SSH handshake and authentication. Press Esc to abort. |
+| **SSH with tunnel** | Esc is checked repeatedly during the tunnel SSH handshake. Press Esc to abort both tunnel and session. |
+| **FTP/FTPS** | Esc is checked during the FTP connection and authentication. |
+| **S3** | Esc is checked before the initial HTTP request. Note: the HTTP call itself cannot be interrupted mid-flight. |
+| **WebDAV** | Esc is checked before each HTTP request (including redirects and auth retries). |
+
+A progress indicator shows the connection status. When Esc is pressed, the connection is
+cancelled, the panel remains open, and the log records "Connection cancelled by user (Esc)".
+
 ## Folder History Navigation
 
 NetBox integrates with Far Manager's built-in folder history, allowing you to quickly return to previously visited remote sessions and directories.
