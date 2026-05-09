@@ -150,8 +150,10 @@ TCustomFarPlugin::TCustomFarPlugin(TObjectClassId Kind, HINSTANCE HInst) noexcep
   FConsoleInput = ::CreateFile(L"CONIN$", GENERIC_READ, FILE_SHARE_READ, nullptr,
     OPEN_EXISTING, 0, nullptr);
   DEBUG_PRINTFA("CONIN$ handle opened");
+  DEBUG_PRINTFA("Opening CONOUT$ handle");
   FConsoleOutput = ::CreateFile(L"CONOUT$", GENERIC_READ | GENERIC_WRITE,
     FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING, 0, nullptr);
+  DEBUG_PRINTFA("CONOUT$ handle opened");
   if (ConsoleWindowState() == SW_SHOWNORMAL)
   {
     FNormalConsoleSize = TerminalInfo();
@@ -169,10 +171,14 @@ TCustomFarPlugin::~TCustomFarPlugin() noexcept
   DebugAssert(FTopDialog == nullptr);
 
   ResetCachedInfo();
+  DEBUG_PRINTFA("Closing CONIN$ handle");
   SAFE_CLOSE_HANDLE(FConsoleInput);
   FConsoleInput = INVALID_HANDLE_VALUE;
+  DEBUG_PRINTFA("CONIN$ handle closed");
+  DEBUG_PRINTFA("Closing CONOUT$ handle");
   SAFE_CLOSE_HANDLE(FConsoleOutput);
   FConsoleOutput = INVALID_HANDLE_VALUE;
+  DEBUG_PRINTFA("CONOUT$ handle closed");
 
   ClearPluginInfo(FPluginInfo);
   DebugAssert(FOpenedPlugins->GetCount() == 0);
