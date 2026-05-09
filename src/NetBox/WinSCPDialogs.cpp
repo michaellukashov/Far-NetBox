@@ -2034,9 +2034,12 @@ TCleanupDialog::TCleanupDialog(TCustomFarPlugin * AFarPlugin) :
   }
 
   // Separator
-  MakeOwnedObject<TFarSeparator>(this);
+  TFarSeparator * Separator = MakeOwnedObject<TFarSeparator>(this);
+  nb::used(Separator);
+  // Separator->SetTop(CRect.Bottom - 6);
 
   // Select All / Deselect All buttons
+  SetNextItemPosition(ipNewLine);
   FSelectAllBtn = MakeOwnedObject<TFarButton>(this);
   FSelectAllBtn->SetCaption(GetMsg(NB_CLEANUP_CHECK_ALL));
   FSelectAllBtn->SetOnClick(nb::bind(&TCleanupDialog::SelectAllButtonClick, this));
@@ -2054,6 +2057,13 @@ TCleanupDialog::TCleanupDialog(TCustomFarPlugin * AFarPlugin) :
   // Standard OK/Cancel buttons
   AddStandardButtons();
 
+  // Adjust positions
+  const TRect CRect = GetClientRect();
+  FSelectAllBtn->SetTop(CRect.Bottom - 2);
+  FDeselectAllBtn->SetTop(CRect.Bottom - 2);
+  ButtonSeparator->SetTop(CRect.Bottom - 1);
+  OkButton->SetTop(CRect.Bottom);
+  CancelButton->SetTop(CRect.Bottom);
   SetCaption(GetMsg(NB_CLEANUP_TITLE));
 }
 
