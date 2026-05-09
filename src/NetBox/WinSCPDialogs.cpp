@@ -2241,13 +2241,13 @@ TGenerateUrlDialog::TGenerateUrlDialog(TCustomFarPlugin * AFarPlugin,
   FCreateSessionCheck->SetCaption(GetMsg(NB_GENERATE_URL_CREATE_SESSION_CHECK));
   FCreateSessionCheck->SetGroup(tabUrl);
 
-  SetNextItemPosition(ipRight);
+  SetNextItemPosition(ipNewLine);
 
   FRawSettingsCheck = MakeOwnedObject<TFarCheckBox>(this);
   FRawSettingsCheck->SetCaption(GetMsg(NB_GENERATE_URL_RAW_SETTINGS_CHECK));
   FRawSettingsCheck->SetGroup(tabUrl);
 
-  SetNextItemPosition(ipNewLine);
+  SetNextItemPosition(ipRight);
 
   FSaveExtCheck = MakeOwnedObject<TFarCheckBox>(this);
   FSaveExtCheck->SetCaption(GetMsg(NB_GENERATE_URL_SAVE_EXTENSION_CHECK));
