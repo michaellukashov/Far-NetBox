@@ -248,6 +248,8 @@ void TWebDAVFileSystem::Open()
   FActive = false;
   try
   {
+    // Check for user cancellation before WebDAV connect
+    FTerminal->CheckForEsc();
     OpenUrl(Url);
   }
   catch (Exception & E)
@@ -298,6 +300,8 @@ void TWebDAVFileSystem::NeonClientOpenSessionInternal(UnicodeString & CorrectedU
   AttemptedUrls->Add(Url);
   while (true)
   {
+    // Check for user cancellation before each redirect attempt
+    FTerminal->CheckForEsc();
 
     FSessionInfo.CSCipher = EmptyStr;
     FSessionInfo.SCCipher = EmptyStr;
@@ -452,6 +456,9 @@ void TWebDAVFileSystem::ExchangeCapabilities(const char * APath, UnicodeString &
   do
   {
     FAuthenticationRetry = false;
+
+    // Check for user cancellation before each auth retry
+    FTerminal->CheckForEsc();
     NeonStatus = ne_options2(FSessionContext->NeonSession, APath, &FCapabilities);
   }
   while ((NeonStatus == NE_AUTH) && FAuthenticationRetry);

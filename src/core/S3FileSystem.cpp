@@ -672,6 +672,9 @@ void TS3FileSystem::Open()
     }
   }
 
+
+  // Check for user cancellation before S3 HTTP request
+  FTerminal->CheckForEsc();
   FActive = false;
   try
   {
@@ -680,6 +683,8 @@ void TS3FileSystem::Open()
     {
       Path = ROOTDIRECTORY;
     }
+    // Check Esc again right before the blocking HTTP call
+    FTerminal->CheckForEsc();
     TryOpenDirectory(Path);
   }
   catch(Exception & E)
