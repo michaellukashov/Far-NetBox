@@ -2022,7 +2022,7 @@ TCleanupDialog::TCleanupDialog(TCustomFarPlugin * AFarPlugin) :
 
   // Layout
   const int32_t ItemCount = static_cast<int32_t>(FCleanupItems.size());
-  const int32_t Height = nb::Max(ItemCount + 5, 11);
+  const int32_t Height = nb::Max(ItemCount + 5, 12);
   SetSize(TPoint(70, Height));
 
   // Checkbox per cleanup category
