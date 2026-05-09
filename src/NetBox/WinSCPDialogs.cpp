@@ -4647,7 +4647,6 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   // Display Public Key
   DisplayPublicKeyBtn = MakeOwnedObject<TFarButton>(this);
   DisplayPublicKeyBtn->SetCaption(GetMsg(NB_LOGIN_DISPLAY_PUBLIC_KEY));
-  DisplayPublicKeyBtn->SetRight(PrivateKeyBrowseBtn->GetRight());
   DisplayPublicKeyBtn->SetOnClick(nb::bind(&TSessionDialog::PrivateKeyViewButtonClick, this));
 
   // Generate Key button (launch puttygen.exe)
