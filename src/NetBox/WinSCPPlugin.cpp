@@ -1148,6 +1148,16 @@ void TWinSCPPlugin::MasterPasswordPrompt()
     {
       AppLogFmt(L"MasterPasswordPrompt: password valid, setting");
       WinConfiguration->SetMasterPassword(Password);
+      // Secure wipe of local password buffer before it goes out of scope
+      if (!Password.IsEmpty())
+      {
+        wchar_t * Buf = Password.SetLength(Password.Length());
+        if (Buf)
+        {
+          SecureZeroMemory(Buf, Password.GetBytesCount());
+        }
+        Password.Clear();
+      }
       return;
     }
 
