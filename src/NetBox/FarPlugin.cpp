@@ -171,6 +171,10 @@ TCustomFarPlugin::~TCustomFarPlugin() noexcept
   DebugAssert(FTopDialog == nullptr);
 
   ResetCachedInfo();
+  if (FTerminalScreenShowing)
+  {
+    SaveTerminalScreen();
+  }
   DEBUG_PRINTFA("Closing CONIN$ handle");
   SAFE_CLOSE_HANDLE(FConsoleInput);
   FConsoleInput = INVALID_HANDLE_VALUE;
