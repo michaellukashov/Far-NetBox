@@ -311,11 +311,11 @@ bool TEditorList::operator==(const TEditorList & rhs) const
   bool Result = (GetCount() == rhs.GetCount());
   if (Result)
   {
-    int32_t i = 0;
-    while ((i < GetCount()) && Result)
+    int32_t I = 0;
+    while ((I < GetCount()) && Result)
     {
-      Result = (*GetEditor(i)) == (*rhs.GetEditor(i));
-      i++;
+      Result = (*GetEditor(I)) == (*rhs.GetEditor(I));
+      I++;
     }
   }
   return Result;
@@ -323,9 +323,9 @@ bool TEditorList::operator==(const TEditorList & rhs) const
 
 void TEditorList::Clear()
 {
-  for (int32_t i = 0; i < GetCount(); i++)
+  for (int32_t I = 0; I < GetCount(); I++)
   {
-    delete GetEditor(i);
+    delete GetEditor(I);
   }
   FEditors->Clear();
 }
@@ -376,15 +376,15 @@ const TEditorPreferences * TEditorList::Find(
   const UnicodeString FileName, bool Local, const TFileMasks::TParams & Params) const
 {
   const TEditorPreferences * Result = nullptr;
-  int32_t i = 0;
-  while ((i < FEditors->Count) && (Result == nullptr))
+  int32_t I = 0;
+  while ((I < FEditors->Count) && (Result == nullptr))
   {
-    Result = GetEditor(i);
+    Result = GetEditor(I);
     if (!Result->Matches(FileName, Local, Params))
     {
       Result = nullptr;
     }
-    i++;
+    I++;
   }
   return Result;
 }
@@ -2972,15 +2972,15 @@ void TWinConfiguration::CleanupTemporaryFolders(TStrings * Folders)
   }
 
   UnicodeString ErrorList;
-  for (int32_t i = 0; i < Folders->GetCount(); i++)
+  for (int32_t I = 0; I < Folders->GetCount(); I++)
   {
-    if (!RecursiveDeleteFile(Folders->Strings[i]))
+    if (!RecursiveDeleteFile(Folders->Strings[I]))
     {
       if (!ErrorList.IsEmpty())
       {
         ErrorList += L"\n";
       }
-      ErrorList += Folders->Strings[i];
+      ErrorList += Folders->Strings[I];
     }
   }
 
