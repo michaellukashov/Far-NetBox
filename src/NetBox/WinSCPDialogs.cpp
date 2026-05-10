@@ -10578,6 +10578,7 @@ private:
   TFarButton * StopButton{nullptr};
   TFarButton * CloseButton{nullptr};
   TFarLister * CopyParamLister{nullptr};
+  std::unique_ptr<TStrings> FLogLines;
 };
 
 TSynchronizeDialog::TSynchronizeDialog(TCustomFarPlugin * AFarPlugin,
@@ -10706,6 +10707,7 @@ void TSynchronizeDialog::TransferSettingsButtonClick(
 void TSynchronizeDialog::CopyParamListerClick(
   TFarDialogItem * /*Item*/, const MOUSE_EVENT_RECORD * Event)
 {
+  if (FSynchronizing) return;
   if (FLAGSET(Event->dwEventFlags, DOUBLE_CLICK))
   {
     CustomCopyParam();
@@ -10833,9 +10835,24 @@ void TSynchronizeDialog::DoAbort(TObject * /*Sender*/, bool Close)
 }
 
 void TSynchronizeDialog::DoLog(TSynchronizeController * /*Controller*/,
-  TSynchronizeLogEntry /*Entry*/, const UnicodeString & /*Message*/)
+  TSynchronizeLogEntry /*Entry*/, const UnicodeString & Message)
 {
-  // void
+  if (!CopyParamLister) return;
+
+  if (!FLogLines)
+  {
+    FLogLines = std::make_unique<TStringList>();
+  }
+
+  FLogLines->Add(Message);
+
+  // Keep log bounded to prevent unbounded growth during long syncs
+  while (FLogLines->GetCount() > 100)
+  {
+    FLogLines->Delete(0);
+  }
+
+  CopyParamLister->SetItems(FLogLines.get());
 }
 
 void TSynchronizeDialog::StartButtonClick(TFarButton * /*Sender*/,
@@ -10880,6 +10897,7 @@ void TSynchronizeDialog::StartButtonClick(TFarButton * /*Sender*/,
     DebugAssert(!FSynchronizing);
 
     FSynchronizing = true;
+    FLogLines = std::make_unique<TStringList>();
     try
     {
       UpdateControls();
@@ -10912,6 +10930,7 @@ void TSynchronizeDialog::Stop()
   BreakSynchronize();
   DoStartStop(false, false);
   UpdateControls();
+  Change();
   StartButton->SetFocus();
 }
 
