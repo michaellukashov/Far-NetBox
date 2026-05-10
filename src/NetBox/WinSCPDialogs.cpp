@@ -520,18 +520,21 @@ bool TWinSCPPlugin::LoggingConfigurationDialog()
   TFarCheckBox * LogToFileCheck = MakeOwnedObject<TFarCheckBox>(Dialog);
   LogToFileCheck->SetCaption(GetMsg(NB_LOGGING_LOG_TO_FILE));
   LogToFileCheck->SetEnabledDependency(LoggingCheck);
+  Dialog->SetNextItemPosition(ipNewLine);
 
   TFarEdit * LogFileNameEdit = MakeOwnedObject<TFarEdit>(Dialog);
   LogFileNameEdit->SetLeft(LogFileNameEdit->GetLeft() + 4);
   LogFileNameEdit->SetHistory(LOG_FILE_HISTORY);
   LogFileNameEdit->SetEnabledDependency(LogToFileCheck);
 
-  Dialog->SetNextItemPosition(ipBelow);
+  Dialog->SetNextItemPosition(ipNewLine);
 
   Text = MakeOwnedObject<TFarText>(Dialog);
   Text->SetCaption(GetMsg(NB_LOGGING_LOG_FILE_HINT1));
   Text = MakeOwnedObject<TFarText>(Dialog);
   Text->SetCaption(GetMsg(NB_LOGGING_LOG_FILE_HINT2));
+
+  Dialog->SetNextItemPosition(ipNewLine);
 
   TFarRadioButton * LogFileAppendButton = MakeOwnedObject<TFarRadioButton>(Dialog);
   LogFileAppendButton->SetCaption(GetMsg(NB_LOGGING_LOG_FILE_APPEND));
@@ -657,7 +660,7 @@ bool TWinSCPPlugin::EnduranceConfigurationDialog()
   Text = MakeOwnedObject<TFarText>(Dialog);
   Text->SetCaption(GetMsg(NB_TRANSFER_SESSION_REOPEN_NUMBER_OF_RETRIES_LABEL));
   Text->SetEnabledDependency(SessionReopenAutoCheck);
-  Text->Move(4, 0);
+  Text->Move(3, 0);
 
   Dialog->SetNextItemPosition(ipRight);
 
@@ -775,11 +778,19 @@ bool TWinSCPPlugin::QueueConfigurationDialog()
   TFarCheckBox * QueueAutoPopupCheck = MakeOwnedObject<TFarCheckBox>(Dialog);
   QueueAutoPopupCheck->SetCaption(GetMsg(NB_TRANSFER_AUTO_POPUP));
 
-
   TFarCheckBox * QueueBeepCheck = MakeOwnedObject<TFarCheckBox>(Dialog);
   QueueBeepCheck->SetCaption(GetMsg(NB_TRANSFER_QUEUE_BEEP));
 
   Dialog->AddStandardButtons();
+  // Adjust positions
+  const TRect CRect = Dialog->GetClientRect();
+  Dialog->ButtonSeparator->SetTop(CRect.Bottom - 1);
+
+  Dialog->OkButton->SetTop(CRect.Bottom);
+  Dialog->CancelButton->SetTop(CRect.Bottom);
+  Dialog->OkButton->SetCenterGroup(true);
+  Dialog->CancelButton->SetCenterGroup(true);
+  Dialog->OkButton->SetDefault(true);
 
   TFarConfiguration * FarConfiguration = GetFarConfiguration();
   QueueTransferLimitEdit->SetAsInteger(FarConfiguration->QueueTransfersLimit());
@@ -1541,6 +1552,15 @@ TSecurityConfigurationDialog::TSecurityConfigurationDialog(TCustomFarPlugin * AF
   FRemoveCaBtn->SetOnClick(nb::bind(&TSecurityConfigurationDialog::RemoveCaBtnClick, this));
 
   AddStandardButtons();
+  // Adjust positions
+  const TRect CRect = GetClientRect();
+  ButtonSeparator->SetTop(CRect.Bottom - 1);
+
+  OkButton->SetTop(CRect.Bottom);
+  CancelButton->SetTop(CRect.Bottom);
+  OkButton->SetCenterGroup(true);
+  CancelButton->SetCenterGroup(true);
+  OkButton->SetDefault(true);
 }
 
 bool TSecurityConfigurationDialog::Execute()
