@@ -28,12 +28,12 @@ public:
   void SetFile(FILE * file);
   void SetPrefix(const char * file_name, int32_t line, const char * func_name, Utils::LogLevel log_level);
   size_t GetDroppedCount() const;
-  LogStream & operator <<(const std::string & log_data);
+  // LogStream & operator <<(const std::string & log_data);
   LogStream & operator <<(const char * log_data);
   template<typename StringType>
   LogStream & operator <<(const StringType & log_data)
   {
-    return this->operator <<(log_data.c_str());
+    return this->operator <<(AnsiString(log_data.c_str()).c_str());
   }
 
   void UpdateBaseTime();

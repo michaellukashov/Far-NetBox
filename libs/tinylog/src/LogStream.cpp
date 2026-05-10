@@ -1,6 +1,7 @@
 #include <io.h>
 #include <fcntl.h>
 
+#include <nbsystem.h>
 #include <tinylog/platform_win32.h>
 
 #include <tinylog/LogStream.h>
@@ -186,7 +187,7 @@ size_t LogStream::FormattedWrite(const char * log_data, size_t to_write)
   struct tm tm_now;
   localtime_s(&tm_now, &sec);
 
-#define MAX(STR, DEF) std::max(((STR) ? strlen(STR) : 0ULL), (DEF))
+#define MAX(STR, DEF) nb::Max(((STR) ? strlen(STR) : 0ULL), (DEF))
   const size_t prefix_len = 36 + MAX(file_name_, 10ULL) +
     MAX(func_name_, 16ULL) + MAX(str_log_level_, 10ULL);
   const size_t append_len = prefix_len + to_write;
@@ -310,6 +311,7 @@ LogStream & LogStream::operator<<(const char * log_data)
   return *this;
 }
 
+#if 0
 LogStream & LogStream::operator<<(const std::string & ref_log)
 {
   FormattedWrite(ref_log.c_str(), ref_log.size());
@@ -329,6 +331,7 @@ LogStream & LogStream::operator<<(const std::string & ref_log)
 */
   return *this;
 }
+#endif 0
 
 void LogStream::UpdateBaseTime()
 {
