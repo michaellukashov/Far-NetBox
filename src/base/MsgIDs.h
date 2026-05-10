@@ -397,7 +397,7 @@ enum MsgIDs {
     NB_SECURITY_CHANGE_MASTER_PASSWORD,  // "Chan&ge master password..."
     NB_SECURITY_SESSION_PASSWORD_GROUP,  // " Session password "
     NB_SECURITY_REMEMBER_PASSWORD,  // "Remember password for &duration of session"
-    NB_SECURITY_SSH_HOST_CA_GROUP,  // " Trusted host certification authorities "
+    NB_SECURITY_SSH_HOST_CA_GROUP,  // "Trusted host certification authorities "
     NB_SECURITY_SSH_HOST_CA_FROM_PUTTY,  // "&Load authorities from PuTTY"
     NB_SECURITY_SSH_HOST_CA_NAME_COL,  // "Name"
     NB_SECURITY_SSH_HOST_CA_HOSTS_COL,  // "Hosts"

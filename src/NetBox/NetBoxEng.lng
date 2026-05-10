@@ -396,7 +396,7 @@
 
 " Session password "
 "Remember password for &duration of session"
-" Trusted host certification authorities "
+"Trusted host certification authorities "
 "&Load authorities from PuTTY"
 "Name"
 "Hosts"

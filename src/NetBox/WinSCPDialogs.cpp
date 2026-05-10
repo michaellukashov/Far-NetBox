@@ -1549,19 +1549,23 @@ TSecurityConfigurationDialog::TSecurityConfigurationDialog(TCustomFarPlugin * AF
   FCaListBox->SetNoBox(true);
   FCaListBox->SetHeight(6);
 
+  SetNextItemPosition(ipNewLine);
   FAddCaBtn = MakeOwnedObject<TFarButton>(this);
   FAddCaBtn->SetCaption(GetMsg(NB_SECURITY_SSH_HOST_CA_ADD_BTN));
   FAddCaBtn->SetOnClick(nb::bind(&TSecurityConfigurationDialog::AddCaBtnClick, this));
 
+  SetNextItemPosition(ipRight);
   FEditCaBtn = MakeOwnedObject<TFarButton>(this);
   FEditCaBtn->SetCaption(GetMsg(NB_SECURITY_SSH_HOST_CA_EDIT_BTN));
   FEditCaBtn->SetOnClick(nb::bind(&TSecurityConfigurationDialog::EditCaBtnClick, this));
 
+  SetNextItemPosition(ipRight);
   FRemoveCaBtn = MakeOwnedObject<TFarButton>(this);
   FRemoveCaBtn->SetCaption(GetMsg(NB_SECURITY_SSH_HOST_CA_REMOVE_BTN));
   FRemoveCaBtn->SetOnClick(nb::bind(&TSecurityConfigurationDialog::RemoveCaBtnClick, this));
 
   AddStandardButtons();
+
   // Adjust positions
   const TRect CRect = GetClientRect();
   ButtonSeparator->SetTop(CRect.Bottom - 1);
