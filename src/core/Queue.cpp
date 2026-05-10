@@ -367,11 +367,10 @@ int32_t TSimpleThread::ThreadProc(void * Thread)
   if (!SimpleThread)
     return 0;
 
-  std::string threadIdStr = std::to_string(::GetCurrentThreadId());
-  TLogContext ctx_thread("thread_id", threadIdStr);
-  TLogContext ctx_class("class", "TSimpleThread");
+  UnicodeString threadIdStr = std::to_string(::GetCurrentThreadId()).c_str();
+  TLogContext ctx_thread(L"thread_id", threadIdStr);
+  TLogContext ctx_class(L"class", "TSimpleThread");
   LOG_THREAD_START("TSimpleThread");
-
 
   try
   {
@@ -388,7 +387,7 @@ int32_t TSimpleThread::ThreadProc(void * Thread)
     SAFE_DESTROY(SimpleThread);
   }
 
-  LOG_THREAD_STOP(threadIdStr.c_str());
+  LOG_THREAD_STOP(threadIdStr);
   return 0;
 }
 
@@ -1154,7 +1153,7 @@ bool TTerminalQueue::WaitForEvent()
 
 void TTerminalQueue::ProcessEvent()
 {
-  TLogContext ctx_queue("queue", "terminal");
+  TLogContext ctx_queue(L"queue", "terminal");
   TINYLOG_DEBUG(g_tinylog) << TLogContext::Format() << " ProcessEvent called";
 
   TTerminalItem * TerminalItem;
@@ -1222,7 +1221,7 @@ void TTerminalQueue::ProcessEvent()
               FForcedItems->Delete(ForcedIndex);
             }
             FItemsInProcess++;
-            TLogContext ctx_item("item", AnsiString(Item1->GetInfo()->Source).c_str());
+            TLogContext ctx_item(L"item", Item1->GetInfo()->Source);
             LOG_QUEUE_EVENT("processing");
           }
         }
@@ -1938,10 +1937,10 @@ bool TQueueItem::IsExecutionCancelled() const
 
 void TQueueItem::Execute()
 {
-  std::string opName = std::to_string(static_cast<int32_t>(FInfo ? FInfo->Operation : foNone));
-  std::string srcPath = UTF8String(FInfo ? FInfo->Source : UnicodeString()).c_str();
-  TLogContext ctx_op("op", opName);
-  TLogContext ctx_src("src", srcPath);
+  UnicodeString opName = std::to_string(static_cast<int32_t>(FInfo ? FInfo->Operation : foNone)).c_str();
+  UnicodeString srcPath = UTF8String(FInfo ? FInfo->Source : UnicodeString()).c_str();
+  TLogContext ctx_op(L"op", opName);
+  TLogContext ctx_src(L"src", srcPath);
   TINYLOG_INFO(g_tinylog) << TLogContext::Format() << " QueueItem execute start";
 
   {

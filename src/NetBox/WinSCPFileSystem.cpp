@@ -1794,9 +1794,9 @@ void TWinSCPFileSystem::CompareDirectories()
     // Use nb::vector_t + linear search instead of std::set to avoid
     // allocator complexity with custom allocators
     nb::vector_t<UnicodeString> LocalDiffs, RemoteDiffs;
-    for (int32_t i = 0; i < Checklist->GetCount(); ++i)
+    for (int32_t I = 0; I < Checklist->GetCount(); ++I)
     {
-      const TChecklistItem * Item = Checklist->GetItem(i);
+      const TChecklistItem * Item = Checklist->GetItem(I);
       // IsDirectory is a bool field (not a method), skip directories
       if (Item->IsDirectory) continue;
       if (!Item->Local.FileName.IsEmpty()) LocalDiffs.push_back(Item->Local.FileName);
@@ -1809,9 +1809,9 @@ void TWinSCPFileSystem::CompareDirectories()
     {
       if (!PanelInfo) return;
       TObjectList * Items = PanelInfo->GetItems();
-      for (int32_t i = 0; i < Items->GetCount(); ++i)
+      for (int32_t I = 0; I < Items->GetCount(); ++I)
       {
-        TFarPanelItem * Item = Items->GetAs<TFarPanelItem>(i);
+        TFarPanelItem * Item = Items->GetAs<TFarPanelItem>(I);
         if (Item->GetIsParentDirectory()) continue;
         const bool Selected = (std::find(Diffs.begin(), Diffs.end(),
           Item->GetFileName()) != Diffs.end());
@@ -2882,12 +2882,12 @@ int32_t TWinSCPFileSystem::GetFilesRemote(TObjectList * PanelItems, bool Move,
   int32_t Result = -1;
   const bool EditView = (OpMode & (OPM_EDIT | OPM_VIEW)) != 0;
 
-  std::string remoteOp(EditView ? "edit_view" : "download");
-  TLogContext ctx_op("op", remoteOp);
+  UnicodeString remoteOp(EditView ? "edit_view" : "download");
+  TLogContext ctx_op(L"op", remoteOp);
   UTF8String remoteSrcUtf8(FFileList && FFileList->GetCount() > 0 ?
     FFileList->GetString(0) : UnicodeString(L""));
-  std::string remoteSrc(remoteSrcUtf8.c_str());
-  TLogContext ctx_src("src", remoteSrc);
+  UnicodeString remoteSrc(remoteSrcUtf8.c_str());
+  TLogContext ctx_src(L"src", remoteSrc);
   TINYLOG_DEBUG(g_tinylog) << TLogContext::Format()
     << " GetFilesRemote start, count=" << std::to_string(FFileList ? FFileList->GetCount() : 0)
     << " move=" << (Move ? "1" : "0");
@@ -3291,10 +3291,10 @@ bool TWinSCPFileSystem::ImportSessions(TObjectList * PanelItems, bool /*Move*/,
         if (StoredKeys->GetCount() > 0)
         {
           UnicodeString SessionNames;
-          for (int32_t i = 0; i < StoredKeys->GetCount() && i < 5; i++)
+          for (int32_t I = 0; I < StoredKeys->GetCount() && I < 5; I++)
           {
-            if (i > 0) SessionNames += L", ";
-            SessionNames += StoredKeys->GetString(i);
+            if (I > 0) SessionNames += L", ";
+            SessionNames += StoredKeys->GetString(I);
           }
           if (StoredKeys->GetCount() > 5) SessionNames += L"...";
           UnicodeString ConfirmMsg = FORMAT("%s will import sessions: %s. Continue?", nb::EscapeFmtChars(FileName), nb::EscapeFmtChars(SessionNames));
