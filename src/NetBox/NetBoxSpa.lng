@@ -663,6 +663,10 @@
 
 "Sincronización está soportada solo contra panel regular."
 "No se encontraron diferencias."
+"Tiempo de &modificación"
+"&Tamaño de archivo"
+"Diferencias encontradas: %d archivos locales, %d archivos remotos"
+" Criterios de comparación "
 "Sincronizar"
 "Directorio lo&cal:"
 "Directorio remo&to:"

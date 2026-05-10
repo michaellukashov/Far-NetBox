@@ -17,6 +17,7 @@
 #include <GUITools.h>
 #include <Sysutils.hpp>
 #include <FormatUtils.h>
+#include <algorithm>
 #include "guid.h"
 #include <SessionHistory.h>
 
@@ -1767,25 +1768,87 @@ void TWinSCPFileSystem::CompareDirectories()
   const UnicodeString LocalDir = (*AnotherPanel)->GetCurrentDirectory();
   const UnicodeString RemoteDir = FTerminal->GetCurrentDirectory();
 
+  // Build criteria params from stored config
+  // CORRECT mapping (see plan Key Design Decisions):
+  //  - Time comparison is DEFAULT (spNotByTime CLEAR)
+  //  - spTimestamp is a special sync mode, NOT a comparison flag
+  int32_t Params = 0;
+  if (!GetFarConfiguration()->GetCompareByTime()) Params |= TTerminal::spNotByTime;
+  if (GetFarConfiguration()->GetCompareBySize()) Params |= TTerminal::spBySize;
+
   try
   {
-    const TCopyParamType & CopyParam = static_cast<TCopyParamType &>(GetGUIConfiguration()->GetDefaultCopyParam());
-    // const DWORD CopyParamAttrs = GetTerminal()->UsableCopyParamAttrs(0).Upload;
-    int32_t Params = TTerminal::spTimestamp;
+    const TCopyParamType & CopyParam = static_cast<const TCopyParamType &>(
+      GetGUIConfiguration()->GetDefaultCopyParam());
     std::unique_ptr<TSynchronizeChecklist> Checklist(FTerminal->SynchronizeCollect(
       LocalDir, RemoteDir, TTerminal::smBoth, &CopyParam, Params, nullptr, nullptr));
-    if (Checklist && Checklist->GetCount() > 0)
+
+    if (!Checklist || Checklist->GetCount() == 0)
     {
-      SynchronizeChecklistDialog(Checklist.get(), TTerminal::smBoth, Params, LocalDir, RemoteDir);
+      MoreMessageDialog(GetMsg(NB_COMPARE_DIRECTORIES_NO_DIFFERENCES),
+        nullptr, qtInformation, qaOK);
+      return;
     }
-    else
+
+    // Collect differing file names from both sides
+    // Use std::vector + linear search instead of std::set to avoid
+    // allocator complexity with custom allocators
+    std::vector<UnicodeString> LocalDiffs, RemoteDiffs;
+    for (int32_t i = 0; i < Checklist->GetCount(); ++i)
     {
-      MoreMessageDialog(GetMsg(NB_COMPARE_DIRECTORIES_NO_DIFFERENCES), nullptr, qtInformation, qaOK);
+      const TChecklistItem * Item = Checklist->GetItem(i);
+      // IsDirectory is a bool field (not a method), skip directories
+      if (Item->IsDirectory) continue;
+      if (!Item->Local.FileName.IsEmpty()) LocalDiffs.push_back(Item->Local.FileName);
+      if (!Item->Remote.FileName.IsEmpty()) RemoteDiffs.push_back(Item->Remote.FileName);
     }
+
+    // Select differing files in local panel (another panel)
+    if (AnotherPanel && *AnotherPanel)
+    {
+      TObjectList * Items = (*AnotherPanel)->GetItems();
+      for (int32_t i = 0; i < Items->GetCount(); ++i)
+      {
+        TFarPanelItem * Item = Items->GetAs<TFarPanelItem>(i);
+        if (Item->GetIsParentDirectory()) continue;
+        const bool Selected = (std::find(LocalDiffs.begin(), LocalDiffs.end(),
+          Item->GetFileName()) != LocalDiffs.end());
+        Item->SetSelected(Selected);
+      }
+      (*AnotherPanel)->ApplySelection();
+    }
+
+    // Select differing files in remote panel (this plugin panel)
+    {
+      TFarPanelInfo ** Panel = GetPanelInfo();
+      if (Panel && *Panel)
+      {
+        TObjectList * Items = (*Panel)->GetItems();
+        for (int32_t i = 0; i < Items->GetCount(); ++i)
+        {
+          TFarPanelItem * Item = Items->GetAs<TFarPanelItem>(i);
+          if (Item->GetIsParentDirectory()) continue;
+          const bool Selected = (std::find(RemoteDiffs.begin(), RemoteDiffs.end(),
+            Item->GetFileName()) != RemoteDiffs.end());
+          Item->SetSelected(Selected);
+        }
+        (*Panel)->ApplySelection();
+      }
+    }
+
+    // Redraw both panels
+    RedrawPanel();
+    RedrawPanel(true); // Another panel
+
+    // Show summary message with counts
+    MoreMessageDialog(
+      FORMAT(GetMsg(NB_COMPARE_DIRECTORIES_RESULT),
+        LocalDiffs.size(), RemoteDiffs.size()),
+      nullptr, qtInformation, qaOK);
   }
   catch (Exception & E)
   {
-    FTerminal->LogEvent(FORMAT(L"Compare: error: %s", E.Message));
+    FTerminal->LogEvent(FORMAT(L"CompareDirectories: error: %s", E.Message));
     ShowExtendedException(&E);
   }
 }

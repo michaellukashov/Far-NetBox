@@ -337,6 +337,14 @@ bool TWinSCPPlugin::ConfigurationDialog()
   TFarCheckBox * SessionNameInTitleCheck = MakeOwnedObject<TFarCheckBox>(Dialog);
   SessionNameInTitleCheck->SetCaption(GetMsg(NB_CONFIG_SESSION_NAME_IN_TITLE));
 
+  MakeOwnedObject<TFarSeparator>(Dialog)->SetCaption(GetMsg(NB_COMPARE_CRITERIA_GROUP));
+
+  TFarCheckBox * CompareByTimeCheck = MakeOwnedObject<TFarCheckBox>(Dialog);
+  CompareByTimeCheck->SetCaption(GetMsg(NB_COMPARE_BY_TIME));
+
+  TFarCheckBox * CompareBySizeCheck = MakeOwnedObject<TFarCheckBox>(Dialog);
+  CompareBySizeCheck->SetCaption(GetMsg(NB_COMPARE_BY_SIZE));
+
   MakeOwnedObject<TFarSeparator>(Dialog);
 
   TFarText * Text = MakeOwnedObject<TFarText>(Dialog);
@@ -421,6 +429,8 @@ bool TWinSCPPlugin::ConfigurationDialog()
   PluginsMenuCheck->SetChecked(FarConfiguration->GetPluginsMenu());
   PluginsMenuCommandsCheck->SetChecked(FarConfiguration->GetPluginsMenuCommands());
   SessionNameInTitleCheck->SetChecked(FarConfiguration->GetSessionNameInTitle());
+  CompareByTimeCheck->SetChecked(FarConfiguration->GetCompareByTime());
+  CompareBySizeCheck->SetChecked(FarConfiguration->GetCompareBySize());
   CommandPrefixesEdit->SetText(FarConfiguration->GetCommandPrefixes());
 
   CustomPanelCheck->SetChecked(FarConfiguration->GetCustomPanelModeDetailed());
@@ -437,6 +447,8 @@ bool TWinSCPPlugin::ConfigurationDialog()
     FarConfiguration->SetPluginsMenu(PluginsMenuCheck->GetChecked());
     FarConfiguration->SetPluginsMenuCommands(PluginsMenuCommandsCheck->GetChecked());
     FarConfiguration->SetSessionNameInTitle(SessionNameInTitleCheck->GetChecked());
+    FarConfiguration->SetCompareByTime(CompareByTimeCheck->GetChecked());
+    FarConfiguration->SetCompareBySize(CompareBySizeCheck->GetChecked());
 
     FarConfiguration->SetCommandPrefixes(CommandPrefixesEdit->GetText());
 

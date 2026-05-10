@@ -663,6 +663,10 @@
 
 "Synchronization is supported only against regular panel."
 "No differences found."
+"&Время модификации"
+"Ра&змер файла"
+"Найдены различия: %d локальных файлов, %d удаленных файлов"
+" Критерии сравнения "
 "Synchronize"
 "Lo&cal directory:"
 "Remo&te directory:"

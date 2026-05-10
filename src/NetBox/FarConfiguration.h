@@ -46,6 +46,10 @@ public:
   void SetPluginsMenuCommands(bool Value) { FPluginsMenuCommands = Value; }
   UnicodeString GetCommandPrefixes() const { return FCommandPrefixes; }
   void SetCommandPrefixes(const UnicodeString & Value) { FCommandPrefixes = Value; }
+  bool GetCompareByTime() const { return FCompareByTime; }
+  void SetCompareByTime(bool Value) { FCompareByTime = Value; }
+  bool GetCompareBySize() const { return FCompareBySize; }
+  void SetCompareBySize(bool Value) { FCompareBySize = Value; }
   bool GetSessionNameInTitle() const { return FSessionNameInTitle; }
   void SetSessionNameInTitle(bool Value) { FSessionNameInTitle = Value; }
 
@@ -122,6 +126,8 @@ private:
   bool FPluginsMenuCommands{false};
   UnicodeString FCommandPrefixes;
   bool FSessionNameInTitle{false};
+  bool FCompareByTime{true};
+  bool FCompareBySize{false};
   bool FEditorDownloadDefaultMode{false};
   bool FEditorUploadSameOptions{false};
   bool FEditorUploadOnSave{false};

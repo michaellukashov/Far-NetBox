@@ -663,6 +663,10 @@
 
 "Synchronization is supported only against regular panel."
 "No differences found."
+"&Date de modification"
+"&Taille du fichier"
+"Différences trouvées : %d fichiers locaux, %d fichiers distants"
+" Critères de comparaison "
 "Synchronize"
 "Lo&cal directory:"
 "Remo&te directory:"

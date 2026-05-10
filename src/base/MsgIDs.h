@@ -664,6 +664,10 @@ enum MsgIDs {
 
     NB_SYNCHRONIZE_LOCAL_PATH_REQUIRED,  // "Synchronization is supported only against regular panel."
     NB_COMPARE_NO_DIFFERENCES,  // "No differences found."
+    NB_COMPARE_BY_TIME,  // "&Modification time"
+    NB_COMPARE_BY_SIZE,  // "File si&ze"
+    NB_COMPARE_DIRECTORIES_RESULT,  // "Differences found: %d local files, %d remote files"
+    NB_COMPARE_CRITERIA_GROUP,  // " Compare criteria "
     NB_FULL_SYNCHRONIZE_TITLE,  // "Synchronize"
     NB_FULL_SYNCHRONIZE_LOCAL_LABEL,  // "Lo&cal directory:"
     NB_FULL_SYNCHRONIZE_REMOTE_LABEL,  // "Remo&te directory:"

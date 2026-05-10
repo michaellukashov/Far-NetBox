@@ -663,6 +663,10 @@
 
 "Synchronizacja jest obsługiwana tylko dla zwykłego panelu."
 "Nie znaleziono różnic."
+"Czas &modyfikacji"
+"&Rozmiar pliku"
+"Znaleziono różnice: %d plików lokalnych, %d plików zdalnych"
+" Kryteria porównania "
 "Synchronizuj"
 "Folder &lokalny:"
 "Folder &zdalny:"

@@ -52,6 +52,8 @@ void TFarConfiguration::Default()
   SetPluginsMenuCommands(true);
   SetCommandPrefixes(DefaultCommandPrefixes);
   SetSessionNameInTitle(true);
+  SetCompareByTime(true);
+  SetCompareBySize(false);
   SetEditorDownloadDefaultMode(true);
   SetEditorUploadSameOptions(true);
   FEditorUploadOnSave = true;
@@ -118,6 +120,8 @@ void TFarConfiguration::ConfigurationInit()
     KEY(String,   StatusColumnTypesDetailed); \
     KEY(String,   StatusColumnWidthsDetailed); \
     KEY(Bool,     SessionNameInTitle); \
+    KEY(Bool,     CompareByTime); \
+    KEY(Bool,     CompareBySize); \
     KEY(Bool,     ConfirmOverwritingOverride); \
     KEY(Bool,     EditorDownloadDefaultMode); \
     KEY(Bool,     EditorUploadSameOptions); \
