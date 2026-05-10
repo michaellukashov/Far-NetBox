@@ -1357,6 +1357,9 @@ private:
   TFarEdit * FPublicKeyEdit{nullptr};
   TFarButton * FBrowseBtn{nullptr};
   TFarEdit * FHostsEdit{nullptr};
+  TFarCheckBox * FPermitRsaSha1Check{nullptr};
+  TFarCheckBox * FPermitRsaSha256Check{nullptr};
+  TFarCheckBox * FPermitRsaSha512Check{nullptr};
 };
 
 class TSecurityConfigurationDialog final : public TWinSCPDialog
@@ -1420,6 +1423,28 @@ TSshHostCADialog::TSshHostCADialog(TCustomFarPlugin * AFarPlugin, bool Add, TSsh
   FHostsEdit = MakeOwnedObject<TFarEdit>(this);
   FHostsEdit->SetWidth(60);
 
+  // Signature types (mirrors WinSCP TSshHostCADialog layout)
+  SetNextItemPosition(ipNewLine);
+  Label = MakeOwnedObject<TFarText>(this);
+  Label->SetCaption(GetMsg(NB_SSH_HOST_CA_SIGNATURE_TYPES));
+
+  UnicodeString Signatures = GetMsg(NB_SSH_HOST_CA_SIGNATURES);
+  int32_t P1 = Signatures.Pos(L'|');
+  UnicodeString Sha1Caption = Signatures.SubString(1, P1 - 1);
+  Signatures.Delete(1, P1);
+  int32_t P2 = Signatures.Pos(L'|');
+  UnicodeString Sha256Caption = Signatures.SubString(1, P2 - 1);
+  UnicodeString Sha512Caption = Signatures.SubString(P2 + 1, Signatures.Length() - P2);
+
+  FPermitRsaSha1Check = MakeOwnedObject<TFarCheckBox>(this);
+  FPermitRsaSha1Check->SetCaption(Sha1Caption);
+  SetNextItemPosition(ipRight);
+  FPermitRsaSha256Check = MakeOwnedObject<TFarCheckBox>(this);
+  FPermitRsaSha256Check->SetCaption(Sha256Caption);
+  SetNextItemPosition(ipRight);
+  FPermitRsaSha512Check = MakeOwnedObject<TFarCheckBox>(this);
+  FPermitRsaSha512Check->SetCaption(Sha512Caption);
+
   AddStandardButtons();
   // Adjust positions
   const TRect CRect = GetClientRect();
@@ -1437,6 +1462,9 @@ bool TSshHostCADialog::Execute()
   FNameEdit->SetText(FSshHostCA.Name);
   FPublicKeyEdit->SetText(EncodeStrToBase64(FSshHostCA.PublicKey));
   FHostsEdit->SetText(FSshHostCA.ValidityExpression);
+  FPermitRsaSha1Check->SetChecked(FSshHostCA.PermitRsaSha1);
+  FPermitRsaSha256Check->SetChecked(FSshHostCA.PermitRsaSha256);
+  FPermitRsaSha512Check->SetChecked(FSshHostCA.PermitRsaSha512);
   UpdateOkButton();
 
   if (ShowModal() != brOK)
@@ -1445,6 +1473,9 @@ bool TSshHostCADialog::Execute()
   FSshHostCA.Name = FNameEdit->GetText();
   FSshHostCA.PublicKey = DecodeBase64ToStr(FPublicKeyEdit->GetText());
   FSshHostCA.ValidityExpression = FHostsEdit->GetText();
+  FSshHostCA.PermitRsaSha1 = FPermitRsaSha1Check->GetChecked();
+  FSshHostCA.PermitRsaSha256 = FPermitRsaSha256Check->GetChecked();
+  FSshHostCA.PermitRsaSha512 = FPermitRsaSha512Check->GetChecked();
 
   if (FSshHostCA.PublicKey.IsEmpty())
   {
