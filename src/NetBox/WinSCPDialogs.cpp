@@ -1385,6 +1385,7 @@ private:
   TFarButton * FChangeMpBtn{nullptr};
   TFarCheckBox * FRememberPwdCheck{nullptr};
   TFarCheckBox * FFromPuTTYCheck{nullptr};
+  TFarText * FCaListHeader{nullptr};
   TFarListBox * FCaListBox{nullptr};
   TFarButton * FAddCaBtn{nullptr};
   TFarButton * FEditCaBtn{nullptr};
@@ -1575,6 +1576,7 @@ TSecurityConfigurationDialog::TSecurityConfigurationDialog(TCustomFarPlugin * AF
   FFromPuTTYCheck = MakeOwnedObject<TFarCheckBox>(this);
   FFromPuTTYCheck->SetCaption(GetMsg(NB_SECURITY_SSH_HOST_CA_FROM_PUTTY));
   FFromPuTTYCheck->SetOnAllowChange(nb::bind(&TSecurityConfigurationDialog::FromPuTTYCheckChange, this));
+  FCaListHeader = MakeOwnedObject<TFarText>(this);
 
   FCaListBox = MakeOwnedObject<TFarListBox>(this);
   FCaListBox->SetNoBox(true);
@@ -1684,6 +1686,7 @@ void TSecurityConfigurationDialog::Change()
     const bool HasItems = FCaListBox->GetItems()->GetCount() > 0;
     FAddCaBtn->SetEnabled(!FromPuTTY);
     FCaListBox->SetEnabled(!FromPuTTY);
+    FCaListHeader->SetEnabled(!FromPuTTY);
     FEditCaBtn->SetEnabled(!FromPuTTY && HasItems);
     FRemoveCaBtn->SetEnabled(!FromPuTTY && HasItems);
   }
@@ -1734,14 +1737,68 @@ void TSecurityConfigurationDialog::FromPuTTYCheckChange(TFarDialogItem * /*Sende
 
 void TSecurityConfigurationDialog::PopulateCaList()
 {
+  constexpr int32_t NameWidth = 35;
+  constexpr int32_t HostsWidth = 24;
+  constexpr wchar_t Separator = L'|';
+
+  UnicodeString HeaderCaption;
+  UnicodeString NameHeader = GetMsg(NB_SECURITY_SSH_HOST_CA_NAME_COL);
+  if (NameHeader.Length() < NameWidth)
+  {
+    const int32_t Pad = (NameWidth - NameHeader.Length()) / 2;
+    HeaderCaption += ::StringOfChar(L' ', Pad);
+    HeaderCaption += NameHeader;
+    HeaderCaption += ::StringOfChar(L' ', NameWidth - NameHeader.Length() - Pad);
+  }
+  else
+  {
+    HeaderCaption += NameHeader.SubString(1, NameWidth - 3) + L"...";
+  }
+  HeaderCaption += Separator;
+
+  UnicodeString HostsHeader = GetMsg(NB_SECURITY_SSH_HOST_CA_HOSTS_COL);
+  if (HostsHeader.Length() < HostsWidth)
+  {
+    const int32_t Pad = (HostsWidth - HostsHeader.Length()) / 2;
+    HeaderCaption += ::StringOfChar(L' ', Pad);
+    HeaderCaption += HostsHeader;
+    HeaderCaption += ::StringOfChar(L' ', HostsWidth - HostsHeader.Length() - Pad);
+  }
+  else
+  {
+    HeaderCaption += HostsHeader.SubString(1, HostsWidth - 3) + L"...";
+  }
+  FCaListHeader->SetCaption(HeaderCaption);
+
   FCaListBox->GetItems()->Clear();
   for (const auto & Ca : FLocalCaList)
   {
-    UnicodeString Display = Ca.Name;
-    if (!Ca.ValidityExpression.IsEmpty())
+    UnicodeString Display;
+
+    UnicodeString Name = Ca.Name;
+    if (Name.Length() > NameWidth)
     {
-      Display += L"  (" + Ca.ValidityExpression + L")";
+      Name = Name.SubString(1, NameWidth - 3) + L"...";
     }
+    Display += Name;
+    if (Name.Length() < NameWidth)
+    {
+      Display += ::StringOfChar(L' ', NameWidth - Name.Length());
+    }
+
+    Display += Separator;
+
+    UnicodeString Hosts = Ca.ValidityExpression;
+    if (Hosts.Length() > HostsWidth)
+    {
+      Hosts = Hosts.SubString(1, HostsWidth - 3) + L"...";
+    }
+    Display += Hosts;
+    if (Hosts.Length() < HostsWidth)
+    {
+      Display += ::StringOfChar(L' ', HostsWidth - Hosts.Length());
+    }
+
     FCaListBox->GetItems()->AddObject(Display, nullptr);
   }
 }
