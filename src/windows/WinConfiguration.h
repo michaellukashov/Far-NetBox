@@ -739,6 +739,8 @@ public:
   void RecryptPasswords(TStrings * RecryptPasswordErrors);
   virtual bool GetUseMasterPassword() const override; // defined in MasterPassword.cpp
   bool GetRefreshRemotePanel() { return FRefreshRemotePanel; }
+  TMasterPasswordPromptEvent GetOnMasterPasswordPrompt() const { return FOnMasterPasswordPrompt; }
+  void SetOnMasterPasswordPrompt(TMasterPasswordPromptEvent value) { FOnMasterPasswordPrompt = value; }
   virtual void Default() override;
   void ClearTemporaryLoginData();
   virtual THierarchicalStorage * CreateScpStorage(bool & SessionList);
@@ -883,7 +885,7 @@ public:
   __property int RunsSinceLastTip = { read = FRunsSinceLastTip, write = SetRunsSinceLastTip };
   __property int HonorDrivePolicy = { read = GetHonorDrivePolicy, write = SetHonorDrivePolicy };
   __property bool UseABDrives = { read = GetUseABDrives, write = SetUseABDrives };
-  __property TMasterPasswordPromptEvent OnMasterPasswordPrompt = { read = FOnMasterPasswordPrompt, write = FOnMasterPasswordPrompt };
+  __property TMasterPasswordPromptEvent OnMasterPasswordPrompt = { read = GetOnMasterPasswordPrompt, write = SetOnMasterPasswordPrompt };
   __property TStrings * CustomCommandOptions = { read = GetCustomCommandOptions, write = SetCustomCommandOptions };
   __property bool LockedInterface = { read = FLockedInterface, write = SetLockedInterface };
   __property bool TimeoutShellOperations = { read = GetTimeoutShellOperations, write = SetTimeoutShellOperations };

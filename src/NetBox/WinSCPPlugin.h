@@ -70,6 +70,7 @@ private:
   void CleanupConfiguration();
   void CoreInitializeOnce();
   void ParseCommandLine(UnicodeString & CommandLine, const TOptions * Options);
+  static void MasterPasswordPrompt();
 
 private:
   bool FInitialized{false};

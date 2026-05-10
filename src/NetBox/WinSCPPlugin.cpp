@@ -118,7 +118,10 @@ TWinSCPPlugin::~TWinSCPPlugin() noexcept
   // DEBUG_PRINTF("begin");
   if (FInitialized)
   {
-    // GetFarConfiguration()->SetPlugin(nullptr);
+    // Unwire master password prompt handler (mirrors TerminalManager destructor)
+    DebugAssert(WinConfiguration->GetOnMasterPasswordPrompt() == MasterPasswordPrompt);
+    WinConfiguration->SetOnMasterPasswordPrompt(nullptr);
+
     CoreFinalize();
     FInitialized = false;
   }
@@ -1105,6 +1108,54 @@ void TWinSCPPlugin::CleanupConfiguration()
   }
 }
 
+// Mirrors WinSCP's TerminalManager::MasterPasswordPrompt().
+// Called via WinConfiguration->OnMasterPasswordPrompt callback when
+// the plugin needs to decrypt a master-password-encrypted credential
+// at session connect time. Shows a Far InputBox password prompt,
+// validates against the stored verifier, and retries on failure.
+void TWinSCPPlugin::MasterPasswordPrompt()
+{
+  AppLogFmt(L"MasterPasswordPrompt: handler invoked");
+
+  // Only prompt on the main Far thread (mirrors TerminalManager::MasterPasswordPrompt)
+  if (GetCurrentThreadId() != FarPlugin->GetFarThreadId())
+  {
+    AppLogFmt(L"MasterPasswordPrompt: called from non-main thread, aborting");
+    Abort();
+    return;
+  }
+
+  // Retry loop: keep prompting until correct or cancelled
+  while (true)
+  {
+    UnicodeString Password;
+    const bool Ok = FarPlugin->InputBox(
+      FarPlugin->GetMsg(NB_MASTER_PASSWORD_CAPTION),
+      FarPlugin->GetMsg(NB_MASTER_PASSWORD_CURRENT),
+      Password,
+      FIB_PASSWORD | FIB_NOUSELASTHISTORY,
+      L"",
+      128);
+
+    if (!Ok)
+    {
+      AppLogFmt(L"MasterPasswordPrompt: user cancelled");
+      Abort();
+      return;
+    }
+
+    if (WinConfiguration->ValidateMasterPassword(Password))
+    {
+      AppLogFmt(L"MasterPasswordPrompt: password valid, setting");
+      WinConfiguration->SetMasterPassword(Password);
+      return;
+    }
+
+    AppLogFmt(L"MasterPasswordPrompt: incorrect password, retrying");
+    MessageDialog(FarPlugin->GetMsg(NB_MASTER_PASSWORD_INCORRECT), qtError, qaOK);
+  }
+}
+
 // CoreInitializeOnce runs during GetPluginInfoW (plugin menu construction).
 // If initialization throws, the exception is caught by GetPluginInfo and
 // HandleException is called. HandleException now uses TUnguard to release
@@ -1117,6 +1168,11 @@ void TWinSCPPlugin::CoreInitializeOnce()
   {
     CoreInitialize();
     CleanupConfiguration();
+
+    // Wire master password prompt handler (mirrors TerminalManager constructor)
+    DebugAssert(WinConfiguration->GetOnMasterPasswordPrompt() == nullptr);
+    WinConfiguration->SetOnMasterPasswordPrompt(MasterPasswordPrompt);
+
     FInitialized = true;
   }
 }
