@@ -2,8 +2,9 @@
 
 #include <nbcore.h>
 #include <tinylog/TinyLog.h>
-#include <string>
-#include <vector>
+#include <UnicodeString.hpp>
+// #include <string>
+// #include <vector>
 
 // Thread-local structured logging context
 // Usage:
@@ -15,23 +16,23 @@ class NB_CORE_EXPORT TLogContext
 {
 public:
   // Push a context value onto the thread-local stack
-  TLogContext(const char* key, const std::string& value);
+  TLogContext(const wchar_t * key, const UnicodeString & value);
   
   // Pop the context value when destroyed
   ~TLogContext();
 
   // Format all current context values as "[key1=val1][key2=val2]..."
-  static std::string Format();
+  static UnicodeString Format();
 
 private:
   struct ContextEntry
   {
-    const char* Key;
-    std::string Value;
+    const wchar_t * Key;
+    UnicodeString Value;
   };
 
   thread_local static nb::vector_t<ContextEntry> ContextStack_;
-  const char* Key_;
+  const wchar_t * Key_{nullptr};
 };
 
 // Convenience macros for structured logging
