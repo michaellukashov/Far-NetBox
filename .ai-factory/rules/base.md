@@ -61,6 +61,7 @@ Dumping thousands of lines of raw logs into `CONTEXT.md`.
 - **Methods/Functions:** PascalCase (e.g., `GetSessionData()`, `Connect()`, `Initialize()`)
 - **Member variables:** `F` prefix + PascalCase (e.g., `FSessionData`, `FConfig`, `FTerminal`)
 - **Local variables:** camelCase (e.g., `sessionData`, `configValue`, `filePath`)
+- **Loop counters:** Uppercase single letter (e.g., `I`, `J`, `K` — `for (int32_t I = 0; ...)`)
 - **Constants/Macros:** UPPER_CASE (e.g., `MAX_RETRY_COUNT`, `DEFAULT_TIMEOUT`)
 - **Enums:** PascalCase (e.g., `SessionType`, `AuthMethod`, `ProtocolType`)
 

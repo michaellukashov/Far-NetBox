@@ -10,6 +10,7 @@
 | Methods/Functions | PascalCase | `GetSessionData()`, `Connect()` |
 | Member variables | `F` + PascalCase | `FSessionData`, `FConfig` |
 | Local variables | camelCase | `sessionData`, `configValue` |
+| Loop counters | Uppercase single letter | `I`, `J`, `K` |
 | Constants/Macros | UPPER_CASE | `MAX_RETRY_COUNT`, `DEFAULT_TIMEOUT` |
 | Enums | PascalCase | `SessionType`, `AuthMethod` |
 
