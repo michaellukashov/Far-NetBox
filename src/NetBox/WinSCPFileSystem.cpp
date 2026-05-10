@@ -1791,9 +1791,9 @@ void TWinSCPFileSystem::CompareDirectories()
     }
 
     // Collect differing file names from both sides
-    // Use std::vector + linear search instead of std::set to avoid
+    // Use nb::vector_t + linear search instead of std::set to avoid
     // allocator complexity with custom allocators
-    std::vector<UnicodeString> LocalDiffs, RemoteDiffs;
+    nb::vector_t<UnicodeString> LocalDiffs, RemoteDiffs;
     for (int32_t i = 0; i < Checklist->GetCount(); ++i)
     {
       const TChecklistItem * Item = Checklist->GetItem(i);
@@ -1803,19 +1803,27 @@ void TWinSCPFileSystem::CompareDirectories()
       if (!Item->Remote.FileName.IsEmpty()) RemoteDiffs.push_back(Item->Remote.FileName);
     }
 
-    // Select differing files in local panel (another panel)
-    if (AnotherPanel && *AnotherPanel)
+    // Helper: select panel items whose filenames are in the diff list
+    auto ApplyDiffSelection = [](TFarPanelInfo * PanelInfo,
+      const nb::vector_t<UnicodeString> & Diffs)
     {
-      TObjectList * Items = (*AnotherPanel)->GetItems();
+      if (!PanelInfo) return;
+      TObjectList * Items = PanelInfo->GetItems();
       for (int32_t i = 0; i < Items->GetCount(); ++i)
       {
         TFarPanelItem * Item = Items->GetAs<TFarPanelItem>(i);
         if (Item->GetIsParentDirectory()) continue;
-        const bool Selected = (std::find(LocalDiffs.begin(), LocalDiffs.end(),
-          Item->GetFileName()) != LocalDiffs.end());
+        const bool Selected = (std::find(Diffs.begin(), Diffs.end(),
+          Item->GetFileName()) != Diffs.end());
         Item->SetSelected(Selected);
       }
-      (*AnotherPanel)->ApplySelection();
+      PanelInfo->ApplySelection();
+    };
+
+    // Select differing files in local panel (another panel)
+    if (AnotherPanel && *AnotherPanel)
+    {
+      ApplyDiffSelection(*AnotherPanel, LocalDiffs);
     }
 
     // Select differing files in remote panel (this plugin panel)
@@ -1823,16 +1831,7 @@ void TWinSCPFileSystem::CompareDirectories()
       TFarPanelInfo ** Panel = GetPanelInfo();
       if (Panel && *Panel)
       {
-        TObjectList * Items = (*Panel)->GetItems();
-        for (int32_t i = 0; i < Items->GetCount(); ++i)
-        {
-          TFarPanelItem * Item = Items->GetAs<TFarPanelItem>(i);
-          if (Item->GetIsParentDirectory()) continue;
-          const bool Selected = (std::find(RemoteDiffs.begin(), RemoteDiffs.end(),
-            Item->GetFileName()) != RemoteDiffs.end());
-          Item->SetSelected(Selected);
-        }
-        (*Panel)->ApplySelection();
+        ApplyDiffSelection(*Panel, RemoteDiffs);
       }
     }
 
@@ -1843,7 +1842,8 @@ void TWinSCPFileSystem::CompareDirectories()
     // Show summary message with counts
     MoreMessageDialog(
       FORMAT(GetMsg(NB_COMPARE_DIRECTORIES_RESULT),
-        LocalDiffs.size(), RemoteDiffs.size()),
+        static_cast<int32_t>(LocalDiffs.size()),
+        static_cast<int32_t>(RemoteDiffs.size())),
       nullptr, qtInformation, qaOK);
   }
   catch (Exception & E)
