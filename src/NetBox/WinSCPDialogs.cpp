@@ -1395,7 +1395,7 @@ TSshHostCADialog::TSshHostCADialog(TCustomFarPlugin * AFarPlugin, bool Add, TSsh
   FAdd(Add),
   FSshHostCA(SshHostCA)
 {
-  SetSize(TPoint(70, 12));
+  SetSize(TPoint(70, 14));
   SetCaption(FORMAT("%s - %s", GetMsg(NB_PLUGIN_TITLE),
     ::StripHotkey(GetMsg(NB_SECURITY_SSH_HOST_CA_GROUP))));
 
@@ -1409,18 +1409,27 @@ TSshHostCADialog::TSshHostCADialog(TCustomFarPlugin * AFarPlugin, bool Add, TSsh
   FPublicKeyEdit = MakeOwnedObject<TFarEdit>(this);
   FPublicKeyEdit->SetWidth(60);
 
-  SetNextItemPosition(ipRight);
+  SetNextItemPosition(ipNewLine);
   FBrowseBtn = MakeOwnedObject<TFarButton>(this);
   FBrowseBtn->SetCaption(GetMsg(NB_SSH_HOST_CA_BROWSE));
   FBrowseBtn->SetOnClick(nb::bind(&TSshHostCADialog::BrowseBtnClick, this));
-  SetNextItemPosition(ipNewLine);
 
+  SetNextItemPosition(ipNewLine);
   Label = MakeOwnedObject<TFarText>(this);
   Label->SetCaption(GetMsg(NB_SSH_HOST_CA_PUBLIC_HOSTS));
   FHostsEdit = MakeOwnedObject<TFarEdit>(this);
   FHostsEdit->SetWidth(60);
 
   AddStandardButtons();
+  // Adjust positions
+  const TRect CRect = GetClientRect();
+  ButtonSeparator->SetTop(CRect.Bottom - 1);
+
+  OkButton->SetTop(CRect.Bottom);
+  CancelButton->SetTop(CRect.Bottom);
+  OkButton->SetCenterGroup(true);
+  CancelButton->SetCenterGroup(true);
+  OkButton->SetDefault(true);
 }
 
 bool TSshHostCADialog::Execute()
@@ -1505,6 +1514,7 @@ void TSshHostCADialog::BrowseBtnClick(TFarButton * /*Sender*/, bool & Close)
   }
   Close = false;
 }
+
 TSecurityConfigurationDialog::TSecurityConfigurationDialog(TCustomFarPlugin * AFarPlugin) :
   TWinSCPDialog(AFarPlugin)
 {
@@ -7757,7 +7767,7 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
   Text = MakeOwnedObject<TFarText>(GetDialog());
   Add(Text);
   Text->SetCaption(GetMsg(NB_TRANSFER_SPEED));
-  Text->MoveAt(TMWidth + 3, FileMaskText->GetTop());
+  Text->MoveAt(TMWidth + 3, FileMaskEdit->GetTop());
 
   GetDialog()->SetNextItemPosition(ipRight);
 
