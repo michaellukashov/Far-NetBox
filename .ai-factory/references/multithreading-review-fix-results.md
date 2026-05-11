@@ -97,16 +97,13 @@ All planned multithreading fixes were implemented. This reference documents the 
 | File | Purpose |
 |---|---|
 | `.ai-factory/rules/threading.md` | Enforceable threading conventions: Far API main-thread rule, event-driven waits, lock ordering, static state protection, progress callback rules |
-| `memory-bank/systemPatterns.md` | Threading patterns: lock hierarchy, main-thread marshal mechanisms, event-wait preference, RAII guard usage |
-| `memory-bank/progress.md` | Full task-by-task completion record |
-| `memory-bank/activeContext.md` | Active context summary with key decisions and open items |
 
 ---
 
 ## Known Limitations
 
 - **Build verification** cannot be performed on the Linux workstation; MSVC W4 compilation must be verified on a Windows environment.
-- `FileOperationProgress::Assign()` dual-acquires `FSection` and `Other.FSection` without address-based ordering. No deadlock has been observed because `TCriticalSection` is recursive and the pattern is symmetric.
+- `FileOperationProgress::Assign()` now uses address-based ordering to prevent deadlock under concurrent bidirectional assignment. See `.ai-factory/PLAN.md` Task 2.
 
 ---
 

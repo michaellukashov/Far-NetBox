@@ -172,10 +172,10 @@ private:
   TCriticalSection FSection;
   TCriticalSection FUserSelectionsSection;
   TFileOperationErrorLog FErrorLog;
-  // Lock ordering: When acquiring both FSection and Other.FSection,
-  // there is no established address-based ordering. Assign() is the only
-  // dual-acquisition site; TCriticalSection is recursive, preventing
-  // self-deadlock.
+  // Lock ordering: Assign() acquires FSection and Other.FSection in address
+  // order (lower address first) to prevent deadlock under concurrent
+  // bidirectional assignment. TCriticalSection is recursive, so the same
+  // thread may re-enter its own lock during AssignButKeepSuspendState().
   bool FInCallback{false};
 
   bool FCounterSet{false};

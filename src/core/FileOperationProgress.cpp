@@ -174,12 +174,18 @@ void TFileOperationProgressType::Init()
 
 void TFileOperationProgressType::Assign(const TFileOperationProgressType & Other)
 {
+  if (&Other == this) return;  // self-assignment guard
 #if defined(__BORLANDC__)
   const TValueRestorer<TCriticalSection *> SectionRestorer(&FSection);
   const TValueRestorer<TCriticalSection *> UserSelectionsSectionRestorer(&FUserSelectionsSection);
 #endif // defined(__BORLANDC__)
-  const TGuard Guard(FSection);
-  const TGuard OtherGuard(Other.FSection);
+  // Lock in address order to prevent deadlock under concurrent bidirectional assignment
+  const TCriticalSection * first = &FSection;
+  const TCriticalSection * second = &Other.FSection;
+  if (first > second) { std::swap(first, second); }
+
+  const TGuard Guard1(*first);
+  const TGuard Guard2(*second);
 
   *this = Other;
 }

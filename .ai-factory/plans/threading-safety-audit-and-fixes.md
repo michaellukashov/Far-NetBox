@@ -3,6 +3,7 @@
 **Branch:** lmv/dev (current)
 **Date:** 2026-05-10
 **Mode:** Fast
+**Status:** STALE — All issues identified here were already fixed via `multithreading-review-fix.md` (2026-04-29). This plan was a parallel audit that identified the same defects. See `multithreading-review-fix.md` for the implementation and `multithreading-review-fix-results.md` for the fix results.
 
 ## Description
 

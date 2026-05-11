@@ -97,7 +97,7 @@ Third-Party (libs/)     <-- no modifications; patch if required
 - `LOG_DEBUG` on string ref count underflow/overflow detection (add defensive checks).
 - Task 2 also hardened `nbstr_getNil()` race: replaced lazy-init global with C++11 thread-safe function-local static in `nbstring.cpp`. Documented intentional non-atomic `nbstr_lock`/`nbstr_unlock` behavior.
 
-### Lock Acquisition Order (from systemPatterns.md)
+### Lock Acquisition Order
 
 Observed hierarchy (from leaf to root):
 
@@ -273,24 +273,6 @@ Cross-lock rule: `FItemsSection` may call `Item->GetStatus()` which acquires `FS
 
 ---
 
-### [x] Task 13: Update memory-bank with threading findings and decisions
-
-**File(s):** `./memory-bank/activeContext.md`, `./memory-bank/progress.md`, `./memory-bank/systemPatterns.md`
-
-**Change:**
-- Record every defect found, the file/line, the fix applied, and the concurrency pattern now in use.
-- Add a `## Threading Conventions` section to `systemPatterns.md` covering:
-  - Lock acquisition order
-  - Main-thread-only Far API rule
-  - Event-driven wait preference over `Sleep` polling
-  - RAII guard usage (`TGuard` / `TUnguard`)
-  - Thread-local logging context usage
-
-**Logging:**
-- N/A (documentation task).
-
----
-
 ### [x] Task 14: Add threading rules to project conventions
 
 **File(s):** `.ai-factory/rules/threading.md`, `.ai-factory/ARCHITECTURE.md`
@@ -352,7 +334,6 @@ Cross-lock rule: `FItemsSection` may call `Item->GetStatus()` which acquires `FS
 - [x] No `Sleep`-based polling remains for thread synchronization, except `SleepEx(100, true)` in `FileOperationProgress.cpp` which is an intentional alertable wait for APC completion (documented exception). Short timeouts on event waits are acceptable.
 - [x] No Far Manager API calls from worker threads remain (verified by code review of all `CreateThread` / `_beginthreadex` / `std::thread` entry points).
 - [x] Lock ordering documented and cycle-free.
-- [x] Memory-bank updated with findings.
 - [x] Threading rules committed to `.ai-factory/rules/threading.md`.
 
 ## Explorations Results

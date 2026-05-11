@@ -169,7 +169,8 @@ public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TPuttyCleanupThread); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TPuttyCleanupThread) || TSimpleThread::is(Kind); }
 public:
-  TPuttyCleanupThread() noexcept : TSimpleThread(OBJECT_CLASS_TPuttyCleanupThread)
+  TPuttyCleanupThread() noexcept : TSimpleThread(OBJECT_CLASS_TPuttyCleanupThread),
+    FTimerEvent(::CreateEvent(nullptr, FALSE, FALSE, nullptr))
   {}
   static void Schedule();
   static void Finalize();
@@ -182,12 +183,15 @@ protected:
 
 private:
   TDateTime FTimer;
+  HANDLE FTimerEvent{nullptr};
   static TPuttyCleanupThread * FInstance;
   static std::unique_ptr<TCriticalSection> FSection;
+  static HANDLE FDoneEvent;
 };
 
 std::unique_ptr<TCriticalSection> TPuttyCleanupThread::FSection(TraceInitPtr(std::make_unique<TCriticalSection>()));
 TPuttyCleanupThread * TPuttyCleanupThread::FInstance = nullptr;
+HANDLE TPuttyCleanupThread::FDoneEvent = ::CreateEvent(nullptr, FALSE, FALSE, nullptr);
 
 void TPuttyCleanupThread::Schedule()
 {
@@ -206,17 +210,18 @@ void TPuttyCleanupThread::Schedule()
 
 void TPuttyCleanupThread::Finalize()
 {
-  while (true)
+  if (FDoneEvent != nullptr)
   {
+    bool NeedWait = false;
     {
       TGuard Guard(*FSection.get());
-      if (FInstance == nullptr)
-      {
-        return;
-      }
+      NeedWait = (FInstance != nullptr);
     }
-    // busy-wait fallback: polling for thread instance destruction
-    Sleep(100);
+    if (NeedWait)
+    {
+      // Wait for the thread to finish — signaled in Execute()'s __finally block
+      ::WaitForSingleObject(FDoneEvent, INFINITE);
+    }
   }
 }
 
@@ -274,8 +279,16 @@ void TPuttyCleanupThread::Execute()
 
       if (Continue)
       {
-        // busy-wait fallback: polling until cleanup timer expires
-        Sleep(400);
+        // Wait for timer event or timeout — event is set by DoSchedule() on reschedule
+        if (FTimerEvent != nullptr)
+        {
+          ::WaitForSingleObject(FTimerEvent, 400);
+        }
+        else
+        {
+          // Fallback if event creation failed (should not happen)
+          ::Sleep(400);
+        }
       }
     }
     while (Continue);
@@ -284,7 +297,16 @@ void TPuttyCleanupThread::Execute()
   {
     TGuard Guard(*FSection.get());
     FInstance = nullptr;
+    if (FDoneEvent != nullptr)
+    {
+      ::SetEvent(FDoneEvent);
+    }
   } end_try__finally
+  if (FTimerEvent != nullptr)
+  {
+    ::CloseHandle(FTimerEvent);
+    FTimerEvent = nullptr;
+  }
 }
 
 void TPuttyCleanupThread::Terminate()
@@ -301,6 +323,10 @@ bool TPuttyCleanupThread::Finished()
 void TPuttyCleanupThread::DoSchedule()
 {
   FTimer = IncSecond(Now(), 10);
+  if (FTimerEvent != nullptr)
+  {
+    ::SetEvent(FTimerEvent);
+  }
 }
 
 class TPuttyPasswordThread final : public TSimpleThread

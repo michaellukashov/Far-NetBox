@@ -46,7 +46,6 @@ Dumping thousands of lines of raw logs into `CONTEXT.md`.
 # ✅ Good Practice (Preservative & Structured)
 1. Read the plan file and `temp-reports/`.
 2. Write a summary to `./ai-factory/storage/archive/{YY-MM-DD}-{feature-name}.md`.
-3. Extract architectural changes and update `./ai-factory/memory-bank/product-details/dataFlowArchitecture.md`.
 4. Clear the `actions/` folder for the next task.
 ```
 

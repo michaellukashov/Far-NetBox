@@ -8,28 +8,31 @@ Status: active
 Updated: 2026-05-12
 
 Goal:
-- Stale plans and roadmap entries have been marked complete.
-- TTerminalThread OnProgress/OnFinished marshaling: CONFIRMED already in source.
-- Background copy & progress UI (roadmap v1.2): CONFIRMED complete in source.
+- Threading safety audit exploration — identify remaining gaps after multithreading-review-fix.md completion.
+- `TPuttyCleanupThread` still uses `Sleep()` in 2 places (Finalize: Sleep(100), Execute: Sleep(400)).
+- `Global.cpp` tracing globals: ALREADY guarded by `TracingCriticalSection` — no fix needed.
+- `.ai-factory/rules/threading.md`: exists but incomplete — missing actual lock hierarchy.
 Constraints:
 - No modifications to `libs/` — use patches only
 - Far Manager API calls on main thread only
 - MSVC /W4 zero warnings
+- Follow existing threading rules in `.ai-factory/rules/threading.md`
 
 Decisions:
-- Plan `.ai-factory/plans/terminal-thread-progress-marshaling.md` updated to COMPLETE (2026-05-12).
-- ROADMAP.md v1.2 updated to COMPLETE (2026-05-12).
-- Next functional gap: Phase 4 Directory comparison or Phase 3 Workspace save/restore (POSTPONED).
+- Plan `multithreading-review-fix.md` is COMPLETE (all 14 tasks done, build verified).
+- Plan `threading-safety-audit-and-fixes.md` is STALE — identifies same issues already fixed.
+- `TPuttyCleanupThread` should use `WaitForSingleObject` on events instead of `Sleep()`.
+- `Global.cpp` tracing: `WriteTraceBuffer()` holds `TracingCriticalSection`; `DoDirectTrace()`/`DoTrace()` are already guarded. `DoAssert()` reads `IsTracing` without lock but `bool` is atomic on x86/x64 — acceptable.
+- `.ai-factory/rules/threading.md` needs expansion: add actual lock hierarchy (m_SpeedLimitSync → FItemsSection → FSection → FileOperationProgress::FSection), event objects (m_SpeedLimitEvent, FClientsZeroEvent, FDirectoryCreatedEvent, m_hStartedEvent), and state inventory.
 Open questions:
-- None
-
+- Should `TPuttyCleanupThread::Finalize()` use INFINITE wait or a reasonable timeout?
+- Should `TPuttyCleanupThread::Execute()` use a manual-reset event or a waitable timer?
 Success signals:
-- Stale plan marked complete with verification notes
-- Roadmap milestone marked complete
-- No source changes needed (already implemented)
-
+- `TPuttyCleanupThread` Sleep calls replaced with WaitForSingleObject
+- `.ai-factory/rules/threading.md` expanded with lock hierarchy and event objects
+- `threading-safety-audit-and-fixes.md` plan marked as STALE/COMPLETE
 Next step:
-- Resume planning for Phase 4 (Directory comparison & advanced sync) OR close exploration.
+- Create plan for TPuttyCleanupThread fix + threading rules expansion (OR implement directly if user prefers)
 ## Sessions
 
 ### 2026-05-12 — Stale Plan & Roadmap Cleanup
@@ -232,3 +235,28 @@ Far text-mode adaptation:
 - Very straightforward port. **Simplest of all 5 gaps.**
 
 Implementation estimate: ~150-180 lines. Backend already exists.
+### 2026-05-12 — Threading Safety Audit Exploration
+
+What changed:
+- Traced full threading safety landscape: two plans exist (`multithreading-review-fix.md` = COMPLETE, `threading-safety-audit-and-fixes.md` = STALE)
+- All CRITICAL and HIGH issues from the audit plan are already fixed in the codebase
+- Verified `Global.cpp` tracing globals: `WriteTraceBuffer()` holds `TracingCriticalSection`; `DoDirectTrace()`/`DoTrace()` are guarded. `DoAssert()` reads `IsTracing` without lock but `bool` is atomic on x86/x64 — acceptable.
+- Identified `TPuttyCleanupThread` as the only remaining `Sleep()` user that should use `WaitForSingleObject`:
+  - `Finalize()` line 219: `Sleep(100)` polls for thread self-destruction → should wait on `HANDLE FDoneEvent`
+  - `Execute()` line 278: `Sleep(400)` polls until cleanup timer expires → should wait on `HANDLE FTimerEvent`
+- `.ai-factory/rules/threading.md` exists but is incomplete: missing actual lock hierarchy, event objects, state inventory
+
+Key decisions:
+- `TPuttyCleanupThread::Finalize()` → replace `Sleep(100)` with `WaitForSingleObject(FDoneEvent, INFINITE)`
+- `TPuttyCleanupThread::Execute()` → replace `Sleep(400)` with `WaitForSingleObject(FTimerEvent, 400)`, add `DoSchedule()` to set event
+- `Global.cpp`: no fix needed — already correctly guarded
+- `.ai-factory/rules/threading.md` needs expansion with lock hierarchy and event objects
+- `threading-safety-audit-and-fixes.md` should be marked as STALE/COMPLETE
+
+Links (paths):
+- `src/windows/GUITools.cpp` (TPuttyCleanupThread: lines 166-303)
+- `src/base/Global.cpp` (tracing globals: lines 69-188)
+- `.ai-factory/rules/threading.md` (threading rules: lines 1-42)
+- `.ai-factory/plans/multithreading-review-fix.md` (implementation plan: all 14 tasks [x])
+- `.ai-factory/plans/threading-safety-audit-and-fixes.md` (audit plan: quality gates unchecked)
+- `.ai-factory/references/multithreading-review-fix-results.md` (fix results)
