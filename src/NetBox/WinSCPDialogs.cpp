@@ -11065,6 +11065,17 @@ void TSynchronizeDialog::UpdateControls()
   EnableGroup(1, !FSynchronizing);
   SynchronizeSelectedOnlyCheck->SetEnabled(
     !FSynchronizing && FLAGSET(FOptions, soAllowSelectedOnly));
+
+  const bool ShowProgress = FSynchronizing;
+  if (ProgressLocalText) ProgressLocalText->SetVisible(ShowProgress);
+  if (ProgressRemoteText) ProgressRemoteText->SetVisible(ShowProgress);
+  if (ProgressStartTimeText) ProgressStartTimeText->SetVisible(ShowProgress);
+  if (ProgressElapsedText) ProgressElapsedText->SetVisible(ShowProgress);
+  if (ProgressFilesScannedText) ProgressFilesScannedText->SetVisible(ShowProgress);
+  if (ProgressFilesTransferredText) ProgressFilesTransferredText->SetVisible(ShowProgress);
+  if (ProgressBytesTransferredText) ProgressBytesTransferredText->SetVisible(ShowProgress);
+  if (ProgressSpeedText) ProgressSpeedText->SetVisible(ShowProgress);
+  if (ProgressEtaText) ProgressEtaText->SetVisible(ShowProgress);
 }
 
 void TSynchronizeDialog::Idle()
@@ -11139,13 +11150,13 @@ void TSynchronizeDialog::UpdateProgressDisplay()
   if (ProgressFilesScannedText)
   {
     ProgressFilesScannedText->SetCaption(GetMsg(NB_SYNCHRONIZE_PROGRESS_SCAN_PASSES) +
-      FORMAT(L"%d", FFilesScanned));
+      FORMAT("%d", FFilesScanned));
   }
 
   if (ProgressFilesTransferredText)
   {
     ProgressFilesTransferredText->SetCaption(GetMsg(NB_SYNCHRONIZE_PROGRESS_FILES_TRANSFERRED) +
-      FORMAT(L"%d", FFilesTransferred));
+      FORMAT("%d", FFilesTransferred));
   }
 
   if (ProgressBytesTransferredText)

@@ -19,7 +19,7 @@
 
 ## Findings
 
-### 1. Missing `SynchroParams.Sender` cleanup in destructor [BLOCKER] → FIXED
+### 1. Missing `SynchroParams.Sender` cleanup in destructor [BLOCKER] → ✅ FIXED
 
 **File:** `src/NetBox/WinSCPDialogs.cpp`  
 **Line:** `TSynchronizeDialog::~TSynchronizeDialog()`
@@ -32,7 +32,7 @@ TSynchronizeDialog::~TSynchronizeDialog() noexcept
 {
     if (GetFarPlugin())
     {
-        TSynchroParams & SynchroParams = GetFarPlugin()->FSynchroParams;
+        TSynchroParams & SynchroParams = GetFarPlugin()->GetSynchroParams();
         SynchroParams.Sender = nullptr;
     }
     SAFE_DESTROY(FSynchronizeOptions);
@@ -40,38 +40,29 @@ TSynchronizeDialog::~TSynchronizeDialog() noexcept
 ```
 
 **Rationale:** `ProcessSynchroEvent()` checks `SynchroParams->Sender` before invoking `SynchroParams->SynchroEvent()`. Setting `Sender = nullptr` prevents the callback from executing on a destroyed object.
-
 ---
 
-### 2. Suppressed message box removes cancellation path during `SynchronizeApply()` [HIGH]
+### 2. Suppressed message box removes cancellation path during `SynchronizeApply()` [HIGH] -> ✅ FIXED
 
-**File:** `src/NetBox/WinSCPFileSystem.cpp`  
+**File:** `src/NetBox/WinSCPFileSystem.cpp`
 **Line:** `TerminalSynchronizeDirectory()` (line ~1684)
 
 **Issue:** `TerminalSynchronizeDirectory()` normally shows a message box every 500ms that allows the user to press ESC and cancel the ongoing sync. The dialog itself is frozen during `SynchronizeApply()` (blocking main thread). By suppressing the message box with `if (FInSynchronizeDialog) return;`, the user loses the only cancellation mechanism available during long `SynchronizeApply()` operations.
 
-**Impact:**
-- Quick syncs: negligible (message box often never appears)
-- Long syncs: user cannot cancel mid-operation; must wait for current file to complete before Stop/ESC takes effect
+**Fix Applied:** Restructured the suppression so the `CheckForEsc()` cancellation path is preserved even when the synchronize dialog is active. The message box display is suppressed, but the ESC check runs unconditionally.
 
-**Recommendation:**
-1. Short-term: Accept as known limitation (documented below).
-2. Medium-term: Do not suppress the message box during `SynchronizeApply()`; only suppress it during the idle poller phase when the dialog is responsive. Or, add periodic `CheckForEsc()` inside `UpdateProgressDisplay()` when called from `DoLog()` during active sync.
+**Impact:** Users can press **ESC** during a long `SynchronizeApply()` and get the confirmation dialog, same as before. The progress display moves to the dialog; the cancellation behavior is unchanged.
 
----
-
-### 3. `FFilesScanned` counter is misleading [MEDIUM]
+### 3. `FFilesScanned` counter is misleading [MEDIUM] -> ✅ FIXED
 
 **File:** `src/NetBox/WinSCPDialogs.cpp`  
 **Line:** `DoLog()` switch on `slScan`
 
 **Issue:** `DoLog()` increments `FFilesScanned` only for `slScan` events. The controller emits `slScan` exactly once (in `StartStop()`) when `soRecurse` is enabled. It does NOT emit per-file scan events during `SynchronizeCollect()`. Therefore the "Files scanned" field shows `1` (or `0` for non-recursive mode), not the actual number of files scanned.
 
-**Recommendation:** Either:
-- Rename the label to "Scan passes" or "Scans" to match the semantics
-- Or instrument `SynchronizeCollect()` to count scanned files and pass them to the dialog (requires controller or terminal changes)
+**Fix Applied:** Renamed enum and label from `NB_SYNCHRONIZE_PROGRESS_FILES_SCANNED` / `"Files scanned:"` to `NB_SYNCHRONIZE_PROGRESS_SCAN_PASSES` / `"Scan passes:"`. This accurately reflects that the counter tracks scan passes (typically 1 for recursive mode), not individual files scanned.
 
----
+**Files changed:** `MsgIDs.h`, `WinSCPDialogs.cpp` (2 references), all 5 `.lng` files.
 
 ### 4. Dialog height increase may clip on small terminals [MEDIUM]
 
@@ -84,20 +75,20 @@ TSynchronizeDialog::~TSynchronizeDialog() noexcept
 
 ---
 
-### 5. Progress text visible before sync starts [MEDIUM]
+### 5. Progress text visible before sync starts [MEDIUM] -> ✅ FIXED
 
 **File:** `src/NetBox/WinSCPDialogs.cpp`
 
 **Issue:** The 9 new progress text items are always visible, even before the user clicks Start. They display static text like "Local:        " (empty path) and "ETA: " (`-`). This looks unpolished.
 
-**Recommendation:** Add visibility toggling in `UpdateControls()`:
+**Fix Applied:** Added visibility toggling in `UpdateControls()` so all progress text items are hidden when `FSynchronizing` is false and shown when sync is active.
+
 ```cpp
 const bool ShowProgress = FSynchronizing;
 if (ProgressLocalText) ProgressLocalText->SetVisible(ShowProgress);
+if (ProgressRemoteText) ProgressRemoteText->SetVisible(ShowProgress);
 // ... etc for all 9 items
 ```
-
----
 
 ### 6. `FSyncStatistics` raw pointer lifetime [LOW — handled correctly]
 
