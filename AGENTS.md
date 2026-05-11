@@ -500,3 +500,23 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 ---
 
 **These guidelines are working if:** fewer unnecessary changes in diffs, fewer rewrites due to overcomplication, and clarifying questions come before implementation rather than after mistakes.
+## 10. Compact Instructions
+
+> Save key context between sessions to reduce ramp-up time and preserve continuity.
+
+### What to Save
+| Item | Description | Suggested Location |
+|------|-------------|-------------------|
+| **Architectural solutions** | Design decisions, trade-offs, and rationale for non-trivial changes | `.ai-factory/decisions/<ticket-or-topic>.md` |
+| **Changed files** | List of files modified in the current session | `.ai-factory/session/changed-files.md` |
+| **Current plan** | Active phase plan, milestone, or roadmap item in progress | `.ai-factory/session/current-plan.md` |
+| **Tasks** | Pending, in-progress, and completed tasks with acceptance criteria | `.ai-factory/session/tasks.md` |
+| **File structure** | Notable directory layout or structural changes discovered | `.ai-factory/session/file-structure.md` |
+
+### How to Maintain
+1. **At session end** -- update `changed-files.md` and `tasks.md` with the latest state.
+2. **After significant decisions** -- append the architectural rationale to the relevant decision file.
+3. **When resuming** -- read `.ai-factory/session/` first to restore context.
+4. **Keep concise** -- entries should be bullet-style; avoid duplicating full documentation.
+
+> These compact artifacts are **session aids**, not replacements for full docs in `docs/` or `.ai-factory/`. Prefer linking over copying.
