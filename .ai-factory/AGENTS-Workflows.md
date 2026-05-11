@@ -1,12 +1,18 @@
-# AGENTS-Workflows.md — Build Commands, Debugging, and Shell Rules
+# AGENTS-Workflows.md — Build, Process, and Agent Workflow Documentation
 
 > Part of the AGENTS documentation series. See [AGENTS.md](../AGENTS.md) for the main entry point.
+
+This file contains all process and workflow documentation, including step-by-step build instructions, development workflow principles, tool selection, git conventions, shell rules, CI procedures, critical agent notes, and compact session instructions. It is the reference for how to execute tasks correctly in the NetBox project.
+
+---
 
 ## Build Commands
 
 > **CRITICAL:** Configure and build **MUST** happen in the **same cmd session** with `vcvarsall.bat` environment. Always use `.bat` files — never chain commands with `&&`.
 
-### Platform Scripts
+### Quick Build
+
+Use pre-configured `.bat` scripts from project root. **Each script handles vcvarsall.bat + configure + build in one session.**
 
 | Script | Platform | Config |
 |--------|----------|--------|
@@ -77,6 +83,8 @@ dumpbin /headers build-Debug-Win32\src\NetBox.dll | findstr /i "machine"
 :: Expected: "14C machine (x86)" and "32 bit word machine"
 ```
 
+---
+
 ## Testing the Plugin
 
 1. Build with `OPT_CREATE_PLUGIN_DIR=ON` (done by `.bat` scripts)
@@ -84,6 +92,8 @@ dumpbin /headers build-Debug-Win32\src\NetBox.dll | findstr /i "machine"
 3. Press `F11` → Plugins → NetBox
 4. Test the affected functionality
 5. Check log: `%LOCALAPPDATA%\NetBox\netbox.log` or tinylog (`src/nbcore/logging.cpp`)
+
+---
 
 ## Debugging in Visual Studio
 
@@ -99,6 +109,8 @@ Open `build-VS\NetBox.sln`. Set debug command (project properties → Debugging)
 |---------|-------|
 | Command | `Far3_x64\Far.exe` |
 | Working Directory | `Far3_x64\` |
+
+---
 
 ## Common Build Errors
 
@@ -132,13 +144,123 @@ fatal error C1083: Cannot open include file: 'cstdlib': No such file or director
 | Professional | `C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvarsall.bat` |
 | Enterprise | `C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat` |
 
+---
+
+## Development Workflow
+
+### Core Principles
+
+1. **Read before writing** — Understand existing patterns before modifying code
+2. **Edit, don't rewrite** — Make minimal surgical changes
+3. **Don't re-read unnecessarily** — Remember files you've already read unless they may have changed
+4. **Verify before declaring done** — Build and check your changes
+5. **User instructions override this file** — Always follow explicit user direction
+
+### Task Execution Checklist
+
+- [ ] Understand the task and locate relevant files
+- [ ] Read existing code to match patterns and conventions
+- [ ] Make minimal, focused changes (see [AGENTS-Standards.md](AGENTS-Standards.md) — Surgical Changes)
+- [ ] Build succeeds with **zero warnings**
+- [ ] No trailing whitespaces introduced
+- [ ] No spelling errors in comments
+- [ ] Stated assumptions and surfaced tradeoffs (see [AGENTS-Standards.md](AGENTS-Standards.md) — Think Before Coding)
+- [ ] Minimal solution — no speculative abstractions (see [AGENTS-Standards.md](AGENTS-Standards.md) — Simplicity First)
+- [ ] Defined verifiable success criteria (see [AGENTS-Standards.md](AGENTS-Standards.md) — Goal-Driven Execution)
+
+### Tool Selection
+
+| Task | Tool |
+|------|------|
+| Read a file | `read` (use `sel` for line ranges) |
+| Find files by pattern | `find(pattern="src/**/*.cpp")` |
+| Search code by keyword | `grep(pattern="GetSessionData", path="src/")` |
+| Structural code search | `ast_grep` (AST-aware) |
+| Edit code | `edit` — surgical changes with 3+ lines context |
+| Create new file | `write` |
+| Run build | `bash` — one command per call, use `.bat` scripts |
+| Track multi-step work | `todo_write` |
+| Ask user a question | `ask` |
+| Structural rewrite | `ast_edit` |
+| Rename/refactor | `lsp` (rename, references, code actions) |
+| Code review | skill: `aif-review` |
+| Commit changes | skill: `aif-commit` |
+| Fix a bug | skill: `aif-fix` |
+| Plan a feature | skill: `aif-plan` |
+
+### Skills to Use
+
+| Skill | When |
+|-------|------|
+| `cpp-coding-standards` | Writing/reviewing C++ code |
+| `cpp-expert` | Complex C++ questions |
+| `memory-safety-patterns` | RAII, ownership, resource management |
+| `cpp-modern-features` | Modern C++ syntax |
+| `cpp-testing` | Writing/fixing tests |
+| `aif-review` | Code review before commit |
+| `aif-commit` | Conventional commit messages |
+| `aif-fix` | Fix specific bugs |
+| `aif-plan` | Plan features before coding |
+| `aif-security-checklist` | Security review |
+
+---
+
+## Git Workflow
+
+- **Main branch:** `main` (protected)
+- **Branch naming:** `feature/description`, `fix/description`, `refactor/description`
+- **Commit messages:** Imperative mood, under 72 chars summary
+- **Multi-line commit:** Use `git commit -m "title\nline1\nline2"` instead of heredoc
+- **Skip CI:** `[skip ci]` or `[ci skip]` in commit message
+
+---
+
+## Critical Notes for Agents
+
+### Build Environment
+
+- **Configure + build MUST happen in the same cmd session** with `vcvarsall.bat` environment
+- **Always use `.bat` scripts** — never chain commands with `&&`
+- **Never use `cmd /c "call vcvarsall.bat && cmake ..."`** — quote encoding breaks
+- Third-party libraries in `libs/` may produce warnings — this is expected
+
+### Unity Build Gotcha
+
+Symbol redefinition errors? Unity build is the culprit. Disable:
+
+```cmd
+cmake -S . -B build-RelWithDebugInfo -DOPT_USE_UNITY_BUILD=OFF ...
+```
+
+### OpenSSL Patches
+
+After updating OpenSSL from upstream (WinSCP), **re-apply the patch**:
+
+```cmd
+git -C libs\openssl-3 apply -p3 0001-openssl-apply-NetBox-patches.patch
+```
+
+See [AGENTS-Structure.md](AGENTS-Structure.md) for full patch details.
+
+### When Stuck
+
+- **Don't guess** — say "insufficient information" and ask the user
+- **Can't find the file?** — use `find` with broader patterns
+- **Can't find the code?** — use `grep` for the function/class name
+- **Unsure about the approach?** — use `ask` or `/aif-explore`
+- **Build fails repeatedly?** — clean reconfigure or read this file → "Common Build Errors"
+- **Shell commands failing?** — read this file → "Agent Build Execution Rules"
+- **Something feels wrong?** — stop and tell the user
+
+---
+
 ## Agent Build Execution Rules
 
 The agent tool runs in a PowerShell environment:
 
 - Direct `call` commands fail in PowerShell
 - Chained commands (`cmd1 && cmd2`) fail when run via bash tool
-- **HTML entities like `&quot;` break command parsing** — use `.bat` files instead
+- **HTML entities like `"` break command parsing** — use `.bat` files instead
 - **Environment isolation:** Each `cmd /c` call creates a new shell session — `vcvarsall.bat` environment is lost
 
 **Correct patterns:**
@@ -168,13 +290,7 @@ cmd /c "cmake --build build..."                        # Session 2 — FAILS! En
 
 > **Never use PowerShell for build operations** — always use `.bat` files with `cmd /c`.
 
-## Git Workflow
-
-- **Main branch:** `main` (protected)
-- **Branch naming:** `feature/description`, `fix/description`, `refactor/description`
-- **Commit messages:** Imperative mood, under 72 chars summary
-- **Multi-line commit:** Use `git commit -m "title\nline1\nline2"` instead of heredoc
-- **Skip CI:** `[skip ci]` or `[ci skip]` in commit message
+---
 
 ## Shell Script Rules
 
@@ -211,6 +327,8 @@ cmd /c "cmake --build build..."                        # Session 2 — FAILS! En
 | Path in pwsh string | `"$env:PATH\file"` | Use explicit paths or `Join-Path` |
 | `findstr` with regex | `findstr ".*pattern"` | `findstr /r ".*pattern"` |
 
+---
+
 ## Line Endings & BOM
 
 ### Verify CRLF
@@ -243,6 +361,8 @@ $c = $c -replace "`n", "`r`n"
 [System.IO.File]::WriteAllText("file.txt", $c, [System.Text.Encoding]::UTF8)
 ```
 
+---
+
 ## Local CI Testing with `act`
 
 Use `act` to run GitHub Actions workflows locally on a self-hosted runner.
@@ -259,3 +379,28 @@ cmd /c "act -W .github/workflows/release.yml -j create-release -P windows-2022=-
 | `--use-new-action-cache` | Cache actions for faster re-runs |
 
 **Expected:** All builds (x86, x64, ARM64) show `✅ Success`. Upload-artifacts may fail on self-hosted runners without GitHub token — this is expected.
+
+---
+
+## Compact Instructions
+
+> Save key context between sessions to reduce ramp-up time and preserve continuity.
+
+### What to Save
+
+| Item | Description | Suggested Location |
+|------|-------------|-------------------|
+| **Architectural solutions** | Design decisions, trade-offs, and rationale for non-trivial changes | `.ai-factory/decisions/<ticket-or-topic>.md` |
+| **Changed files** | List of files modified in the current session | `.ai-factory/session/changed-files.md` |
+| **Current plan** | Active phase plan, milestone, or roadmap item in progress | `.ai-factory/session/current-plan.md` |
+| **Tasks** | Pending, in-progress, and completed tasks with acceptance criteria | `.ai-factory/session/tasks.md` |
+| **File structure** | Notable directory layout or structural changes discovered | `.ai-factory/session/file-structure.md` |
+
+### How to Maintain
+
+1. **At session end** -- update `changed-files.md` and `tasks.md` with the latest state.
+2. **After significant decisions** -- append the architectural rationale to the relevant decision file.
+3. **When resuming** -- read `.ai-factory/session/` first to restore context.
+4. **Keep concise** -- entries should be bullet-style; avoid duplicating full documentation.
+
+> These compact artifacts are **session aids**, not replacements for full docs in `docs/` or `.ai-factory/`. Prefer linking over copying.
