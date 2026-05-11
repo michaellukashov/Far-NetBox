@@ -1,8 +1,8 @@
-# Plan: Add OnProgress/OnFinished Marshaling to TTerminalThread
+# Plan: Add OnProgress/OnFinished Marshaling to TTerminalThread (COMPLETE — Source Already Has Implementation)
 
 > Created: 2026-05-10
-> Status: **Ready to execute**
-> Priority: Critical — Far Manager API calls from worker thread
+> Status: **COMPLETE** (verified 2026-05-12 — implementation already exists in source)
+> Priority: ~~Critical~~ N/A — resolved: TProgressUserAction, TFinishedUserAction, TerminalProgress(), TerminalFinished() already present in Queue.cpp
 
 ## Problem
 

@@ -9,7 +9,7 @@
   - SFTP: Uses SFTP protocol extensions (added 2023-06-11)
   - WebDAV: Uses HTTP COPY method (added 2017-03-19)
   - S3: Uses S3 CopyObject API (added 2018-01-19)
-- **Version 1.2** – Background copy & progress UI
+| **Version 1.2** – Background copy & progress UI — **COMPLETE**
 - **Version 1.3** – Win32/KiTTY input mode, WinXP compatible builds
 - **Version 2.0** – Full plugin refactor, modular architecture
 

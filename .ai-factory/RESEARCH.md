@@ -1,6 +1,6 @@
 # Research
 
-Updated: 2026-05-10
+Updated: 2026-05-12
 Status: active
 
 ## Active Summary (input for /aif-plan)
@@ -8,37 +8,44 @@ Status: active
 Updated: 2026-05-12
 
 Goal:
-- TTerminalThread OnProgress/OnFinished marshaling is already implemented in source.
-- Background copy & progress UI (roadmap v1.2) is fully functional — no remaining work.
-- Stale plan and roadmap entries need marking as complete.
-
+- Stale plans and roadmap entries have been marked complete.
+- TTerminalThread OnProgress/OnFinished marshaling: CONFIRMED already in source.
+- Background copy & progress UI (roadmap v1.2): CONFIRMED complete in source.
 Constraints:
 - No modifications to `libs/` — use patches only
 - Far Manager API calls on main thread only
 - MSVC /W4 zero warnings
 
 Decisions:
-- Plan `.ai-factory/plans/terminal-thread-progress-marshaling.md` is stale — source already has:
-  TProgressUserAction, TFinishedUserAction, TerminalProgress(), TerminalFinished(),
-  InitTerminalThread() save/override/restore, destructor restore.
-- Roadmap v1.2 "Remaining: minor polish items (queue auto-popup, beep on completion)" is stale —
-  both features exist in source (QueueAutoPopup config + ProcessUserAction, QueueBeep + MessageBeep).
-- Next functional gap: Phase 3 Workspace save/restore (POSTPONED) or Phase 4 Directory comparison.
-
+- Plan `.ai-factory/plans/terminal-thread-progress-marshaling.md` updated to COMPLETE (2026-05-12).
+- ROADMAP.md v1.2 updated to COMPLETE (2026-05-12).
+- Next functional gap: Phase 4 Directory comparison or Phase 3 Workspace save/restore (POSTPONED).
 Open questions:
 - None
 
 Success signals:
-- Source code review confirms marshaling classes exist and are wired
-- Queue dialog displays progress (bytes, %, status) for active items
-- Background transfer queue runs TBackgroundTerminal in worker thread
-- Beep and auto-popup settings persisted in FarConfiguration
+- Stale plan marked complete with verification notes
+- Roadmap milestone marked complete
+- No source changes needed (already implemented)
 
 Next step:
-- Mark stale plans as complete (terminal-thread-progress-marshaling.md, update ROADMAP.md v1.2 status)
-- Resume planning for Phase 3 (Workspace save/restore) or Phase 4 (Directory comparison & advanced sync)
+- Resume planning for Phase 4 (Directory comparison & advanced sync) OR close exploration.
 ## Sessions
 
+### 2026-05-12 — Stale Plan & Roadmap Cleanup
+
+What changed:
+- Marked `terminal-thread-progress-marshaling.md` plan as COMPLETE — implementation already exists in source.
+- Updated ROADMAP.md v1.2 milestone to COMPLETE.
+- Verified no source changes were needed (TProgressUserAction, TFinishedUserAction already in Queue.cpp).
+
+Key decisions:
+- Stale plan preservation: kept plan file for history, updated header/status to reflect actual state.
+- Roadmap v1.2 now accurately reflects completed background copy & progress UI.
+
+Links (paths):
+|- `.ai-factory/plans/terminal-thread-progress-marshaling.md` (marked COMPLETE)
+|- `.ai-factory/ROADMAP.md` (v1.2 marked COMPLETE)
 
 ### 2026-05-12 — TerminalThread Marshaling & Background Queue Verification
 
