@@ -198,6 +198,7 @@ public:
   UnicodeString GetTemporaryDir() const;
   intptr_t InputRecordToKey(const INPUT_RECORD * Rec);
   TFarEditorInfo * EditorInfo();
+  TSynchroParams & GetSynchroParams() { return FSynchroParams; }
 
   void ShowConsoleTitle(const UnicodeString & Title);
   void ClearConsoleTitle();

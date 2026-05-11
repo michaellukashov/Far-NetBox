@@ -1508,10 +1508,19 @@ void TWinSCPFileSystem::Synchronize(const UnicodeString & LocalDirectory,
     FSynchronizationCompare = false;
     try__finally
     {
-      FTerminal->SynchronizeApply(Checklist, &CopyParam,
-        Params | TTerminal::spNoConfirmation,
-        nb::bind(&TWinSCPFileSystem::TerminalSynchronizeDirectory, this),
-        nullptr, nullptr, nullptr, nullptr);
+      TFileOperationStatistics Statistics;
+      FSyncStatistics = &Statistics;
+      try__finally
+      {
+        FTerminal->SynchronizeApply(Checklist, &CopyParam,
+          Params | TTerminal::spNoConfirmation,
+          nb::bind(&TWinSCPFileSystem::TerminalSynchronizeDirectory, this),
+          nullptr, nullptr, nullptr, &Statistics);
+      }
+      __finally
+      {
+        FSyncStatistics = nullptr;
+      } end_try__finally
 //      LocalDirectory, RemoteDirectory,
     }
     __finally
@@ -1672,34 +1681,37 @@ void TWinSCPFileSystem::TerminalSynchronizeDirectory(
   {
     LastTicks = Ticks;
 
-    constexpr const int32_t ProgressWidth = 48;
-    static UnicodeString ProgressTitle;
-    static UnicodeString ProgressTitleCompare;
-    static UnicodeString LocalLabel;
-    static UnicodeString RemoteLabel;
-    static UnicodeString StartTimeLabel;
-    static UnicodeString TimeElapsedLabel;
-
-    if (ProgressTitle.IsEmpty())
+    if (!FInSynchronizeDialog)
     {
-      ProgressTitle = GetMsg(NB_SYNCHRONIZE_PROGRESS_TITLE);
-      ProgressTitleCompare = GetMsg(NB_SYNCHRONIZE_PROGRESS_COMPARE_TITLE);
-      LocalLabel = GetMsg(NB_SYNCHRONIZE_PROGRESS_LOCAL);
-      RemoteLabel = GetMsg(NB_SYNCHRONIZE_PROGRESS_REMOTE);
-      StartTimeLabel = GetMsg(NB_SYNCHRONIZE_PROGRESS_START_TIME);
-      TimeElapsedLabel = GetMsg(NB_SYNCHRONIZE_PROGRESS_ELAPSED);
+      constexpr const int32_t ProgressWidth = 48;
+      static UnicodeString ProgressTitle;
+      static UnicodeString ProgressTitleCompare;
+      static UnicodeString LocalLabel;
+      static UnicodeString RemoteLabel;
+      static UnicodeString StartTimeLabel;
+      static UnicodeString TimeElapsedLabel;
+
+      if (ProgressTitle.IsEmpty())
+      {
+        ProgressTitle = GetMsg(NB_SYNCHRONIZE_PROGRESS_TITLE);
+        ProgressTitleCompare = GetMsg(NB_SYNCHRONIZE_PROGRESS_COMPARE_TITLE);
+        LocalLabel = GetMsg(NB_SYNCHRONIZE_PROGRESS_LOCAL);
+        RemoteLabel = GetMsg(NB_SYNCHRONIZE_PROGRESS_REMOTE);
+        StartTimeLabel = GetMsg(NB_SYNCHRONIZE_PROGRESS_START_TIME);
+        TimeElapsedLabel = GetMsg(NB_SYNCHRONIZE_PROGRESS_ELAPSED);
+      }
+
+      UnicodeString Message = LocalLabel + base::MinimizeName(LocalDirectory,
+          ProgressWidth - LocalLabel.Length(), false);
+      Message += ::StringOfChar(L' ', ProgressWidth - Message.Length()) + L"\n";
+      Message += RemoteLabel + base::MinimizeName(RemoteDirectory,
+          ProgressWidth - RemoteLabel.Length(), true) + L"\n";
+      Message += StartTimeLabel + FSynchronizationStart.GetTimeString(false) + L"\n";
+      Message += TimeElapsedLabel +
+        FormatDateTimeSpan(TDateTime(Now() - FSynchronizationStart)) + L"\n";
+
+      GetWinSCPPlugin()->Message(0, (Collect ? ProgressTitleCompare : ProgressTitle), Message);
     }
-
-    UnicodeString Message = LocalLabel + base::MinimizeName(LocalDirectory,
-        ProgressWidth - LocalLabel.Length(), false);
-    Message += ::StringOfChar(L' ', ProgressWidth - Message.Length()) + L"\n";
-    Message += RemoteLabel + base::MinimizeName(RemoteDirectory,
-        ProgressWidth - RemoteLabel.Length(), true) + L"\n";
-    Message += StartTimeLabel + FSynchronizationStart.GetTimeString(false) + L"\n";
-    Message += TimeElapsedLabel +
-      FormatDateTimeSpan(TDateTime(Now() - FSynchronizationStart)) + L"\n";
-
-    GetWinSCPPlugin()->Message(0, (Collect ? ProgressTitleCompare : ProgressTitle), Message);
 
     if (GetWinSCPPlugin()->CheckForEsc() &&
       (MoreMessageDialog(GetMsg(NB_CANCEL_OPERATION), nullptr,

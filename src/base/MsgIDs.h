@@ -707,6 +707,11 @@ enum MsgIDs {
     NB_SYNCHRONIZE_PROGRESS_REMOTE,  // "Remote:       "
     NB_SYNCHRONIZE_PROGRESS_START_TIME,  // "Start time:   "
     NB_SYNCHRONIZE_PROGRESS_ELAPSED, // "Time elapsed: "
+    NB_SYNCHRONIZE_PROGRESS_SCAN_PASSES, // "Scan passes: "
+    NB_SYNCHRONIZE_PROGRESS_FILES_TRANSFERRED, // "Files transferred: "
+    NB_SYNCHRONIZE_PROGRESS_BYTES_TRANSFERRED, // "Bytes transferred: "
+    NB_SYNCHRONIZE_PROGRESS_SPEED, // "Speed: "
+    NB_SYNCHRONIZE_PROGRESS_ETA, // "ETA: "
 
     NB_COPY_PARAM_CUSTOM_TITLE, // "Transfer settings"
 

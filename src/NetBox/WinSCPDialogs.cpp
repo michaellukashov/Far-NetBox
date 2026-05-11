@@ -10524,6 +10524,7 @@ class TSynchronizeDialog final : public TFarDialog
   CUSTOM_MEM_ALLOCATION_IMPL
 public:
   explicit TSynchronizeDialog(TCustomFarPlugin * AFarPlugin,
+    TWinSCPFileSystem * AFileSystem,
     TSynchronizeStartStopEvent && OnStartStop,
     uint32_t Options, uint32_t CopyParamAttrs, TGetSynchronizeOptionsEvent && OnGetOptions);
   virtual ~TSynchronizeDialog() noexcept override;
@@ -10548,6 +10549,9 @@ protected:
   virtual intptr_t DialogProc(intptr_t Msg, intptr_t Param1, void * Param2) override;
   virtual bool CloseQuery() override;
   virtual bool Key(TFarDialogItem * Item, intptr_t KeyCode) override;
+  virtual void Idle() override;
+  void UpdateProgressDisplay();
+  void OnIdle(TObject * Sender, void * Data);
   TCopyParamType GetCopyParams() const;
   int32_t ActualCopyParamAttrs() const;
   void CustomCopyParam();
@@ -10579,12 +10583,30 @@ private:
   TFarButton * CloseButton{nullptr};
   TFarLister * CopyParamLister{nullptr};
   std::unique_ptr<TStrings> FLogLines;
-};
 
+  TWinSCPFileSystem * FFileSystem{nullptr};
+  int32_t FFilesScanned{0};
+  int32_t FFilesTransferred{0};
+  int64_t FBytesTransferred{0};
+  TDateTime FSyncStartTime;
+  uint32_t FLastProgressTicks{0};
+
+  TFarText * ProgressLocalText{nullptr};
+  TFarText * ProgressRemoteText{nullptr};
+  TFarText * ProgressStartTimeText{nullptr};
+  TFarText * ProgressElapsedText{nullptr};
+  TFarText * ProgressFilesScannedText{nullptr};
+  TFarText * ProgressFilesTransferredText{nullptr};
+  TFarText * ProgressBytesTransferredText{nullptr};
+  TFarText * ProgressSpeedText{nullptr};
+  TFarText * ProgressEtaText{nullptr};
+};
 TSynchronizeDialog::TSynchronizeDialog(TCustomFarPlugin * AFarPlugin,
+  TWinSCPFileSystem * AFileSystem,
   TSynchronizeStartStopEvent && OnStartStop,
   uint32_t Options, uint32_t CopyParamAttrs, TGetSynchronizeOptionsEvent && OnGetOptions) :
-  TFarDialog(AFarPlugin)
+  TFarDialog(AFarPlugin),
+  FFileSystem(AFileSystem)
 {
   TFarDialog::InitDialog();
   FSynchronizing = false;
@@ -10597,7 +10619,7 @@ TSynchronizeDialog::TSynchronizeDialog(TCustomFarPlugin * AFarPlugin,
   FSynchronizeOptions = nullptr;
   FCopyParamAttrs = CopyParamAttrs;
 
-  SetSize(TPoint(76, 20));
+  SetSize(TPoint(76, 26));
 
   SetDefaultGroup(1);
 
@@ -10661,6 +10683,50 @@ TSynchronizeDialog::TSynchronizeDialog(TCustomFarPlugin * AFarPlugin,
 
   SetDefaultGroup(0);
 
+  Separator = MakeOwnedObject<TFarSeparator>(this);
+  Separator->SetCaption(GetMsg(NB_SYNCHRONIZE_PROGRESS_TITLE));
+
+  ProgressLocalText = MakeOwnedObject<TFarText>(this);
+  ProgressLocalText->SetCaption(GetMsg(NB_SYNCHRONIZE_PROGRESS_LOCAL));
+
+  ProgressRemoteText = MakeOwnedObject<TFarText>(this);
+  ProgressRemoteText->SetCaption(GetMsg(NB_SYNCHRONIZE_PROGRESS_REMOTE));
+
+  ProgressStartTimeText = MakeOwnedObject<TFarText>(this);
+  ProgressStartTimeText->SetCaption(GetMsg(NB_SYNCHRONIZE_PROGRESS_START_TIME));
+
+  SetNextItemPosition(ipRight);
+
+  ProgressElapsedText = MakeOwnedObject<TFarText>(this);
+  ProgressElapsedText->SetCaption(GetMsg(NB_SYNCHRONIZE_PROGRESS_ELAPSED));
+
+  SetNextItemPosition(ipNewLine);
+
+  ProgressFilesScannedText = MakeOwnedObject<TFarText>(this);
+  ProgressFilesScannedText->SetCaption(GetMsg(NB_SYNCHRONIZE_PROGRESS_SCAN_PASSES));
+
+  SetNextItemPosition(ipRight);
+
+  ProgressFilesTransferredText = MakeOwnedObject<TFarText>(this);
+  ProgressFilesTransferredText->SetCaption(GetMsg(NB_SYNCHRONIZE_PROGRESS_FILES_TRANSFERRED));
+
+  SetNextItemPosition(ipNewLine);
+
+  ProgressBytesTransferredText = MakeOwnedObject<TFarText>(this);
+  ProgressBytesTransferredText->SetCaption(GetMsg(NB_SYNCHRONIZE_PROGRESS_BYTES_TRANSFERRED));
+
+  SetNextItemPosition(ipRight);
+
+  ProgressSpeedText = MakeOwnedObject<TFarText>(this);
+  ProgressSpeedText->SetCaption(GetMsg(NB_SYNCHRONIZE_PROGRESS_SPEED));
+
+  SetNextItemPosition(ipNewLine);
+
+  ProgressEtaText = MakeOwnedObject<TFarText>(this);
+  ProgressEtaText->SetCaption(GetMsg(NB_SYNCHRONIZE_PROGRESS_ETA));
+
+  SetDefaultGroup(0);
+
   // align buttons with bottom of the window
   Separator = MakeOwnedObject<TFarSeparator>(this);
   Separator->SetPosition(-4);
@@ -10694,6 +10760,11 @@ TSynchronizeDialog::TSynchronizeDialog(TCustomFarPlugin * AFarPlugin,
 
 TSynchronizeDialog::~TSynchronizeDialog() noexcept
 {
+  if (GetFarPlugin())
+  {
+    TSynchroParams & SynchroParams = GetFarPlugin()->GetSynchroParams();
+    SynchroParams.Sender = nullptr;
+  }
   SAFE_DESTROY(FSynchronizeOptions);
 }
 
@@ -10835,24 +10906,42 @@ void TSynchronizeDialog::DoAbort(TObject * /*Sender*/, bool Close)
 }
 
 void TSynchronizeDialog::DoLog(TSynchronizeController * /*Controller*/,
-  TSynchronizeLogEntry /*Entry*/, const UnicodeString & Message)
+  TSynchronizeLogEntry Entry, const UnicodeString & Message)
 {
-  if (!CopyParamLister) return;
-
-  if (!FLogLines)
+  if (CopyParamLister)
   {
-    FLogLines = std::make_unique<TStringList>();
+    if (!FLogLines)
+    {
+      FLogLines = std::make_unique<TStringList>();
+    }
+
+    FLogLines->Add(Message);
+
+    // Keep log bounded to prevent unbounded growth during long syncs
+    while (FLogLines->GetCount() > 100)
+    {
+      FLogLines->Delete(0);
+    }
+
+    CopyParamLister->SetItems(FLogLines.get());
   }
 
-  FLogLines->Add(Message);
-
-  // Keep log bounded to prevent unbounded growth during long syncs
-  while (FLogLines->GetCount() > 100)
+  switch (Entry)
   {
-    FLogLines->Delete(0);
+    case slScan:
+      ++FFilesScanned;
+      break;
+
+    case slUpload:
+    case slDelete:
+      ++FFilesTransferred;
+      break;
+
+    default:
+      break;
   }
 
-  CopyParamLister->SetItems(FLogLines.get());
+  UpdateProgressDisplay();
 }
 
 void TSynchronizeDialog::StartButtonClick(TFarButton * /*Sender*/,
@@ -10897,6 +10986,11 @@ void TSynchronizeDialog::StartButtonClick(TFarButton * /*Sender*/,
     DebugAssert(!FSynchronizing);
 
     FSynchronizing = true;
+    FFilesScanned = 0;
+    FFilesTransferred = 0;
+    FBytesTransferred = 0;
+    FSyncStartTime = Now();
+    FLastProgressTicks = 0;
     FLogLines = std::make_unique<TStringList>();
     try
     {
@@ -10973,6 +11067,116 @@ void TSynchronizeDialog::UpdateControls()
     !FSynchronizing && FLAGSET(FOptions, soAllowSelectedOnly));
 }
 
+void TSynchronizeDialog::Idle()
+{
+  TFarDialog::Idle();
+
+  if (GetFarPlugin())
+  {
+    TSynchroParams & SynchroParams = GetFarPlugin()->GetSynchroParams();
+    SynchroParams.SynchroEvent = nb::bind(&TSynchronizeDialog::OnIdle, this);
+    SynchroParams.Sender = this;
+    GetFarPlugin()->PostMainThreadSynchro(&SynchroParams);
+  }
+}
+
+void TSynchronizeDialog::OnIdle(TObject * /*Sender*/, void * /*Data*/)
+{
+  UpdateProgressDisplay();
+}
+
+void TSynchronizeDialog::UpdateProgressDisplay()
+{
+  if (!FSynchronizing)
+  {
+    return;
+  }
+
+  const uint32_t Ticks = ::GetTickCount();
+  if ((FLastProgressTicks != 0) && (Ticks - FLastProgressTicks < 500))
+  {
+    return;
+  }
+  FLastProgressTicks = Ticks;
+
+  if (FFileSystem != nullptr)
+  {
+    const TFileOperationStatistics * Statistics = FFileSystem->GetSyncStatistics();
+    if (Statistics != nullptr)
+    {
+      FBytesTransferred = Statistics->TotalUploaded + Statistics->TotalDownloaded;
+    }
+  }
+
+  constexpr int32_t ProgressWidth = 48;
+
+  if (ProgressLocalText)
+  {
+    UnicodeString LocalDir = LocalDirectoryEdit ? LocalDirectoryEdit->GetText() : UnicodeString();
+    ProgressLocalText->SetCaption(GetMsg(NB_SYNCHRONIZE_PROGRESS_LOCAL) +
+      base::MinimizeName(LocalDir, ProgressWidth - GetMsg(NB_SYNCHRONIZE_PROGRESS_LOCAL).Length(), false));
+  }
+
+  if (ProgressRemoteText)
+  {
+    UnicodeString RemoteDir = RemoteDirectoryEdit ? RemoteDirectoryEdit->GetText() : UnicodeString();
+    ProgressRemoteText->SetCaption(GetMsg(NB_SYNCHRONIZE_PROGRESS_REMOTE) +
+      base::MinimizeName(RemoteDir, ProgressWidth - GetMsg(NB_SYNCHRONIZE_PROGRESS_REMOTE).Length(), true));
+  }
+
+  if (ProgressStartTimeText)
+  {
+    ProgressStartTimeText->SetCaption(GetMsg(NB_SYNCHRONIZE_PROGRESS_START_TIME) +
+      FSyncStartTime.GetTimeString(false));
+  }
+
+  if (ProgressElapsedText)
+  {
+    ProgressElapsedText->SetCaption(GetMsg(NB_SYNCHRONIZE_PROGRESS_ELAPSED) +
+      FormatDateTimeSpan(TDateTime(Now() - FSyncStartTime)));
+  }
+
+  if (ProgressFilesScannedText)
+  {
+    ProgressFilesScannedText->SetCaption(GetMsg(NB_SYNCHRONIZE_PROGRESS_SCAN_PASSES) +
+      FORMAT(L"%d", FFilesScanned));
+  }
+
+  if (ProgressFilesTransferredText)
+  {
+    ProgressFilesTransferredText->SetCaption(GetMsg(NB_SYNCHRONIZE_PROGRESS_FILES_TRANSFERRED) +
+      FORMAT(L"%d", FFilesTransferred));
+  }
+
+  if (ProgressBytesTransferredText)
+  {
+    ProgressBytesTransferredText->SetCaption(GetMsg(NB_SYNCHRONIZE_PROGRESS_BYTES_TRANSFERRED) +
+      base::FormatBytes(FBytesTransferred));
+  }
+
+  if (ProgressSpeedText)
+  {
+    const TDateTime Elapsed = TDateTime(Now() - FSyncStartTime);
+    const double ElapsedSecs = Elapsed * 24.0 * 3600.0;
+    UnicodeString SpeedStr;
+    if (ElapsedSecs > 0.5 && FBytesTransferred > 0)
+    {
+      const int64_t Speed = static_cast<int64_t>(FBytesTransferred / ElapsedSecs);
+      SpeedStr = FORMAT(L"%s/s", base::FormatBytes(Speed));
+    }
+    else
+    {
+      SpeedStr = L"-";
+    }
+    ProgressSpeedText->SetCaption(GetMsg(NB_SYNCHRONIZE_PROGRESS_SPEED) + SpeedStr);
+  }
+
+  if (ProgressEtaText)
+  {
+    ProgressEtaText->SetCaption(GetMsg(NB_SYNCHRONIZE_PROGRESS_ETA) + UnicodeString(L"-"));
+  }
+}
+
 TCopyParamType TSynchronizeDialog::GetCopyParams() const
 {
   TCopyParamType Result = FCopyParams;
@@ -10989,9 +11193,18 @@ bool TWinSCPFileSystem::SynchronizeDialog(TSynchronizeParamType & Params,
   const TCopyParamType * CopyParams, TSynchronizeStartStopEvent && OnStartStop,
   bool & SaveSettings, uint32_t Options, uint32_t CopyParamAttrs, TGetSynchronizeOptionsEvent && OnGetOptions)
 {
-  std::unique_ptr<TSynchronizeDialog> Dialog(std::make_unique<TSynchronizeDialog>(GetPlugin(), std::move(OnStartStop),
+  std::unique_ptr<TSynchronizeDialog> Dialog(std::make_unique<TSynchronizeDialog>(GetPlugin(), this, std::move(OnStartStop),
     Options, CopyParamAttrs, std::move(OnGetOptions)));
-  const bool Result = Dialog->Execute(Params, CopyParams, SaveSettings);
+  FInSynchronizeDialog = true;
+  bool Result = false;
+  try__finally
+  {
+    Result = Dialog->Execute(Params, CopyParams, SaveSettings);
+  }
+  __finally
+  {
+    FInSynchronizeDialog = false;
+  } end_try__finally
   return Result;
 }
 

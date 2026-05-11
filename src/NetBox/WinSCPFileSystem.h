@@ -86,6 +86,7 @@ class TWinSCPFileSystem final : public TCustomFarFileSystem
   friend class TNetBoxPlugin;
   friend class TKeepAliveThread;
   friend class TQueueDialog;
+  friend class TSynchronizeDialog;
   NB_DISABLE_COPY(TWinSCPFileSystem)
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TWinSCPFileSystem); }
@@ -201,6 +202,7 @@ protected:
     bool & SaveSettings, uint32_t Options, uint32_t CopyParamAttrs,
     TGetSynchronizeOptionsEvent && OnGetOptions);
   bool SynchronizeAllowSelectedOnly();
+  const TFileOperationStatistics * GetSyncStatistics() const { return FSyncStatistics; }
   void RequireCapability(int32_t Capability);
   void RequireLocalPanel(const TFarPanelInfo * Panel, const UnicodeString & Message);
   bool AreCachesEmpty() const;
@@ -339,6 +341,8 @@ private:
   TDateTime FLastMultipleEditTimestamp{};
   gsl::owner<TKeepAliveThread *> FKeepaliveThread{nullptr};
   gsl::owner<TSynchronizeController *> FSynchronizeController{nullptr};
+  TFileOperationStatistics * FSyncStatistics{nullptr};
+  bool FInSynchronizeDialog{false};
   std::unique_ptr<TStrings> FCapturedLog;
   std::unique_ptr<TStrings> FAuthenticationLog;
   using TMultipleEdits = nb::map_t<int32_t, TMultipleEdit>;

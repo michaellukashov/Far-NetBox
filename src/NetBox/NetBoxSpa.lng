@@ -706,6 +706,11 @@
 "Remoto:       "
 "Hora inicio:  "
 "Transcurrido: "
+"Scan passes: "
+"Files transferred: "
+"Bytes transferred: "
+"Speed: "
+"ETA: "
 
 "Ajustes de transferencia"
 

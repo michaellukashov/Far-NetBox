@@ -706,6 +706,11 @@
 "Remote:       "
 "Start time:   "
 "Time elapsed: "
+"Scan passes: "
+"Files transferred: "
+"Bytes transferred: "
+"Speed: "
+"ETA: "
 
 "Transfer settings"
 

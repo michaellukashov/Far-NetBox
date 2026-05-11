@@ -706,6 +706,11 @@
 "Zdalny:       "
 "Czas startu:  "
 "Pozost. czas: "
+"Scan passes: "
+"Files transferred: "
+"Bytes transferred: "
+"Speed: "
+"ETA: "
 
 "Ustawienia transferu"
 
