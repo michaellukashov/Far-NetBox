@@ -130,6 +130,21 @@ TCustomFileSystem *CreateFileSystem(TSessionData * Data)
 | Platform dirs | `Far3_x86/`, `Far3_x64/`, `Far3_ARM64/` |
 | Build dir | `build-<config>/` |
 
+
+## Security Layer
+
+### Master Password
+
+NetBox optionally protects stored session passwords with a master password using AES-256-CBC encryption plus HMAC-SHA256 integrity verification. See [Security Documentation](security.md) for the full data flow, secure memory handling (`TSecureString`), thread-safe session counters, rate limiting, and recryption behavior.
+
+Key components:
+
+| Component | Location | Purpose |
+|-----------|----------|---------|
+| `TSecureString` | `src/base/SecureString.cpp` | Secure memory buffer with `VirtualLock` + `SecureZeroMemory` |
+| Master password state | `src/windows/WinConfiguration.cpp` | Verifier, session counter, rate limiting |
+| AES-256 crypto | `src/core/Cryptography.cpp` | Encrypt/decrypt + verifier generation |
+
 ## See Also
 
 - [Contributing](contributing.md) — Code conventions and development workflow
