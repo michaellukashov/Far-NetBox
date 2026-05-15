@@ -1185,25 +1185,26 @@ void TMasterPasswordDialog::UpdateOkButton()
 {
   bool CanSubmit = false;
   // Mode: 0=no-op, 1=set, 2=change, 3=clear
-  const int Mode = FEnableCheck->GetChecked() ? (FUseMP ? 2 : 1) : (FUseMP ? 3 : 0);
+  const int32_t Mode = FEnableCheck->GetChecked() ? (FUseMP ? 2 : 1) : (FUseMP ? 3 : 0);
 
   switch (Mode)
   {
-  case 2: // Change: current + new + confirm must all be non-empty
-    CanSubmit = IsValidPassword(FCurrentEdit->GetText()) >= 0 &&
-                IsValidPassword(FNewEdit->GetText()) >= 0 &&
-                IsValidPassword(FConfirmEdit->GetText()) >= 0;
+    case 0: // No-op: nothing to do
+    case 1: // Set: new + confirm must be non-empty
+      CanSubmit = (IsValidPassword(FNewEdit->GetText()) >= 0) &&
+                  (IsValidPassword(FConfirmEdit->GetText()) >= 0) &&
+                  (FNewEdit->GetText() == FConfirmEdit->GetText());
+      break;
+    case 2: // Change: current + new + confirm must all be non-empty
+      CanSubmit = (IsValidPassword(FCurrentEdit->GetText()) >= 0) &&
+                (IsValidPassword(FNewEdit->GetText()) >= 0) &&
+                (IsValidPassword(FConfirmEdit->GetText()) >= 0);
     break;
-  case 1: // Set: new + confirm must be non-empty
-    CanSubmit = IsValidPassword(FNewEdit->GetText()) >= 0 &&
-                IsValidPassword(FConfirmEdit->GetText()) >= 0;
-    break;
-  case 3: // Clear: current must be non-empty
-    CanSubmit = IsValidPassword(FCurrentEdit->GetText()) >= 0;
-    break;
-  case 0: // No-op: nothing to do
-  default:
-    CanSubmit = false;
+    case 3: // Clear: current must be non-empty
+      CanSubmit = IsValidPassword(FCurrentEdit->GetText()) >= 0;
+      break;
+    default:
+      CanSubmit = false;
     break;
   }
 
