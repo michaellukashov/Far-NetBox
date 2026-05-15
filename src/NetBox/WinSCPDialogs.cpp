@@ -3852,6 +3852,8 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   PasswordEdit->SetRight(CRect.Right - 12 - 2);
   PasswordEdit->SetVisible(true);
 
+  SetNextItemPosition(ipNewLine);
+
   MakeOwnedObject<TFarSeparator>(this);
 
   SetNextItemPosition(ipNewLine);
@@ -4215,10 +4217,14 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   FtpAccountEdit = MakeOwnedObject<TFarEdit>(this);
   Text->SetEnabledFollow(FtpAccountEdit);
 
+  SetNextItemPosition(ipNewLine);
   VMSAllRevisionsCheck = MakeOwnedObject<TFarCheckBox>(this);
   VMSAllRevisionsCheck->SetCaption(GetMsg(NB_LOGIN_FTP_VMS_ALL_REVISIONS));
+  SetNextItemPosition(ipNewLine);
   FtpPasvModeCheck = MakeOwnedObject<TFarCheckBox>(this);
   FtpPasvModeCheck->SetCaption(GetMsg(NB_LOGIN_FTP_PASV_MODE));
+
+  SetNextItemPosition(ipNewLine);
 
   FtpAllowEmptyPasswordCheck = MakeOwnedObject<TFarCheckBox>(this);
   FtpAllowEmptyPasswordCheck->SetCaption(GetMsg(NB_LOGIN_FTP_ALLOW_EMPTY_PASSWORD));
