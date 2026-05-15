@@ -96,27 +96,26 @@ void TMasterPasswordDialog::DoChange(bool &CanSubmit)
 **NetBox equivalent:**
 - Override the virtual `Change()` method on the dialog class (pattern: `TLinkDialog::Change()` at WinSCPDialogs.cpp:6829, `TPropertiesDialog::Change()` at line 5782)
 - `OkButton->SetEnabled(CanSubmit)` dynamically in `Change()`
-- Logic: OK enabled when all visible password fields pass `IsValidPassword() > 0`
-
+|- Logic: OK enabled when all visible password fields pass `IsValidPassword() >= 0` (non-empty; weak passwords are caught at submit time with a warning, matching WinSCP)
 **Note:** Checkbox toggle (DN_BTNCLICK) does not trigger `Change()` automatically. The checkbox click handler must also call the OK update logic.
 
 **Change mode** (checkbox ON + existing MP):
 ```
 
-CanSubmit = IsValidPassword(CurrentEdit->Text) > 0 &&
-            IsValidPassword(NewEdit->Text) > 0 &&
-            IsValidPassword(ConfirmEdit->Text) > 0;
+CanSubmit = IsValidPassword(CurrentEdit->Text) >= 0 &&
+            IsValidPassword(NewEdit->Text) >= 0 &&
+            IsValidPassword(ConfirmEdit->Text) >= 0;
 ```
 
 **Set mode** (checkbox ON + no MP):
 ```
-CanSubmit = IsValidPassword(NewEdit->Text) > 0 &&
-            IsValidPassword(ConfirmEdit->Text) > 0;
+CanSubmit = IsValidPassword(NewEdit->Text) >= 0 &&
+            IsValidPassword(ConfirmEdit->Text) >= 0;
 ```
 
 **Clear mode** (checkbox OFF + has MP):
 ```
-CanSubmit = IsValidPassword(CurrentEdit->Text) > 0;
+CanSubmit = IsValidPassword(CurrentEdit->Text) >= 0;
 ```
 
 **Edge case:** New==Confirm is NOT checked for button enablement (matching WinSCP — that's checked at submit time via `DoValidate()`).
@@ -157,14 +156,13 @@ This is a valid Far Manager adaptation of WinSCP's three separate dialogs. No st
 - Override the virtual `Change()` method on the dialog class (pattern: `TLinkDialog::Change()` at WinSCPDialogs.cpp:6829)
 - Implement `UpdateOkButton()` called from `Change()` and from the checkbox click handler:
   - Determines current mode (set/change/clear) from `UseMP` and checkbox state
-  - Evaluates whether all visible fields pass `IsValidPassword() > 0`
+  - Evaluates whether all visible fields pass `IsValidPassword() >= 0` (non-empty)
   - Calls `OkButton->SetEnabled(CanSubmit)`
-- On dialog init: call `UpdateOkButton()` to set initial OK state (disabled)
-- Checkbox click handler: call `UpdateOkButton()` after toggling field visibility
+|- On dialog init: call `UpdateOkButton()` to set initial OK state (disabled)
 
 **Logging:** `AppLogFmt(L"MasterPassword OK enabled=%d (mode=%d)", enabled, mode)`
 
-**Verification:** OK starts disabled, becomes enabled when all fields have valid content (≥6 chars, ≥2 character classes). Toggling checkbox re-evaluates. Clear mode enables OK when current password field is valid.
+**Verification:** OK starts disabled, becomes enabled when all visible fields are non-empty. Weak passwords (0) still enable OK; strength is checked at submit time with a warning dialog. Toggling checkbox re-evaluates. Clear mode enables OK when current password field is non-empty.
 
 ---
 
@@ -243,7 +241,7 @@ All MsgIDs already match WinSCP's resource strings. No changes expected.
 1. **All fields empty on open** — OK disabled, standard state
 2. **Current password valid but New==Confirm mismatch** — OK enabled (matches WinSCP), mismatch caught at submit
 
-3. **Weak password** — OK disabled (`IsValidPassword` returns 0 for weak passwords). User must strengthen password (≥6 chars, ≥2 character classes) to proceed. This differs from WinSCP (`>= 0` threshold which incorrectly accepts weak passwords) — NetBox uses the correct `> 0` threshold.
+3. **Weak password** — OK enabled even for weak passwords (`IsValidPassword` returns 0), matching WinSCP's `>= 0` threshold. Strength check runs at submit time via `IsValidPassword(NewPwd) <= 0` warning with OK/Cancel. User can proceed with a weak password after confirming.
 4. **Checkbox toggle mid-typing** — OK state re-evaluated immediately
 5. **Dialog cancel** — No changes committed
 6. **RecryptPasswords stub** — `ChangeMasterPassword()` calls `RecryptPasswords()` internally. MSVC stub means stored passwords won't be recrypted. Not in scope for this plan (tracked in `master-password-infrastructure.md`).

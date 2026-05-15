@@ -1115,7 +1115,7 @@ TMasterPasswordDialog::TMasterPasswordDialog(TCustomFarPlugin * AFarPlugin, bool
   TWinSCPDialog(AFarPlugin),
   FUseMP(UseMP)
 {
-  SetSize(TPoint(70, 12));
+  SetSize(TPoint(70, 14));
   SetCaption(FORMAT("%s - %s", GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_MASTER_PASSWORD_CAPTION))));
 
   int32_t Top = 2;
@@ -1189,17 +1189,17 @@ void TMasterPasswordDialog::UpdateOkButton()
 
   switch (Mode)
   {
-  case 2: // Change: current + new + confirm must all be valid
-    CanSubmit = IsValidPassword(FCurrentEdit->GetText()) > 0 &&
-                IsValidPassword(FNewEdit->GetText()) > 0 &&
-                IsValidPassword(FConfirmEdit->GetText()) > 0;
+  case 2: // Change: current + new + confirm must all be non-empty
+    CanSubmit = IsValidPassword(FCurrentEdit->GetText()) >= 0 &&
+                IsValidPassword(FNewEdit->GetText()) >= 0 &&
+                IsValidPassword(FConfirmEdit->GetText()) >= 0;
     break;
-  case 1: // Set: new + confirm must be valid
-    CanSubmit = IsValidPassword(FNewEdit->GetText()) > 0 &&
-                IsValidPassword(FConfirmEdit->GetText()) > 0;
+  case 1: // Set: new + confirm must be non-empty
+    CanSubmit = IsValidPassword(FNewEdit->GetText()) >= 0 &&
+                IsValidPassword(FConfirmEdit->GetText()) >= 0;
     break;
-  case 3: // Clear: current must be valid
-    CanSubmit = IsValidPassword(FCurrentEdit->GetText()) > 0;
+  case 3: // Clear: current must be non-empty
+    CanSubmit = IsValidPassword(FCurrentEdit->GetText()) >= 0;
     break;
   case 0: // No-op: nothing to do
   default:
