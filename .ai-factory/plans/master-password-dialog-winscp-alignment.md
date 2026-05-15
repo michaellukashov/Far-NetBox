@@ -188,17 +188,32 @@ This is a valid Far Manager adaptation of WinSCP's three separate dialogs. No st
 **Target:** `src/NetBox/NetBoxEng.lng` (validation only — no changes expected)
 
 **Check:**
-- `NB_MASTER_PASSWORD_CURRENT` = "&Current master password:" ✓
-- `NB_MASTER_PASSWORD_NEW` = "&New master password:" ✓
-- `NB_MASTER_PASSWORD_CONFIRM` = "&Re-enter master password:" ✓
-- `NB_MASTER_PASSWORD_INCORRECT` ✓
-- `NB_MASTER_PASSWORD_DIFFERENT` ✓
-- `NB_MASTER_PASSWORD_SIMPLE2` ✓
-- `NB_MASTER_PASSWORD_CHANGED` ✓
-- `NB_MASTER_PASSWORD_SET2` ✓
-- `NB_MASTER_PASSWORD_CLEARED2` ✓
+|- `NB_MASTER_PASSWORD_CURRENT` = "&Current master password:" ✓
+|- `NB_MASTER_PASSWORD_NEW` = "&New master password:" ✓
+|- `NB_MASTER_PASSWORD_CONFIRM` = "&Re-enter master password:" ✓
+|- `NB_MASTER_PASSWORD_INCORRECT` ✓
+|- `NB_MASTER_PASSWORD_DIFFERENT` ✓
+|- `NB_MASTER_PASSWORD_SIMPLE2` ✓
+|- `NB_MASTER_PASSWORD_CHANGED` ✓
+|- `NB_MASTER_PASSWORD_SET2` ✓
+|- `NB_MASTER_PASSWORD_CLEARED2` ✓
 
 All MsgIDs already match WinSCP's resource strings. No changes expected.
+
+**Status:** Already implemented in commit `41691bb2f`.
+
+---
+
+### Task 4: Wire `[ Change master password... ]` button to checkbox state
+
+**Target:** `src/NetBox/WinSCPDialogs.cpp` — `TSecurityConfigurationDialog::Change()`
+
+**Gap found:** `FChangeMpBtn` is enabled at dialog init (`Execute()`) and after returning from `TMasterPasswordDialog` (`ChangeMpBtnClick()`), but NOT when the user toggles `FUseMpCheck` in real-time.
+
+**Fix:**
+|- In `TSecurityConfigurationDialog::Change()`, add `FChangeMpBtn->SetEnabled(FUseMpCheck->GetChecked());` inside the `if (GetHandle())` block.
+
+**Verification:** Toggling "Use master password" immediately enables/disables the "Change master password..." button. Button remains correctly enabled after returning from the change dialog.
 
 ---
 
@@ -206,6 +221,7 @@ All MsgIDs already match WinSCP's resource strings. No changes expected.
 
 1. `fix(ui): add real-time OK enable/disable to master password dialog` — Task 1
 2. `fix(ui): reorder master password validation to match WinSCP` — Task 2
+3. `fix(ui): wire Change master password button to Use master password checkbox` — Task 4
 
 ---
 

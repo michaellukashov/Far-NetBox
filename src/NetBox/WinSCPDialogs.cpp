@@ -1694,6 +1694,9 @@ void TSecurityConfigurationDialog::Change()
   TWinSCPDialog::Change();
   if (GetHandle())
   {
+    const bool UseMp = FUseMpCheck->GetChecked();
+    FChangeMpBtn->SetEnabled(UseMp);
+
     const bool FromPuTTY = FFromPuTTYCheck->GetChecked();
     const bool HasItems = FCaListBox->GetItems()->GetCount() > 0;
     FAddCaBtn->SetEnabled(!FromPuTTY);
