@@ -52,11 +52,11 @@ The following table inventories every `TCriticalSection` instance across the cod
 | Core | `TFileOperationProgressType::FUserSelectionsSection` | `FileOperationProgress.h:173` | User selection state | Secondary lock |
 | Core | `TTerminalQueue::FItemsSection` | `Queue.h:155` | Queue item list | Parent of `TQueueItem::FSection` |
 | Core | `TQueueItem::FSection` | `Queue.h:248` | Individual queue item state | Child of `FItemsSection` |
+| Core | `TTerminalItem::FCriticalSection` | `Queue.cpp:337` | Terminal item state | Queue worker thread state |
 | Core | `TTerminalThread::FSection` | `Queue.h:596` | Terminal thread state | Marshaling handshake |
 | Core | `TParallelOperation::FSection` | `Terminal.h:1205` | Parallel transfer client count | Never held with `FItemsSection` |
 | Core | `TFTPFileSystem::FQueueCriticalSection` | `FtpFileSystem.h:239` | FTP message queue | Signals via `FQueueEvent` |
 | Core | `TFTPFileSystem::FTransferStatusCriticalSection` | `FtpFileSystem.h:240` | FTP transfer progress | Protocol-layer progress |
-| Core | `TSecureShell::FSocketEvent` | `SecureShell.cpp:95` | Socket readiness | `WSAEventSelect` integration |
 | Core | `TRemoteDirectoryCache::FSection` | `RemoteFiles.h:420` | Cached directory entries | Navigation invalidation |
 | Core | `LibS3Section` | `S3FileSystem.cpp:80` | libs3 init/deinit refcount | Global singleton pattern |
 | Core | `PasswordFilesCacheSection` | `SessionData.cpp:2056` | Password file cache map | Per-file cache |
@@ -64,17 +64,16 @@ The following table inventories every `TCriticalSection` instance across the cod
 | Core | `PuttyStorageSection` | `PuttyIntf.cpp:550` | `PuttyStorage` redirect | PuTTY config marshaling |
 | Core | `TSessionLog::FCriticalSection` | `SessionInfo.h:341` | Log file/stream | I/O bound |
 | Core | `TActionLog::FCriticalSection` | `SessionInfo.h:414` | Action log entries | I/O bound |
-| Core | `TCallStackLog::FCriticalSection` | `SessionInfo.h:456` | Callstack entries | Debug only |
+| Core | `TApplicationLog::FCriticalSection` | `SessionInfo.h:456` | Application log entries | Debug only |
 | Core | `TUsage::FCriticalSection` | `Usage.h:37` | Usage counters | Analytics |
 | Core | `TWebDAVFileSystem::FNeonLockStoreSection` | `WebDAVFileSystem.h:178` | neon lock store | WebDAV locking |
 | filezilla | `CAsyncSslSocketLayer::m_sCriticalSection` | `AsyncSslSocketLayer.h:197` | SSL layer list (static) | Cross-instance SSL state |
 | filezilla | `CAsyncSslSocketLayer::m_CriticalSection` | `AsyncSslSocketLayer.h:198` | Per-instance SSL state | Connection-specific |
-| filezilla | `CFtpControlSocket::m_SpeedLimitSync` | `FtpControlSocket.h:179` | Speed limit active list | Leaf lock; unlock-sleep-relock pattern replaced with event |
+| filezilla | `CFtpControlSocket::m_SpeedLimitSync` | `FtpControlSocket.h:179` | Speed limit active list | `CCriticalSectionWrapper`; leaf lock; unlock-sleep-relock replaced with event |
 | Windows | `TPuttyCleanupThread::FSection` | `GUITools.cpp:188` | Singleton instance pointer | Self-destructing thread |
 | Windows | `SystemRequiredThreadSection` | `GUITools.cpp:2550` | `SystemRequiredThread` singleton | Power management |
 | Windows | `TOwnConsole::FSection` | `ConsoleRunner.cpp:88` | Console singleton instance | Console runner state |
-| Windows | `TConsoleCommStruct::FSection` | `ConsoleRunner.cpp:566` | Console communication struct | Inter-thread console I/O |
-| Windows | `TTerminalManager::FQueueSection` | `TerminalManager.h:118` | Terminal-manager queue events | Session event dispatch |
+| Windows | `TExternalConsole::FSection` | `ConsoleRunner.cpp:566` | Console I/O via file mapping | Inter-thread console I/O |
 | Windows | `TTerminalManager::FChangeSection` | `TerminalManager.h:121` | Configuration change counter | Config change batching |
 | Windows | `StackTraceCriticalSection` | `WinInterface.cpp:615` | `StackTraceMap` (TLS->TStrings) | Debug-only callstack capture |
 
@@ -141,7 +140,7 @@ The following lock acquisition order must be respected. Cycles are forbidden.
 | `TFileOperationProgressType::FUserSelectionsSection` | `FileOperationProgress.h` | User selections | Secondary to `FSection` | Guards user selection state |
 | `TFTPFileSystem::FQueueCriticalSection` | `FtpFileSystem.h` | Protocol queue | — | Guards FTP message queue |
 | `TFTPFileSystem::FTransferStatusCriticalSection` | `FtpFileSystem.h` | Protocol progress | — | Guards FTP transfer progress |
-| `TSecureShell::FSocketEvent` | `SecureShell.cpp` | Socket | — | `WSAEventSelect` integration |
+| `TTerminalItem::FCriticalSection` | `Queue.cpp` | Queue worker | — | Guards terminal item worker state |
 | `TWebDAVFileSystem::FNeonLockStoreSection` | `WebDAVFileSystem.h` | WebDAV locks | — | neon lock store |
 | `LibS3Section` | `S3FileSystem.cpp` | S3 init | — | libs3 init/deinit refcount |
 | `PuttyStorageSection` | `PuttyIntf.cpp` | PuTTY config | — | PuTTY config marshaling |

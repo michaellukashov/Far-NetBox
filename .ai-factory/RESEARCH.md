@@ -1,42 +1,39 @@
 # Research
 
-Updated: 2026-05-14
+Updated: 2026-05-15
 Status: active
 
 ## Active Summary (input for /aif-plan)
 
-Updated: 2026-05-12
+Updated: 2026-05-15
 
-Goal:
-| Threading safety audit exploration — identify remaining gaps after multithreading-review-fix.md completion.
-| `TPuttyCleanupThread` still uses `Sleep()` in 2 places (Finalize: Sleep(100), Execute: Sleep(400)).
-| `Global.cpp` tracing globals: ALREADY guarded by `TracingCriticalSection` — no fix needed.
-| `.ai-factory/rules/threading.md`: exists but incomplete — missing actual lock hierarchy.
-| **NEXT: Expand `.ai-factory/rules/threading.md` with complete TCriticalSection inventory, full event-object catalog, Sleep() pattern taxonomy, and TGuard usage patterns.**
+Topic: Master Password infrastructure verification
+Goal: Trace full `[ ] Use master password` stack end-to-end; verify dialog wiring, crypto, recryption, i18n, and UX consistency.
 Constraints:
 | No modifications to `libs/` — use patches only
-| Far Manager API calls on main thread only
 | MSVC /W4 zero warnings
-| Follow existing threading rules in `.ai-factory/rules/threading.md`
+| CRLF line endings
+| All .lng files must stay aligned (verify_lng_alignment.py)
 Decisions:
-| Plan `multithreading-review-fix.md` is COMPLETE (all 14 tasks done, build verified).
-| Plan `threading-safety-audit-and-fixes.md` is STALE — identifies same issues already fixed.
-| `TPuttyCleanupThread` should use `WaitForSingleObject` on events instead of `Sleep()`.
-| `Global.cpp` tracing: `WriteTraceBuffer()` holds `TracingCriticalSection`; `DoDirectTrace()`/`DoTrace()` are already guarded. `DoAssert()` reads `IsTracing` without lock but `bool` is atomic on x86/x64 — acceptable.
-| `.ai-factory/rules/threading.md` needs expansion: add actual lock hierarchy (m_SpeedLimitSync -> FItemsSection -> FSection -> FileOperationProgress::FSection), event objects (m_SpeedLimitEvent, FClientsZeroEvent, FDirectoryCreatedEvent, m_hStartedEvent), and state inventory.
-| **Ground-truth verified: TPuttyCleanupThread ALREADY uses WaitForSingleObject in both Finalize() and Execute() — the Sleep(400) is only a defensive null-event fallback. Source audit was based on outdated snapshot.**
+| **FIXED** `TSecurityConfigurationDialog`: `FUseMpCheck` was interactive but state never read back — made read-only via `SetEnabled(false)` (WinSCPDialogs.cpp:1574)
+| MP dialog (set/change/clear) calls `ChangeMasterPassword()`/`ClearMasterPassword()` which recrypt all sessions, then `DoSave(false, false)`
+| Runtime prompt `MasterPasswordPrompt()` validates via `AES256Verify` against `FMasterPasswordVerifier`, caches key in `FPlainMasterPasswordDecrypt`
+| Brute-force lockout: `TValidationAttemptTracker` with 5 attempts / 30 seconds, `std::atomic<uint32_t>`
+| All 6 .lng files aligned (1327 strings each, verify_lng_alignment.py PASSED)
+| `NB_MASTER_PASSWORD_RECRYPT_CHANGE/SET/CLEAR` present in MsgIDs.h and all .lng files; accessed via `GetMsg()` (no FarPluginStrings entry needed)
 Open questions:
-| Should `TPuttyCleanupThread::Finalize()` use INFINITE wait or a reasonable timeout?
-| Should `TPuttyCleanupThread::Execute()` use a manual-reset event or a waitable timer?
-| **RESOLVED via source read: Current implementation is correct. No code change needed.**
+| **Transaction boundary risk**: MP dialog saves independently; if Security dialog cancelled afterward, MP change is already persisted. Should we warn the user?
+| **Recryption failure leaves inconsistent data**: 47 passwords with new MP, 3 with old MP, old verifier gone. Should failures block the change entirely?
+| **Thread safety**: Lockout tracker is per-instance; multiple Far processes or plugin reload reset counter — weaker than WinSCP's single-process protection.
+| **Changed return value**: `TSecurityConfigurationDialog::Execute()` doesn't surface MP sub-dialog changes in its `Changed` return value.
+| **Visual affordance**: `FUseMpCheck` is now a disabled checkbox; should it be a `TFarText` label instead to avoid implying interactivity?
+| Are there other dialogs (e.g., session editor) with `Save password (protected by master password)` that need similar read-only treatment?
 Success signals:
-| `TPuttyCleanupThread` Sleep calls replaced with WaitForSingleObject
-| `.ai-factory/rules/threading.md` expanded with lock hierarchy and event objects
-| `threading-safety-audit-and-fixes.md` plan marked as STALE/COMPLETE
-| **NEW: threading.md duplicate header fixed, full TCriticalSection inventory added, all 16+ event objects catalogued, Sleep() pattern taxonomy documented**
+| `FUseMpCheck->SetEnabled(false)` in constructor, verified in source
+| `test_master_password` integration test exists (CMakeLists.txt); builds with `-DOPT_CREATE_TESTS=ON`
+| `scripts/verify_lng_alignment.py` PASSED
 Next step:
-| Create plan for TPuttyCleanupThread fix + threading rules expansion (OR implement directly if user prefers)
-| **REVISED: No TPuttyCleanupThread code fix needed — only documentation expansion in threading.md. Transition to /aif-plan to apply.**
+| User decides which open questions to pursue; likely: (a) transaction boundary UX, (b) recryption failure handling, (c) visual affordance change to TFarText
 ## Sessions
 
 ### 2026-05-12 — Stale Plan & Roadmap Cleanup
@@ -407,3 +404,55 @@ Links (paths):
 | `src/filezilla/FtpControlSocket.cpp` (m_SpeedLimitEvent, m_SpeedLimitSync)
 | `src/NetBox/FarDialog.cpp` (Synchronize, idle thread)
 | `src/NetBox/WinSCPFileSystem.cpp` (KeepAlive thread, TTunnelUI guard)
+
+### 2026-05-15 — threading.md Deep Source Audit & Fixes
+
+What changed:
+| Systematic source-level verification of every entry in `.ai-factory/rules/threading.md` section 5.1 (TCriticalSection inventory).
+| Cross-checked 37 candidate synchronization primitives against actual source declarations.
+| Found and fixed 5 classification errors / mislabelings:
+|   1. `TSecureShell::FSocketEvent` — misclassified as lock; it's a `HANDLE` event object (already correctly in section 9). Removed from 5.1 and section 8.
+|   2. `TConsoleCommStruct::FSection` — class `TConsoleCommStruct` has no such member. Actual lock is `TExternalConsole::FSection` at `ConsoleRunner.cpp:566`.
+|   3. `TCallStackLog::FCriticalSection` — class `TCallStackLog` does not exist. Actual lock is `TApplicationLog::FCriticalSection` at `SessionInfo.h:456`.
+|   4. `TTerminalManager::FQueueSection` — member is commented out (`// TCriticalSection * FQueueSection{nullptr};`). Removed from active inventory.
+|   5. `CFtpControlSocket::m_SpeedLimitSync` — type is `CCriticalSectionWrapper` (FileZilla wrapper), not `TCriticalSection`. Added type note.
+| Added 1 missing lock: `TTerminalItem::FCriticalSection` (`Queue.cpp:337`).
+| Updated Lock Hierarchy section 8: removed event, added `TTerminalItem::FCriticalSection`.
+| Final count: 36 active locks + 16 event objects. All source-verified.
+
+Key decisions:
+| No code changes required — all issues were documentation-only inaccuracies.
+| `threading.md` now accurately reflects the live codebase state as of 2026-05-15.
+
+Links (paths):
+| `.ai-factory/rules/threading.md` (updated — all 5 defects fixed)
+| `src/core/SecureShell.cpp:95` (FSocketEvent = CreateEvent — verified event, not lock)
+| `src/windows/ConsoleRunner.cpp:566` (TExternalConsole::FSection — verified TCriticalSection)
+| `src/core/SessionInfo.h:456` (TApplicationLog::FCriticalSection — verified TCriticalSection)
+| `src/windows/TerminalManager.h:118` (FQueueSection commented out — verified inactive)
+| `src/core/Queue.cpp:337` (TTerminalItem::FCriticalSection — added to inventory)
+| `src/filezilla/FtpControlSocket.h:179` (m_SpeedLimitSync = CCriticalSectionWrapper — type note added)
+
+### 2026-05-15 — Master Password Infrastructure Verification
+
+What changed:
+- Full end-to-end trace of `[ ] Use master password` functionality across all layers
+- Found and fixed: `FUseMpCheck` in `TSecurityConfigurationDialog` was interactive but state was never read back — changed to read-only indicator
+- Verified AES256+MAC verifier round-trip, password strength validation, `TSecureString` move semantics
+- Verified brute-force lockout tracker (`TValidationAttemptTracker`) with atomic counters and 30-second lockout
+- Verified all 6 language files aligned (1327 strings each)
+
+Key findings:
+| **Fixed bug**: `FUseMpCheck->SetEnabled(false)` added in `TSecurityConfigurationDialog` constructor (WinSCPDialogs.cpp:1574)
+| **Transaction boundary risk**: MP dialog saves independently via `DoSave(false, false)` on OK; parent Security dialog Cancel leaves partial commit
+| **Recryption failure data loss risk**: `ChangeMasterPassword()`/`ClearMasterPassword()` continue even when `RecryptErrors->GetCount() > 0` — old verifier is gone, failed sessions may be unreadable
+| **Thread safety gap**: Lockout counter is per-plugin-instance; resets on Far unload/reload or multi-instance scenarios
+| **Changed return unreliable**: `TSecurityConfigurationDialog::Execute()` only checks `FRememberPwdCheck` and `FFromPuTTYCheck` for `Changed` flag — MP state changes are invisible to caller
+| **Visual affordance question**: Disabled checkbox may still look interactive to users; `TFarText` label might be clearer
+
+Links (paths):
+| `src/NetBox/WinSCPDialogs.cpp` (TSecurityConfigurationDialog, TMasterPasswordDialog)
+| `src/windows/WinConfiguration.cpp/h` (FUseMasterPassword, verifier, recryption, lockout)
+| `src/NetBox/WinSCPPlugin.cpp` (MasterPasswordPrompt runtime handler)
+| `src/base/MsgIDs.h` + `src/NetBox/*.lng` (i18n alignment)
+| `tests/integration/test_master_password.cpp` (verifier, strength, secure string tests)
