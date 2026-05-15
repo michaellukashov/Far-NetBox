@@ -40,9 +40,8 @@ void CreatePlugin()
 
 void DestroyPlugin()
 {
-  DestroyFarPlugin(FarPlugin);
-  // CleanupVCLCommon();
   TermExtensionModule();
+  DestroyFarPlugin(FarPlugin);
 }
 
 [[noreturn]]

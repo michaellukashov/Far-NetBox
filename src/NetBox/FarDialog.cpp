@@ -91,7 +91,7 @@ TFarDialog::~TFarDialog() noexcept
   {
     TFarDialogItem * Item = GetItem(Index);
     Item->Detach();
-    // TODO: SAFE_DESTROY(Item);
+    SAFE_DESTROY(Item);
   }
 //  SAFE_DESTROY(FItems);
   nb_free(FDialogItems);
