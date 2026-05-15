@@ -1689,6 +1689,43 @@ bool TSecurityConfigurationDialog::Execute()
     Changed = true;
   }
 
+  if (FUseMpCheck->GetChecked() != UseMP)
+  {
+    if (FUseMpCheck->GetChecked())
+    {
+      AppLogFmt(L"SecurityConfigurationDialog: enabling master password");
+      TMasterPasswordDialog MpDialog(GetFarPlugin(), false);
+      if (MpDialog.Execute())
+      {
+        AppLogFmt(L"SecurityConfigurationDialog: master password set");
+        Changed = true;
+      }
+      else
+      {
+        AppLogFmt(L"SecurityConfigurationDialog: master password dialog cancelled");
+      }
+    }
+    else
+    {
+      AppLogFmt(L"SecurityConfigurationDialog: disabling master password");
+      try
+      {
+        std::unique_ptr<TStringList> RecryptErrors(std::make_unique<TStringList>());
+        WinConfiguration->ClearMasterPassword(RecryptErrors.get());
+        if (RecryptErrors->GetCount() > 0)
+        {
+          MessageDialog(FORMAT(GetMsg(NB_MASTER_PASSWORD_RECRYPT_CLEAR).c_str(), RecryptErrors->GetCount()), qtWarning, qaOK);
+        }
+        AppLogFmt(L"SecurityConfigurationDialog: master password cleared");
+        Changed = true;
+      }
+      catch (Exception & e)
+      {
+        AppLogFmt(L"SecurityConfigurationDialog: failed to clear master password: %s", e.Message);
+        MessageDialog(e.Message, qtError, qaOK);
+      }
+    }
+  }
   if (Changed)
   {
     GetConfiguration()->DoSave(false, false);

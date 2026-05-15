@@ -215,6 +215,23 @@ All MsgIDs already match WinSCP's resource strings. No changes expected.
 
 ---
 
+### Task 6: Save `[x] Use master password` checkbox state
+
+**Target:** `src/NetBox/WinSCPDialogs.cpp` — `TSecurityConfigurationDialog::Execute()`
+
+**Gap found:** `FUseMpCheck` checkbox state is read from `WinConfiguration->GetUseMasterPassword()` on dialog open, but never saved back when the dialog is confirmed with OK.
+
+**Fix:**
+|- After `ShowModal() == brOK`, compare `FUseMpCheck->GetChecked()` with initial `UseMP` state.
+|- If checked (was unchecked): open `TMasterPasswordDialog` in set mode (`UseMP=false`) to set a new password.
+|- If unchecked (was checked): call `WinConfiguration->ClearMasterPassword()` to disable master password and recrypt stored passwords.
+|- Handle recryption errors with appropriate warning dialogs.
+|- Log each action at verbose level.
+
+**Verification:** Checking "Use master password" and clicking OK opens the master password set dialog. Unchecking and clicking OK clears the master password with confirmation. The checkbox state persists across dialog reopening.
+
+---
+
 ### Task 5: Fix dialog vertical padding
 
 **Target:** `src/NetBox/WinSCPDialogs.cpp` — `TMasterPasswordDialog` constructor
