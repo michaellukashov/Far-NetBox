@@ -1115,7 +1115,7 @@ TMasterPasswordDialog::TMasterPasswordDialog(TCustomFarPlugin * AFarPlugin, bool
   TWinSCPDialog(AFarPlugin),
   FUseMP(UseMP)
 {
-  SetSize(TPoint(70, 18));
+  SetSize(TPoint(70, 12));
   SetCaption(FORMAT("%s - %s", GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_MASTER_PASSWORD_CAPTION))));
 
   int32_t Top = 2;
@@ -1124,11 +1124,11 @@ TMasterPasswordDialog::TMasterPasswordDialog(TCustomFarPlugin * AFarPlugin, bool
   {
     TFarText * CurrentLabel = MakeOwnedObject<TFarText>(this);
     CurrentLabel->SetCaption(GetMsg(NB_MASTER_PASSWORD_CURRENT));
-    CurrentLabel->SetLeft(3);
+    // CurrentLabel->SetLeft(3);
     CurrentLabel->SetTop(Top++);
 
     FCurrentEdit = MakeOwnedObject<TFarEdit>(this);
-    FCurrentEdit->SetLeft(3);
+    // FCurrentEdit->SetLeft(3);
     FCurrentEdit->SetTop(Top++);
     FCurrentEdit->SetPassword(true);
     FCurrentEdit->SetWidth(60);
@@ -1136,18 +1136,18 @@ TMasterPasswordDialog::TMasterPasswordDialog(TCustomFarPlugin * AFarPlugin, bool
 
   FEnableCheck = MakeOwnedObject<TFarCheckBox>(this);
   FEnableCheck->SetCaption(GetMsg(NB_MASTER_PASSWORD_CAPTION));
-  FEnableCheck->SetLeft(3);
+  // FEnableCheck->SetLeft(3);
   FEnableCheck->SetTop(Top++);
   FEnableCheck->SetChecked(FUseMP);
 
   TFarText * NewLabel = MakeOwnedObject<TFarText>(this);
   NewLabel->SetCaption(GetMsg(NB_MASTER_PASSWORD_NEW));
-  NewLabel->SetLeft(3);
+  // NewLabel->SetLeft(3);
   NewLabel->SetTop(Top++);
   NewLabel->SetEnabledDependency(FEnableCheck);
 
   FNewEdit = MakeOwnedObject<TFarEdit>(this);
-  FNewEdit->SetLeft(3);
+  // FNewEdit->SetLeft(3);
   FNewEdit->SetTop(Top++);
   FNewEdit->SetPassword(true);
   FNewEdit->SetWidth(60);
@@ -1155,18 +1155,27 @@ TMasterPasswordDialog::TMasterPasswordDialog(TCustomFarPlugin * AFarPlugin, bool
 
   TFarText * ConfirmLabel = MakeOwnedObject<TFarText>(this);
   ConfirmLabel->SetCaption(GetMsg(NB_MASTER_PASSWORD_CONFIRM));
-  ConfirmLabel->SetLeft(3);
+  // ConfirmLabel->SetLeft(3);
   ConfirmLabel->SetTop(Top++);
   ConfirmLabel->SetEnabledDependency(FEnableCheck);
 
   FConfirmEdit = MakeOwnedObject<TFarEdit>(this);
-  FConfirmEdit->SetLeft(3);
+  // FConfirmEdit->SetLeft(3);
   FConfirmEdit->SetTop(Top++);
   FConfirmEdit->SetPassword(true);
   FConfirmEdit->SetWidth(60);
   FConfirmEdit->SetEnabledDependency(FEnableCheck);
 
   AddStandardButtons();
+  // Adjust positions
+  const TRect CRect = GetClientRect();
+  ButtonSeparator->SetTop(CRect.Bottom - 1);
+
+  OkButton->SetTop(CRect.Bottom);
+  CancelButton->SetTop(CRect.Bottom);
+  OkButton->SetCenterGroup(true);
+  CancelButton->SetCenterGroup(true);
+  OkButton->SetDefault(true);
 
   // OK starts disabled — enabled only when all visible fields pass IsValidPassword() > 0
   OkButton->SetEnabled(false);

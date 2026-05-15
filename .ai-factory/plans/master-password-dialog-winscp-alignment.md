@@ -217,11 +217,24 @@ All MsgIDs already match WinSCP's resource strings. No changes expected.
 
 ---
 
+### Task 5: Fix dialog vertical padding
+
+**Target:** `src/NetBox/WinSCPDialogs.cpp` — `TMasterPasswordDialog` constructor
+
+**Gap found:** Dialog height `18` leaves ~7 empty rows below the buttons. Content (max 7 rows) + separator/buttons (2 rows) + borders (2 rows) needs only ~12 rows.
+
+**Fix:**
+|- Reduce `SetSize(TPoint(70, 18))` to `SetSize(TPoint(70, 12))`.
+
+**Verification:** Dialog renders compactly with no trailing empty rows in either set mode or change mode.
+---
+
 ## Commit Plan
 
 1. `fix(ui): add real-time OK enable/disable to master password dialog` — Task 1
 2. `fix(ui): reorder master password validation to match WinSCP` — Task 2
 3. `fix(ui): wire Change master password button to Use master password checkbox` — Task 4
+4. `fix(ui): reduce excessive vertical padding in master password dialog` — Task 5
 
 ---
 
