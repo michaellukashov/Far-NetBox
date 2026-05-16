@@ -161,7 +161,7 @@ CTime CFtpControlSocket::m_CurrentTransferTime[2] = { CTime::GetCurrentTime(), C
 _int64 CFtpControlSocket::m_CurrentTransferLimit[2] = {0, 0};
 
 CCriticalSectionWrapper CFtpControlSocket::m_SpeedLimitSync;
-HANDLE CFtpControlSocket::m_SpeedLimitEvent = nullptr;
+HANDLE CFtpControlSocket::m_SpeedLimitSemaphore = nullptr;
 
 #define BUFSIZE 16384
 
@@ -6055,10 +6055,12 @@ _int64 CFtpControlSocket::GetAbleToUDSize(bool &beenWaiting, CTime &curTime, _in
             return 0;
           }
         }
-        if (m_SpeedLimitEvent == nullptr)
-          m_SpeedLimitEvent = ::CreateEvent(nullptr, FALSE, FALSE, nullptr);
+        // Use a semaphore so signals accumulate; no wakeup is lost across the
+        // Unlock/Wait/Lock window (auto-reset events would lose the signal).
+        if (m_SpeedLimitSemaphore == nullptr)
+          m_SpeedLimitSemaphore = ::CreateSemaphore(nullptr, 0, 0x7FFFFFFF, nullptr);
         m_SpeedLimitSync.Unlock();
-        ::WaitForSingleObject(m_SpeedLimitEvent, 100);
+        ::WaitForSingleObject(m_SpeedLimitSemaphore, 100);
         m_SpeedLimitSync.Lock();
         nowTime = CTime::GetCurrentTime();
         beenWaiting = true;
@@ -6177,8 +6179,8 @@ BOOL CFtpControlSocket::SpeedLimitAddTransferredBytes(enum transferDirection dir
       else
         iter->nBytesAvailable = 0;
       iter->nBytesTransferred += nBytesTransferred;
-      if (m_SpeedLimitEvent != nullptr)
-        ::SetEvent(m_SpeedLimitEvent);
+      if (m_SpeedLimitSemaphore != nullptr)
+        ::ReleaseSemaphore(m_SpeedLimitSemaphore, 1, nullptr);
       m_SpeedLimitSync.Unlock();
       return TRUE;
     }
