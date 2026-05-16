@@ -192,7 +192,7 @@ TCustomFarPlugin::~TCustomFarPlugin() noexcept
   while (FOpenedPlugins->GetCount() > 0)
   {
     TCustomFarFileSystem * FileSystem = FOpenedPlugins->GetAs<TCustomFarFileSystem>(0);
-    DEBUG_PRINTFA("Closing file system %p", FileSystem);
+    DEBUG_PRINTFA("Closing file system %p", static_cast<void*>(FileSystem));
     try__finally
     {
       CloseFileSystem(FileSystem);

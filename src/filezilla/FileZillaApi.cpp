@@ -53,7 +53,7 @@ int CFileZillaApi::Init(TFileZillaIntern * Intern, CFileZillaTools * pTools)
 
   //Initialization OK
   m_bInitialized=TRUE;
-  DEBUG_PRINTFA("CFileZillaApi::Init OK (thread=%p)", m_pMainThread);
+  DEBUG_PRINTFA("CFileZillaApi::Init OK (thread=%p)", static_cast<void*>(m_pMainThread));
   return FZ_REPLY_OK;
 }
 
@@ -154,7 +154,7 @@ void CFileZillaApi::Destroy()
     hDup = tmp; // fall back to original handle
   }
 
-  DEBUG_PRINTFA("CFileZillaApi::Destroy: calling Quit on thread %p", m_pMainThread);
+  DEBUG_PRINTFA("CFileZillaApi::Destroy: calling Quit on thread %p", static_cast<void*>(m_pMainThread));
   m_pMainThread->Quit();
 
   // Wait for the main thread to quit — up to 30 seconds.

@@ -406,7 +406,7 @@ void TFTPFileSystem::Init(void *)
 
 TFTPFileSystem::~TFTPFileSystem() noexcept
 {
-  DEBUG_PRINTFA("~TFTPFileSystem (filelist=%p)", FFileList);
+  DEBUG_PRINTFA("~TFTPFileSystem (filelist=%p)", static_cast<void*>(FFileList));
   DebugAssert(FFileList == nullptr);
 
   if (FFileZillaIntf)

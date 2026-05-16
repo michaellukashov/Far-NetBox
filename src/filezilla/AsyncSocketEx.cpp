@@ -73,12 +73,12 @@ public:
     m_hWnd=CreateWindow(L"CAsyncSocketEx Helper Window", L"CAsyncSocketEx Helper Window", 0, 0, 0, 0, 0, 0, 0, GetModuleHandle(0), 0);
     DebugAssert(m_hWnd);
     SetWindowLongPtr(m_hWnd, GWL_USERDATA, (LONG_PTR)this);
-    DEBUG_PRINTFA("CAsyncSocketExHelperWindow created (hwnd=%p this=%p)", m_hWnd, this);
+    DEBUG_PRINTFA("CAsyncSocketExHelperWindow created (hwnd=%p this=%p)", static_cast<void*>(m_hWnd), static_cast<void*>(this));
   }
 
   virtual ~CAsyncSocketExHelperWindow()
   {
-    DEBUG_PRINTFA("~CAsyncSocketExHelperWindow (hwnd=%p this=%p)", m_hWnd, this);
+    DEBUG_PRINTFA("~CAsyncSocketExHelperWindow (hwnd=%p this=%p)", static_cast<void*>(m_hWnd), static_cast<void*>(this));
     //Clean up socket storage
     nb_free(m_pAsyncSocketExWindowData);
     m_pAsyncSocketExWindowData=0;

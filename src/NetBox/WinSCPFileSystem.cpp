@@ -280,7 +280,7 @@ void TKeepAliveThread::InitKeepaliveThread()
 
 void TKeepAliveThread::Terminate()
 {
-  DEBUG_PRINTFA("TKeepAliveThread::Terminate (event=%p)", FEvent);
+  DEBUG_PRINTFA("TKeepAliveThread::Terminate (event=%p)", static_cast<void*>(FEvent));
   // TCompThread::Terminate();
   ::SetEvent(FEvent);
 }
@@ -316,7 +316,7 @@ void TWinSCPFileSystem::InitWinSCPFileSystem(const TSecureShell * /*SecureShell*
 
 TWinSCPFileSystem::~TWinSCPFileSystem() noexcept
 {
-  DEBUG_PRINTFA("~TWinSCPFileSystem (terminal=%p)", FTerminal);
+  DEBUG_PRINTFA("~TWinSCPFileSystem (terminal=%p)", static_cast<void*>(FTerminal));
   // DEBUG_PRINTF("begin");
   Disconnect();
   // SAFE_DESTROY(FPathHistory);
@@ -3613,7 +3613,7 @@ void TWinSCPFileSystem::SetPrevSessionName(const UnicodeString & Value)
 
 void TWinSCPFileSystem::Disconnect()
 {
-  DEBUG_PRINTFA("TWinSCPFileSystem::Disconnect begin (terminal=%p)", FTerminal);
+  DEBUG_PRINTFA("TWinSCPFileSystem::Disconnect begin (terminal=%p)", static_cast<void*>(FTerminal));
   if (FTerminal && FTerminal->GetActive())
   {
     if (!GetSessionData()->GetName().IsEmpty())
