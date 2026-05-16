@@ -78,6 +78,10 @@ static UnicodeString MungeStr(const UnicodeString & Str, bool ForceAnsi, bool Va
 
 static UnicodeString UnMungeStr(const UnicodeString & Str)
 {
+  if (Str.IsEmpty())
+  {
+    return UnicodeString();
+  }
   // Str should contain ASCII characters only
   const RawByteString Source = AnsiString(Str);
   strbuf * sb = strbuf_new();

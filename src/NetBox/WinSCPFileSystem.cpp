@@ -3319,9 +3319,17 @@ bool TWinSCPFileSystem::ImportSessions(TObjectList * PanelItems, bool /*Move*/,
             return false;
           }
         }
-        GetStoredSessions()->Load(ImportStorage.get(), /*AsModified*/ true, /*UseDefaults*/ true);
-        // modified only, explicit
-        GetStoredSessions()->Save(false, true);
+        try
+        {
+          GetStoredSessions()->Load(ImportStorage.get(), /*AsModified*/ true, /*UseDefaults*/ true);
+          // modified only, explicit
+          GetStoredSessions()->Save(false, true);
+        }
+        catch (Exception & E)
+        {
+          AppLogFmt(L"[FIX] ImportSessions: failed to load sessions from %s: %s", FileName, E.Message);
+          throw;
+        }
       }
 
       if (!AnyData)

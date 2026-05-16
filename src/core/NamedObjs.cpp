@@ -23,7 +23,7 @@ TNamedObject::TNamedObject(TObjectClassId Kind, const UnicodeString & AName) noe
 
 void TNamedObject::SetName(const UnicodeString & Value)
 {
-  FHidden = (Value.SubString(1, StrLength(TNamedObjectList::HiddenPrefix)) == TNamedObjectList::HiddenPrefix);
+  FHidden = (!Value.IsEmpty() && (Value.SubString(1, StrLength(TNamedObjectList::HiddenPrefix)) == TNamedObjectList::HiddenPrefix));
   FName = Value;
 }
 

@@ -523,8 +523,22 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t I
           Abort();
         }
         const UnicodeString SessionName = ::PuttyUnMungeStr(ImportStorage->ReadStringRaw("Session", ""));
+        AppLogFmt(L"[FIX] OpenPluginEx OPEN_ANALYSE: session name='%s' from file %s", SessionName, XmlFileName);
+        if (SessionName.IsEmpty())
+        {
+          AppLogFmt(L"[FIX] OpenPluginEx OPEN_ANALYSE: empty session name in %s, aborting", XmlFileName);
+          Abort();
+        }
         std::unique_ptr<TSessionData> Session(std::make_unique<TSessionData>(SessionName));
-        Session->Load(ImportStorage.get(), false);
+        try
+        {
+          Session->Load(ImportStorage.get(), false);
+        }
+        catch (Exception & E)
+        {
+          AppLogFmt(L"[FIX] OpenPluginEx OPEN_ANALYSE: failed to load session '%s' from %s: %s", SessionName, XmlFileName, E.Message);
+          throw;
+        }
         Session->SetModified(true);
         if (!Session->GetCanLogin())
         {
