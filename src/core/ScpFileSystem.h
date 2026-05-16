@@ -94,9 +94,9 @@ public:
   void Init(void * /*TSecureShell * */) override;
   void FileTransferProgress(int64_t /*TransferSize*/, int64_t /*Bytes*/) override {}
 protected:
-  __property TStrings * Output = { read = FOutput.get() };
+  __property TStrings * Output = { read = FOutput };
   const ROProperty<TStrings *> Output{nb::bind(&TSCPFileSystem::GetOutput, this)};
-  __property int ReturnCode = { read = FReturnCode };
+  __property int32_t ReturnCode = { read = FReturnCode };
   const ROProperty2<int32_t> ReturnCode{&FReturnCode};
 
   TStrings * GetOutput() const { return FOutput.get(); }
@@ -111,11 +111,13 @@ private:
   TFileSystemInfo FFileSystemInfo;
   UnicodeString FCurrentDirectory;
   std::unique_ptr<TStrings> FOutput;
-  int32_t FReturnCode{0};
+  mutable int32_t FReturnCode{0};
   UnicodeString FCachedDirectoryChange;
   bool FProcessingCommand{false};
   int32_t FLsFullTime{asAuto};
   TCaptureOutputEvent FOnCaptureOutput;
+  bool FNeedsSessionReset{false};
+  UnicodeString FLastDirectory;
   bool FScpFatalError{false};
 
   void DetectUtf();
@@ -124,20 +126,24 @@ private:
   void CustomReadFile(const UnicodeString & AFileName,
     TRemoteFile *& AFile, TRemoteFile * ALinkedByFile);
   void DetectReturnVar();
-  bool IsLastLine(UnicodeString & Line);
+  bool TryRemoveLastLine(UnicodeString & ALine) const;
+  bool IsLastLine(const UnicodeString & ALine) const;
   static bool IsTotalListingLine(const UnicodeString & ALine);
   void EnsureLocation();
-  // void ExecCommand(TFSCommand Cmd, const TVarRec * args = nullptr,
-  //  int32_t size = 0, int32_t Params = -1);
+#if defined(__BORLANDC__)
+  void ExecCommand(TFSCommand Cmd, const TVarRec * args = nullptr,
+    int32_t size = 0, int32_t Params = -1);
+#endif // defined(__BORLANDC__)
   void ExecCommand(TFSCommand Cmd, int32_t Params, fmt::ArgList args);
   FMT_VARIADIC_W(void, ExecCommand, TFSCommand, int32_t)
-  void InvalidOutputError(const UnicodeString & Command);
+  void ReconnectSession();
+  NORETURN void InvalidOutputError(const UnicodeString & Command);
   void ReadCommandOutput(int32_t Params, const UnicodeString * Cmd = nullptr);
   void SCPResponse(bool * GotLastLine = nullptr);
   void SCPDirectorySource(const UnicodeString & ADirectoryName,
     const UnicodeString & ATargetDir, const TCopyParamType * CopyParam, int32_t Params,
     TFileOperationProgressType * OperationProgress, int32_t Level);
-  void SCPError(const UnicodeString & Message, bool Fatal);
+  NORETURN void SCPError(const UnicodeString & Message, bool Fatal);
   void SCPSendError(const UnicodeString & Message, bool Fatal);
   void SCPSink(const UnicodeString & ATargetDir,
     const UnicodeString & AFileName, const UnicodeString & ASourceDir,
