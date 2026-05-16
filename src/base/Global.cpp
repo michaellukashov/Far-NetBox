@@ -1,6 +1,8 @@
 
 #include <vcl.h>
-//#pragma hdrstop
+#if defined(__BORLANDC__)
+#pragma hdrstop
+#endif // defined(__BORLANDC__)
 
 #ifdef _DEBUG
 //#include <cstdio>
@@ -8,7 +10,7 @@
 #include <Interface.h>
 #endif // ifdef _DEBUG
 
-#include <Global.h>
+#include "Global.h"
 
 #if defined(__BORLANDC__)
 #pragma package(smart_init)
@@ -22,6 +24,16 @@ UnicodeString NormalizeString(const UnicodeString & S)
   if (Result == L"\1\1\1")
   {
     Result = UnicodeString();
+  }
+  return Result;
+}
+
+UnicodeString DenormalizeString(const UnicodeString & S)
+{
+  UnicodeString Result = S;
+  if (Result.IsEmpty())
+  {
+    Result = EmptyStr;
   }
   return Result;
 }
@@ -41,7 +53,7 @@ TGuard::~TGuard() noexcept
 
 // TUnguard
 
-TUnguard::TUnguard(TCriticalSection & ACriticalSection) noexcept :
+TUnguard::TUnguard(const TCriticalSection & ACriticalSection) noexcept :
   FCriticalSection(ACriticalSection)
 {
   FCriticalSection.Leave();
@@ -55,14 +67,18 @@ TUnguard::~TUnguard() noexcept
 #ifdef _DEBUG
 
 static HANDLE TraceFile = nullptr;
+static TCriticalSection TracingCriticalSection;
 bool IsTracing = false;
 const uint32_t CallstackTlsOff = static_cast<uint32_t>(-1);
 uint32_t CallstackTls = CallstackTlsOff;
-TCriticalSection * TracingCriticalSection = nullptr;
 
 bool TracingInMemory = false;
 HANDLE TracingThread = nullptr;
-
+// Thread-safety inventory (debug-only):
+// - TraceFile / IsTracing: guarded by TracingCriticalSection in WriteTraceBuffer and SetTraceFile.
+// - TracingCriticalSection: static object, initialized before main().
+// - CallstackTls: set once during startup; read without lock (TLS index).
+// - TracingInMemory / TracingThread: set during startup; no worker access.
 #define DirectTrace(MESSAGE) \
   DoDirectTrace(GetCurrentThreadId(), TEXT(__FILE__), TEXT(__FUNC__), __LINE__, (MESSAGE))
 // Map to DirectTrace(MESSAGE) to enable tracing of in-memory tracing
@@ -85,10 +101,13 @@ inline static UTF8String TraceFormat(const TDateTime & Time, DWORD Thread, const
 
 inline static void WriteTraceBuffer(const char * Buffer, size_t Length)
 {
-  DWORD Written;
-  ::WriteFile(TraceFile, Buffer, static_cast<DWORD>(Length), &Written, nullptr);
+  const TGuard Guard(TracingCriticalSection);
+  if (TraceFile != nullptr)
+  {
+    DWORD Written;
+    ::WriteFile(TraceFile, Buffer, static_cast<DWORD>(Length), &Written, nullptr);
+  }
 }
-
 inline static void DoDirectTrace(DWORD Thread, const wchar_t * SourceFile,
   const wchar_t * Func, int32_t Line, const wchar_t * Message)
 {
@@ -98,21 +117,16 @@ inline static void DoDirectTrace(DWORD Thread, const wchar_t * SourceFile,
 
 void SetTraceFile(HANDLE ATraceFile)
 {
+  const TGuard Guard(TracingCriticalSection);
   TraceFile = ATraceFile;
   IsTracing = (TraceFile != nullptr);
-  if (TracingCriticalSection == nullptr)
-  {
-    TracingCriticalSection = new TCriticalSection();
-  }
 }
 
 void CleanupTracing()
 {
-  if (TracingCriticalSection != nullptr)
-  {
-    delete TracingCriticalSection;
-    TracingCriticalSection = nullptr;
-  }
+  const TGuard Guard(TracingCriticalSection);
+  TraceFile = nullptr;
+  IsTracing = false;
 }
 
 #ifndef TRACE_IN_MEMORY_NO_FORMATTING
@@ -133,16 +147,16 @@ void DoTrace(const wchar_t * SourceFile, const wchar_t * Func,
   UTF8String Buffer = UTF8String(FORMAT("[%s] [%.4X] [%s:%d:%s] %s\n",
     TimeString, nb::ToInt32(::GetCurrentThreadId()), SourceFile,
     Line, Func, Message));
-  DWORD Written;
-  WriteFile(TraceFile, Buffer.c_str(), nb::ToDWord(Buffer.Length()), &Written, nullptr);
+  WriteTraceBuffer(Buffer.c_str(), Buffer.Length());
 }
 
 void DoTraceFmt(const wchar_t * SourceFile, const wchar_t * Func,
   uint32_t Line, const wchar_t * AFormat, fmt::ArgList args)
 {
-  DebugAssert(IsTracing);
-
-  UnicodeString Message = nb::Format(AFormat, args);
+  // No naked IsTracing read; WriteTraceBuffer() handles inactive tracing
+  // under TracingCriticalSection. Removed DebugAssert(IsTracing) to avoid
+  // data race with SetTraceFile() on another thread.
+  const UnicodeString Message = nb::Format(AFormat, args);
   DoTrace(SourceFile, Func, Line, Message.c_str());
 }
 
@@ -150,10 +164,9 @@ void DoTraceFmt(const wchar_t * SourceFile, const wchar_t * Func,
 
 void DoAssert(const wchar_t * Message, const wchar_t * Filename, int32_t LineNumber)
 {
-  if (IsTracing)
-  {
-    DoTrace(Filename, L"assert", LineNumber, Message);
-  }
+  // WriteTraceBuffer() already skips when TraceFile is nullptr under lock,
+  // so no need for a naked IsTracing read that races with SetTraceFile().
+  DoTrace(Filename, L"assert", LineNumber, Message);
   _wassert(Message, Filename, static_cast<uint32_t>(LineNumber));
 }
 
@@ -168,7 +181,7 @@ NB_CORE_EXPORT extern "C" void DoAssertC(char * Message, char * Filename, int32_
 namespace os::debug
 {
 
-void SetThreadName(HANDLE ThreadHandle, const UnicodeString & Name)
+void SetThreadName(HANDLE ThreadHandle, const UnicodeString & AName)
 {
   // from osquery\osquery\core\system.cpp
 #if defined(WIN32)
@@ -180,7 +193,7 @@ void SetThreadName(HANDLE ThreadHandle, const UnicodeString & Name)
     GetProcAddress(GetModuleHandleA("Kernel32.dll"), "SetThreadDescription"));
   if (pfnSetThreadDescription != nullptr)
   {
-    HRESULT hr = pfnSetThreadDescription(ThreadHandle, Name.c_str());
+    HRESULT hr = pfnSetThreadDescription(ThreadHandle, AName.c_str());
     if (!FAILED(hr))
     {
       // DEBUG_PRINTF("SetThreadDescription: success");

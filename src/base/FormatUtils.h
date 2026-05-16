@@ -10,6 +10,8 @@
 
 #include "UnicodeString.hpp"
 
+class TDateTime;
+
 namespace nb {
 
 NB_CORE_EXPORT UnicodeString Format(const UnicodeString & fmt, fmt::ArgList args);
@@ -20,6 +22,13 @@ FMT_VARIADIC_W(UnicodeString, Sprintf, const UnicodeString &)
 
 NB_CORE_EXPORT UnicodeString FmtLoadStr(int32_t id, fmt::ArgList args);
 FMT_VARIADIC_W(UnicodeString, FmtLoadStr, int32_t)
+
+NB_CORE_EXPORT UnicodeString DateTimeToStr(const TDateTime & DateTime);
+
+// Escape % characters in a string to prevent CWE-134 format string
+// vulnerability when passing untrusted data to FMTLOAD/FORMAT.
+// Doubles every % to %% which fmt interprets as a literal %.
+NB_CORE_EXPORT UnicodeString EscapeFmtChars(const UnicodeString & Str);
 
 } // namespace nb
 

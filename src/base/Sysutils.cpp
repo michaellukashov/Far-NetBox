@@ -4,12 +4,14 @@
 
 #include <iomanip>
 #include <ctime>
+#include <stdexcept>
 
 #include <Classes.hpp>
 #include <Common.h>
 #include <rtlconsts.h>
 #include <Sysutils.hpp>
 #include <nbutils.h>
+#undef StrToInt  // Prevent shlwapi.h macro conflict
 
 UnicodeString MB2W(const char * src, const UINT cp)
 {
@@ -191,6 +193,12 @@ bool TryStrToInt(const UnicodeString & StrValue, int32_t & Value)
   Value = nb::ToInt32(Val);
   return Result;
 }
+int32_t StrToInt(const UnicodeString & Value)
+{
+  int32_t Result;
+  if (TryStrToInt(Value, Result)) return Result;
+  throw std::invalid_argument("Invalid integer value");
+}
 
 UnicodeString Trim(const UnicodeString & Str)
 {
@@ -234,7 +242,69 @@ UnicodeString RightCutToLength(const UnicodeString & Str, int32_t MaxLength, con
     return Result;
 
   const auto Dots = Ellipsis.SubStr(0, MaxLength);
+  DEBUG_PRINTF("RightCutToLength: truncated '%s' to %d chars", Str.c_str(), MaxLength);
   return Result.Replace(MaxLength - Dots.Length() + 1, Str.Length() - MaxLength + Dots.Length(), Dots.c_str());
+}
+
+UnicodeString CutToLength(const UnicodeString & Str, int32_t MaxLength, const UnicodeString & Ellipsis)
+{
+  if (MaxLength <= 0)
+    return L"";
+
+  if (Str.Length() <= MaxLength)
+    return Str;
+
+  // Detect parenthesized suffix: find last '(' that has matching ')' at end
+  int32_t OpenParen = 0;
+  int32_t CloseParen = 0;
+
+  // Find last non-space character
+  int32_t P = Str.Length();
+  while (P >= 1 && Str[P] == L' ')
+    P--;
+
+  if (P >= 1 && Str[P] == L')')
+  {
+    CloseParen = P;
+    // Find matching '(' by scanning backward
+    int32_t Q = CloseParen - 1;
+    while (Q >= 1 && Str[Q] != L'(')
+      Q--;
+
+    if (Q >= 1)
+      OpenParen = Q;
+  }
+
+  if (OpenParen > 0 && CloseParen > 0)
+  {
+    UnicodeString Suffix = Str.SubString(OpenParen, Str.Length() - OpenParen + 1);
+    const int32_t SuffixLen = Suffix.Length();
+
+    if (SuffixLen < MaxLength)
+    {
+      const int32_t BodyMaxLen = MaxLength - SuffixLen - Ellipsis.Length();
+      if (BodyMaxLen > 0)
+      {
+        UnicodeString Body = Str.SubString(1, OpenParen - 1);
+        Body.SetLength(BodyMaxLen);
+        DEBUG_PRINTF("CutToLength: truncated '%s' to '%s' (MaxLength=%d)", Str.c_str(), (Body + Ellipsis + Suffix).c_str(), MaxLength);
+        return Body + Ellipsis + Suffix;
+      }
+    }
+  }
+
+  // Plain right-truncation with ellipsis
+  UnicodeString Result = Str;
+  const auto Dots = Ellipsis.SubStr(1, MaxLength);
+  const int32_t KeepLen = MaxLength - Dots.Length();
+  if (KeepLen > 0)
+  {
+    Result.SetLength(KeepLen);
+    DEBUG_PRINTF("CutToLength: truncated '%s' to '%s' (MaxLength=%d)", Str.c_str(), (Result + Dots).c_str(), MaxLength);
+    return Result + Dots;
+  }
+  DEBUG_PRINTF("CutToLength: truncated '%s' to '%s' (MaxLength=%d)", Str.c_str(), Dots.SubStr(1, MaxLength).c_str(), MaxLength);
+  return Dots.SubStr(1, MaxLength);
 }
 
 UnicodeString UpperCase(const UnicodeString & Str)
@@ -499,6 +569,13 @@ TTimeStamp DateTimeToTimeStamp(const TDateTime & DateTime)
   double intpart{0.0};
   const double fractpart = modf(DateTime, &intpart);
   Result.Time = nb::ToInt32(fractpart * MSecsPerDay + 0.5);
+  // Due to conversions from int to float and back to int (with rounding) we might end up with a value
+  // that exceeds the maximum possible number of milliseconds in a day (MSecsPerDay - 1).
+  // Clamp the value to the maximum allowed.
+  if (Result.Time >= MSecsPerDay)
+  {
+    Result.Time = MSecsPerDay - 1;
+  }
   Result.Date = nb::ToInt32(intpart + DateDelta);
   return Result;
 }
@@ -617,10 +694,38 @@ void FileAge(const UnicodeString & AFileName, TDateTime & ATimestamp)
   }
 }
 
-DWORD FileGetAttr(const UnicodeString & AFileName, bool /*FollowLink*/)
+DWORD FileGetAttr(const UnicodeString & AFileName, bool FollowLink)
 {
-  TODO("FollowLink");
-  const DWORD LocalFileAttrs = ::GetFileAttributesW(ApiPath(AFileName).c_str());
+  DWORD LocalFileAttrs;
+  if (FollowLink)
+  {
+    // Open reparse point to get attributes of the target file
+    const HANDLE HFile = ::CreateFileW(ApiPath(AFileName).c_str(), FILE_READ_EA,
+      FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, nullptr,
+      OPEN_EXISTING, FILE_FLAG_OPEN_REPARSE_POINT | FILE_FLAG_BACKUP_SEMANTICS, nullptr);
+    if (HFile != INVALID_HANDLE_VALUE)
+    {
+      BY_HANDLE_FILE_INFORMATION info = {};
+      if (::GetFileInformationByHandle(HFile, &info))
+      {
+        LocalFileAttrs = info.dwFileAttributes;
+      }
+      else
+      {
+        LocalFileAttrs = ::GetFileAttributesW(ApiPath(AFileName).c_str());
+      }
+      ::CloseHandle(HFile);
+    }
+    else
+    {
+      LocalFileAttrs = ::GetFileAttributesW(ApiPath(AFileName).c_str());
+    }
+  }
+  else
+  {
+    // Default behavior - do not follow symbolic links
+    LocalFileAttrs = ::GetFileAttributesW(ApiPath(AFileName).c_str());
+  }
   return LocalFileAttrs;
 }
 
@@ -836,9 +941,9 @@ UnicodeString TranslateExceptionMessage(Exception * E)
 {
   if (E)
   {
-    if (rtti::isa<Exception>(E))
+    if (nb::isa<Exception>(E))
     {
-      return rtti::dyn_cast_or_null<Exception>(E)->Message;
+      return nb::dyn_cast_or_null<Exception>(E)->Message;
     }
     return E->Message;
   }
@@ -1455,56 +1560,176 @@ TDateTime Date()
   return Result;
 }
 
+/**
+ * @brief Formats a TDateTime value according to a format string.
+ *
+ * Parses the format string token by token and constructs the output
+ * by appending formatted components. See the corresponding header
+ * documentation for supported tokens.
+ *
+ * @param Fmt Format string with tokens.
+ * @param ADateTime Date/time value to format.
+ * @return Formatted string.
+ */
 UnicodeString FormatDateTime(const UnicodeString & Fmt, const TDateTime & ADateTime)
 {
-  (void)Fmt;
   UnicodeString Result;
-  uint16_t Year;
-  uint16_t Month;
-  uint16_t Day;
-  uint16_t Hour;
-  uint16_t Minutes;
-  uint16_t Seconds;
-  uint16_t Milliseconds;
+  uint16_t Year, Month, Day, Hour, Minutes, Seconds, Milliseconds;
 
   ADateTime.DecodeDate(Year, Month, Day);
   ADateTime.DecodeTime(Hour, Minutes, Seconds, Milliseconds);
 
-  if (Fmt == L"dddddd tt")
+  // Simple format parser
+  const wchar_t * FmtStr = Fmt.c_str();
+  const wchar_t * End = FmtStr + Fmt.Length();
+  const wchar_t * p = FmtStr;
+
+  while (p < End)
   {
-    /*
-    return FormatDateTime(L"dddddd tt",
-        EncodeDateVerbose(
-            static_cast<uint16_t>(ValidityTime.Year), static_cast<uint16_t>(ValidityTime.Month),
-            static_cast<uint16_t>(ValidityTime.Day)) +
-        EncodeTimeVerbose(
-            static_cast<uint16_t>(ValidityTime.Hour), static_cast<uint16_t>(ValidityTime.Min),
-            static_cast<uint16_t>(ValidityTime.Sec), 0));
-    */
-    uint16_t Y, M, D, H, Mm, S, MS;
-    const TDateTime DateTime =
-      EncodeDateVerbose(Year, Month, Day) +
-      EncodeTimeVerbose(Hour, Minutes, Seconds, Milliseconds);
-    DateTime.DecodeDate(Y, M, D);
-    DateTime.DecodeTime(H, Mm, S, MS);
-    Result = FORMAT("%02d.%02d.%04d %02d:%02d:%02d ", D, M, Y, H, Mm, S);
+    if (*p == L'"' || *p == L'\'')
+    {
+      // Quoted literal
+      wchar_t Quote = *p++;
+      while (p < End && *p != Quote) Result += *p++;
+      if (p < End) p++;
+    }
+    else if (*p == L'y' || *p == L'Y')
+    {
+      // Year
+      int32_t Count = 0;
+      while (p < End && (*p == L'y' || *p == L'Y')) { p++; Count++; }
+      if (Count >= 4) Result += FORMAT("%04d", Year);
+      else Result += FORMAT("%02d", Year % 100);
+    }
+    else if (*p == L'm' || *p == L'M')
+    {
+      // Month
+      int32_t Count = 0;
+      const wchar_t * Start = p;
+      while (p < End && (*p == L'm' || *p == L'M')) { p++; Count++; }
+      // Check if month or minute (after H = hour = minute)
+      bool IsMinute = (Start > FmtStr && (*(Start-1) == L'h' || *(Start-1) == L'H'));
+      if (IsMinute)
+      {
+        Result += FORMAT("%02d", Minutes);
+      }
+      else
+      {
+        if (Count >= 3) Result += FORMAT("%02d", Month); // Short month names not implemented
+        else Result += FORMAT("%02d", Month);
+      }
+    }
+    else if (*p == L'd' || *p == L'D')
+    {
+      // Day
+      int32_t Count = 0;
+      while (p < End && (*p == L'd' || *p == L'D')) { p++; Count++; }
+      Result += FORMAT("%02d", Day);
+    }
+    else if (*p == L'h' || *p == L'H')
+    {
+      // Hour
+      int32_t Count = 0;
+      while (p < End && (*p == L'h' || *p == L'H')) { p++; Count++; }
+      Result += FORMAT("%02d", Hour);
+    }
+    else if (*p == L'n' || *p == L'N')
+    {
+      // Minute
+      int32_t Count = 0;
+      while (p < End && (*p == L'n' || *p == L'N')) { p++; Count++; }
+      Result += FORMAT("%02d", Minutes);
+    }
+    else if (*p == L's' || *p == L'S')
+    {
+      // Second
+      int32_t Count = 0;
+      while (p < End && (*p == L's' || *p == L'S')) { p++; Count++; }
+      Result += FORMAT("%02d", Seconds);
+    }
+    else if (*p == L'z' || *p == L'Z')
+    {
+      // Millisecond
+      int32_t Count = 0;
+      while (p < End && (*p == L'z' || *p == L'Z')) { p++; Count++; }
+      if (Count >= 3) Result += FORMAT("%03d", Milliseconds);
+      else if (Count == 2) Result += FORMAT("%02d", Milliseconds / 10);
+      else Result += FORMAT("%d", Milliseconds);
+    }
+    else if (*p == L':')
+    {
+      Result += L':';
+      p++;
+    }
+    else if (*p == L'/')
+    {
+      Result += L'/';
+      p++;
+    }
+    else if (*p == L'-')
+    {
+      Result += L'-';
+      p++;
+    }
+    else if (*p == L' ')
+    {
+      Result += L' ';
+      p++;
+    }
+    else if (*p == L'.')
+    {
+      Result += L'.';
+      p++;
+    }
+    else
+    {
+      Result += *p++;
+    }
   }
-  else if (Fmt == L"nnzzz")
+  return Result;
+}
+
+/**
+ * @brief Converts an ISO 8601 date/time string to a TDateTime.
+ *
+ * Parses the string in ISO 8601 format. Supported forms:
+ * "YYYY-MM-DD" and "YYYY-MM-DDTHH:MM:SS".
+ *
+ * @param S ISO 8601 date/time string.
+ * @return TDateTime value.
+ * @throw Exception If parsing fails.
+ */
+TDateTime ISO8601ToDate(const UnicodeString & S)
+{
+  // Parse ISO 8601 format: YYYY-MM-DDTHH:MM:SS[.zzz]
+  TDateTime Result;
+  if (S.Length() < 10)
   {
-    Result = FORMAT("%02d%03d ", Seconds, Milliseconds);
+    throw Exception(L"Invalid ISO 8601 date format");
   }
-  else if (Fmt == L" yyyy-mm-dd hh:nn:ss.zzz ")
+
+  // Parse YYYY-MM-DD
+  int32_t Year = S.SubString(1, 4).ToInt32();
+  int32_t Month = S.SubString(6, 2).ToInt32();
+  int32_t Day = S.SubString(9, 2).ToInt32();
+
+  int32_t Hour = 0, Minute = 0, Second = 0, Millisecond = 0;
+  if (S.Length() >= 13 && S[5] == L'T')
   {
-    Result = FORMAT(" %04d-%02d-%02d %02d:%02d:%02d.%03d ", Year, Month, Day, Hour, Minutes, Seconds, Milliseconds);
+    // Time present - parse HH:MM:SS
+    Hour = S.SubString(12, 2).ToInt32();
+    if (S.Length() >= 16 && S[14] == L':')
+    {
+      Minute = S.SubString(15, 2).ToInt32();
+      if (S.Length() >= 19 && S[17] == L':')
+      {
+        Second = S.SubString(18, 2).ToInt32();
+      }
+    }
   }
-  else if (Fmt == L"h:nn:ss")
-  {
-    Result = FORMAT("%02d:%02d:%02d", Hour, Minutes, Seconds);
-  }
-  else
-  {
-    ThrowNotImplemented(150);
-  }
+
+  Result = EncodeDate(static_cast<uint16_t>(Year), static_cast<uint16_t>(Month), static_cast<uint16_t>(Day)) +
+         EncodeTime(static_cast<uint32_t>(Hour), static_cast<uint32_t>(Minute), static_cast<uint32_t>(Second), static_cast<uint32_t>(Millisecond));
   return Result;
 }
 

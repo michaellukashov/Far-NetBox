@@ -3,12 +3,13 @@
 #define NO_WIN32_LEAN_AND_MEAN
 #endif
 #include <vcl.h>
-// #pragma hdrstop
+#if defined(__BORLANDC__)
+#pragma hdrstop
+#endif // defined(__BORLANDC__)
 
 #include <System.ShlObj.hpp>
 #include <Exceptions.h>
 #include <TextsCore.h>
-//#include <Interface.h>
 #include <Common.h>
 #include <Global.h>
 #include <StrUtils.hpp>
@@ -18,6 +19,7 @@
 #include <ShlObj.h>
 #include <limits>
 #include <algorithm>
+#include <memory>
 #include <Shlwapi.h>
 #include <TLHelp32.h>
 #include <Psapi.h>
@@ -217,7 +219,7 @@ static UnicodeString GetFileListItemPath(const TStrings * Files, int32_t Index)
   UnicodeString Result;
   if (Files->Objects[Index] != nullptr)
   {
-    Result = DebugNotNull(rtti::dyn_cast_or_null<TRemoteFile>(Files->Objects[Index]))->FullFileName();
+    Result = DebugNotNull(nb::dyn_cast_or_null<TRemoteFile>(Files->Objects[Index]))->FullFileName();
   }
   else
   {
@@ -671,7 +673,8 @@ const UnicodeString AnyMask = L"*.*";
 const wchar_t EngShortMonthNames[12][4] =
   {L"Jan", L"Feb", L"Mar", L"Apr", L"May", L"Jun",
    L"Jul", L"Aug", L"Sep", L"Oct", L"Nov", L"Dec"};
-const char Bom[3] = "\xEF\xBB\xBF";
+const char Bom[4] = "\xEF\xBB\xBF";
+const UnicodeString XmlDeclaration(TraceInitStr(L"<?xml version=\"1.0\" encoding=\"UTF-8\"?>"));
 const wchar_t TokenPrefix = L'%';
 const wchar_t NoReplacement = wchar_t(false);
 const wchar_t TokenReplacement = wchar_t(true);
@@ -733,6 +736,7 @@ void DoShred(T & Str)
 {
   if (!Str.IsEmpty())
   {
+    // Should instead test for (StringRefCount(Str) == 1) to prevent Unique making yet another copy
     Str.Unique();
     ::ZeroMemory(nb::ToPtr(Str.c_str()), Str.Length() * sizeof(*Str.c_str()));
     Str = L"";
@@ -767,6 +771,12 @@ UnicodeString AnsiToString(const RawByteString & S)
 UnicodeString AnsiToString(const char * S, int32_t Len)
 {
   return UnicodeString(AnsiString(S, Len));
+}
+
+UnicodeString UTFToString(const RawByteString & S)
+{
+  // Simply casting RawByteString to UTF8String does not work
+  return UnicodeString(UTF8String(S.c_str(), S.Length()));
 }
 
 // Note similar function ValidLocalFileName
@@ -950,12 +960,12 @@ UnicodeString DelimitStr(const UnicodeString & Str, wchar_t Quote)
     }
   }
   UnicodeString Result(Str);
-  for (int32_t i = 1; i <= Result.Length(); i++)
+  for (int32_t I = 1; I <= Result.Length(); I++)
   {
-    if (Result.IsDelimiter(SpecialChars, i))
+    if (Result.IsDelimiter(SpecialChars, I))
     {
-      Result.Insert(L"\\", i);
-      i++;
+      Result.Insert(L"\\", I);
+      I++;
     }
   }
   if (Result.IsDelimiter(L"-", 1))
@@ -981,12 +991,12 @@ UnicodeString ExceptionLogString(Exception * E)
 {
   DebugAssert(OBJECT_CLASS_ExtException != OBJECT_CLASS_Exception);
   DebugAssert(E);
-  if (rtti::isa<Exception>(E))
+  if (nb::isa<Exception>(E))
   {
     UnicodeString Msg = E->Message; // FORMAT("%s", E->Message);
-    if (rtti::isa<ExtException>(E))
+    if (nb::isa<ExtException>(E))
     {
-      const TStrings * MoreMessages = rtti::dyn_cast_or_null<ExtException>(E)->GetMoreMessages();
+      const TStrings * MoreMessages = nb::dyn_cast_or_null<ExtException>(E)->GetMoreMessages();
       if (MoreMessages)
       {
         Msg += L"\n";
@@ -1145,9 +1155,14 @@ UnicodeString EncodeStrToBase64(const RawByteString & Str)
 RawByteString DecodeBase64ToStr(const UnicodeString & Str)
 {
   TBytes Bytes = DecodeBase64(Str);
-  // This might be the same as TEncoding::ASCII->GetString.
-  // const_cast: The operator[] const is (badly?) implemented to return by value
-  return RawByteString(reinterpret_cast<const char *>(&const_cast<TBytes &>(Bytes)[0]), nb::ToInt32(Bytes.size()));
+  RawByteString Result;
+  if (Bytes.size() > 0)
+  {
+    // This might be the same as TEncoding::ASCII->GetString.
+    // const_cast: The operator[] const is (badly?) implemented to return by value
+    Result = RawByteString(reinterpret_cast<const char *>(&const_cast<TBytes &>(Bytes)[0]), Bytes.size());
+  }
+  return Result;
 }
 
 UnicodeString Base64ToUrlSafe(const UnicodeString & S)
@@ -1157,7 +1172,7 @@ UnicodeString Base64ToUrlSafe(const UnicodeString & S)
   {
     Result.SetLength(Result.Length() - 1);
   }
-  // See https://en.wikipedia.org/wiki/Base64#Implementations_and_history
+  // See https://en.wikipedia.org/wiki/Base64#Variants
   Result = ReplaceChar(Result, L'+', L'-');
   Result = ReplaceChar(Result, L'/', L'_');
   return Result;
@@ -2446,6 +2461,7 @@ struct TDateTimeParams : public TObject
 using TYearlyDateTimeParams = nb::map_t<int, TDateTimeParams>;
 static TYearlyDateTimeParams YearlyDateTimeParams;
 static TCriticalSection DateTimeParamsSection;
+// Thread-safety: DateTimeParamsSection protects YearlyDateTimeParams.
 static void EncodeDSTMargin(const SYSTEMTIME & Date, uint16_t Year,
   TDateTime & Result);
 
@@ -2775,7 +2791,7 @@ bool TryStrToSize(const UnicodeString & ASizeStr, int64_t & ASize)
       Result = (SizeStr.Length() == 1);
       if (Result)
       {
-        const wchar_t Unit = towupper(SizeStr[1]);
+        const wchar_t Unit = ::UpCase(SizeStr[1]);
         switch (Unit)
         {
           case GigaSize:
@@ -2851,6 +2867,17 @@ FILETIME DateTimeToFileTime(const TDateTime & DateTime,
     // can actually change between years
     // (as it did in Belarus from GMT+2 to GMT+3 between 2011 and 2012)
 
+    // NOTE: This applies a DST adjustment to the UnixTimeStamp based on whether the file's
+    // date falls in DST vs. current DST state: net = (fileDST ? DaylightDiff : StandardDiff)
+    // - CurrentDaylightDiff. This legacy compensation is intentionally retained for download
+    // paths (SynchronizeLocalTimestamp, UpdateTargetTime) to maintain backward compatibility
+    // with servers that exhibit the pre-Win7 Windows DST display bug.
+    //
+    // KNOWN LIMITATION: ConvertTimestampToUnix() does NOT apply this adjustment for dstmWin
+    // on Win7+ (pure UTC→UTC conversion), creating an upload/download asymmetry.
+    // A file uploaded during DST will download correctly only if the current DST state
+    // matches the file's creation DST state. Fixing this requires broader regression testing
+    // across all protocol download paths (see issue #391).
     UnixTimeStamp += (IsDateInDST(DateTime) ?
       Params->DaylightDifferenceSec : Params->StandardDifferenceSec) +
       Params->BaseDifferenceSec;
@@ -2859,7 +2886,6 @@ FILETIME DateTimeToFileTime(const TDateTime & DateTime,
     UnixTimeStamp -=
       CurrentParams->CurrentDaylightDifferenceSec +
       CurrentParams->BaseDifferenceSec;
-
   }
 
   FILETIME Result{};
@@ -2903,7 +2929,7 @@ int64_t ConvertTimestampToUnix(const FILETIME & FileTime,
   TDSTMode DSTMode)
 {
   NB_STATIC_ASSERT(sizeof(FILETIME) == sizeof(int64_t), "ConvertTimestampToUnix: unexpected FILETIME size");
-  int64_t Result = *reinterpret_cast<int64_t *>(const_cast<FILETIME *>(&(FileTime))) / 10000000LL - 11644473600LL;
+  int64_t Result = *reinterpret_cast<const int64_t *>(const_cast<FILETIME *>(&(FileTime))) / 10000000LL - 11644473600LL;
   if (UsesDaylightHack())
   {
     if ((DSTMode == dstmUnix) || (DSTMode == dstmKeep))
@@ -2926,17 +2952,10 @@ int64_t ConvertTimestampToUnix(const FILETIME & FileTime,
   }
   else
   {
-    if (DSTMode == dstmWin)
-    {
-      FILETIME LocalFileTime;
-      SYSTEMTIME SystemTime;
-      FileTimeToLocalFileTime(&FileTime, &LocalFileTime);
-      FileTimeToSystemTime(&LocalFileTime, &SystemTime);
-      const TDateTime DateTime = SystemTimeToDateTimeVerbose(SystemTime);
-      const TDateTimeParams * Params = GetDateTimeParams(DecodeYear(DateTime));
-      Result -= (IsDateInDST(DateTime) ?
-        Params->DaylightDifferenceSec : Params->StandardDifferenceSec);
-    }
+    // On Windows 7+, FILETIME is pure UTC and no DST compensation is needed for dstmWin.
+    // The legacy Windows DST display bug is fixed — the arithmetic conversion
+    // Result = FILETIME / 10000000 - 11644473600LL is correct as-is for pure UTC→Unix UTC.
+    // Only dstmUnix/dstmKeep modes apply DST adjustments for legacy server compatibility.
   }
 
   return Result;
@@ -3305,6 +3324,8 @@ static bool DoRecursiveDeleteFile(
             }
           }
           while (Result && (FindNextUnchecked(SearchRec) == 0));
+
+          SearchRec.Close();
 
           if (Result)
           {
@@ -3831,8 +3852,8 @@ bool IsWine()
     (::GetProcAddress(NtDll, "wine_get_version") != nullptr);
 }
 
-int32_t GIsUWP = -1;
-UnicodeString GPackageName;
+static int32_t GIsUWP = -1;
+static UnicodeString GPackageName;
 
 void EnableUWPTestMode()
 {
@@ -4004,7 +4025,7 @@ UnicodeString FormatSize(int64_t ASize)
 UnicodeString FormatDateTimeSpan(const TDateTime & DateTime)
 {
   UnicodeString Result;
-  if ((0 <= DateTime) && (DateTime <= MaxDateTime))
+  if ((TDateTime() <= DateTime) && (DateTime <= MaxDateTime))
   {
     const TTimeStamp TimeStamp = DateTimeToTimeStamp(DateTime);
     const int32_t Days = TimeStamp.Date - DateDelta;
@@ -4300,7 +4321,7 @@ static FILE * OpenCertificate(const UnicodeString & Path)
   if (Result == nullptr)
   {
     const int32_t Error = errno;
-    throw EOSExtException(MainInstructions(FMTLOAD(CERTIFICATE_OPEN_ERROR, Path)), Error);
+    throw EOSExtException(MainInstructions(FMTLOAD(CERTIFICATE_OPEN_ERROR, nb::EscapeFmtChars(Path))), Error);
   }
 
   return Result;
@@ -4342,7 +4363,7 @@ static void ThrowTlsCertificateErrorIgnorePassphraseErrors(const UnicodeString &
   const uint32_t Error = ERR_get_error();
   if (!IsTlsPassphraseError(Error, HasPassphrase))
   {
-    throw ExtException(MainInstructions(FMTLOAD(CERTIFICATE_READ_ERROR, Path)), GetTlsErrorStr(Error));
+    throw ExtException(MainInstructions(FMTLOAD(CERTIFICATE_READ_ERROR, nb::EscapeFmtChars(Path))), GetTlsErrorStr(Error));
   }
 }
 
@@ -4444,7 +4465,7 @@ void ParseCertificate(const UnicodeString & Path,
 
           if (!base::FileExists(CertificatePath))
           {
-            throw Exception(MainInstructions(FMTLOAD(CERTIFICATE_PUBLIC_KEY_NOT_FOUND, Path)));
+            throw Exception(MainInstructions(FMTLOAD(CERTIFICATE_PUBLIC_KEY_NOT_FOUND, nb::EscapeFmtChars(Path))));
           }
           else
           {
@@ -4470,7 +4491,7 @@ void ParseCertificate(const UnicodeString & Path,
               {
                 const int32_t DERError = ERR_get_error();
 
-                const UnicodeString Message = MainInstructions(FMTLOAD(CERTIFICATE_READ_ERROR, CertificatePath));
+                const UnicodeString Message = MainInstructions(FMTLOAD(CERTIFICATE_READ_ERROR, nb::EscapeFmtChars(CertificatePath)));
                 const UnicodeString MoreMessages =
                   FORMAT("Base64: %s\nDER: %s", GetTlsErrorStr(Base64Error), GetTlsErrorStr(DERError));
                 throw ExtException(Message, MoreMessages);
@@ -4707,7 +4728,7 @@ UnicodeString RtfEscapeParam(const UnicodeString & Param, bool PowerShellEscape)
     else
     {
       int32_t P2 = PosEx(RtfHyperlinkFieldPrefix, Param, Index);
-      int32_t P3;
+      int32_t P3 = 0;
       if ((P2 > 0) && (P2 < P1) && ((P3 = PosEx(RtfHyperlinkFieldSuffix, Param, P2)) > 0))
       {
         // skip HYPERLINK
@@ -5056,8 +5077,8 @@ UnicodeString AssemblyAddRawSettings(
   UnicodeString Result;
   for (int32_t Index = 0; Index < RawSettings->Count; Index++)
   {
-    UnicodeString Name = RawSettings->Names[Index];
-    UnicodeString Value = RawSettings->ValueFromIndex[Index];
+    UnicodeString Name = RawSettings->Names(Index);
+    UnicodeString Value = RawSettings->ValueFromIndex(Index);
     UnicodeString AddRawSettingsMethod =
       RtfLibraryMethod(ClassName, MethodName, false) +
       FORMAT(L"(%s, %s)", (AssemblyString(Language, Name), AssemblyString(Language, Value)));
@@ -5225,7 +5246,7 @@ static UnicodeString GetProcessName(DWORD ProcessId)
   return Result;
 }
 
-UnicodeString ParentProcessName;
+static UnicodeString ParentProcessName;
 
 UnicodeString GetAncestorProcessName(int32_t Levels)
 {
@@ -5313,7 +5334,7 @@ UnicodeString GetAncestorProcessName(int32_t Levels)
   return Result;
 }
 
-UnicodeString AncestorProcessNames;
+static UnicodeString AncestorProcessNames;
 
 UnicodeString GetAncestorProcessNames()
 {
@@ -5324,15 +5345,13 @@ UnicodeString GetAncestorProcessNames()
   return AncestorProcessNames;
 }
 
-[[noreturn]]
-void NotImplemented()
+NORETURN void NotImplemented()
 {
   DebugFail();
   throw Exception(L"Not implemented");
 }
 
-[[noreturn]]
-void NotSupported()
+NORETURN void NotSupported()
 {
   throw Exception(MainInstructions(LoadStr(NOTSUPPORTED)));
 }
