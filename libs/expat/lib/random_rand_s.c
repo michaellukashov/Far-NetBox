@@ -6,11 +6,11 @@
                         \___/_/\_\ .__/ \__,_|\__|
                                  |_| XML parser
 
-   Copyright (c) 2000      Clark Cooper <coopercc@users.sourceforge.net>
-   Copyright (c) 2002      Greg Stein <gstein@users.sourceforge.net>
-   Copyright (c) 2005      Karl Waclawek <karl@waclawek.net>
-   Copyright (c) 2017-2023 Sebastian Pipping <sebastian@pipping.org>
-   Copyright (c) 2023      Orgad Shaneh <orgad.shaneh@audiocodes.com>
+   Copyright (c) 2019      David Loffredo <loffredo@steptools.com>
+   Copyright (c) 2019-2026 Sebastian Pipping <sebastian@pipping.org>
+   Copyright (c) 2019      Ben Wagner <bungeman@chromium.org>
+   Copyright (c) 2019      Vadim Zeitlin <vadim@zeitlins.org>
+   Copyright (c) 2026      Matthew Fernandez <matthew.fernandez@gmail.com>
    Licensed under the MIT license:
 
    Permission is  hereby granted,  free of charge,  to any  person obtaining
@@ -33,16 +33,34 @@
    USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef WINCONFIG_H
-#define WINCONFIG_H
+#include "random_rand_s.h"
 
-#ifndef WIN32_LEAN_AND_MEAN
-#  define WIN32_LEAN_AND_MEAN
-#endif
+// WINSCP
+
+// rand_s is not in C++Builder
+// Have to call semi-documented RtlGenRandom/SystemFunction036 directly
+// (what allegedly rand_s does internally anyway)
 #include <windows.h>
-#undef WIN32_LEAN_AND_MEAN
+typedef BOOLEAN (APIENTRY *RTLGENRANDOM_FUNC)(PVOID, ULONG);
+HMODULE _Expat_LoadLibrary(LPCTSTR filename);  /* see loadlibrary.c */
 
-#include <memory.h>
-#include <string.h>
+bool
+writeRandomBytes_rand_s(void *target, size_t count) {
+  int success = false;  /* full count bytes written? */
+  const HMODULE advapi32 = _Expat_LoadLibrary(TEXT("ADVAPI32.DLL"));
 
-#endif /* ndef WINCONFIG_H */
+  if (advapi32) {
+    const RTLGENRANDOM_FUNC RtlGenRandom
+        = (RTLGENRANDOM_FUNC)GetProcAddress(advapi32, "SystemFunction036");
+    if (RtlGenRandom) {
+      if (RtlGenRandom((PVOID)target, (ULONG)count) == TRUE) {
+        success = true;
+      }
+    }
+    FreeLibrary(advapi32);
+  }
+
+  return success;
+}
+
+// /WINSCP
