@@ -2047,7 +2047,7 @@ intptr_t TCustomFarPlugin::InputRecordToKey(const INPUT_RECORD * /*Rec*/)
 
 void TCustomFarPlugin::Initialize()
 {
-//  ::SetGlobals(new TGlobalFunctions());
+  // ::SetGlobals(new TGlobalFunctions());
   // Idle thread initialization moved to SetStartupInfo to avoid early start
 }
 
