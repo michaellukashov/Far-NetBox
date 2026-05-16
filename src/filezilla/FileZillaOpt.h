@@ -56,3 +56,5 @@
 #define OPTION_MPEXT_TRANSFER_SIZE 1015
 
 #endif // FileZillaOptH
+
+#define OPTION_HEARTBEAT_TYPE 11  // 0=random, 1=NOOP

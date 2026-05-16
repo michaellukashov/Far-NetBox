@@ -9,7 +9,7 @@
 #include "stdafx.h"
 #include "AsyncSocketEx.h"
 
-#include "AsyncSocketExLayer.h"
+
 #include "FileZillaApi.h"
 
 #ifndef GWL_USERDATA
