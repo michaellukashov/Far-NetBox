@@ -129,8 +129,8 @@ src/
 7. **Maintain backward compatibility** with existing configurations
 8. **Use `nb::vector_t<T>` instead of `std::vector<T>`** — NetBox provides a custom-allocator alias (`nb::vector_t`) in `<nbtypes.h>` that is used throughout the codebase. Prefer it over `std::vector` for consistency and to ensure proper allocator integration. Remove `#include <vector>` when it is no longer needed.
 9. **Use `UnicodeString` and `AnsiString` instead of `std::wstring` / `std::string`** — NetBox provides its own string types that are used consistently across the codebase. Prefer them over standard C++ string types for API compatibility and to avoid type mismatches with Far Manager and protocol layers.
-10. **Modernize legacy C types to fixed-width C++ types** — Prefer `uint8_t` over `unsigned char`, `uint32_t` over `unsigned int`, and `int32_t` over `int` for platform-independent, self-documenting code. Apply this when touching existing code that uses legacy C-style integer types, especially in cryptography, protocol, and binary data handling modules.
-## Testing
+10. **Modernize legacy C types to fixed-width C++ types** — Prefer `uint8_t` over `unsigned char`, `uint32_t` over `unsigned int`, and `int32_t` over `int` for platform-independent, self-documenting code. Apply this when touching existing code that uses legacy C-style integer types, especially in cryptography, protocol, and binary handling modules.
+11. **UnicodeString/AnsiString index and iterator positions start at 1** — NetBox string types use 1-based indexing (`operator[]`, `SubString`, iterators). Accessing index `0` or calling `SubString(1, N)` on an empty string throws `Exception("Index is out of range")`. Always guard with `!Str.IsEmpty()` and `Str.Length() > 0` before 1-based operations. Loop counters over characters must start at `1`, not `0`.
 
 - **Manual testing:** Required for affected functionality
 - **Build verification:** Clean build with no warnings
