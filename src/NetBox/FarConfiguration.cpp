@@ -5,6 +5,7 @@
 
 #include "Bookmarks.h"
 #include "FarConfiguration.h"
+#include "WinConfiguration.h"
 #include "Far3Storage.h"
 #include "FarPlugin.h"
 #include "CoreMain.h"
@@ -29,8 +30,10 @@ TFarConfiguration::TFarConfiguration(gsl::not_null<TCustomFarPlugin *> APlugin) 
   TGUIConfiguration(OBJECT_CLASS_TFarConfiguration),
   FFarPlugin(APlugin)
 {
-//  TFarConfiguration::Default();
-  //CacheFarSettings();
+  // TFarConfiguration::Default();
+  // CacheFarSettings();
+  // from UserInterface.cpp
+  // WinConfiguration = new TWinConfiguration();
 }
 
 TFarConfiguration::~TFarConfiguration() noexcept = default;
@@ -49,6 +52,8 @@ void TFarConfiguration::Default()
   SetPluginsMenuCommands(true);
   SetCommandPrefixes(DefaultCommandPrefixes);
   SetSessionNameInTitle(true);
+  SetCompareByTime(true);
+  SetCompareBySize(false);
   SetEditorDownloadDefaultMode(true);
   SetEditorUploadSameOptions(true);
   FEditorUploadOnSave = true;
@@ -115,6 +120,8 @@ void TFarConfiguration::ConfigurationInit()
     KEY(String,   StatusColumnTypesDetailed); \
     KEY(String,   StatusColumnWidthsDetailed); \
     KEY(Bool,     SessionNameInTitle); \
+    KEY(Bool,     CompareByTime); \
+    KEY(Bool,     CompareBySize); \
     KEY(Bool,     ConfirmOverwritingOverride); \
     KEY(Bool,     EditorDownloadDefaultMode); \
     KEY(Bool,     EditorUploadSameOptions); \
@@ -147,6 +154,12 @@ void TFarConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
 
     Storage->CloseSubKey();
   }
+
+  if (Storage->OpenSubKeyPath("TransferPresets", /*CanCreate=*/true))
+  {
+    FCopyParamPresets->Save(Storage);
+    Storage->CloseSubKey();
+  }
 }
 
 void TFarConfiguration::LoadData(THierarchicalStorage * Storage)
@@ -166,6 +179,17 @@ void TFarConfiguration::LoadData(THierarchicalStorage * Storage)
   {
     FBookmarks->Load(Storage);
     Storage->CloseSubKey();
+  }
+
+  if (Storage->OpenSubKeyPath("TransferPresets", false))
+  {
+    FCopyParamPresets->Load(Storage);
+    Storage->CloseSubKey();
+  }
+  else
+  {
+    // No saved presets — initialize with shipped defaults
+    FCopyParamPresets->AddDefaultPresets();
   }
 }
 
@@ -314,7 +338,10 @@ bool TFarConfiguration::GetConfirmDeleting() const
 
 UnicodeString TFarConfiguration::ModuleFileName() const
 {
-  DebugAssert(GetPlugin());
+  if (GetPlugin() == nullptr)
+  {
+    return UnicodeString();
+  }
   return GetPlugin()->GetModuleName();
 }
 
@@ -332,6 +359,6 @@ TBookmarkList * TFarConfiguration::GetBookmarks(const UnicodeString & Key)
 
 TFarConfiguration * GetFarConfiguration()
 {
-  return rtti::dyn_cast_or_null<TFarConfiguration>(GetConfiguration());
+  return nb::dyn_cast_or_null<TFarConfiguration>(GetConfiguration());
 }
 
