@@ -13,7 +13,7 @@
 "Authentification..."
 "Authentifié."
 "Démarrage de la session..."
-"Lecture du répertoire distant..."
+"Lecture du répertoire distant %s..."
 "Session démarrée."
 
 "Confirmation"
@@ -1228,7 +1228,7 @@
 "Authentifié."
 "Démarrage de la session..."
 "Session démarrée."
-"Lecture du répertoire distant..."
+"Lecture du répertoire distant %s..."
 "Connecting through tunnel..."
 "Server refused our key."
 "Administratively prohibited (%s)."

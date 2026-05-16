@@ -13,7 +13,7 @@
 "Autentificando..."
 "Autentificado."
 "Comenzando la sesión..."
-"Leyendo directorio remoto..."
+	"Leyendo directorio remoto %s..."
 "Sesión iniciada."
 
 "Confirmación"
@@ -1228,7 +1228,7 @@
 "Authenticated."
 "Starting the session..."
 "Session started."
-"Reading remote directory..."
+	"Reading remote directory %s..."
 "Connecting through tunnel..."
 "Server refused our key."
 "Administratively prohibited (%s)."

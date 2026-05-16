@@ -13,7 +13,7 @@
 "Autoryzacja..."
 "Zautoryzowano."
 "Startowanie sesji..."
-"Odczytywanie zdalnego folderu..."
+"Odczytywanie zdalnego folderu %s..."
 "Sesja uruchomiona."
 
 "Potwierdzenie"
@@ -1228,7 +1228,7 @@
 "Zalogowany."
 "Rozpoczynanie sesji..."
 "Sesja rozpoczęta."
-"Odczyt zdalnego folderu..."
+"Odczyt zdalnego folderu %s..."
 "Łączenie przez tunel..."
 "Serwer odrzucił podany klucz."
 "Zabronione administracyjnie (%s)."

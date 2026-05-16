@@ -3114,7 +3114,7 @@ void TTerminal::DoEndTransaction(bool Inform)
         {
           if (Inform)
           {
-            DoInformation(LoadStr(STATUS_OPEN_DIRECTORY), -1, CurrentDirectory());
+            DoInformation(FORMAT(LoadStr(STATUS_OPEN_DIRECTORY), CurrentDirectory()), -1, CurrentDirectory());
           }
           ReadDirectory(!FReadCurrentDirectoryPending);
         }
