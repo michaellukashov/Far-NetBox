@@ -53,7 +53,7 @@ public:
         {
 
           // Marshal idle processing to the main thread via the sanctioned synchro path.
-          DEBUG_PRINTFA("IdleThread: posting FE_IDLE synchro");
+          // DEBUG_PRINTFA("IdleThread: posting FE_IDLE synchro");
           FPlugin->PostMainThreadSynchro(nullptr);
         }
 
@@ -1795,7 +1795,7 @@ UnicodeString TCustomFarPlugin::GetMsg(intptr_t MsgId) const
 
 bool TCustomFarPlugin::CheckForEsc() const
 {
-  DEBUG_PRINTFA("CheckForEsc ENTER");
+  // DEBUG_PRINTFA("CheckForEsc ENTER");
   static uint32_t LastTicks;
   const uint32_t Ticks = ::GetTickCount();
   if ((LastTicks == 0) || (Ticks - LastTicks > 500))
@@ -1846,7 +1846,7 @@ bool TCustomFarPlugin::CheckForEsc() const
       ReadCount, FoundEsc ? "yes" : "no", static_cast<unsigned long>(NonEscEvents.size()));
     return FoundEsc;
   }
-  DEBUG_PRINTFA("CheckForEsc: throttled");
+  // DEBUG_PRINTFA("CheckForEsc: throttled");
   return false;
 }
 void TCustomFarPlugin::FlushEscBuffer() const
