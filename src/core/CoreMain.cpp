@@ -13,15 +13,15 @@
 #include "NeonIntf.h"
 #include "TextsCore.h"
 
-// #pragma package(smart_init)
-
 #if defined(__BORLANDC__)
+#pragma package(smart_init)
+
 TConfiguration * Configuration = nullptr;
 TStoredSessionList * StoredSessions = nullptr;
 #endif // defined(__BORLANDC__)
 TApplicationLog * ApplicationLog = nullptr;
 bool AnySession = false;
-
+TCriticalSection * CoreMainCriticalSection = nullptr;
 TQueryButtonAlias::TQueryButtonAlias() noexcept :
   OnSubmit(nullptr),
   GroupWith(-1)
@@ -171,6 +171,7 @@ static bool StoredSessionsInitialized = false;
 
 TStoredSessionList * GetStoredSessions(bool * JustLoaded)
 {
+  const TGuard Guard(*CoreMainCriticalSection);
 #define SET_LOADED(Value) do { if (JustLoaded != nullptr) *JustLoaded = Value; } while(0)
   static TStoredSessionList * StoredSessions = nullptr;
   if (StoredSessionsInitialized)
@@ -202,6 +203,7 @@ TStoredSessionList * GetStoredSessions(bool * JustLoaded)
 
 void DeleteStoredSessions()
 {
+  const TGuard Guard(*CoreMainCriticalSection);
   if (StoredSessionsInitialized)
   {
     TStoredSessionList * StoredSessions = GetStoredSessions();
@@ -212,6 +214,7 @@ void DeleteStoredSessions()
 
 void CoreLoad()
 {
+  DEBUG_PRINTFA("CoreLoad ENTER");
   bool SessionList = false;
   std::unique_ptr<THierarchicalStorage> SessionsStorage(GetConfiguration()->CreateScpStorage(SessionList));
   THierarchicalStorage * ConfigStorage{nullptr};
@@ -235,6 +238,7 @@ void CoreLoad()
   }
   catch(Exception & E)
   {
+    DEBUG_PRINTFA("CoreLoad exception - calling ShowExtendedException");
     ShowExtendedException(&E);
   }
 
@@ -254,22 +258,26 @@ void CoreLoad()
   }
   catch(Exception & E)
   {
+    DEBUG_PRINTFA("CoreLoad stored sessions exception");
     ShowExtendedException(&E);
   }
 #endif // defined(__BORLANDC__)
+  DEBUG_PRINTFA("CoreLoad LEAVE");
 }
-
 void CoreInitialize()
 {
+  CoreMainCriticalSection = new TCriticalSection();
   WinInitialize();
   Randomize();
   CryptographyInitialize();
 
   // we do not expect configuration re-creation
   DebugAssert(GetConfiguration() != nullptr);
+#if defined(__BORLANDC__)
   // configuration needs to be created and loaded before putty is initialized,
   // so that random seed path is known
-//  Configuration = CreateConfiguration();
+  Configuration = CreateConfiguration();
+#endif // defined(__BORLANDC__)
 
   PuttyInitialize();
   TFileZillaIntf::Initialize();
@@ -282,7 +290,9 @@ void CoreFinalize()
 {
   try
   {
-    // GetConfiguration()->Save();
+#if defined(__BORLANDC__)
+    Configuration->Save();
+#endif // defined(__BORLANDC__)
   }
   catch(Exception & E)
   {
@@ -297,12 +307,16 @@ void CoreFinalize()
   DeleteConfiguration();
 #if defined(__BORLANDC__)
   delete StoredSessions;
-  StoredSessions = NULL;
+  StoredSessions = nullptr;
   delete Configuration;
-  Configuration = NULL;
+  Configuration = nullptr;
 #endif // defined(__BORLANDC__)
 
   CryptographyFinalize();
+
+  delete CoreMainCriticalSection;
+  CoreMainCriticalSection = nullptr;
+
   WinFinalize();
 }
 
@@ -318,6 +332,7 @@ void CoreMaintenanceTask()
 
 void CoreUpdateFinalStaticUsage()
 {
+  const TGuard Guard(*CoreMainCriticalSection);
   if (!AnySession)
   {
     GetConfiguration()->Usage->Inc(L"RunsWithoutSession");

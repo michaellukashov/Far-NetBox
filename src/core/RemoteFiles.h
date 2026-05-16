@@ -116,6 +116,7 @@ private:
   UnicodeString FHumanRights;
   const TTerminal * FTerminal{nullptr};
   wchar_t FType{0};
+  UnicodeString FTags;
   bool FCyclicLink{false};
   UnicodeString FFullFileName;
   int32_t FIsHidden{0};
@@ -136,7 +137,7 @@ public:
   wchar_t GetType() const;
   void SetType(wchar_t AType);
   void SetTerminal(const TTerminal * Value);
-  void SetRights(const TRights * Value);
+  void SetRights(TRights * Value);
   UnicodeString GetFullFileName() const;
   bool GetHaveFullFileName() const;
   int32_t GetIconIndex() const;
@@ -204,7 +205,8 @@ public:
   __property UnicodeString ListingStr = { read = GetListingStr, write = SetListingStr };
   RWProperty<UnicodeString> ListingStr{nb::bind(&TRemoteFile::GetListingStr, this), nb::bind(&TRemoteFile::SetListingStr, this)};
   __property TRights * Rights = { read = FRights, write = SetRights };
-  RWProperty<const TRights *> Rights{nb::bind(&TRemoteFile::GetRights, this), nb::bind(&TRemoteFile::SetRights, this)};
+  const ROProperty<const TRights *> RightsConst{nb::bind(&TRemoteFile::GetRightsConst, this)};
+  RWProperty<TRights *> Rights{nb::bind(&TRemoteFile::GetRights, this), nb::bind(&TRemoteFile::SetRights, this)};
   __property UnicodeString HumanRights = { read = FHumanRights, write = FHumanRights };
   __property TTerminal * Terminal = { read = FTerminal, write = SetTerminal };
   RWProperty<const TTerminal *> Terminal{nb::bind(&TRemoteFile::GetTerminal, this), nb::bind(&TRemoteFile::SetTerminal, this)};
@@ -215,13 +217,15 @@ public:
   __property bool HaveFullFileName  = { read = GetHaveFullFileName };
   __property int32_t IconIndex = { read = GetIconIndex };
   __property UnicodeString TypeName = { read = GetTypeName };
+  __property UnicodeString Tags = { read = FTags, write = FTags };
+  UnicodeString& Tags{FTags};
   __property bool IsHidden = { read = GetIsHidden, write = SetIsHidden };
   const ROProperty<bool> IsHidden{nb::bind(&TRemoteFile::GetIsHidden, this)};
   __property bool IsParentDirectory = { read = GetIsParentDirectory };
   const ROProperty<bool> IsParentDirectory{nb::bind(&TRemoteFile::GetIsParentDirectory, this)};
   __property bool IsThisDirectory = { read = GetIsThisDirectory };
   const ROProperty<bool> IsThisDirectory{nb::bind(&TRemoteFile::GetIsThisDirectory, this)};
-  __property bool IsInaccessibleDirectory  = { read=GetIsInaccessibleDirectory };
+  __property bool IsInaccesibleDirectory  = { read=GetIsInaccessibleDirectory };
   const ROProperty<bool> IsInaccessibleDirectory{nb::bind(&TRemoteFile::GetIsInaccessibleDirectory, this)};
   __property UnicodeString Extension  = { read=GetExtension };
   const ROProperty<UnicodeString> Extension{nb::bind(&TRemoteFile::GetExtension, this)};
@@ -250,8 +254,8 @@ public:
   void SetIsSymLink(bool Value) { FIsSymLink = Value; }
   UnicodeString GetLinkTo() const { return FLinkTo; }
   void SetLinkTo(const UnicodeString & Value) { FLinkTo = Value; }
-  const TRights * GetRights() const { return FRights.get(); }
-  TRights * GetRightsNotConst() { return FRights.get(); }
+  const TRights * GetRightsConst() const { return FRights.get(); }
+  TRights * GetRights() { return FRights.get(); }
   UnicodeString GetHumanRights() const { return FHumanRights; }
   void SetHumanRights(const UnicodeString & Value) { FHumanRights = Value; }
   const TTerminal * GetTerminal() const { return FTerminal; }
@@ -318,6 +322,7 @@ public:
   TRemoteFile * FindFile(const UnicodeString & AFileName) const;
   virtual void DuplicateTo(TRemoteFileList * Copy) const;
   virtual void AddFile(TRemoteFile * AFile);
+  virtual void ExtractFile(TRemoteFile * AFile);
 
   static TStrings * CloneStrings(TStrings * List);
   static bool AnyDirectory(TStrings * List);
@@ -367,7 +372,7 @@ public:
   Boolean GetLoaded() const;
   void SetIncludeParentDirectory(Boolean Value);
   void SetIncludeThisDirectory(Boolean Value);
-  void ReleaseRelativeDirectories();
+  virtual void ReleaseRelativeDirectories();
 public:
   explicit TRemoteDirectory(TTerminal * ATerminal, TRemoteDirectory * Template = nullptr) noexcept;
   virtual ~TRemoteDirectory() noexcept override;
@@ -491,7 +496,7 @@ public:
     rfS3Read = rfOtherRead, rfS3Write = rfOtherWrite, rfS3ReadACP = rfOtherExec, rfS3WriteACP = rfStickyBit,
   };
   enum TUnsupportedFlag {
-    rfDirectory = 040000 };
+    rfDirectory  = 040000 };
   enum TState { rsNo, rsYes, rsUndef };
 
 public:
@@ -587,9 +592,9 @@ public:
   bool GetUnknown() const { return FUnknown; }
 };
 
-enum TValidProperty { vpRights = 0x1, vpGroup = 0x2, vpOwner = 0x4, vpModification = 0x8, vpLastAccess = 0x10, vpEncrypt = 0x20 };
+enum TValidProperty { vpRights = 0x1, vpGroup = 0x2, vpOwner = 0x4, vpModification = 0x8, vpLastAccess = 0x10, vpEncrypt = 0x20, vpTags = 0x40 };
 #if defined(__BORLANDC__)
-typedef Set<TValidProperty, vpRights, vpEncrypt> TValidProperties;
+typedef Set<TValidProperty, vpRights, vpTags> TValidProperties;
 #endif // defined(__BORLANDC__)
 class TRemoteProperties final : public TObject
 {
@@ -598,12 +603,19 @@ public:
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TRemoteProperties) || TObject::is(Kind); }
 public:
   TValidProperties<TValidProperty> Valid;
+#if defined(__BORLANDC__)
+  bool Recursive;
+#endif // defined(__BORLANDC__)
   TRights Rights;
+#if defined(__BORLANDC__)
+  bool AddXToDirectories;
+#endif // defined(__BORLANDC__)
   TRemoteToken Group;
   TRemoteToken Owner;
   int64_t Modification{0}; // unix time
   int64_t LastAccess{0}; // unix time
   bool Encrypt{false};
+  UnicodeString Tags;
   bool Recursive{false};
   bool AddXToDirectories{false};
 
@@ -661,6 +673,12 @@ public:
   int64_t GetBaseSize() const;
   int64_t GetSize() const;
   int64_t GetSize(TChecklistAction AAction) const;
+  UnicodeString GetLocalPath() const;
+  // Contrary to RemoteFile->FullFileName, this does not include trailing slash for directories
+  UnicodeString GetRemotePath() const;
+  UnicodeString GetLocalTarget() const;
+  UnicodeString GetRemoteTarget() const;
+  TStrings * GetFileList() const;
 
   TChecklistItem() noexcept;
   ~TChecklistItem() noexcept;
@@ -669,7 +687,6 @@ private:
   FILETIME FLocalLastWriteTime{};
   bool FDirectoryHasSize{false};
 
-  // TChecklistItem() noexcept;
   int64_t GetBaseSize(TChecklistAction AAction) const;
 };
 
@@ -679,11 +696,11 @@ class NB_CORE_EXPORT TSynchronizeChecklist final : public TObject
   friend class TTerminal;
 
 public:
-  static const int32_t ActionCount = saDeleteLocal;
 #if defined(__BORLANDC__)
-  enum TAction { // renamed to TChecklistAction
+  enum TAction {
     saNone, saUploadNew, saDownloadNew, saUploadUpdate, saDownloadUpdate, saDeleteRemote, saDeleteLocal };
-  static const int ActionCount = saDeleteLocal;
+#endif // defined(__BORLANDC__)
+  static const int32_t ActionCount = saDeleteLocal;
 
 // renamed to TChecklistItem
   class TItem
@@ -698,23 +715,30 @@ public:
       UnicodeString Directory;
       TDateTime Modification;
       TModificationFmt ModificationFmt;
-      int64_t Size;
+      int64_t Size{0};
     };
 
-    TAction Action;
-    bool IsDirectory;
+    TChecklistAction Action;
+    bool IsDirectory{false};
     TFileInfo Local;
     TFileInfo Remote;
-    int32_t ImageIndex;
-    bool Checked;
-    TRemoteFile * RemoteFile;
+    int32_t ImageIndex{0};
+    bool Checked{false};
+    TRemoteFile * RemoteFile{nullptr};
 
     const UnicodeString& GetFileName() const;
     bool IsRemoteOnly() const { return (Action == saDownloadNew) || (Action == saDeleteRemote); }
     bool IsLocalOnly() const { return (Action == saUploadNew) || (Action == saDeleteLocal); }
     bool HasSize() const { return !IsDirectory || FDirectoryHasSize; }
+    int64_t GetBaseSize() const;
     int64_t GetSize() const;
-    int64_t GetSize(TAction AAction) const;
+    int64_t GetSize(TChecklistAction AAction) const;
+    UnicodeString GetLocalPath() const;
+    // Contrary to RemoteFile->FullFileName, this does not include trailing slash for directories
+    UnicodeString GetRemotePath() const;
+    UnicodeString GetLocalTarget() const;
+    UnicodeString GetRemoteTarget() const;
+    TStrings * GetFileList() const;
 
     ~TItem();
 
@@ -723,12 +747,12 @@ public:
     bool FDirectoryHasSize;
 
     TItem();
-    int64_t GetBaseSize(TAction AAction) const;
+    int64_t GetBaseSize(TChecklistAction AAction) const;
   };
 
+#if defined(__BORLANDC__)
   typedef std::vector<const TSynchronizeChecklist::TItem *> TItemList;
 #endif // defined(__BORLANDC__)
-
   using TItemList = TListBase<TChecklistItem>;
 
   TSynchronizeChecklist() noexcept;
@@ -740,6 +764,7 @@ public:
 
   static TChecklistAction Reverse(TChecklistAction Action);
   static bool IsItemSizeIrrelevant(TChecklistAction Action);
+  bool GetNextChecked(int32_t & Index, const TChecklistItem *& Item) const;
 
   __property int32_t Count = { read = GetCount };
   const ROProperty<int32_t> Count{nb::bind(&TSynchronizeChecklist::GetCount, this)};
@@ -748,6 +773,9 @@ public:
 #if defined(__BORLANDC__)
   __property const TItem * Item[int32_t Index] = { read = GetItem };
 #endif // defined(__BORLANDC__)
+  const ROIndexedProperty<const TChecklistItem *> Item{nb::bind(&TSynchronizeChecklist::GetItem, this)};
+
+  static int32_t Compare(const TChecklistItem * Item1, const TChecklistItem * Item2);
 
 protected:
 #if defined(__BORLANDC__)
