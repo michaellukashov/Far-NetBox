@@ -1,0 +1,383 @@
+diff --git tinyxml2.cpp tinyxml2.cpp
+index af48c14..3f9c9ce 100644
+--- tinyxml2.cpp
++++ tinyxml2.cpp
+@@ -41,7 +41,7 @@ distribution.
+ 	   const char *format [,
+ 		  argument] ...
+ 	);*/
+-	static inline int TIXML_SNPRINTF( char* buffer, size_t size, const char* format, ... )
++	static inline int TIXML_SNPRINTF( char* buffer, ::size_t size, const char* format, ... )
+ 	{
+ 		va_list va;
+ 		va_start( va, format );
+@@ -50,7 +50,7 @@ distribution.
+ 		return result;
+ 	}
+ 
+-	static inline int TIXML_VSNPRINTF( char* buffer, size_t size, const char* format, va_list va )
++	static inline int TIXML_VSNPRINTF( char* buffer, ::size_t size, const char* format, va_list va )
+ 	{
+ 		const int result = vsnprintf_s( buffer, size, _TRUNCATE, format, va );
+ 		return result;
+@@ -73,7 +73,7 @@ distribution.
+ 			int len = 512;
+ 			for (;;) {
+ 				len = len*2;
+-				char* str = new char[len]();
++				char* str = nb::chcalloc(len);
+ 				const int required = _vsnprintf(str, len, format, va);
+ 				delete[] str;
+ 				if ( required != -1 ) {
+@@ -183,7 +183,7 @@ void StrPair::TransferTo( StrPair* other )
+ void StrPair::Reset()
+ {
+     if ( _flags & NEEDS_DELETE ) {
+-        delete [] _start;
++        nb_free(_start);
+     }
+     _flags = 0;
+     _start = 0;
+@@ -195,9 +195,9 @@ void StrPair::SetStr( const char* str, int flags )
+ {
+     TIXMLASSERT( str );
+     Reset();
+-    size_t len = strlen( str );
++    ::size_t len = strlen( str );
+     TIXMLASSERT( _start == 0 );
+-    _start = new char[ len+1 ];
++    _start = nb::chcalloc(len+1);
+     memcpy( _start, str, len+1 );
+     _end = _start + len;
+     _flags = flags | NEEDS_DELETE;
+@@ -212,7 +212,7 @@ char* StrPair::ParseText( char* p, const char* endTag, int strFlags, int* curLin
+ 
+     char* start = p;
+     const char  endChar = *endTag;
+-    size_t length = strlen( endTag );
++    ::size_t length = strlen( endTag );
+ 
+     // Inner loop of text parsing.
+     while ( *p ) {
+@@ -2233,7 +2233,7 @@ void XMLDocument::Clear()
+ #endif
+     ClearError();
+ 
+-    delete [] _charBuffer;
++    nb_free(_charBuffer);
+     _charBuffer = 0;
+ 	_parsingDepth = 0;
+ 
+@@ -2398,10 +2398,10 @@ XMLError XMLDocument::LoadFile( FILE* fp )
+         return _errorID;
+     }
+ 
+-    const size_t size = static_cast<size_t>(filelength);
++    const ::size_t size = static_cast<::size_t>(filelength);
+     TIXMLASSERT( _charBuffer == 0 );
+-    _charBuffer = new char[size+1];
+-    const size_t read = fread( _charBuffer, 1, size, fp );
++    _charBuffer = nb::chcalloc(size+1);
++    const ::size_t read = fread( _charBuffer, 1, size, fp );
+     if ( read != size ) {
+         SetError( XML_ERROR_FILE_READ_ERROR, 0, 0 );
+         return _errorID;
+@@ -2444,7 +2444,7 @@ XMLError XMLDocument::SaveFile( FILE* fp, bool compact )
+ }
+ 
+ 
+-XMLError XMLDocument::Parse( const char* xml, size_t nBytes )
++XMLError XMLDocument::Parse( const char* xml, ::size_t nBytes )
+ {
+     Clear();
+ 
+@@ -2452,11 +2452,11 @@ XMLError XMLDocument::Parse( const char* xml, size_t nBytes )
+         SetError( XML_ERROR_EMPTY_DOCUMENT, 0, 0 );
+         return _errorID;
+     }
+-    if ( nBytes == static_cast<size_t>(-1) ) {
++    if ( nBytes == static_cast<::size_t>(-1) ) {
+         nBytes = strlen( xml );
+     }
+     TIXMLASSERT( _charBuffer == 0 );
+-    _charBuffer = new char[ nBytes+1 ];
++    _charBuffer = nb::chcalloc(nBytes+1);
+     memcpy( _charBuffer, xml, nBytes );
+     _charBuffer[nBytes] = 0;
+ 
+@@ -2499,10 +2499,10 @@ void XMLDocument::SetError( XMLError error, int lineNum, const char* format, ...
+     TIXMLASSERT(error >= 0 && error < XML_ERROR_COUNT);
+     _errorID = error;
+     _errorLineNum = lineNum;
+-	_errorStr.Reset();
++    _errorStr.Reset();
+ 
+-    const size_t BUFFER_SIZE = 1000;
+-    char* buffer = new char[BUFFER_SIZE];
++    const ::size_t BUFFER_SIZE = 1000;
++    char* buffer = nb::chcalloc(BUFFER_SIZE);
+ 
+     TIXMLASSERT(sizeof(error) <= sizeof(int));
+     TIXML_SNPRINTF(buffer, BUFFER_SIZE, "Error=%s ErrorID=%d (0x%x) Line number=%d",
+@@ -2679,7 +2679,7 @@ void XMLPrinter::PrintString( const char* p, bool restricted )
+                 // entity, and keep looking.
+                 if ( flag[static_cast<unsigned char>(*q)] ) {
+                     while ( p < q ) {
+-                        const size_t delta = q - p;
++                        const ::size_t delta = q - p;
+                         const int toPrint = ( INT_MAX < delta ) ? INT_MAX : static_cast<int>(delta);
+                         Write( p, toPrint );
+                         p += toPrint;
+diff --git tinyxml2.h tinyxml2.h
+index c801117..224d3bc 100644
+--- tinyxml2.h
++++ tinyxml2.h
+@@ -1,4 +1,4 @@
+-/*
++﻿/*
+ Original code by Lee Thomason (www.grinninglizard.com)
+ 
+ This software is provided 'as-is', without any express or implied
+@@ -42,6 +42,8 @@ distribution.
+ #endif
+ #include <stdint.h>
+ 
++#include <nbglobals.h>
++
+ /*
+ 	gcc:
+         g++ -Wall -DTINYXML2_DEBUG tinyxml2.cpp xmltest.cpp -o gccxmltest.exe
+@@ -202,6 +204,7 @@ private:
+ template <class T, size_t INITIAL_SIZE>
+ class DynArray
+ {
++    CUSTOM_MEM_ALLOCATION_IMPL
+ public:
+     DynArray() :
+         _mem( _pool ),
+@@ -212,7 +215,7 @@ public:
+ 
+     ~DynArray() {
+         if ( _mem != _pool ) {
+-            delete [] _mem;
++            nb_free(_mem);
+         }
+     }
+ 
+@@ -300,21 +303,21 @@ private:
+         if ( cap > _allocated ) {
+             TIXMLASSERT( cap <= SIZE_MAX / 2 / sizeof(T));
+             const size_t newAllocated = cap * 2;
+-            T* newMem = new T[newAllocated];
++            T* newMem = nb::calloc<T*>(newAllocated, sizeof(T));
+             TIXMLASSERT( newAllocated >= _size );
+             memcpy( newMem, _mem, sizeof(T) * _size );	// warning: not using constructors, only works for PODs
+             if ( _mem != _pool ) {
+-                delete [] _mem;
++                nb_free(_mem);
+             }
+             _mem = newMem;
+             _allocated = newAllocated;
+         }
+     }
+ 
+-    T*  _mem;
+-    T   _pool[INITIAL_SIZE];
+-    size_t _allocated;		// objects allocated
+-    size_t _size;			// number objects in use
++    T*  _mem{nullptr};
++    T   _pool[INITIAL_SIZE]{};
++    size_t _allocated{0};		// objects allocated
++    size_t _size{0};			// number objects in use
+ };
+ 
+ 
+@@ -351,7 +354,7 @@ public:
+         // Delete the blocks.
+         while( !_blockPtrs.Empty()) {
+             Block* lastBlock = _blockPtrs.Pop();
+-            delete lastBlock;
++            nb_free(lastBlock);
+         }
+         _root = 0;
+         _currentAllocs = 0;
+@@ -367,10 +370,10 @@ public:
+         return _currentAllocs;
+     }
+ 
+-    virtual void* Alloc() override{
++    virtual void* Alloc() override {
+         if ( !_root ) {
+             // Need a new block.
+-            Block* block = new Block;
++            Block* block = new Block();
+             _blockPtrs.Push( block );
+ 
+             Item* blockItems = block->items;
+@@ -407,7 +410,7 @@ public:
+     }
+     void Trace( const char* name ) {
+         printf( "Mempool %s watermark=%d [%dk] current=%d size=%d nAlloc=%d blocks=%d\n",
+-                name, _maxAllocs, _maxAllocs * ITEM_SIZE / 1024, _currentAllocs,
++                name, _maxAllocs, (int)(_maxAllocs * ITEM_SIZE / 1024), _currentAllocs,
+                 ITEM_SIZE, _nAllocs, _blockPtrs.Size() );
+     }
+ 
+@@ -441,6 +444,7 @@ private:
+         char    itemData[static_cast<size_t>(ITEM_SIZE)];
+     };
+     struct Block {
++        CUSTOM_MEM_ALLOCATION_IMPL
+         Item items[ITEMS_PER_BLOCK];
+     };
+     DynArray< Block*, 10 > _blockPtrs;
+@@ -475,6 +479,7 @@ private:
+ */
+ class TINYXML2_LIB XMLVisitor
+ {
++    CUSTOM_MEM_ALLOCATION_IMPL
+ public:
+     virtual ~XMLVisitor() {}
+ 
+@@ -565,7 +570,7 @@ public:
+     // Anything in the high order range of UTF-8 is assumed to not be whitespace. This isn't
+     // correct, but simple, and usually works.
+     static bool IsWhiteSpace( char p )					{
+-        return !IsUTF8Continuation(p) && isspace( static_cast<unsigned char>(p) );
++        return !IsUTF8Continuation(p) && std::isspace( static_cast<unsigned char>(p) );
+     }
+ 
+     inline static bool IsNameStartChar( unsigned char ch ) {
+@@ -581,7 +586,7 @@ public:
+ 
+     inline static bool IsNameChar( unsigned char ch ) {
+         return IsNameStartChar( ch )
+-               || isdigit( ch )
++               || std::isdigit( ch )
+                || ch == '.'
+                || ch == '-';
+     }
+@@ -617,7 +622,7 @@ public:
+     static void ToStr( bool v, char* buffer, int bufferSize );
+     static void ToStr( float v, char* buffer, int bufferSize );
+     static void ToStr( double v, char* buffer, int bufferSize );
+-	static void ToStr(int64_t v, char* buffer, int bufferSize);
++    static void ToStr(int64_t v, char* buffer, int bufferSize);
+     static void ToStr(uint64_t v, char* buffer, int bufferSize);
+ 
+     // converts strings to primitive types
+@@ -668,6 +673,7 @@ private:
+ */
+ class TINYXML2_LIB XMLNode
+ {
++    CUSTOM_MEM_ALLOCATION_IMPL
+     friend class XMLDocument;
+     friend class XMLElement;
+ public:
+@@ -1140,6 +1146,7 @@ private:
+ */
+ class TINYXML2_LIB XMLAttribute
+ {
++    CUSTOM_MEM_ALLOCATION_IMPL
+     friend class XMLElement;
+ public:
+     /// The name of the attribute.
+@@ -1769,7 +1776,7 @@ public:
+     	Returns XML_SUCCESS (0) on success, or
+     	an errorID.
+     */
+-    XMLError LoadFile( FILE* );
++    XMLError LoadFile( std::FILE* );
+ 
+     /**
+     	Save the XML file to disk.
+@@ -1922,10 +1929,10 @@ public:
+ 	// internal
+ 	void MarkInUse(const XMLNode* const);
+ 
+-    virtual XMLNode* ShallowClone( XMLDocument* /*document*/ ) const override{
++    virtual XMLNode* ShallowClone( XMLDocument* /*document*/ ) const override {
+         return 0;
+     }
+-    virtual bool ShallowEqual( const XMLNode* /*compare*/ ) const override{
++    virtual bool ShallowEqual( const XMLNode* /*compare*/ ) const override {
+         return false;
+     }
+ 
+@@ -2053,6 +2060,7 @@ inline NodeType* XMLDocument::CreateUnlinkedNode( MemPoolT<PoolElementSize>& poo
+ */
+ class TINYXML2_LIB XMLHandle
+ {
++    CUSTOM_MEM_ALLOCATION_IMPL
+ public:
+     /// Create a handle from any node (at any depth of the tree.) This can be a null pointer.
+     explicit XMLHandle( XMLNode* node ) : _node( node ) {
+@@ -2134,6 +2142,7 @@ private:
+ */
+ class TINYXML2_LIB XMLConstHandle
+ {
++    CUSTOM_MEM_ALLOCATION_IMPL
+ public:
+     explicit XMLConstHandle( const XMLNode* node ) : _node( node ) {
+     }
+@@ -2238,6 +2247,7 @@ private:
+ */
+ class TINYXML2_LIB XMLPrinter : public XMLVisitor
+ {
++    CUSTOM_MEM_ALLOCATION_IMPL
+ public:
+     enum EscapeAposCharsInAttributes {
+         ESCAPE_APOS_CHARS_IN_ATTRIBUTES,
+@@ -2250,7 +2260,7 @@ public:
+     	If 'compact' is set to true, then output is created
+     	with only required whitespace and newlines.
+     */
+-    XMLPrinter( FILE* file=0, bool compact = false, int depth = 0, EscapeAposCharsInAttributes aposInAttributes = ESCAPE_APOS_CHARS_IN_ATTRIBUTES );
++    XMLPrinter( std::FILE* file=0, bool compact = false, int depth = 0, EscapeAposCharsInAttributes aposInAttributes = ESCAPE_APOS_CHARS_IN_ATTRIBUTES );
+     virtual ~XMLPrinter()	{}
+ 
+     /** If streaming, write the BOM and declaration. */
+@@ -2263,9 +2273,9 @@ public:
+     void PushAttribute( const char* name, const char* value );
+     void PushAttribute( const char* name, int value );
+     void PushAttribute( const char* name, unsigned value );
+-	void PushAttribute( const char* name, int64_t value );
+-	void PushAttribute( const char* name, uint64_t value );
+-	void PushAttribute( const char* name, bool value );
++    void PushAttribute( const char* name, int64_t value );
++    void PushAttribute( const char* name, uint64_t value );
++    void PushAttribute( const char* name, bool value );
+     void PushAttribute( const char* name, double value );
+     /// If streaming, close the Element.
+     virtual void CloseElement( bool compactMode=false );
+@@ -2276,11 +2286,11 @@ public:
+     void PushText( int value );
+     /// Add a text node from an unsigned.
+     void PushText( unsigned value );
+-	/// Add a text node from a signed 64bit integer.
+-	void PushText( int64_t value );
+-	/// Add a text node from an unsigned 64bit integer.
+-	void PushText( uint64_t value );
+-	/// Add a text node from a bool.
++    /// Add a text node from a signed 64bit integer.
++    void PushText( int64_t value );
++    /// Add a text node from an unsigned 64bit integer.
++    void PushText( uint64_t value );
++    /// Add a text node from a bool.
+     void PushText( bool value );
+     /// Add a text node from a float.
+     void PushText( float value );
+@@ -2357,11 +2367,11 @@ private:
+     void PrintString( const char*, bool restrictedEntitySet );	// prints out, after detecting entities.
+ 
+     bool _firstElement;
+-    FILE* _fp;
++    std::FILE* _fp;
+     int _depth;
+     int _textDepth;
+     bool _processEntities;
+-	bool _compactMode;
++    bool _compactMode;
+ 
+     enum {
+         ENTITY_RANGE = 64,
