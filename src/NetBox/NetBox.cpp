@@ -41,8 +41,8 @@ void CreatePlugin()
 
 void DestroyPlugin()
 {
-  TermExtensionModule();
   DestroyFarPlugin(FarPlugin);
+  TermExtensionModule();
   if (PrevInvalidParameterHandler)
   {
     _set_invalid_parameter_handler(PrevInvalidParameterHandler);
