@@ -322,6 +322,12 @@ void TWinSCPFileSystem::HandleException(Exception * E, OPERATION_MODES OpMode)
 {
   bool DoClose = false;
 
+  // Defensive: never destroy the panel during background operations
+  // (directory size calculation, find file, quick view). Far Manager
+  // holds the panel handle across the entire scan and will crash if the
+  // FileSystem object is deleted mid-operation.
+  const bool BackgroundOp = FLAGSET(OpMode, OPM_FIND | OPM_SILENT);
+
   if ((GetTerminal() != nullptr) && nb::isa<EFatal>(E))
   {
     const bool Reopen = GetTerminal()->QueryReopen(E, 0, nullptr);
@@ -332,14 +338,24 @@ void TWinSCPFileSystem::HandleException(Exception * E, OPERATION_MODES OpMode)
     else
     {
       GetTerminal()->ShowExtendedException(E);
-      DoClose = true;
+      DoClose = !BackgroundOp;
+      if (BackgroundOp)
+      {
+        TINYLOG_WARNING(g_tinylog) << TLogContext::Format()
+            << "HandleException: suppressing ClosePanel for background op, EFatal=" << E->Message;
+      }
     }
   }
   else if ((GetTerminal() != nullptr) && nb::isa<EAbort>(E))
   {
     if (E->Message == EXCEPTION_MSG_REPLACED)
     {
-      DoClose = true;
+      DoClose = !BackgroundOp;
+      if (BackgroundOp)
+      {
+        TINYLOG_WARNING(g_tinylog) << TLogContext::Format()
+            << "HandleException: suppressing ClosePanel for background op, EAbort(REPLACED)";
+      }
     }
     else
     {
