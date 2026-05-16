@@ -19,8 +19,9 @@ public:
 
   virtual void Start();
   void WaitFor(DWORD Milliseconds = INFINITE) const;
-  virtual void Terminate() = 0;
+  virtual void Terminate() {}
   virtual void Close();
+  void SignalStop();
   bool IsFinished() const;
 
 protected:
@@ -67,6 +68,7 @@ class TTerminalQueue;
 class TQueueItemProxy;
 class TTerminalQueueStatus;
 class TQueueFileList;
+class TTerminalItem;
 
 #if defined(__BORLANDC__)
 typedef void (__closure * TQueueListUpdate)
@@ -85,8 +87,7 @@ using TQueueItemUpdateEvent = nb::FastDelegate2<void,
 enum TQueueEventType { qeEmpty, qeEmptyButMonitored, qePendingUserAction };
 using TQueueEvent = nb::FastDelegate2<void,
   TTerminalQueue * /*Queue*/, TQueueEventType /*Event*/>;
-
-class TTerminalItem;
+using TIdleMarshalEvent = nb::FastDelegate0<void>;
 
 class NB_CORE_EXPORT TTerminalQueue final : public TSignalThread
 {
@@ -115,7 +116,10 @@ public:
   __property TQueueListUpdate OnListUpdate = { read = FOnListUpdate, write = FOnListUpdate };
   __property TQueueItemUpdateEvent OnQueueItemUpdate = { read = FOnQueueItemUpdate, write = FOnQueueItemUpdate };
   __property TQueueEventEvent OnEvent = { read = FOnEvent, write = FOnEvent };
+  __property TIdleMarshalEvent OnIdleMarshal = { read = FOnIdleMarshal, write = FOnIdleMarshal };
 
+  DWORD GetMainThreadId() const { return FMainThreadId; }
+  void SetMainThreadId(DWORD Value) { FMainThreadId = Value; }
 protected:
   friend class TTerminalItem;
   friend class TQueryUserAction;
@@ -138,7 +142,8 @@ public:
   void SetOnQueueItemUpdate(TQueueItemUpdateEvent && Value) { FOnQueueItemUpdate = std::move(Value); }
   TQueueEvent & GetOnEvent() { return FOnEvent; }
   void SetOnEvent(TQueueEvent && Value) { FOnEvent = std::move(Value); }
-
+  TIdleMarshalEvent & GetOnIdleMarshal() { return FOnIdleMarshal; }
+  void SetOnIdleMarshal(TIdleMarshalEvent && Value) { FOnIdleMarshal = std::move(Value); }
 protected:
   TQueryUserEvent FOnQueryUser;
   TPromptUserEvent FOnPromptUser;
@@ -146,6 +151,8 @@ protected:
   TQueueItemUpdateEvent FOnQueueItemUpdate;
   TQueueListUpdateEvent FOnListUpdate;
   TQueueEvent FOnEvent;
+  TIdleMarshalEvent FOnIdleMarshal;
+  DWORD FMainThreadId{0};
   gsl::not_null<TTerminal *> FTerminal;
   gsl::not_null<TConfiguration *> FConfiguration;
   std::unique_ptr<TSessionData> FSessionData;
@@ -153,6 +160,12 @@ protected:
   std::unique_ptr<TList> FDoneItems;
   int32_t FItemsInProcess{0};
   TCriticalSection FItemsSection;
+  // Lock ordering hierarchy (observed):
+  // 1. TTerminalQueue::FItemsSection
+  // 2. TQueueItem::FSection
+  // Cross-lock acquisition: FItemsSection may call Item->GetStatus() which
+  // acquires FSection. No reverse ordering has been observed.
+  // TCriticalSection wraps a Windows CRITICAL_SECTION and is recursive.
   int32_t FFreeTerminals{0};
   std::unique_ptr<TList> FTerminals;
   std::unique_ptr<TList> FForcedItems;
@@ -255,16 +268,18 @@ public:
   void SetStatus(TStatus Status);
   TStatus GetStatus() const;
   void Execute();
-  virtual void DoExecute(gsl::not_null<TTerminal *> Terminal) = 0;
+  virtual void DoExecute(gsl::not_null<TTerminal *> ATerminal) = 0;
   void SetProgress(TFileOperationProgressType & ProgressData);
   void GetData(TQueueItemProxy * Proxy) const;
   virtual bool UpdateFileList(TQueueFileList * FileList);
   void SetCPSLimit(int32_t CPSLimit);
   int32_t GetCPSLimit() const;
+  TInfo * GetInfo() const { return FInfo.get(); }
+
 
 protected:
   virtual int32_t DefaultCPSLimit() const;
-  virtual UnicodeString GetStartupDirectory() const = 0;
+  virtual UnicodeString GetStartupDirectory() const;
   virtual void ProgressUpdated();
   virtual TQueueItem * CreateParallelOperation();
   virtual bool Complete();
@@ -300,14 +315,15 @@ public:
   __property TQueueItem::TStatus Status = { read = FStatus };
   __property bool ProcessingUserAction = { read = FProcessingUserAction };
   __property int32_t Index = { read = GetIndex };
-  __property void * UserData = { read = FUserData, write = FUserData };
+  // Clang warns on property backed by private field which is never used
+  void * UserData{nullptr};
 
   TQueueItem::TInfo * GetInfo() const { return FInfo.get(); }
   TQueueItem::TStatus GetStatus() const { return FStatus; }
   bool GetProcessingUserAction() const { return FProcessingUserAction; }
-  void * GetUserData() const { return FUserData; }
-  void * GetUserData() { return FUserData; }
-  void SetUserData(void * Value) { FUserData = Value; }
+  void * GetUserData() const { return UserData; }
+  void * GetUserData() { return UserData; }
+  void SetUserData(void * Value) { UserData = Value; }
   TQueueItemProxy * Clone() { return new TQueueItemProxy(FQueue, FQueueItem); }
 
 private:
@@ -318,7 +334,6 @@ private:
   TTerminalQueueStatus * FQueueStatus{nullptr};
   std::unique_ptr<TQueueItem::TInfo> FInfo;
   bool FProcessingUserAction{false};
-  void * FUserData{nullptr};
 
   explicit TQueueItemProxy(gsl::not_null<TTerminalQueue *> Queue, gsl::not_null<TQueueItem *> QueueItem) noexcept;
   virtual ~TQueueItemProxy() noexcept override;
@@ -389,7 +404,7 @@ public:
   virtual ~TBootstrapQueueItem() noexcept override;
 
 protected:
-  virtual void DoExecute(gsl::not_null<TTerminal *> Terminal) override;
+  virtual void DoExecute(gsl::not_null<TTerminal *> ATerminal) override;
   virtual UnicodeString GetStartupDirectory() const override;
   virtual bool Complete() override;
 };
@@ -407,7 +422,7 @@ protected:
   explicit TLocatedQueueItem(TObjectClassId Kind, const UnicodeString & ACurrentDir) noexcept;
   virtual ~TLocatedQueueItem() override = default;
 
-  virtual void DoExecute(gsl::not_null<TTerminal *> Terminal) override;
+  virtual void DoExecute(gsl::not_null<TTerminal *> ATerminal) override;
   virtual UnicodeString GetStartupDirectory() const override;
 
 private:
@@ -456,7 +471,7 @@ public:
 public:
   explicit TUploadQueueItem(TTerminal * ATerminal,
     const TStrings * AFilesToCopy, const UnicodeString & ATargetDir,
-    const TCopyParamType * CopyParam, int32_t Params, bool SingleFile, bool Parallel) noexcept;
+    const TCopyParamType * CopyParam, int32_t Params, bool Parallel) noexcept;
   virtual ~TUploadQueueItem() override = default;
 
 protected:
@@ -471,23 +486,39 @@ public:
 public:
   explicit TDownloadQueueItem(TTerminal * ATerminal,
     const TStrings * AFilesToCopy, const UnicodeString & ATargetDir,
-    const TCopyParamType * CopyParam, int32_t Params, bool SingleFile, bool Parallel) noexcept;
+    const TCopyParamType * CopyParam, int32_t Params, bool Parallel) noexcept;
   virtual ~TDownloadQueueItem() override = default;
 
 protected:
   virtual void DoTransferExecute(gsl::not_null<TTerminal *> ATerminal, TParallelOperation * ParallelOperation) override;
 };
 
-class TDeleteQueueItem : public TLocatedQueueItem
+class TRemoteDeleteQueueItem final : public TLocatedQueueItem
 {
 public:
-  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TDeleteQueueItem); }
-  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TDeleteQueueItem) || TLocatedQueueItem::is(Kind); }
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TRemoteDeleteQueueItem); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TRemoteDeleteQueueItem) || TLocatedQueueItem::is(Kind); }
 public:
-  explicit TDeleteQueueItem(TObjectClassId Kind, TTerminal * Terminal, TStrings * FilesToDelete, int32_t Params) noexcept;
+  explicit TRemoteDeleteQueueItem(TTerminal * ATerminal, TStrings * AFilesToDelete, int32_t AParams);
 
 protected:
-  virtual void DoExecute(TTerminal * Terminal);
+  virtual void DoExecute(gsl::not_null<TTerminal *> ATerminal) override;
+
+private:
+  std::unique_ptr<TStrings> FFilesToDelete;
+  int32_t FParams{0};
+};
+
+class TLocalDeleteQueueItem final : public TQueueItem
+{
+public:
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TLocalDeleteQueueItem); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TLocalDeleteQueueItem) || TQueueItem::is(Kind); }
+public:
+  explicit TLocalDeleteQueueItem(TStrings * AFilesToDelete, int32_t AParams) noexcept;
+
+protected:
+  virtual void DoExecute(gsl::not_null<TTerminal *> ATerminal) override;
 
 private:
   std::unique_ptr<TStrings> FFilesToDelete;
@@ -495,6 +526,8 @@ private:
 };
 
 class TUserAction;
+class TInformationUserAction;
+enum TTerminalReopenResult { trrPending, trrSucceeded, trrFailed, trrNeedsInteraction };
 class NB_CORE_EXPORT TTerminalThread : public TSignalThread
 {
   NB_DISABLE_COPY(TTerminalThread)
@@ -506,6 +539,10 @@ public:
 
   void TerminalOpen();
   void TerminalReopen();
+  void StartTerminalReopenNonInteractive();
+  TTerminalReopenResult IsTerminalReopenComplete();
+  void ContinueTerminalReopenInteractive();
+  bool Abandoned();
 
   void Cancel();
   bool Release();
@@ -537,6 +574,9 @@ private:
   TReadDirectoryProgressEvent FOnReadDirectoryProgress{nullptr};
   TNotifyEvent FOnInitializeLog{nullptr};
 
+  TFileOperationProgressEvent FOnProgress{nullptr};
+  TFileOperationFinishedEvent FOnFinished{nullptr};
+
   TNotifyEvent FOnIdle{nullptr};
 
   TNotifyEvent FAction{nullptr};
@@ -549,13 +589,21 @@ private:
   TDateTime FCancelAfter;
   bool FAbandoned{false};
   bool FCancelled{false};
-  bool FPendingIdle{false};
+
   bool FAllowAbandon{false};
+  bool FNonInteractive{false};
+  bool FNeedsInteraction{false};
+#if defined(__BORLANDC__)
+  typedef std::list<TInformationUserAction *> TInformationList;
+#endif // defined(__BORLANDC__)
+  using TInformationList = nb::list_t<TInformationUserAction *>;
+  TInformationList FNonInteractiveInformation;
 
   DWORD FMainThread{0};
   TCriticalSection FSection;
 
   void WaitForUserAction(TUserAction * UserAction);
+  void StartAction(TNotifyEvent Action);
   void RunAction(TNotifyEvent && Action);
 
   static void SaveException(Exception & E, Exception *& Exception);
@@ -567,7 +615,7 @@ private:
   void TerminalReopenEvent(TObject * Sender);
 
   void TerminalInformation(
-    TTerminal * Terminal, const UnicodeString & AStr, bool Status, int32_t Phase, const UnicodeString & Additional);
+    TTerminal * ATerminal, const UnicodeString & AStr, int32_t Phase, const UnicodeString & Additional);
   void TerminalQueryUser(TObject * Sender,
     const UnicodeString & AQuery, TStrings * MoreMessages, uint32_t Answers,
     const TQueryParams * Params, uint32_t & Answer, TQueryType Type, void * Arg);
@@ -584,6 +632,12 @@ private:
   void TerminalStartReadDirectory(TObject * Sender);
   void TerminalReadDirectoryProgress(TObject * Sender, int32_t Progress, int32_t ResolvedLinks, bool & Cancel);
   void TerminalInitializeLog(TObject * Sender);
+
+  void TerminalProgress(TFileOperationProgressType & ProgressData);
+  void TerminalFinished(TFileOperation Operation, TOperationSide Side,
+    bool Temp, const UnicodeString & FileName, bool Success, bool NotCancelled,
+    TOnceDoneOperation & OnceDoneOperation);
+  void DiscardException();
 };
 
 enum TQueueFileState { qfsQueued = 0, qfsProcessed = 1 };
