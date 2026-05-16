@@ -424,8 +424,17 @@ void TFileOperationProgressType::DoProgress()
   {
     TValueRestorer<bool> InCallbackRestorer(FInCallback);
     FInCallback = true;
-    const TGuard Guard(FSection);
-    FOnProgress(*this);
+    // Snapshot the callback under lock, then invoke outside the lock
+    // to avoid blocking the worker or deadlocking with UI thread.
+    TFileOperationProgressEvent OnProgress;
+    {
+      const TGuard Guard(FSection);
+      OnProgress = FOnProgress;
+    }
+    if (!OnProgress.empty())
+    {
+      OnProgress(*this);
+    }
   }
   else
   {
@@ -436,16 +445,31 @@ void TFileOperationProgressType::DoProgress()
 void TFileOperationProgressType::Finish(const UnicodeString & AFileName,
   bool Success, TOnceDoneOperation & OnceDoneOperation)
 {
-  const TGuard Guard(FSection);
-  DebugAssert(FInProgress);
-
-  // Cancel reader is guarded
-  const bool NotCancelled = (Cancel == csContinue);
-  FOnFinished(FOperation, Side(), FTemp, AFileName, Success, NotCancelled, OnceDoneOperation);
-  FFilesFinished++;
-  if (Success)
+  TFileOperationFinishedEvent OnFinished;
+  bool NotCancelled;
+  TFileOperation Operation;
+  TOperationSide OpSide;
+  bool Temp;
   {
-    FFilesFinishedSuccessfully++;
+    const TGuard Guard(FSection);
+    DebugAssert(FInProgress);
+    NotCancelled = (Cancel == csContinue);
+    Operation = FOperation;
+    OpSide = Side();
+    Temp = FTemp;
+    OnFinished = FOnFinished;
+  }
+  if (!OnFinished.empty())
+  {
+    OnFinished(Operation, OpSide, Temp, AFileName, Success, NotCancelled, OnceDoneOperation);
+  }
+  {
+    const TGuard Guard(FSection);
+    FFilesFinished++;
+    if (Success)
+    {
+      FFilesFinishedSuccessfully++;
+    }
   }
   DoProgress();
 }
@@ -576,10 +600,10 @@ int64_t TFileOperationProgressType::AdjustToCPSLimit(
       }
 
       if (FRemainingCPS == 0)
-        // CPS throttle wait. No APCs are queued here; use WaitForSingleObject
-        // for consistent event-driven pattern.
       {
-        ::WaitForSingleObject(nullptr, 100);
+        // CPS throttle wait. Use Sleep for a clean 100ms delay;
+        // WaitForSingleObject with nullptr returns immediately.
+        Sleep(100);
         DoProgress();
       }
     }

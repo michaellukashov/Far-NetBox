@@ -2775,7 +2775,6 @@ TTerminalThread::TTerminalThread(gsl::not_null<TTerminal *> Terminal) noexcept :
   FUserAction = nullptr;
   FCancel = false;
   FCancelled = false;
-  FPendingIdle = false;
   FAbandoned = false;
   FAllowAbandon = false;
   FMainThread = GetCurrentThreadId();
@@ -2882,7 +2881,14 @@ void TTerminalThread::Idle()
       {
         Rethrow(FIdleException);
       }
-      FPendingIdle = true;
+      try
+      {
+        FTerminal->Idle();
+      }
+      catch (Exception & E)
+      {
+        SaveException(E, FIdleException);
+      }
     }
     __finally
     {
@@ -2959,6 +2965,10 @@ void TTerminalThread::RunAction(TNotifyEvent && Action)
               {
                 FOnIdle(nullptr);
               }
+              // Keep session alive while main thread waits for worker.
+              // Idle() is marshaled here so worker thread never calls
+              // Far-facing callbacks.
+              Idle();
               Wait = nb::Min(Wait + 10, MaxWait);
             }
             break;
@@ -3135,18 +3145,8 @@ void TTerminalThread::WaitForUserAction(TUserAction * UserAction)
           // that we rethrow the idle exception below)
           // Also if idle exception is set, it is probable that terminal
           // is not active anyway.
-          if (FTerminal->GetActive() && FPendingIdle && (FIdleException == nullptr))
-          {
-            FPendingIdle = false;
-            try
-            {
-              FTerminal->Idle();
-            }
-            catch (Exception & E)
-            {
-              SaveException(E, FIdleException);
-            }
-          }
+          // Idle() is marshaled to the main thread via RunAction() idle loop;
+          // worker thread must not call Far-facing callbacks.
         }
 
         const int32_t WaitResult = WaitForEvent(400);

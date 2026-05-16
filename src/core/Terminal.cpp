@@ -1883,6 +1883,10 @@ void TTerminal::SetupTunnelLocalPortNumber()
         FTunnelLocalPortNumber = Port;
         LogEvent(FORMAT(L"Autoselected tunnel local port number %d", FTunnelLocalPortNumber));
       }
+      else
+      {
+        Sleep(10);
+      }
     }
     while (FTunnelLocalPortNumber == 0);
   }

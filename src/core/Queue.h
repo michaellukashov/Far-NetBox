@@ -582,7 +582,7 @@ private:
   TDateTime FCancelAfter;
   bool FAbandoned{false};
   bool FCancelled{false};
-  bool FPendingIdle{false};
+
   bool FAllowAbandon{false};
   bool FNonInteractive{false};
   bool FNeedsInteraction{false};
