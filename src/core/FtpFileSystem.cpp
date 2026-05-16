@@ -715,10 +715,19 @@ void TFTPFileSystem::Close()
     }
   }
 
-  if (DebugAlwaysTrue(Result))
+  if (Result)
   {
     DebugAssert(FActive);
     Disconnect();
+  }
+  else
+  {
+    // Connection was already closed or in a bad state; force cleanup.
+    DEBUG_PRINTFA("TFTPFileSystem::Close: Result=false, forcing Disconnect");
+    if (FActive)
+    {
+      Disconnect();
+    }
   }
   DEBUG_PRINTFA("TFTPFileSystem::Close end (result=%s)", Result ? "yes" : "no");
 }
