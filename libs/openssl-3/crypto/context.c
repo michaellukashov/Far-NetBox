@@ -1,5 +1,5 @@
 /*
- * Copyright 2019-2024 The OpenSSL Project Authors. All Rights Reserved.
+ * Copyright 2019-2025 The OpenSSL Project Authors. All Rights Reserved.
  *
  * Licensed under the Apache License 2.0 (the "License").  You may not use
  * this file except in compliance with the License.  You can obtain a copy
@@ -49,22 +49,28 @@ struct ossl_lib_ctx_st {
     void *fips_prov;
 #endif
 
-    unsigned int ischild:1;
+    unsigned int ischild : 1;
 };
 
 int ossl_lib_ctx_write_lock(OSSL_LIB_CTX *ctx)
 {
-    return CRYPTO_THREAD_write_lock(ossl_lib_ctx_get_concrete(ctx)->lock);
+    if ((ctx = ossl_lib_ctx_get_concrete(ctx)) == NULL)
+        return 0;
+    return CRYPTO_THREAD_write_lock(ctx->lock);
 }
 
 int ossl_lib_ctx_read_lock(OSSL_LIB_CTX *ctx)
 {
-    return CRYPTO_THREAD_read_lock(ossl_lib_ctx_get_concrete(ctx)->lock);
+    if ((ctx = ossl_lib_ctx_get_concrete(ctx)) == NULL)
+        return 0;
+    return CRYPTO_THREAD_read_lock(ctx->lock);
 }
 
 int ossl_lib_ctx_unlock(OSSL_LIB_CTX *ctx)
 {
-    return CRYPTO_THREAD_unlock(ossl_lib_ctx_get_concrete(ctx)->lock);
+    if ((ctx = ossl_lib_ctx_get_concrete(ctx)) == NULL)
+        return 0;
+    return CRYPTO_THREAD_unlock(ctx->lock);
 }
 
 int ossl_lib_ctx_is_child(OSSL_LIB_CTX *ctx)
@@ -205,7 +211,7 @@ static int context_init(OSSL_LIB_CTX *ctx)
 
     return 1;
 
- err:
+err:
     context_deinit_objs(ctx);
 
     if (exdata_done)
@@ -251,7 +257,6 @@ static void context_deinit_objs(OSSL_LIB_CTX *ctx)
         ossl_decoder_cache_free(ctx->decoder_cache);
         ctx->decoder_cache = NULL;
     }
-
 
     /* P2. We want encoder_store to be cleaned up before the provider store */
     if (ctx->encoder_store != NULL) {
@@ -410,7 +415,7 @@ static OSSL_LIB_CTX *get_default_context(void)
 {
     OSSL_LIB_CTX *current_defctx = get_thread_default_context();
 
-    if (current_defctx == NULL)
+    if (current_defctx == NULL && default_context_inited)
         current_defctx = &default_context_int;
     return current_defctx;
 }
@@ -437,7 +442,7 @@ OSSL_LIB_CTX *OSSL_LIB_CTX_new(void)
 
 #ifndef FIPS_MODULE
 OSSL_LIB_CTX *OSSL_LIB_CTX_new_from_dispatch(const OSSL_CORE_HANDLE *handle,
-                                             const OSSL_DISPATCH *in)
+    const OSSL_DISPATCH *in)
 {
     OSSL_LIB_CTX *ctx = OSSL_LIB_CTX_new();
 
@@ -453,7 +458,7 @@ OSSL_LIB_CTX *OSSL_LIB_CTX_new_from_dispatch(const OSSL_CORE_HANDLE *handle,
 }
 
 OSSL_LIB_CTX *OSSL_LIB_CTX_new_child(const OSSL_CORE_HANDLE *handle,
-                                     const OSSL_DISPATCH *in)
+    const OSSL_DISPATCH *in)
 {
     OSSL_LIB_CTX *ctx = OSSL_LIB_CTX_new_from_dispatch(handle, in);
 

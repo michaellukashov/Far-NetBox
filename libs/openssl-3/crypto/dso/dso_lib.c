@@ -54,7 +54,7 @@ int DSO_free(DSO *dso)
     if (CRYPTO_DOWN_REF(&dso->references, &i) <= 0)
         return 0;
 
-    REF_PRINT_COUNT("DSO", dso);
+    REF_PRINT_COUNT("DSO", i, dso);
     if (i > 0)
         return 1;
     REF_ASSERT_ISNT(i < 0);
@@ -96,7 +96,7 @@ int DSO_up_ref(DSO *dso)
     if (CRYPTO_UP_REF(&dso->references, &i) <= 0)
         return 0;
 
-    REF_PRINT_COUNT("DSO", dso);
+    REF_PRINT_COUNT("DSO", i, dso);
     REF_ASSERT_ISNT(i < 2);
     return ((i > 1) ? 1 : 0);
 }
@@ -149,7 +149,7 @@ DSO *DSO_load(DSO *dso, const char *filename, DSO_METHOD *meth, int flags)
     }
     /* Load succeeded */
     return ret;
- err:
+err:
     if (allocated)
         DSO_free(ret);
     return NULL;
@@ -296,7 +296,7 @@ int DSO_pathbyaddr(void *addr, char *path, int sz)
         ERR_raise(ERR_LIB_DSO, DSO_R_UNSUPPORTED);
         return -1;
     }
-    return (*meth->pathbyaddr) (addr, path, sz);
+    return (*meth->pathbyaddr)(addr, path, sz);
 }
 
 DSO *DSO_dsobyaddr(void *addr, int flags)
@@ -310,7 +310,7 @@ DSO *DSO_dsobyaddr(void *addr, int flags)
 
     filename = OPENSSL_malloc(len);
     if (filename != NULL
-            && DSO_pathbyaddr(addr, filename, len) == len)
+        && DSO_pathbyaddr(addr, filename, len) == len)
         ret = DSO_load(NULL, filename, NULL, flags);
 
     OPENSSL_free(filename);
@@ -325,5 +325,5 @@ void *DSO_global_lookup(const char *name)
         ERR_raise(ERR_LIB_DSO, DSO_R_UNSUPPORTED);
         return NULL;
     }
-    return (*meth->globallookup) (name);
+    return (*meth->globallookup)(name);
 }
