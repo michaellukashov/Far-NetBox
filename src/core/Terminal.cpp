@@ -1187,10 +1187,10 @@ int32_t TParallelOperation::GetNext(
       bool Processed = true;
       if (IsParallelFileTransfer)
       {
-        CustomCopyParam = new TCopyParamType(*FCopyParam);
-        CustomCopyParam->PartOffset = FParallelFileOffset;
-        const int64_t Remaining = FParallelFileSize - CustomCopyParam->PartOffset;
-        CustomCopyParam->PartSize = FParallelFileSize / GetConfiguration()->QueueTransfersLimit();
+        std::unique_ptr<TCopyParamType> CustomCopyParamOwner(new TCopyParamType(*FCopyParam));
+        CustomCopyParamOwner->PartOffset = FParallelFileOffset;
+        const int64_t Remaining = FParallelFileSize - CustomCopyParamOwner->PartOffset;
+        CustomCopyParamOwner->PartSize = FParallelFileSize / GetConfiguration()->QueueTransfersLimit();
         DebugAssert(!OnlyFileName.IsEmpty());
         if (FParallelFileTargetName.IsEmpty())
         {
@@ -1200,23 +1200,24 @@ int32_t TParallelOperation::GetNext(
         const int32_t Index = FParallelFileCount;
         const UnicodeString PartFileName = GetPartPrefix(OnlyFileName) + IntToStr(Index);
         FParallelFileCount++;
-        FParallelFileOffsets.push_back(CustomCopyParam->PartOffset);
+        FParallelFileOffsets.push_back(CustomCopyParamOwner->PartOffset);
         FParallelFileDones.push_back(false);
         DebugAssert(FParallelFileOffsets.size() == nb::ToSizeT(FParallelFileCount));
-        CustomCopyParam->FileMask = DelimitFileNameMask(PartFileName);
-        if ((CustomCopyParam->PartSize >= Remaining) ||
-            (Remaining - CustomCopyParam->PartSize < CustomCopyParam->PartSize / 10))
+        CustomCopyParamOwner->FileMask = DelimitFileNameMask(PartFileName);
+        if ((CustomCopyParamOwner->PartSize >= Remaining) ||
+            (Remaining - CustomCopyParamOwner->PartSize < CustomCopyParamOwner->PartSize / 10))
         {
-          CustomCopyParam->PartSize = -1; // Until the end
+          CustomCopyParamOwner->PartSize = -1; // Until the end
           FParallelFileOffset = FParallelFileSize;
-          Terminal->LogEvent(FORMAT(L"Starting transfer of \"%s\" part %d from %s until the EOF", OnlyFileName, Index, Int64ToStr(CustomCopyParam->PartOffset)));
+          Terminal->LogEvent(FORMAT(L"Starting transfer of \"%s\" part %d from %s until the EOF", OnlyFileName, Index, Int64ToStr(CustomCopyParamOwner->PartOffset)));
         }
         else
         {
           Processed = false;
-          FParallelFileOffset += CustomCopyParam->PartSize;
-          Terminal->LogEvent(FORMAT(L"Starting transfer of \"%s\" part %d from %s, length %s", OnlyFileName, Index, Int64ToStr(CustomCopyParam->PartOffset), Int64ToStr(CustomCopyParam->PartSize)));
+          FParallelFileOffset += CustomCopyParamOwner->PartSize;
+          Terminal->LogEvent(FORMAT(L"Starting transfer of \"%s\" part %d from %s, length %s", OnlyFileName, Index, Int64ToStr(CustomCopyParamOwner->PartOffset), Int64ToStr(CustomCopyParamOwner->PartSize)));
         }
+        CustomCopyParam = CustomCopyParamOwner.release();
       }
 
       if (Processed)
@@ -3881,9 +3882,9 @@ void TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
       {
         LogEvent(FORMAT(L"ReadDirectory catch: FFiles=%p, using directory=%s", static_cast<const void*>(FFiles.get()), Directory));
       }
-      catch (...)
+      catch (Exception &)
       {
-        // Ignore logging failures — the original error is more important
+        // Logging failure ignored — the original ReadDirectory error is more important
       }
       CommandError(&E, FMTLOAD(LIST_DIR_ERROR, Directory));
     }
@@ -4681,9 +4682,6 @@ bool TTerminal::DeleteFiles(TStrings * AFilesToDelete, int32_t Params)
   TValueRestorer<bool> UseBusyCursorRestorer(FUseBusyCursor, false);
   FUseBusyCursor = false;
 
-  // TODO: avoid resolving symlinks while reading subdirectories.
-  // Resolving does not work anyway for relative symlinks in subdirectories
-  // (at least for SFTP).
   return this->ProcessFiles(AFilesToDelete, foDelete, nb::bind(&TTerminal::DeleteFile, this), &Params);
 }
 

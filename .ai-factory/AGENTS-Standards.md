@@ -45,12 +45,15 @@ This file contains all formatting and code standards, naming conventions, thread
 
 - `//` for single-line comments
 - `/* */` for multi-line comments
-- `// TODO: description` for future work
+- `// TODO: description` for notes and reminders only (not compiler-visible)
 - `// FIXME: description` for known issues
+- `TODO("description")` for actionable technical debt (emits compiler warning)
 - Comments must be clear, grammatically correct English
 
----
+**Rule:** Use `TODO("...")` (pragma-style macro) for all actionable debt that should appear
+in build logs. Use `// TODO:` only for informal notes that do not require tracking.
 
+---
 ## Memory Management
 
 - Prefer RAII and smart pointers (`std::unique_ptr` for exclusive ownership)

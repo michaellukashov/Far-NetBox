@@ -1103,7 +1103,7 @@ protected:
 
 private:
   void UpdateOkButton();
-
+  bool ValidatePasswordsMatch(const UnicodeString & NewPwd, const UnicodeString & ConfirmPwd);
   bool FUseMP{false};
   TFarEdit * FCurrentEdit{nullptr};
   TFarEdit * FNewEdit{nullptr};
@@ -1212,6 +1212,17 @@ void TMasterPasswordDialog::UpdateOkButton()
   AppLogFmt(L"MasterPassword OK enabled=%d (mode=%d)", CanSubmit ? 1 : 0, Mode);
 }
 
+bool TMasterPasswordDialog::ValidatePasswordsMatch(const UnicodeString & NewPwd, const UnicodeString & ConfirmPwd)
+{
+  if (NewPwd != ConfirmPwd)
+  {
+    AppLogFmt(L"MasterPassword: new passwords do not match");
+    MessageDialog(GetMsg(NB_MASTER_PASSWORD_DIFFERENT), qtError, qaOK);
+    return false;
+  }
+  return true;
+}
+
 void TMasterPasswordDialog::Change()
 {
   TWinSCPDialog::Change();
@@ -1245,10 +1256,8 @@ bool TMasterPasswordDialog::Execute()
         return false;
       }
       AppLogFmt(L"MasterPassword: current password valid, checking match");
-      if (NewPwd != ConfirmPwd)
+      if (!ValidatePasswordsMatch(NewPwd, ConfirmPwd))
       {
-        AppLogFmt(L"MasterPassword: new passwords do not match");
-        MessageDialog(GetMsg(NB_MASTER_PASSWORD_DIFFERENT), qtError, qaOK);
         return false;
       }
       AppLogFmt(L"MasterPassword: passwords match, checking strength");
@@ -1284,10 +1293,8 @@ bool TMasterPasswordDialog::Execute()
     {
       // Set mode: match first, then strength (WinSCP order)
       AppLogFmt(L"MasterPassword: set mode, checking match");
-      if (NewPwd != ConfirmPwd)
+      if (!ValidatePasswordsMatch(NewPwd, ConfirmPwd))
       {
-        AppLogFmt(L"MasterPassword: new passwords do not match");
-        MessageDialog(GetMsg(NB_MASTER_PASSWORD_DIFFERENT), qtError, qaOK);
         return false;
       }
       AppLogFmt(L"MasterPassword: passwords match, checking strength");

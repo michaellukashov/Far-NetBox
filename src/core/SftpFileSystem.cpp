@@ -5723,7 +5723,7 @@ void TSFTPFileSystem::Sink(
     (CopyParam->PartOffset < 0);
 
   HANDLE LocalFileHandle = INVALID_HANDLE_VALUE;
-  TStream * FileStream = nullptr; // TODO: use std::unique_ptr<>
+  std::unique_ptr<TStream> FileStream;
   bool DeleteLocalFile = false;
   RawByteString RemoteHandle;
   UnicodeString DestFullName = ATargetDir + ADestFileName;
@@ -5903,12 +5903,13 @@ void TSFTPFileSystem::Sink(
 
       DeleteLocalFile = true;
 
-      FileStream = new TSafeHandleStream(static_cast<THandle>(LocalFileHandle));
+      FileStream = std::make_unique<TSafeHandleStream>(static_cast<THandle>(LocalFileHandle));
     }
 
     // at end of this block queue is discarded
     {
       TValueRestorer<TSecureShellMode> SecureShellModeRestorer(FSecureShell->Mode);
+      nb::used(SecureShellModeRestorer);
       FSecureShell->Mode = ssmDownloading;
       TSFTPDownloadQueue Queue(this, FCodePage);
       try__finally
@@ -6037,7 +6038,7 @@ void TSFTPFileSystem::Sink(
               Encryption.Decrypt(BlockBuf);
             }
 
-            WriteLocalFile(CopyParam, FileStream, BlockBuf, LocalFileName, OperationProgress);
+            WriteLocalFile(CopyParam, FileStream.get(), BlockBuf, LocalFileName, OperationProgress);
           }
 
           if (OperationProgress->GetCancel() != csContinue)
@@ -6063,7 +6064,7 @@ void TSFTPFileSystem::Sink(
           TFileBuffer BlockBuf;
           if (Encryption.DecryptEnd(BlockBuf))
           {
-            WriteLocalFile(CopyParam, FileStream, BlockBuf, LocalFileName, OperationProgress);
+            WriteLocalFile(CopyParam, FileStream.get(), BlockBuf, LocalFileName, OperationProgress);
           }
         }
         Encryption.Finalize();
@@ -6113,10 +6114,6 @@ void TSFTPFileSystem::Sink(
       SAFE_CLOSE_HANDLE(LocalFileHandle);
     }
 
-    if (FileStream != nullptr)
-    {
-      SAFE_DESTROY(FileStream);
-    }
 
     if (FTerminal && DeleteLocalFile && (!ResumeAllowed || OperationProgress->GetLocallyUsed() == 0) &&
         (OverwriteMode == omOverwrite))
