@@ -10,12 +10,18 @@
 #include "plugin_version.hpp"
 
 static HINSTANCE HInstanceDLL;
+static _invalid_parameter_handler PrevInvalidParameterHandler = nullptr;
 
 // extern void InitExtensionModule(HINSTANCE HInst);
 // extern void TermExtensionModule();
 extern TCustomFarPlugin * CreateFarPlugin(HINSTANCE HInst);
 extern void DestroyFarPlugin(TCustomFarPlugin *& Plugin);
-
+extern void CleanupVCLCommon();
+// TFarPluginGuard acquires the global plugin lock for the entire export call.
+// CRITICAL: any modal dialog or message loop run while this lock is held
+// will deadlock if Far dispatches a keyboard/mouse event to another plugin
+// export that tries to acquire the same lock. Use TUnguard to temporarily
+// release the lock before showing modal UI. See docs/far3-plugin-init-deadlock.md
 class TFarPluginGuard final : public TFarPluginEnvGuard, public TGuard
 {
 public:
@@ -37,6 +43,11 @@ void DestroyPlugin()
 {
   DestroyFarPlugin(FarPlugin);
   TermExtensionModule();
+  if (PrevInvalidParameterHandler)
+  {
+    _set_invalid_parameter_handler(PrevInvalidParameterHandler);
+    PrevInvalidParameterHandler = nullptr;
+  }
 }
 
 [[noreturn]]
@@ -51,7 +62,41 @@ void InvalidParameterHandler(const wchar_t * expression, const wchar_t * functio
   RaiseException(STATUS_INVALID_PARAMETER, 0, 0, nullptr);
 }
 
+
+// Helper to log current console mode for debugging console state changes.
+static void LogConsoleMode(const char * Label)
+{
+  HANDLE hInput = GetStdHandle(STD_INPUT_HANDLE);
+  DWORD Mode = 0;
+  if (GetConsoleMode(hInput, &Mode))
+  {
+    DEBUG_PRINTFA("ConsoleMode %s: 0x%08X (LINE=%s ECHO=%s PROCESSED=%s WINDOW=%s MOUSE=%s EXTENDED=%s)",
+      Label, Mode,
+      (Mode & ENABLE_LINE_INPUT) ? "yes" : "no",
+      (Mode & ENABLE_ECHO_INPUT) ? "yes" : "no",
+      (Mode & ENABLE_PROCESSED_INPUT) ? "yes" : "no",
+      (Mode & ENABLE_WINDOW_INPUT) ? "yes" : "no",
+      (Mode & ENABLE_MOUSE_INPUT) ? "yes" : "no",
+      (Mode & ENABLE_EXTENDED_FLAGS) ? "yes" : "no");
+  }
+  else
+  {
+    DEBUG_PRINTFA("ConsoleMode %s: FAILED", Label);
+  }
+}
+
 extern "C" {
+// Export tracer for deadlock debugging. Logs ENTER/LEAVE to DebugView.
+struct TExportTracer {
+  const char * FName;
+  explicit TExportTracer(const char * Name) noexcept : FName(Name) {
+    DEBUG_PRINTFA("ENTER %s", Name);
+  }
+  ~TExportTracer() noexcept {
+    DEBUG_PRINTFA("LEAVE %s", FName);
+  }
+  NB_DISABLE_COPY(TExportTracer)
+};
 
 void WINAPI GetGlobalInfoW(struct GlobalInfo * Info)
 {
@@ -70,14 +115,18 @@ void WINAPI GetGlobalInfoW(struct GlobalInfo * Info)
 
 void WINAPI SetStartupInfoW(const struct PluginStartupInfo * Info)
 {
+  LogConsoleMode("BEFORE-SetStartupInfoW");
+  const TExportTracer Tracer("SetStartupInfoW");
   if (!Info || (Info->StructSize < sizeof(PluginStartupInfo)))
     return;
   const TFarPluginGuard Guard;
   FarPlugin->SetStartupInfo(Info);
+  LogConsoleMode("AFTER-SetStartupInfoW");
 }
 
 void WINAPI ExitFARW(const struct ExitInfo * Info)
 {
+  const TExportTracer Tracer("ExitFARW");
   if (!Info || (Info->StructSize < sizeof(ExitInfo)))
     return;
   {
@@ -90,15 +139,19 @@ void WINAPI ExitFARW(const struct ExitInfo * Info)
 
 void WINAPI GetPluginInfoW(PluginInfo * Info)
 {
+  LogConsoleMode("BEFORE-GetPluginInfoW");
+  const TExportTracer Tracer("GetPluginInfoW");
   if (!Info || (Info->StructSize < sizeof(PluginInfo)))
     return;
   DebugAssert(FarPlugin);
   const TFarPluginGuard Guard;
   FarPlugin->GetPluginInfo(Info);
+  LogConsoleMode("AFTER-GetPluginInfoW");
 }
 
 intptr_t WINAPI ProcessSynchroEventW(const struct ProcessSynchroEventInfo * Info)
 {
+  const TExportTracer Tracer("ProcessSynchroEventW");
   // DEBUG_PRINTF("Info: %p", Info->Param);
   if (!Info || (Info->StructSize < sizeof(ProcessSynchroEventInfo)))
     return 0;
@@ -109,6 +162,7 @@ intptr_t WINAPI ProcessSynchroEventW(const struct ProcessSynchroEventInfo * Info
 
 intptr_t WINAPI ConfigureW(const struct ConfigureInfo * Info)
 {
+  const TExportTracer Tracer("ConfigureW");
   if (!Info || (Info->StructSize < sizeof(ConfigureInfo)))
     return FALSE;
   const TFarPluginGuard Guard;
@@ -157,17 +211,28 @@ intptr_t WINAPI ProcessHostFileW(const struct ProcessHostFileInfo * Info)
 
 intptr_t WINAPI ProcessPanelInputW(const struct ProcessPanelInputInfo * Info)
 {
+  LogConsoleMode("BEFORE-ProcessPanelInputW");
+  const TExportTracer Tracer("ProcessPanelInputW");
+  DEBUG_PRINTFA("ProcessPanelInputW: about to acquire lock");
   DebugAssert(Info && FarPlugin);
   const TFarPluginGuard Guard;
-  return FarPlugin->ProcessPanelInput(Info);
+  DEBUG_PRINTFA("ProcessPanelInputW: lock acquired, calling ProcessPanelInput");
+  const intptr_t Result = FarPlugin->ProcessPanelInput(Info);
+  DEBUG_PRINTFA("ProcessPanelInputW: returning");
+  LogConsoleMode("AFTER-ProcessPanelInputW");
+  return Result;
 }
 
 intptr_t WINAPI ProcessPanelEventW(const struct ProcessPanelEventInfo * Info)
 {
+  LogConsoleMode("BEFORE-ProcessPanelEventW");
+  const TExportTracer Tracer("ProcessPanelEventW");
   if (!Info || (Info->StructSize < sizeof(ProcessPanelEventInfo)))
     return FALSE;
   const TFarPluginGuard Guard;
-  return FarPlugin->ProcessPanelEvent(Info);
+  const intptr_t Result = FarPlugin->ProcessPanelEvent(Info);
+  LogConsoleMode("AFTER-ProcessPanelEventW");
+  return Result;
 }
 
 intptr_t WINAPI SetDirectoryW(const struct SetDirectoryInfo * Info)
@@ -257,6 +322,7 @@ HANDLE WINAPI AnalyseW(const struct AnalyseInfo * Info)
 
 HANDLE WINAPI OpenW(const struct OpenInfo * Info)
 {
+  const TExportTracer Tracer("OpenW");
   if (!Info || (Info->StructSize < sizeof(OpenInfo)))
     return nullptr;
   DebugAssert(FarPlugin);
@@ -274,7 +340,20 @@ BOOL WINAPI DllMain(HINSTANCE HInstDLL, DWORD Reason, LPVOID /*ptr*/ )
   if (Reason == DLL_PROCESS_ATTACH)
   {
     HInstanceDLL = HInstDLL;
-    (void) _set_invalid_parameter_handler(InvalidParameterHandler);
+    PrevInvalidParameterHandler = _set_invalid_parameter_handler(InvalidParameterHandler);
+  }
+  else if (Reason == DLL_PROCESS_DETACH)
+  {
+    // All cleanup (threads, singletons, handles) is performed explicitly
+    // in ~TWinSCPPlugin() / ~TCustomFarPlugin(), called from ExitFARW before
+    // FreeLibrary. Do NOT add cleanup here — DllMain runs under the loader
+    // lock and must not touch CRT heap-allocated objects or stop threads.
+  }
+  else if (Reason == DLL_THREAD_ATTACH)
+  {
+  }
+  else if (Reason == DLL_THREAD_DETACH)
+  {
   }
   return TRUE;
 }

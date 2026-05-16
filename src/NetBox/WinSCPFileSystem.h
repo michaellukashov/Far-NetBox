@@ -67,6 +67,7 @@ struct TMultipleEdit final : public TObject
   UnicodeString Directory;
   UnicodeString LocalFileName;
   bool PendingSave{false};
+  TDateTime SourceTimestamp{};
 };
 
 struct TEditHistory final : public TObject
@@ -85,6 +86,7 @@ class TWinSCPFileSystem final : public TCustomFarFileSystem
   friend class TNetBoxPlugin;
   friend class TKeepAliveThread;
   friend class TQueueDialog;
+  friend class TSynchronizeDialog;
   NB_DISABLE_COPY(TWinSCPFileSystem)
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TWinSCPFileSystem); }
@@ -113,13 +115,13 @@ protected:
   virtual bool DeleteFilesEx(TObjectList * PanelItems, OPERATION_MODES OpMode) override;
   virtual int32_t GetFilesEx(TObjectList * PanelItems, bool Move,
     UnicodeString & DestPath, OPERATION_MODES OpMode) override;
+  int32_t CopyFilesLocal(TObjectList * PanelItems, UnicodeString & DestPath, OPERATION_MODES OpMode);
   virtual int32_t PutFilesEx(TObjectList * PanelItems, bool Move, OPERATION_MODES OpMode) override;
   virtual bool ProcessPanelEventEx(intptr_t Event, void * Param) override;
 
   void ProcessEditorEvent(intptr_t Event, void * Param);
 
   virtual void HandleException(Exception * E, OPERATION_MODES OpMode = 0) override;
-  void KeepaliveThreadCallback();
 
   bool IsSessionList() const;
   bool Connected() const;
@@ -152,10 +154,13 @@ protected:
   void CopyFullFileNamesToClipboard();
   void FullSynchronize(bool Source);
   void Synchronize();
+  void CompareDirectories();
   void OpenDirectory(bool Add);
   void HomeDirectory();
   void ToggleSynchronizeBrowsing();
   bool IsSynchronizedBrowsing() const;
+  void SetPrevSessionName(const UnicodeString & Value);
+  void SetFocusFileName(const UnicodeString & Value) { FFocusFileName = Value; }
   bool PropertiesDialog(TStrings * AFileList,
     const UnicodeString & Directory,
     const TRemoteTokenList * GroupList, const TRemoteTokenList * UserList,
@@ -197,6 +202,7 @@ protected:
     bool & SaveSettings, uint32_t Options, uint32_t CopyParamAttrs,
     TGetSynchronizeOptionsEvent && OnGetOptions);
   bool SynchronizeAllowSelectedOnly();
+  const TFileOperationStatistics * GetSyncStatistics() const { return FSyncStatistics; }
   void RequireCapability(int32_t Capability);
   void RequireLocalPanel(const TFarPanelInfo * Panel, const UnicodeString & Message);
   bool AreCachesEmpty() const;
@@ -218,6 +224,7 @@ protected:
   void MultipleEdit(const UnicodeString Directory, const UnicodeString AFileName, const TRemoteFile * AFile);
   void EditViewCopyParam(TCopyParamType & CopyParam);
   bool SynchronizeBrowsing(const UnicodeString & NewPath);
+  void UpdatePanelDirectoryParam();
   bool IsEditHistoryEmpty() const;
   void EditHistory();
   UnicodeString ProgressBar(int32_t Percentage, int32_t Width);
@@ -241,7 +248,7 @@ private:
   void TerminalReadDirectoryProgress(TObject * Sender, int32_t Progress,
     int32_t ResolvedLinks, bool & Cancel);
   void TerminalInformation(TTerminal * Terminal,
-    const UnicodeString & AStr, bool Status, int32_t Phase, const UnicodeString & Additional);
+    const UnicodeString & AStr, int32_t Phase, const UnicodeString & Additional);
   void TerminalQueryUser(TObject * Sender,
     const UnicodeString & AQuery, TStrings * MoreMessages, uint32_t Answers,
     const TQueryParams * AParams, uint32_t & Answer, TQueryType Type, void * Arg);
@@ -265,7 +272,7 @@ private:
   void OperationProgress(
     TFileOperationProgressType & ProgressData);
   void OperationFinished(TFileOperation Operation,
-    TOperationSide Side, bool DragDrop, const UnicodeString & AFileName, bool Success,
+    TOperationSide Side, bool DragDrop, const UnicodeString & AFileName, bool Success, bool NotCancelled,
     TOnceDoneOperation & DisconnectWhenComplete);
   void CancelConfiguration(TFileOperationProgressType & ProgressData);
   TStrings * CreateFileList(TObjectList * PanelItems,
@@ -297,6 +304,7 @@ private:
   void QueueListUpdate(TTerminalQueue * Queue);
   void QueueItemUpdate(const TTerminalQueue * Queue, TQueueItem * Item);
   void QueueEvent(TTerminalQueue * Queue, TQueueEventType Event);
+  void QueueIdleMarshal();
   void GetSpaceAvailable(const UnicodeString & APath,
     TSpaceAvailable & ASpaceAvailable, bool & Close);
   void QueueAddItem(TQueueItem * Item);
@@ -314,6 +322,8 @@ private:
   gsl::owner<TTerminalQueueStatus *> FQueueStatus{nullptr};
   TCriticalSection FQueueStatusSection;
   TQueueEventType FQueueEvent{qeEmpty};
+  bool FInShowOperationProgress{false};
+  bool FInCancelDialog{false};
   HANDLE FProgressSaveScreenHandle{nullptr};
   HANDLE FSynchronizationSaveScreenHandle{nullptr};
   HANDLE FAuthenticationSaveScreenHandle{nullptr};
@@ -328,8 +338,12 @@ private:
   UnicodeString FLastMultipleEditDirectory;
   int32_t FLastEditorID{-1};
   TGUICopyParamType FLastEditCopyParam{};
+  TDateTime FLastEditFileTimestamp{};
+  TDateTime FLastMultipleEditTimestamp{};
   gsl::owner<TKeepAliveThread *> FKeepaliveThread{nullptr};
   gsl::owner<TSynchronizeController *> FSynchronizeController{nullptr};
+  TFileOperationStatistics * FSyncStatistics{nullptr};
+  bool FInSynchronizeDialog{false};
   std::unique_ptr<TStrings> FCapturedLog;
   std::unique_ptr<TStrings> FAuthenticationLog;
   using TMultipleEdits = nb::map_t<int32_t, TMultipleEdit>;
@@ -341,6 +355,7 @@ private:
   UnicodeString FSessionsFolder;
   UnicodeString FNewSessionsFolder;
   UnicodeString FPrevSessionName;
+  UnicodeString FFocusFileName;
   bool FQueueStatusInvalidated{false};
   bool FQueueItemInvalidated{false};
   bool FRefreshLocalDirectory{false};
@@ -356,6 +371,8 @@ private:
   bool FOutputLog{false};
   bool FLoadingSessionList{false};
   bool FCurrentDirectoryWasChanged{false};
+  bool FUpdatingPanelParam{false};
+  DWORD FMainThreadId{0};
 };
 
 class TSessionPanelItem final : public TCustomFarPanelItem

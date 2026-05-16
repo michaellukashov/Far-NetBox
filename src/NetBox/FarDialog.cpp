@@ -41,7 +41,11 @@ public:
       if (::WaitForSingleObject(FEvent, FMillisecs) != WAIT_FAILED)
       {
         if (!IsFinished() && FDialog && FDialog->GetHandle())
-          FDialog->Idle();
+        {
+          // Marshal Idle() to the main thread; Far Manager APIs must not be
+          // called from worker threads.
+          FDialog->Synchronize(nb::bind(&TFarDialog::Idle, FDialog.get()));
+        }
       }
     }
     if (!IsFinished())
@@ -87,7 +91,7 @@ TFarDialog::~TFarDialog() noexcept
   {
     TFarDialogItem * Item = GetItem(Index);
     Item->Detach();
-    // TODO: SAFE_DESTROY(Item);
+    SAFE_DESTROY(Item);
   }
 //  SAFE_DESTROY(FItems);
   nb_free(FDialogItems);
@@ -493,7 +497,7 @@ intptr_t TFarDialog::DialogProc(intptr_t Msg, intptr_t Param1, void * Param2)
       if (!Result && (Msg == DN_CONTROLINPUT) &&
         (nb::ToIntPtr(Param2) == VK_RETURN) &&
         ((Param1 < 0) ||
-          !rtti::isa<TFarButton>(GetItem(nb::ToInt32(Param1)))) &&
+          !nb::isa<TFarButton>(GetItem(nb::ToInt32(Param1)))) &&
         GetDefaultButton()->GetEnabled() &&
         (GetDefaultButton()->GetOnClick()))
       {
@@ -538,7 +542,7 @@ intptr_t TFarDialog::DialogProc(intptr_t Msg, intptr_t Param1, void * Param2)
         Result = 1;
         if (Param1 >= 0)
         {
-          TFarButton * Button = rtti::dyn_cast_or_null<TFarButton>(GetItem(nb::ToInt32(Param1)));
+          TFarButton * Button = nb::dyn_cast_or_null<TFarButton>(GetItem(nb::ToInt32(Param1)));
           // FAR WORKAROUND
           // FAR 1.70 alpha 6 calls DN_CLOSE even for non-button dialog items
           // (list boxes in particular), while FAR 1.70 beta 5 used ID of
@@ -547,7 +551,7 @@ intptr_t TFarDialog::DialogProc(intptr_t Msg, intptr_t Param1, void * Param2)
           // flag DIF_LISTNOCLOSE.
           if (Button == nullptr)
           {
-            DebugAssert(rtti::isa<TFarListBox>(GetItem(nb::ToInt32(Param1))));
+            DebugAssert(nb::isa<TFarListBox>(GetItem(nb::ToInt32(Param1))));
             Result = nb::ToIntPtr(false);
           }
           else
@@ -776,7 +780,7 @@ int32_t TFarDialog::ShowModal()
 
     if (BResult >= 0)
     {
-      const TFarButton * Button = rtti::dyn_cast_or_null<TFarButton>(GetItem(nb::ToInt32(BResult)));
+      const TFarButton * Button = nb::dyn_cast_or_null<TFarButton>(GetItem(nb::ToInt32(BResult)));
       DebugAssert(Button);
       if (Button)
       {
@@ -1582,19 +1586,19 @@ void TFarDialogItem::SetWidth(int32_t Value)
   TRect R = GetBounds();
   if (R.Left >= 0)
   {
-    R.Right = R.Left + Value - 1;
+    R.Right = R.Left + Value;
   }
   else
   {
     DebugAssert(R.Right < 0);
-    R.Left = R.Right - nb::ToInt32(Value + 1);
+    R.Left = R.Right - nb::ToInt32(Value);
   }
   SetBounds(R);
 }
 
 int32_t TFarDialogItem::GetWidth() const
 {
-  return nb::ToInt32(GetActualBounds().Width() + 1);
+  return nb::ToInt32(GetActualBounds().Width());
 }
 
 void TFarDialogItem::SetHeight(int32_t Value)
@@ -1602,19 +1606,19 @@ void TFarDialogItem::SetHeight(int32_t Value)
   TRect R = GetBounds();
   if (R.Top >= 0)
   {
-    R.Bottom = nb::ToInt32(R.Top + Value - 1);
+    R.Bottom = nb::ToInt32(R.Top + Value);
   }
   else
   {
     DebugAssert(R.Bottom < 0);
-    R.Top = nb::ToInt32(R.Bottom - Value + 1);
+    R.Top = nb::ToInt32(R.Bottom - Value);
   }
   SetBounds(R);
 }
 
 int32_t TFarDialogItem::GetHeight() const
 {
-  return nb::ToInt32(GetActualBounds().Height() + 1);
+  return nb::ToInt32(GetActualBounds().Height());
 }
 
 bool TFarDialogItem::CanFocus() const
@@ -2033,6 +2037,51 @@ UnicodeString TFarEdit::GetHistoryMask(size_t Index) const
   return Result;
 }
 
+UnicodeString TFarEdit::GetTextFromDialog()
+{
+  UnicodeString Result;
+
+  // If dialog is not shown, fall back to cached data
+  if (!GetDialog()->GetHandle())
+  {
+    Result = GetData();
+    DEBUG_PRINTF("GetTextFromDialog: Dialog not active, returning cached '%s'",
+      Result.c_str());
+    return Result;
+  }
+
+  // Query Far Manager for actual item data size
+  intptr_t Size = SendDialogMessage(DM_GETDLGITEM, nullptr);
+  if (Size <= 0)
+  {
+    DEBUG_PRINTF("GetTextFromDialog: DM_GETDLGITEM returned %d, using cached",
+      static_cast<int32_t>(Size));
+    return GetData();
+  }
+
+  // Allocate buffer and retrieve full item data
+  nb::vector_t<uint8_t> Buffer(Size);
+  FarGetDialogItem ItemInfo{};
+  ItemInfo.StructSize = sizeof(FarGetDialogItem);
+  ItemInfo.Size = Size;
+  ItemInfo.Item = reinterpret_cast<FarDialogItem*>(Buffer.data());
+
+  SendDialogMessage(DM_GETDLGITEM, &ItemInfo);
+
+  // Extract text from retrieved item (Data field for DI_EDIT controls)
+  // Note: This relies on Far's ABI - FarDialogItem.Data contains text for edit controls
+  if (ItemInfo.Item && ItemInfo.Item->Data)
+  {
+    Result = UnicodeString(ItemInfo.Item->Data);
+  }
+
+  DEBUG_PRINTF("GetTextFromDialog: item=%d, cached='%s', fresh='%s'",
+    GetItemIdx(), GetData().c_str(), Result.c_str());
+
+  return Result;
+}
+
+
 void TFarEdit::SetHistoryMask(size_t Index, const UnicodeString & Value)
 {
   if (GetHistoryMask(Index) != Value)
@@ -2170,7 +2219,7 @@ void TFarList::Assign(const TPersistent * Source)
 {
   TStringList::Assign(Source);
 
-  const TFarList * FarList = rtti::dyn_cast_or_null<TFarList>(Source);
+  const TFarList * FarList = nb::dyn_cast_or_null<TFarList>(Source);
   if (FarList != nullptr)
   {
     for (int32_t Index = 0; Index < FarList->GetCount(); ++Index)
@@ -2573,7 +2622,43 @@ intptr_t TFarComboBox::ItemProc(intptr_t Msg, void * Param)
     GetDialogItem()->Data = TCustomFarPlugin::DuplicateStr(Data, /*AllowEmpty=*/true);
     FItemChanged = true;
   }
-
+  else if (Msg == DN_CONTROLINPUT)
+  {
+    const INPUT_RECORD * Rec = static_cast<const INPUT_RECORD *>(Param);
+    if (Rec->EventType == KEY_EVENT)
+    {
+      const KEY_EVENT_RECORD & Event = Rec->Event.KeyEvent;
+      if (Event.bKeyDown)
+      {
+        const WORD Key = Event.wVirtualKeyCode;
+        const WORD ControlState = Event.dwControlKeyState;
+        if (GetDropDownList() && ((Key == VK_DOWN) || (Key == VK_NUMPAD2)) &&
+          (CheckControlMaskSet(ControlState, ALTMASK) ||
+            (((ControlState & CTRLMASK) != 0) && ((ControlState & SHIFTMASK) != 0)) ||
+            ((ControlState & CTRLMASK) != 0)))
+        {
+          if (CheckControlMaskSet(ControlState, ALTMASK))
+          {
+            // Alt+Down — primary shortcut; works reliably in all terminals
+            SendDialogMessage(DM_SETDROPDOWNOPENED, nb::ToPtr(1));
+            return 1;
+          }
+          else if (((ControlState & CTRLMASK) != 0) && ((ControlState & SHIFTMASK) != 0))
+          {
+            // Ctrl+Shift+Down — fallback for terminals that intercept plain Ctrl+Down (e.g. Windows Terminal scroll)
+            SendDialogMessage(DM_SETDROPDOWNOPENED, nb::ToPtr(1));
+            return 1;
+          }
+          else if ((ControlState & CTRLMASK) != 0)
+          {
+            // Ctrl+Down — native Far Manager shortcut; may be intercepted by terminal host
+            SendDialogMessage(DM_SETDROPDOWNOPENED, nb::ToPtr(1));
+            return 1;
+          }
+        }
+      }
+    }
+  }
   if (FList->ItemProc(Msg, Param))
   {
     return 1;
