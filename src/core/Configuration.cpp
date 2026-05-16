@@ -1213,8 +1213,10 @@ int32_t TConfiguration::GetCompoundVersion() const
 
 UnicodeString TConfiguration::ModuleFileName() const
 {
-  ThrowNotImplemented(204);
-  return "";
+  // NetBox overrides this in TFarConfiguration and TWinConfiguration.
+  // Return empty string rather than throwing to avoid crashes from any
+  // unexpected virtual dispatch path.
+  return UnicodeString();
 }
 
 void * TConfiguration::GetFileApplicationInfo(const UnicodeString & AFileName) const

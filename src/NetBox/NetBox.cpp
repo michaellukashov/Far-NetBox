@@ -338,15 +338,10 @@ BOOL WINAPI DllMain(HINSTANCE HInstDLL, DWORD Reason, LPVOID /*ptr*/ )
   }
   else if (Reason == DLL_PROCESS_DETACH)
   {
-    // Always destroy the global tinylog singleton so its background
-    // thread does not outlive the DLL (it is heap-allocated and
-    // not automatically cleaned up by the CRT).
-    tinylog::TinyLog * Logger = tinylog::TinyLog::instance();
-    if (Logger)
-    {
-      Logger->Close();
-      delete Logger;
-    }
+    // All cleanup (threads, singletons, handles) is performed explicitly
+    // in ~TWinSCPPlugin() / ~TCustomFarPlugin(), called from ExitFARW before
+    // FreeLibrary. Do NOT add cleanup here — DllMain runs under the loader
+    // lock and must not touch CRT heap-allocated objects or stop threads.
   }
   return TRUE;
 }

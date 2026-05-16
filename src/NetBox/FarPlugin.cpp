@@ -184,12 +184,11 @@ TCustomFarPlugin::~TCustomFarPlugin() noexcept
   FConsoleOutput = INVALID_HANDLE_VALUE;
   DEBUG_PRINTFA("CONOUT$ handle closed");
 
-  // Defensive: if Far exits without explicitly closing all panels,
-  // force-close any remaining file systems so their threads terminate
-  // before the DLL is unloaded.
+  DEBUG_PRINTFA("Closing remaining file systems (count=%d)", FOpenedPlugins->GetCount());
   while (FOpenedPlugins->GetCount() > 0)
   {
     TCustomFarFileSystem * FileSystem = FOpenedPlugins->GetAs<TCustomFarFileSystem>(0);
+    DEBUG_PRINTFA("Closing file system %p", FileSystem);
     try__finally
     {
       CloseFileSystem(FileSystem);
@@ -201,6 +200,7 @@ TCustomFarPlugin::~TCustomFarPlugin() noexcept
       // it means the close succeeded — loop continues with next item.
     } end_try__finally
   }
+  DEBUG_PRINTFA("All file systems closed");
   ClearPluginInfo(FPluginInfo);
   DebugAssert(FOpenedPlugins->GetCount() == 0);
   for (int32_t Index = 0; Index < FSavedTitles->GetCount(); ++Index)

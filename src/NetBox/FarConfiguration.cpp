@@ -338,7 +338,10 @@ bool TFarConfiguration::GetConfirmDeleting() const
 
 UnicodeString TFarConfiguration::ModuleFileName() const
 {
-  DebugAssert(GetPlugin());
+  if (GetPlugin() == nullptr)
+  {
+    return UnicodeString();
+  }
   return GetPlugin()->GetModuleName();
 }
 

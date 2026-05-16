@@ -459,7 +459,10 @@ void TSimpleThread::SignalStop()
 
 void TSimpleThread::WaitFor(DWORD Milliseconds) const
 {
-  ::WaitForSingleObject(FThread, Milliseconds);
+  if (CheckHandle(FThread))
+  {
+    ::WaitForSingleObject(FThread, Milliseconds);
+  }
 }
 
 // TSignalThread

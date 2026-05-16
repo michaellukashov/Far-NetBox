@@ -21,11 +21,12 @@ TCustomFarPlugin * CreateFarPlugin(HINSTANCE HInst)
   Result->Initialize();
   return Result;
 }
-
+extern void CleanupVCLCommon();
 void DestroyFarPlugin(TCustomFarPlugin *& Plugin)
 {
   DebugAssert(FarPlugin);
   Plugin->Finalize();
+  CleanupVCLCommon();
   delete Plugin;
   Plugin = nullptr;
 }
@@ -125,8 +126,11 @@ TWinSCPPlugin::~TWinSCPPlugin() noexcept
     CoreFinalize();
     FInitialized = false;
   }
-  g_tinylog->Close();
-  { tinylog::TinyLog * PObj = g_tinylog; delete PObj; }
+  if (g_tinylog)
+  {
+    g_tinylog->Close();
+    { tinylog::TinyLog * PObj = g_tinylog; delete PObj; }
+  }
 
   // DEBUG_PRINTF("begin");
   SetUnhandledExceptionFilter(FPrevFilter);
