@@ -7,7 +7,7 @@
 
 #include <disable_warnings_in_std_begin.hpp>
 
-#include "NetBox.cpp"
+// #include "NetBox.cpp"
 #include "FarDialog.cpp"
 #include "FarPlugin.cpp"
 #include "FarUtils.cpp"

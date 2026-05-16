@@ -1,6 +1,7 @@
 #include <vcl.h>
 #pragma hdrstop
 
+#include <commdlg.h>
 #include "WinSCPPlugin.h"
 #include "WinSCPFileSystem.h"
 #include "FarDialog.h"

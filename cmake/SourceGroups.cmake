@@ -20,6 +20,7 @@ function(netbox_configure_source_groups)
       NetBox/UnityBuildCore.cpp
       NetBox/UnityBuildFilezilla.cpp
       NetBox/UnityBuildMain.cpp
+      NetBox/NetBox.cpp
     PARENT_SCOPE)
   else()
     # Initialize empty sources lis
@@ -167,8 +168,6 @@ function(netbox_define_core_sources)
     core/WebDAVFileSystem.cpp
     core/S3FileSystem.cpp
     core/PuttyIntf.cpp
-    core/KittyKeyboard.cpp
-    core/Win32Input.cpp
     core/Cryptography.cpp
     core/NamedObjs.cpp
     core/HierarchicalStorage.cpp
