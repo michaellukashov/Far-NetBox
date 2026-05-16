@@ -128,10 +128,47 @@ void CFileZillaApi::Destroy()
   if (!m_bInitialized)
     return;
   DebugAssert(m_pMainThread);
-  HANDLE tmp=m_pMainThread->m_hThread;
+
+  // Duplicate the thread handle so that the thread closing its own
+  // m_hThread in ~CMainThread() does not invalidate our wait handle.
+  HANDLE tmp = m_pMainThread->m_hThread;
+  HANDLE hDup = nullptr;
+  if (!::DuplicateHandle(
+        ::GetCurrentProcess(), tmp,
+        ::GetCurrentProcess(), &hDup,
+        0, FALSE, DUPLICATE_SAME_ACCESS))
+  {
+    hDup = tmp; // fall back to original handle
+  }
+
   m_pMainThread->Quit();
-  //Wait for the main thread to quit
-  ::WaitForSingleObject(tmp, 10000);
+
+  // Wait for the main thread to quit — up to 30 seconds.
+  // If it still hasn't exited, terminate it forcibly to prevent
+  // a DLL unload crash (the thread's code would be unmapped while
+  // its RIP is still inside the DLL).
+  constexpr DWORD QuitWaitMs = 30000;
+  DWORD WaitRes = ::WaitForSingleObject(hDup, QuitWaitMs);
+  if (WaitRes == WAIT_TIMEOUT)
+  {
+    ::TerminateThread(hDup, 1);
+    // TerminateThread does not interrupt a thread blocked in GetMessage.
+    // Post a dummy message to force GetMessage to return so the kernel
+    // can deliver the termination on the next transition to user mode.
+    for (int Retry = 0; Retry < 10; ++Retry)
+    {
+      if (::PostThreadMessage(m_pMainThread->m_dwThreadId, WM_NULL, 0, 0))
+        break;
+      ::Sleep(50);
+    }
+    // Wait again — up to 5 seconds — for the thread to actually exit.
+    ::WaitForSingleObject(hDup, 5000);
+  }
+
+  if (hDup != nullptr && hDup != tmp)
+  {
+    ::CloseHandle(hDup);
+  }
 
   m_pMainThread=0;
   m_bInitialized=FALSE;

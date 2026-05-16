@@ -336,6 +336,18 @@ BOOL WINAPI DllMain(HINSTANCE HInstDLL, DWORD Reason, LPVOID /*ptr*/ )
     HInstanceDLL = HInstDLL;
     (void) _set_invalid_parameter_handler(InvalidParameterHandler);
   }
+  else if (Reason == DLL_PROCESS_DETACH)
+  {
+    // Always destroy the global tinylog singleton so its background
+    // thread does not outlive the DLL (it is heap-allocated and
+    // not automatically cleaned up by the CRT).
+    tinylog::TinyLog * Logger = tinylog::TinyLog::instance();
+    if (Logger)
+    {
+      Logger->Close();
+      delete Logger;
+    }
+  }
   return TRUE;
 }
 

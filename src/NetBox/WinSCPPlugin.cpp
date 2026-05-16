@@ -125,10 +125,9 @@ TWinSCPPlugin::~TWinSCPPlugin() noexcept
     CoreFinalize();
     FInitialized = false;
   }
-#ifndef NDEBUG
   g_tinylog->Close();
   { tinylog::TinyLog * PObj = g_tinylog; delete PObj; }
-#endif //ifndef NDEBUG
+
   // DEBUG_PRINTF("begin");
   SetUnhandledExceptionFilter(FPrevFilter);
   OutputDebugStringA("NetBox: Exception filter removed\n");

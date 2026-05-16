@@ -280,7 +280,14 @@ void CMainThread::Quit()
   LCS;
   if (IsBusy())
     PostThreadMessage(m_nInternalMessageID, FZAPI_THREADMSG_CANCEL, 1);
-  PostThreadMessage(WM_QUIT, 0, 0);
+  // Post WM_QUIT aggressively: the thread may be stuck in GetMessage with
+  // a saturated queue.  Retry up to 50 times (5 s) before giving up.
+  for (int Retry = 0; Retry < 50; ++Retry)
+  {
+    if (PostThreadMessage(WM_QUIT, 0, 0))
+      break;
+    ::Sleep(100);
+  }
 }
 
 void CMainThread::SetCurrentPath(CServerPath path)
