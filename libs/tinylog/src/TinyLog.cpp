@@ -116,6 +116,11 @@ void TinyLogImpl::Close()
     pthread_cond_signal(&cond_);
     pthread_mutex_unlock(&mutex_);
     pthread_join(thrd_, nullptr);
+    if (thrd_ != INVALID_HANDLE_VALUE)
+    {
+      ::CloseHandle(thrd_);
+      thrd_ = INVALID_HANDLE_VALUE;
+    }
     logstream_.reset();
   }
 }
