@@ -132,7 +132,7 @@ static void completeCallback(S3Status requestStatus,
 
     simplexml_deinitialize(&(cbData->simpleXml));
 
-    free(cbData);
+    nb_free(cbData);
 }
 
 
@@ -146,10 +146,11 @@ void S3_list_service(S3Protocol protocol, const char *accessKeyId,
 {
     char queryParams[64]; // WINSCP
     queryParams[0] = '\0';
+    memset(queryParams, 0, sizeof(queryParams));
 
     // Create and set up the callback data
     XmlCallbackData *data =
-        (XmlCallbackData *) malloc(sizeof(XmlCallbackData));
+        (XmlCallbackData *) nb_calloc(1, sizeof(XmlCallbackData));
     if (!data) {
         (*(handler->responseHandler.completeCallback))
             (S3StatusOutOfMemory, 0, callbackData);
@@ -169,7 +170,7 @@ void S3_list_service(S3Protocol protocol, const char *accessKeyId,
     string_buffer_initialize(data->bucketName);
     string_buffer_initialize(data->creationDate);
 
-    if (maxkeys) { // WINSCP 
+    if (maxkeys) { // WINSCP
         snprintf(queryParams, sizeof(queryParams), "max-keys=%d", maxkeys);
     }
 

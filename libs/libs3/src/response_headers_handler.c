@@ -164,7 +164,7 @@ void response_headers_handler_add(ResponseHeadersHandler *handler,
         metaHeader->value = copiedValue;
     }
     else if (!strncasecmp(header, "x-amz-server-side-encryption", namelen)) {
-        if (!_strnicmp(c, "AES256", sizeof("AES256") - 1)) {
+        if (!strncasecmp(c, "AES256", sizeof("AES256") - 1)) {
             responseProperties->usesServerSideEncryption = 1;
         }
         // Ignore other values - only AES256 is expected, anything else is
