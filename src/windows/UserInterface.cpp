@@ -2,8 +2,10 @@
 #include <vcl.h>
 #pragma hdrstop
 
-// #include "ScpCommander.h"
-// #include "ScpExplorer.h"
+#if defined(__BORLANDC__)
+#include "ScpCommander.h"
+#include "ScpExplorer.h"
+#endif // defined(__BORLANDC__)
 
 #include <CoreMain.h>
 #include <Common.h>
@@ -12,13 +14,19 @@
 #include "ProgParams.h"
 #include "VCLCommon.h"
 #include "WinConfiguration.h"
-// #include "TerminalManager.h"
+#if defined(__BORLANDC__)
+#include "TerminalManager.h"
+#endif // defined(__BORLANDC__)
 #include "TextsWin.h"
 #include "WinInterface.h"
-// #include "PasswordEdit.hpp"
+#if defined(__BORLANDC__)
+#include "PasswordEdit.hpp"
+#endif // defined(__BORLANDC__)
 #include "ProgParams.h"
 #include "Tools.h"
-// #include "Custom.h"
+#if defined(__BORLANDC__)
+#include "Custom.h"
+#endif // defined(__BORLANDC__)
 #include "HelpWin.h"
 #include <Math.hpp>
 #include <PasTools.hpp>
@@ -33,6 +41,7 @@ const UnicodeString AppName = L"WinSCP";
 TConfiguration * CreateConfiguration()
 {
   WinConfiguration = new TWinConfiguration();
+#if defined(__BORLANDC__)
   CustomWinConfiguration = WinConfiguration;
   GUIConfiguration = CustomWinConfiguration;
 
@@ -59,6 +68,7 @@ TConfiguration * CreateConfiguration()
       WinConfiguration->OptionsStorage = RawConfig.get();
     }
   }
+#endif // defined(__BORLANDC__)
 
   return WinConfiguration;
 }
@@ -101,7 +111,10 @@ UnicodeString AppNameString()
 
 UnicodeString GetCompanyRegistryKey()
 {
+#if defined(__BORLANDC__)
   return L"Software\\Martin Prikryl";
+#endif // defined(__BORLANDC__)
+  return L"Software\\NetBox";
 }
 
 #if defined(__BORLANDC__)
@@ -437,7 +450,7 @@ int GetToolbarLayoutPixelsPerInch(TStrings * Storage, TControl * Control)
   int Result;
   if (Storage->IndexOfName(PixelsPerInchKey))
   {
-    Result = LoadPixelsPerInch(Storage->Values[PixelsPerInchKey], Control);
+    Result = LoadPixelsPerInch(Storage->Values(PixelsPerInchKey), Control);
   }
   else
   {
@@ -478,7 +491,7 @@ static int ToolbarReadInt(const UnicodeString & ToolbarName,
     GetToolbarKey(ToolbarName, Value, ToolbarKey);
     if (Storage->IndexOfName(ToolbarKey) >= 0)
     {
-      Result = StrToIntDef(Storage->Values[ToolbarKey], Default);
+      Result = StrToIntDef(Storage->Values(ToolbarKey), Default);
 #if defined(__BORLANDC__)
       // this does not work well, as it scales down the stretched
       // toolbars (path toolbars) too much, it has to be reimplemented smarter
@@ -519,7 +532,7 @@ static UnicodeString ToolbarReadString(const UnicodeString & ToolbarName,
   GetToolbarKey(ToolbarName, Value, ToolbarKey);
   if (Storage->IndexOfName(ToolbarKey) >= 0)
   {
-    Result = Storage->Values[ToolbarKey];
+    Result = Storage->Values(ToolbarKey);
   }
   else
   {
@@ -538,7 +551,7 @@ static void ToolbarWriteInt(const UnicodeString ToolbarName,
     UnicodeString ToolbarKey;
     GetToolbarKey(ToolbarName, Value, ToolbarKey);
     DebugAssert(Storage->IndexOfName(ToolbarKey) < 0);
-    Storage->Values[ToolbarKey] = IntToStr(Data);
+    Storage->Values(ToolbarKey, IntToStr(Data));
   }
 }
 
@@ -550,7 +563,7 @@ static void ToolbarWriteString(const UnicodeString ToolbarName,
   UnicodeString ToolbarKey;
   GetToolbarKey(ToolbarName, Value, ToolbarKey);
   DebugAssert(Storage->IndexOfName(ToolbarKey) < 0);
-  Storage->Values[ToolbarKey] = Data;
+  Storage->Values(ToolbarKey, Data);
 }
 
 UnicodeString GetToolbarsLayoutStr(TControl * OwnerControl)
@@ -561,7 +574,7 @@ UnicodeString GetToolbarsLayoutStr(TControl * OwnerControl)
   {
     TBCustomSavePositions(OwnerControl, ToolbarWriteInt, ToolbarWriteString,
       Storage);
-    Storage->Values[PixelsPerInchKey] = SavePixelsPerInch(OwnerControl);
+    Storage->Values(PixelsPerInchKey, SavePixelsPerInch(OwnerControl));
     Result = Storage->CommaText;
   }
   __finally
@@ -974,7 +987,7 @@ static void ColorPickClick(void * /*Data*/, TObject * Sender)
         break;
       }
     }
-    Dialog->CustomColors->Values[CustomColorName(Index)] = StoreColor(CustomColor);
+    Dialog->CustomColors->Values(CustomColorName(Index), StoreColor(CustomColor));
   }
 
   if (Dialog->Execute())
@@ -984,7 +997,7 @@ static void ColorPickClick(void * /*Data*/, TObject * Sender)
     UnicodeString Colors;
     for (int Index = 0; Index < MaxCustomColors; Index++)
     {
-      UnicodeString CStr = Dialog->CustomColors->Values[CustomColorName(Index)];
+      UnicodeString CStr = Dialog->CustomColors->Values(CustomColorName(Index));
       if (!CStr.IsEmpty())
       {
         TColor CustomColor = RestoreColor(CStr);
@@ -1345,9 +1358,9 @@ bool TMasterPasswordDialog::Execute(
 void TMasterPasswordDialog::DoChange(bool & CanSubmit)
 {
   CanSubmit =
-    (!WinConfiguration->UseMasterPassword || (IsValidPassword(CurrentEdit->Text) >= 0)) &&
-    ((NewEdit == nullptr) || (IsValidPassword(NewEdit->Text) >= 0)) &&
-    ((ConfirmEdit == nullptr) || (IsValidPassword(ConfirmEdit->Text) >= 0));
+    (!WinConfiguration->UseMasterPassword || (IsValidPassword(CurrentEdit->Text) > 0)) &&
+    ((NewEdit == nullptr) || (IsValidPassword(NewEdit->Text) > 0)) &&
+    ((ConfirmEdit == nullptr) || (IsValidPassword(ConfirmEdit->Text) > 0));
   TCustomDialog::DoChange(CanSubmit);
 }
 

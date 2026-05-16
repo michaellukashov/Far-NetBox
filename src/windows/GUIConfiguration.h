@@ -38,7 +38,7 @@ public:
   virtual void Default() override;
   virtual void Assign(const TCopyParamType * Source) override;
   TGUICopyParamType & operator =(const TGUICopyParamType & rhs);
-  TGUICopyParamType & operator =(const TCopyParamType & rhs);
+  virtual TGUICopyParamType & operator =(const TCopyParamType & rhs) override;
 
   __property bool Queue = { read = FQueue, write = FQueue };
   __property bool QueueNoConfirmation = { read = FQueueNoConfirmation, write = FQueueNoConfirmation };
@@ -255,7 +255,7 @@ public:
   void SetQueueKeepDoneItems(bool Value);
   void SetQueueKeepDoneItemsFor(int32_t Value);
   void SetLocaleInternal(LCID Value, bool Safe, bool CompleteOnly);
-  void SetAppliedLocale(LCID AppliedLocale, const UnicodeString & LocaleModuleName);
+  void SetAppliedLocale(LCID AAppliedLocale, const UnicodeString & ALocaleModuleName);
   bool GetCanApplyLocaleImmediately() const;
   UnicodeString GetTranslationModule(const UnicodeString & Path) const;
   UnicodeString AddTranslationsSubFolder(const UnicodeString & Path) const;
@@ -391,6 +391,8 @@ public:
   int32_t GetSessionReopenAutoIdle() const { return FSessionReopenAutoIdle; }
   void SetSessionReopenAutoIdle(int32_t Value) { FSessionReopenAutoIdle = Value; }
   LCID GetAppliedLocale() const { return FAppliedLocale; }
+  bool GetSilentMode() const { return TConfiguration::GetSilentMode(); }
+  void SetSilentMode(bool Value) { TConfiguration::SetSilentMode(Value); }
 };
 
 NB_CORE_EXPORT TGUIConfiguration * GetGUIConfiguration();

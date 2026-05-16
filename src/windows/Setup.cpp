@@ -40,7 +40,7 @@
             _T("Session Manager\\Environment")
 // when the PATH registry key is over aprox 2048 characters,
 // PATH as well as WINDIR variables are actually not set, breaking the system
-#define MAX_PATH_LEN 2000
+constexpr const size_t MAX_PATH_LEN = 2000;
 
 /* Command line options. */
 UnicodeString LastPathError;
@@ -146,7 +146,7 @@ void path_reg_propagate()
                              5000, &send_message_result);
     if (ret != ERROR_SUCCESS && GetLastError() != 0)
     {
-      err_out_sys(_T("Cannot propagate the new enviroment to ")
+      err_out_sys(_T("Cannot propagate the new environment to ")
                   _T("other processes. The new value will be ")
                   _T("available after a reboot."), GetLastError());
       SimpleErrorDialog(LastPathError);
@@ -2133,7 +2133,7 @@ UnicodeString FirstUnshownTip()
   int LastTipSeen = -1;
   for (int Index = 0; Index < TipsSeen->Count; Index++)
   {
-    int TipIndex = Tips->IndexOf(TipsSeen->Names[Index]);
+    int TipIndex = Tips->IndexOf(TipsSeen->Names(Index));
     if (TipIndex >= 0)
     {
       LastTipSeen = TipIndex;
@@ -2195,7 +2195,7 @@ static UnicodeString TipUrl(TTipsData * TipsData)
 static void TipSeen(const UnicodeString & Tip)
 {
   std::unique_ptr<TStringList> TipsSeen(CommaTextToStringList(WinConfiguration->TipsSeen));
-  TipsSeen->Values[Tip] = FormatDateTime(L"yyyy-mm-dd", Now());
+  TipsSeen->Values(Tip, FormatDateTime(L"yyyy-mm-dd", Now()));
   WinConfiguration->TipsSeen = TipsSeen->CommaText;
   WinConfiguration->TipsShown = Now();
   WinConfiguration->RunsSinceLastTip = 0;

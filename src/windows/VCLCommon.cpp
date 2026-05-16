@@ -905,6 +905,12 @@ void FinalizeSystemSettings()
 {
 }
 
+void CleanupVCLCommon()
+{
+  // Destroy DesktopFontManager explicitly before DLL unload to prevent
+  // its hidden window from receiving messages after the DLL code is gone.
+  DesktopFontManager.reset();
+}
 #ifdef _DEBUG
 void VerifyControl(TControl * Control)
 {

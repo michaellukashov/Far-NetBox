@@ -314,6 +314,7 @@ void TTerminalManager::DoConnectTerminal(TTerminal * Terminal, bool Reopen, bool
   try
   {
     TValueRestorer<TTerminal *> OpeningTerminalRestorer(FOpeningTerminal);
+    nb::used(OpeningTerminalRestorer);
     FOpeningTerminal = Terminal;
     TTerminalThread * TerminalThread = new TTerminalThread(Terminal);
     TerminalThread->AllowAbandon = (Terminal == FActiveTerminal);
@@ -1657,7 +1658,7 @@ void TTerminalManager::NewSession(
     Retry = false;
     if (!DataList) // first round
     {
-      DataList.reset(new TObjectList());
+      DataList.reset(std::make_unique<TObjectList>());
       UnicodeString DownloadFile; // unused
       GetLoginData(SessionUrl, nullptr, DataList.get(), DownloadFile, true, LinkedForm);
     }

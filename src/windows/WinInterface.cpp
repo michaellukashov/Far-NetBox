@@ -9,28 +9,36 @@
 #include <Exceptions.h>
 #include <CoreMain.h>
 #include <TextsCore.h>
+#include <MsgIDs.h>
 #include <TextsWin.h>
 #include <HelpWin.h>
 #include <HelpCore.h>
 #include <Interface.h>
 #include <VCLCommon.h>
-// #include <Glyphs.h>
+#if defined(__BORLANDC__)
+#include <Glyphs.h>
+#endif // defined(__BORLANDC__)
 #include <PasTools.hpp>
 #include <DateUtils.hpp>
-// #include <Custom.h>
-// #include <HistoryComboBox.hpp>
+#if defined(__BORLANDC__)
+#include <Custom.h>
+#include <HistoryComboBox.hpp>
+#endif // defined(__BORLANDC__)
 
 #include "WinInterface.h"
 #include "GUITools.h"
-// #include "JclDebug.hpp"
-// #include "JclHookExcept.hpp"
+#if defined(__BORLANDC__)
+#include "JclDebug.hpp"
+#include "JclHookExcept.hpp"
+#endif // defined(__BORLANDC__)
 #include <System.IOUtils.hpp>
 #include <StrUtils.hpp>
-// #include <WinApi.h>
-#include "Tools.h"
-//#include <Vcl.AppEvnts.hpp>
-
 #if defined(__BORLANDC__)
+#include <WinApi.h>
+#endif // defined(__BORLANDC__)
+#include "Tools.h"
+#if defined(__BORLANDC__)
+#include <Vcl.AppEvnts.hpp>
 
 #pragma package(smart_init)
 
@@ -422,7 +430,7 @@ void TMessageTimeout::ApplicationMessage(TMsg & Msg, bool & DebugUsedArg(Handled
 void TMessageTimeout::MouseMove()
 {
   TPoint CursorPos = Mouse->CursorPos;
-  int Delta = std::max(std::abs(FOrigCursorPos.X - CursorPos.X), std::abs(FOrigCursorPos.Y - CursorPos.Y));
+  int Delta = nb::Max(std::abs(FOrigCursorPos.X - CursorPos.X), std::abs(FOrigCursorPos.Y - CursorPos.Y));
 
   int Threshold = 8;
   if (DebugAlwaysTrue(FButton != nullptr))
@@ -434,7 +442,7 @@ void TMessageTimeout::MouseMove()
   {
     FOrigCursorPos = CursorPos;
     const uint32_t SuspendTime = 30 * MSecsPerSec;
-    FTimeout = std::max(FOrigTimeout, SuspendTime);
+    FTimeout = nb::Max(FOrigTimeout, SuspendTime);
     UpdateButton();
   }
 }
@@ -901,7 +909,7 @@ void CopyParamListPopup(TRect Rect, TPopupMenu * Menu,
   const TCopyParamList * CopyParamList = GUIConfiguration->CopyParamList;
   for (int i = 0; i < CopyParamList->Count; i++)
   {
-    UnicodeString Name = CopyParamList->Names[i];
+    UnicodeString Name = CopyParamList->Names(i);
     TCopyParamType AParam = GUIConfiguration->CopyParamPreset[Name];
     if (AParam.AnyUsableCopyParam(CopyParamAttrs) ||
         // This makes "Binary" preset visible,
@@ -993,7 +1001,7 @@ int CopyParamListPopupClick(TObject * Sender,
       // If saved unmodified, then make this the selected preset
       if (*CopyParamList->CopyParams[Index] == Param)
       {
-        Preset = CopyParamList->Names[Index];
+        Preset = CopyParamList->Names(Index);
       }
     }
     Result = 0;
@@ -1005,7 +1013,7 @@ int CopyParamListPopupClick(TObject * Sender,
   else
   {
     Preset = (Item->Tag >= 0) ?
-      GUIConfiguration->CopyParamList->Names[Item->Tag] : UnicodeString();
+      GUIConfiguration->CopyParamList->Names(Item->Tag) : UnicodeString();
     // The cast strips away the "queue" properties of the TGUICopyParamType
     // that are not configurable in presets
     Param = TCopyParamType(GUIConfiguration->CopyParamPreset[Preset]);
@@ -1407,7 +1415,28 @@ static void DoApplicationMinimizeRestore(bool Minimize)
     {
       if (Minimize)
       {
-        Application->Minimize();
+        // WORKAROUND:
+        // VCL enables minimized windows (why?) and restores the previous disabled state on restore.
+        // But if we meanwhile re-enable the window (like when transfer finishes while minimized),
+        // the VCL will re-disable the window on restore.
+        // (This does not help in scenario, then the main window is minimized with its own title's minimize window,
+        // but then it should not be disabled in the first place)
+        bool WasDisabled = !MainForm->Enabled;
+        if (WasDisabled)
+        {
+          MainForm->Enabled = true;
+        }
+        try
+        {
+          Application->Minimize();
+        }
+        __finally
+        {
+          if (WasDisabled)
+          {
+            MainForm->Enabled = false;
+          }
+        }
         MinimizedToTray = WinConfiguration->MinimizeToTray;
       }
       else
@@ -1470,8 +1499,8 @@ void ClickToolbarItem(TTBCustomItem * Item, bool PositionCursor)
   TTBItemViewer * Viewer = Toolbar->View->Find(Item);
   DebugAssert(Viewer != nullptr);
 
-  int X = Viewer->BoundsRect.Left + (Viewer->BoundsRect.Width() / 2);
-  int Y = Viewer->BoundsRect.Top + (Viewer->BoundsRect.Height() / 2);
+  int32_t X = Viewer->BoundsRect.Left + (Viewer->BoundsRect.Width() / 2);
+  int32_t Y = Viewer->BoundsRect.Top + (Viewer->BoundsRect.Height() / 2);
 
   if (PositionCursor)
   {
@@ -1500,7 +1529,7 @@ void CheckConfigurationForceSave()
       (Configuration->Storage == stIniFile) && base::FileExists(ApiPath(Configuration->IniFileStorageName)) &&
       !Configuration->ForceSave)
   {
-    int Attr = GetFileAttributes(ApiPath(Configuration->IniFileStorageName).c_str());
+    int32_t Attr = GetFileAttributes(ApiPath(Configuration->IniFileStorageName).c_str());
     if (FLAGSET(Attr, FILE_ATTRIBUTE_READONLY))
     {
       UnicodeString Message = FMTLOAD(READONLY_INI_FILE_OVERWRITE, Configuration->IniFileStorageName);
@@ -1601,8 +1630,9 @@ void WinInitialize()
   OnApiPath = ApiPath;
 #endif // defined(__BORLANDC__)
   MainThread = GetCurrentThreadId();
-  // Application->OnGetMainFormHandle = MakeMethod<TGetHandleEvent>(nullptr, AppGetMainFormHandle);
-
+#if defined(__BORLANDC__)
+  Application->OnGetMainFormHandle = MakeMethod<TGetHandleEvent>(nullptr, AppGetMainFormHandle);
+#endif // defined(__BORLANDC__)
 }
 
 void WinFinalize()
