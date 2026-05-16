@@ -60,6 +60,7 @@
 #include "../core/WinSCPSecurity.cpp"
 #include "../core/Http.cpp"
 #include "../core/NeonIntf.cpp"
+#include "../core/Certificates.cpp"
 
 #include "../windows/SynchronizeController.cpp"
 #include "../windows/GUITools.cpp"

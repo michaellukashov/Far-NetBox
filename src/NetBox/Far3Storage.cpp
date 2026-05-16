@@ -1,6 +1,6 @@
 #include <Classes.hpp>
 #include <Common.h>
-#include <Exceptions.h>
+//#include <Exceptions.h>
 #include <PuttyIntf.h>
 #include "Far3Storage.h"
 //#include "TextsCore.h"
@@ -94,7 +94,7 @@ bool TFar3Storage::DoDeleteSubKey(const UnicodeString & SubKey)
 
 void TFar3Storage::DoGetSubKeyNames(TStrings * Strings)
 {
-  FarSettingsEnum Settings = {sizeof(FarSettingsEnum), 0, 0, nullptr};
+  FarSettingsEnum Settings = {sizeof(FarSettingsEnum), 0, 0, {nullptr}};
   Settings.Root = FRoot;
   if (FPluginSettings.GetSubKeyNames(Settings))
   {
@@ -111,7 +111,7 @@ void TFar3Storage::DoGetSubKeyNames(TStrings * Strings)
 void TFar3Storage::DoGetValueNames(TStrings * Strings)
 {
   Strings->Clear();
-  FarSettingsEnum Settings = {sizeof(FarSettingsEnum), 0, 0, nullptr};
+  FarSettingsEnum Settings = {sizeof(FarSettingsEnum), 0, 0, {nullptr}};
   Settings.Root = FRoot;
   if (FPluginSettings.GetSubKeyNames(Settings))
   {
@@ -175,7 +175,7 @@ double TFar3Storage::DoReadFloat(const UnicodeString & Name, double Default)
   double Result{0.0};
   double Val{0.0};
   void * Value = nb::ToPtr(&Val);
-  const size_t Sz = sizeof(Val);
+  constexpr size_t Sz = sizeof(Val);
   if (FPluginSettings.Get(FRoot, Name.c_str(), Value, Sz) == Sz)
   {
     Result = Val;
