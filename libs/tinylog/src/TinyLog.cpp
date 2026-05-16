@@ -189,7 +189,7 @@ int32_t TinyLogImpl::MainLoop()
   return 0;
 }
 
-TinyLog * TinyLog::instance_ = nullptr;
+bool TinyLog::destroyed_ = false;
 
 static std::mutex g_registry_mutex;
 static std::vector<TinyLog *> g_registry;
@@ -263,16 +263,23 @@ TinyLog::TinyLog() noexcept :
 TinyLog::~TinyLog() noexcept
 {
   Unregister(this);
-  // Mark singleton as destroyed so background threads
-  // skip logging via TINYLOG_* null-guard checks
-  instance_ = nullptr;
+  destroyed_ = true;
 }
 
 auto TinyLog::instance() -> TinyLog * &
 {
-  if (!instance_)
-    instance_ = new TinyLog();
-  return instance_;
+  static TinyLog * s_instance = nullptr;
+  static std::once_flag s_once;
+  static TinyLog * s_null = nullptr;
+
+  if (destroyed_)
+    return s_null;
+
+  std::call_once(s_once, [&]() {
+    s_instance = new TinyLog();
+  });
+
+  return s_instance;
 }
 
 void TinyLog::level(Utils::LogLevel log_level)

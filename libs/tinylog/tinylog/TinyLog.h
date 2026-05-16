@@ -47,9 +47,8 @@ public:
   // TODO: group / groupEnd
 
 private:
-  static TinyLog * instance_;
+  static bool destroyed_; // prevents lazy re-creation after shutdown
   std::unique_ptr<TinyLogImpl> impl_;
-
 private:
   TinyLog(TinyLog const &) = delete;
   void operator =(TinyLog const &) = delete;
