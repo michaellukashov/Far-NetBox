@@ -6200,7 +6200,7 @@ bool TTerminal::AllowLocalFileTransfer(
     TSearchRecSmart ASearchRec;
     if (SearchRec == nullptr)
     {
-      if (!CopyParam->FOnTransferIn.empty())
+      if (!CopyParam->OnTransferIn.empty())
       {
         ASearchRec.Clear();
       }
@@ -7918,7 +7918,7 @@ bool TTerminal::CopyToRemote(
   bool Result = false;
   TOnceDoneOperation OnceDoneOperation = odoIdle;
 
-  if ((!CopyParam->FOnTransferIn.empty()) && !FFileSystem->IsCapable(fcTransferIn))
+  if ((!CopyParam->OnTransferIn.empty()) && !FFileSystem->IsCapable(fcTransferIn))
   {
     NotSupported();
   }
@@ -8144,7 +8144,7 @@ void TTerminal::SourceRobust(
 {
   TUploadSessionAction Action(GetActionLog());
   bool * AFileTransferAny = FLAGSET(AFlags, tfUseFileTransferAny) ? &FFileTransferAny : nullptr;
-  const bool CanRetry = (CopyParam->FOnTransferIn.empty());
+  const bool CanRetry = (CopyParam->OnTransferIn.empty());
   TRobustOperationLoop RobustLoop(this, AOperationProgress, AFileTransferAny, CanRetry);
 
   do
@@ -8392,7 +8392,7 @@ void TTerminal::Source(
   TFileOperationProgressType * AOperationProgress, uint32_t AFlags, TUploadSessionAction & Action, bool & ChildError)
 {
   UnicodeString ActionFileName = AFileName;
-  if (CopyParam->FOnTransferIn.empty())
+  if (CopyParam->OnTransferIn.empty())
   {
     ActionFileName = ::ExpandUNCFileName(ActionFileName);
   }
@@ -8406,7 +8406,7 @@ void TTerminal::Source(
   }
 
   TLocalFileHandle Handle;
-  if (CopyParam->FOnTransferIn.empty())
+  if (CopyParam->OnTransferIn.empty())
   {
     OpenLocalFile(AFileName, GENERIC_READ, Handle);
   }
@@ -8430,7 +8430,7 @@ void TTerminal::Source(
   }
   else
   {
-    if (!CopyParam->FOnTransferIn.empty())
+    if (!CopyParam->OnTransferIn.empty())
     {
       LogEvent(FORMAT(L"Streaming \"%s\" to remote directory started.", AFileName));
     }
@@ -8536,7 +8536,7 @@ bool TTerminal::CopyToLocal(
   DebugAssert(AFilesToCopy != nullptr);
   TOnceDoneOperation OnceDoneOperation = odoIdle;
 
-  if ((!CopyParam->FOnTransferOut.empty()) && !FFileSystem->IsCapable(fcTransferOut))
+  if ((!CopyParam->OnTransferOut.empty()) && !FFileSystem->IsCapable(fcTransferOut))
   {
     NotSupported();
   }
@@ -8555,7 +8555,7 @@ bool TTerminal::CopyToLocal(
     std::unique_ptr<TStringList> Files;
     const bool ACanParallel =
       CanParallel(CopyParam, AParams, ParallelOperation) &&
-      DebugAlwaysTrue(CopyParam->FOnTransferOut.empty());
+      DebugAlwaysTrue(CopyParam->OnTransferOut.empty());
     if (ACanParallel)
     {
       Files = std::make_unique<TStringList>();
@@ -8791,7 +8791,7 @@ void TTerminal::SinkRobust(
   try__finally
   {
     bool * FileTransferAny = FLAGSET(AFlags, tfUseFileTransferAny) ? &FFileTransferAny : nullptr;
-    const bool CanRetry = (!CopyParam->FOnTransferOut.empty());
+    const bool CanRetry = (!CopyParam->OnTransferOut.empty());
     TRobustOperationLoop RobustLoop(this, AOperationProgress, FileTransferAny);
     bool Sunk = false;
 
@@ -8847,9 +8847,9 @@ void TTerminal::SinkRobust(
   __finally
   {
     // Once we issue <download> we must terminate the data stream
-    if (Action.IsValid() && (!CopyParam->FOnTransferOut.empty()) && DebugAlwaysTrue(GetIsCapable(fcTransferOut)))
+    if (Action.IsValid() && (!CopyParam->OnTransferOut.empty()) && DebugAlwaysTrue(GetIsCapable(fcTransferOut)))
     {
-      CopyParam->FOnTransferOut(this, nullptr, 0);
+      CopyParam->OnTransferOut(this, nullptr, 0);
     }
   } end_try__finally
 }
@@ -8948,7 +8948,7 @@ void TTerminal::Sink(
   }
   else
   {
-    if (!CopyParam->FOnTransferOut.empty())
+    if (!CopyParam->OnTransferOut.empty())
     {
       LogEvent(FORMAT(L"Streaming \"%s\" to local machine started.", AFileName));
     }
@@ -8977,7 +8977,7 @@ void TTerminal::Sink(
 
     int32_t Attrs = 0;
     UnicodeString LogFileName;
-    if (!CopyParam->FOnTransferOut.empty())
+    if (!CopyParam->OnTransferOut.empty())
     {
       Attrs = -1;
       LogFileName = L"-";

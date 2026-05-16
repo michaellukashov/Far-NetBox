@@ -945,7 +945,7 @@ void TWebDAVFileSystem::NeonPropsResult(
     FileSystem->ParsePropResultSet(File.get(), Path, Results);
 
     const UnicodeString FileListPath = base::UnixIncludeTrailingBackslash(FileSystem->AbsolutePath(Data.FileList->GetDirectory(), false));
-    if (FileSystem->FOneDrive)
+    if (FileSystem->OneDrive)
     {
       const UnicodeString FullFileName = base::UnixIncludeTrailingBackslash(File->FullFileName);
       if (GetConfiguration()->Usage->Collect && (FileSystem->FOneDriveInterface == odiUnknown) && !base::IsUnixRootPath(FullFileName))

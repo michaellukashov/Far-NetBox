@@ -214,5 +214,7 @@ private:
   void SetSessionTls(TSessionContext * SessionContext, ne_session_s * Session, bool Aux);
   void InitSession(TSessionContext * SessionContext, ne_session_s * Session);
   bool IsTlsSession(ne_session * Session) const;
+
+  bool& OneDrive{FOneDrive};
 };
 

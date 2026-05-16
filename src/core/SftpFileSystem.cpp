@@ -4922,7 +4922,7 @@ void TSFTPFileSystem::Source(
     CopyParam->AllowResume(OperationProgress->LocalSize, ADestFileName) &&
     IsCapable(fcRename) &&
     !FTerminal->IsEncryptingFiles() &&
-    (CopyParam->FOnTransferIn.empty());
+    (CopyParam->OnTransferIn.empty());
 
   TOpenRemoteFileParams OpenParams;
   OpenParams.OverwriteMode = omOverwrite;
@@ -5058,7 +5058,7 @@ void TSFTPFileSystem::Source(
   OpenParams.CopyParam = CopyParam;
   OpenParams.Params = Params;
   OpenParams.FileParams = &FileParams;
-  OpenParams.Confirmed = (!CopyParam->FOnTransferIn.empty()) && FLAGCLEAR(Params, cpAppend);
+  OpenParams.Confirmed = (!CopyParam->OnTransferIn.empty()) && FLAGCLEAR(Params, cpAppend);
   OpenParams.DontRecycle = false;
   OpenParams.Recycled = false;
 
@@ -5087,10 +5087,10 @@ void TSFTPFileSystem::Source(
   bool TransferFinished = false;
   // int64_t DestWriteOffset = 0;
   TSFTPPacket CloseRequest(SSH_FXP_NONE, FCodePage);
-  bool PreserveRights = CopyParam->PreserveRights && (CopyParam->FOnTransferIn.empty());
+  bool PreserveRights = CopyParam->PreserveRights && (CopyParam->OnTransferIn.empty());
   bool PreserveExistingRights = (DoResume && DestFileExists) || OpenParams.Recycled;
   bool SetRights = (PreserveExistingRights || PreserveRights);
-  bool PreserveTime = CopyParam->PreserveTime && (CopyParam->FOnTransferIn.empty());
+  bool PreserveTime = CopyParam->PreserveTime && (CopyParam->OnTransferIn.empty());
   bool SetProperties = (PreserveTime || SetRights);
   TSFTPPacket PropertiesRequest(SSH_FXP_SETSTAT, FCodePage);
   TSFTPPacket PropertiesResponse(SSH_FXP_NONE, FCodePage);
@@ -5154,7 +5154,7 @@ void TSFTPFileSystem::Source(
       const int32_t ConvertParams =
         FLAGMASK(CopyParam->GetRemoveCtrlZ(), cpRemoveCtrlZ) |
         FLAGMASK(CopyParam->GetRemoveBOM(), cpRemoveBOM);
-      Queue.Init(AHandle.FileName, AHandle.Handle, std::move(const_cast<TCopyParamType * >(CopyParam)->FOnTransferIn), OperationProgress,
+      Queue.Init(AHandle.FileName, AHandle.Handle, std::move(const_cast<TCopyParamType * >(CopyParam)->OnTransferIn), OperationProgress,
         OpenParams.RemoteFileHandle,
         DestWriteOffset + OperationProgress->GetTransferredSize(),
         ConvertParams);
@@ -5691,9 +5691,9 @@ void TSFTPFileSystem::WriteLocalFile(
   const TCopyParamType * CopyParam, TStream * FileStream, TFileBuffer & BlockBuf, const UnicodeString & ALocalFileName,
   TFileOperationProgressType * OperationProgress)
 {
-  if (!CopyParam->FOnTransferOut.empty())
+  if (!CopyParam->OnTransferOut.empty())
   {
-    BlockBuf.WriteToOut(std::move(const_cast<TCopyParamType * >(CopyParam)->FOnTransferOut), FTerminal, BlockBuf.Size);
+    BlockBuf.WriteToOut(std::move(const_cast<TCopyParamType * >(CopyParam)->OnTransferOut), FTerminal, BlockBuf.Size);
   }
   else
   {
@@ -5719,7 +5719,7 @@ void TSFTPFileSystem::Sink(
     !OperationProgress->GetAsciiTransfer() &&
     CopyParam->AllowResume(OperationProgress->TransferSize, ADestFileName) &&
     !FTerminal->IsEncryptingFiles() &&
-    CopyParam->FOnTransferOut.empty() &&
+    CopyParam->OnTransferOut.empty() &&
     (CopyParam->PartOffset < 0);
 
   HANDLE LocalFileHandle = INVALID_HANDLE_VALUE;
@@ -5729,7 +5729,7 @@ void TSFTPFileSystem::Sink(
   UnicodeString DestFullName = ATargetDir + ADestFileName;
   UnicodeString LocalFileName = DestFullName;
   TOverwriteMode OverwriteMode = omOverwrite;
-  UnicodeString ExpandedDestFullName;
+  // UnicodeString ExpandedDestFullName;
 
   try__finally
   {
@@ -5888,7 +5888,7 @@ void TSFTPFileSystem::Sink(
 
     Action.Destination(ExpandUNCFileName(DestFullName));
 
-    if (CopyParam->FOnTransferOut.empty())
+    if (CopyParam->OnTransferOut.empty())
     {
       // if not already opened (resume, append...), create new empty file
       if (!CheckHandle(LocalFileHandle))
@@ -6076,7 +6076,7 @@ void TSFTPFileSystem::Sink(
       // queue is discarded here
     }
 
-    if (CopyParam->FOnTransferOut.empty())
+    if (CopyParam->OnTransferOut.empty())
     {
       DebugAssert(CheckHandle(LocalFileHandle));
       if (CopyParam->GetPreserveTime())

@@ -198,7 +198,9 @@ public:
   __property TOnceDoneOperation OnceDoneOperation = { read = FOnceDoneOperation, write = FOnceDoneOperation };
   TOnceDoneOperation& OnceDoneOperation{FOnceDoneOperation};
   __property TTransferOutEvent OnTransferOut = { read = FOnTransferOut, write = FOnTransferOut };
+  TTransferOutEvent& OnTransferOut{FOnTransferOut};
   __property TTransferInEvent OnTransferIn = { read = FOnTransferIn, write = FOnTransferIn };
+  TTransferInEvent& OnTransferIn{FOnTransferIn};
 
   const TFileMasks & GetAsciiFileMask() const { return FAsciiFileMask; }
   TFileMasks & GetAsciiFileMask() { return FAsciiFileMask; }

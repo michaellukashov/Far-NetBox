@@ -1695,7 +1695,7 @@ void TFTPFileSystem::FileTransfer(const UnicodeString & AFileName,
   {
     FFileZillaIntf->FileTransfer(
       ApiPath(LocalFile).c_str(), RemoteFile.c_str(), RemotePath.c_str(),
-      Get, Size, nb::ToInt32(Type), &UserData, std::move(UserData.CopyParam->FOnTransferOut), std::move(UserData.CopyParam->FOnTransferIn));
+      Get, Size, nb::ToInt32(Type), &UserData, std::move(UserData.CopyParam->OnTransferOut), std::move(UserData.CopyParam->OnTransferIn));
     // we may actually catch response code of the listing
     // command (when checking for existence of the remote file)
     const uint32_t Reply = WaitForCommandReply();
@@ -1807,7 +1807,7 @@ void TFTPFileSystem::Sink(
   const UnicodeString ExpandedDestFullName = ExpandUNCFileName(DestFullName);
   Action.Destination(ExpandedDestFullName);
 
-  if (CopyParam->FOnTransferOut.empty())
+  if (CopyParam->OnTransferOut.empty())
   {
     FTerminal->UpdateTargetAttrs(DestFullName, File, CopyParam, Attrs);
   }
@@ -1834,7 +1834,7 @@ void TFTPFileSystem::CopyToRemote(TStrings * AFilesToCopy,
 bool TFTPFileSystem::CanTransferSkipList(int32_t Params, uint32_t Flags, const TCopyParamType * CopyParam) const
 {
   const bool Result =
-    (!CopyParam->FOnTransferIn.empty()) ||
+    (!CopyParam->OnTransferIn.empty()) ||
     (FLAGSET(Params, cpNoConfirmation) &&
      // cpAppend is not supported with FTP
      DebugAlwaysTrue(FLAGCLEAR(Params, cpAppend)) &&
@@ -1850,7 +1850,7 @@ void TFTPFileSystem::Source(
   TFileOperationProgressType * OperationProgress, uint32_t Flags,
   TUploadSessionAction & Action, bool & /*ChildError*/)
 {
-  if (CopyParam->FOnTransferIn.empty())
+  if (CopyParam->OnTransferIn.empty())
   {
     Handle.Close();
   }
@@ -1869,7 +1869,7 @@ void TFTPFileSystem::Source(
 
     SetCPSLimit(OperationProgress);
     // not used for uploads anyway
-    FFileTransferPreserveTime = CopyParam->GetPreserveTime() && (CopyParam->FOnTransferIn.empty());
+    FFileTransferPreserveTime = CopyParam->GetPreserveTime() && (CopyParam->OnTransferIn.empty());
     FFileTransferRemoveBOM = CopyParam->GetRemoveBOM();
     FFileTransferNoList = CanTransferSkipList(Params, Flags, CopyParam);
     // not used for uploads, but we get new name (if any) back in this field
@@ -4103,7 +4103,7 @@ bool TFTPFileSystem::HandleAsyncRequestOverwrite(
       // on retry, use the same answer as on the first attempt
       RequestResult = nb::ToInt32(UserData.OverwriteResult);
     }
-    else if ((!UserData.CopyParam->FOnTransferOut.empty()) || (!UserData.CopyParam->FOnTransferIn.empty()))
+    else if ((!UserData.CopyParam->OnTransferOut.empty()) || (!UserData.CopyParam->OnTransferIn.empty()))
     {
       DebugFail();
       RequestResult = TFileZillaIntf::FILEEXISTS_OVERWRITE;
@@ -4980,7 +4980,7 @@ bool TFTPFileSystem::Unquote(UnicodeString & Str)
 void TFTPFileSystem::PreserveDownloadFileTime(HANDLE AHandle, void * UserData) const
 {
   const TFileTransferData * Data = static_cast<TFileTransferData *>(UserData);
-  DebugAssert(Data->CopyParam->FOnTransferOut.empty());
+  DebugAssert(Data->CopyParam->OnTransferOut.empty());
   FTerminal->UpdateTargetTime(AHandle, Data->Modification, mfFull, dstmUnix);
 }
 
