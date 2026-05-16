@@ -447,6 +447,7 @@ TFTPFileSystem::~TFTPFileSystem() noexcept
 
   ResetCaches();
 }
+
 void TFTPFileSystem::Open()
 {
 
@@ -3436,10 +3437,11 @@ UnicodeString TFTPFileSystem::GotReply(uint32_t Reply, uint32_t Flags,
     }
     else
     {
-      // everything else should be an error or disconnect notification,
-      // but FZAPI may return other reply codes in edge cases (e.g. REPLY_CANCEL,
-      // REPLY_BUSY, REPLY_CRITICALERROR). Treat any remaining reply as an error
-      // and let the downstream exception handling deal with it.
+      // everything else must be an error or disconnect notification
+      DebugAssert(
+        FLAGSET(Reply, TFileZillaIntf::REPLY_ERROR) ||
+        FLAGSET(Reply, TFileZillaIntf::REPLY_DISCONNECTED));
+
       TODO("REPLY_CRITICALERROR ignored");
 
       // REPLY_NOTCONNECTED happens if connection is closed between moment
