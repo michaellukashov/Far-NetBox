@@ -6727,7 +6727,7 @@ void TSessionDialog::PrivateKeyViewButtonClick(TFarButton * /*Sender*/, bool & C
     Params.Aliases = &Alias;
     Params.AliasesCount = 1;
 
-    std::unique_ptr<TStringList> Messages(new TStringList());
+    std::unique_ptr<TStringList> Messages(std::make_unique<TStringList>());
     Messages->Add(Line);
 
     TWinSCPPlugin * WinSCPPlugin = nb::dyn_cast_or_null<TWinSCPPlugin>(FarPlugin);

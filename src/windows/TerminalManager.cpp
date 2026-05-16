@@ -1657,7 +1657,7 @@ void TTerminalManager::NewSession(
     Retry = false;
     if (!DataList) // first round
     {
-      DataList.reset(new TObjectList());
+      DataList.reset(std::make_unique<TObjectList>());
       UnicodeString DownloadFile; // unused
       GetLoginData(SessionUrl, nullptr, DataList.get(), DownloadFile, true, LinkedForm);
     }

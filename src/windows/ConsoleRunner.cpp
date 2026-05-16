@@ -596,7 +596,7 @@ TExternalConsole::TExternalConsole(
     CloseHandle(Job);
   }
 
-  FSection.reset(new TCriticalSection());
+  FSection.reset(std::make_unique<TCriticalSection>());
 
   TConsoleCommStruct * CommStruct = GetCommStruct();
   try
