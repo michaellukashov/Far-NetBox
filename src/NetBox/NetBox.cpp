@@ -40,10 +40,8 @@ void CreatePlugin()
 
 void DestroyPlugin()
 {
-  DEBUG_PRINTFA("DestroyPlugin begin");
   TermExtensionModule();
   DestroyFarPlugin(FarPlugin);
-  DEBUG_PRINTFA("DestroyPlugin end");
 }
 
 [[noreturn]]
@@ -131,7 +129,6 @@ void WINAPI ExitFARW(const struct ExitInfo * Info)
   }
   // Now Guard is released
   DestroyPlugin();
-  DEBUG_PRINTFA("ExitFARW: plugin destroyed, FarPlugin=%p", static_cast<void*>(FarPlugin));
 }
 
 void WINAPI GetPluginInfoW(PluginInfo * Info)
@@ -338,24 +335,19 @@ BOOL WINAPI DllMain(HINSTANCE HInstDLL, DWORD Reason, LPVOID /*ptr*/ )
   {
     HInstanceDLL = HInstDLL;
     (void) _set_invalid_parameter_handler(InvalidParameterHandler);
-    DEBUG_PRINTFA("DllMain DLL_PROCESS_ATTACH");
   }
   else if (Reason == DLL_PROCESS_DETACH)
   {
-    DEBUG_PRINTFA("DllMain DLL_PROCESS_DETACH begin");
     // All cleanup (threads, singletons, handles) is performed explicitly
     // in ~TWinSCPPlugin() / ~TCustomFarPlugin(), called from ExitFARW before
     // FreeLibrary. Do NOT add cleanup here — DllMain runs under the loader
     // lock and must not touch CRT heap-allocated objects or stop threads.
-    DEBUG_PRINTFA("DllMain DLL_PROCESS_DETACH end");
   }
   else if (Reason == DLL_THREAD_ATTACH)
   {
-    DEBUG_PRINTFA("DllMain DLL_THREAD_ATTACH (tid=%lu)", GetCurrentThreadId());
   }
   else if (Reason == DLL_THREAD_DETACH)
   {
-    DEBUG_PRINTFA("DllMain DLL_THREAD_DETACH (tid=%lu)", GetCurrentThreadId());
   }
   return TRUE;
 }

@@ -27,14 +27,12 @@ public:
     FPlugin(Plugin),
     FMillisecs(Millisecs)
   {
-    DEBUG_PRINTFA("TPluginIdleThread constructor");
     pthread_mutex_init(&FMutex, nullptr);
     pthread_cond_init(&FCond, nullptr);
   }
 
   virtual ~TPluginIdleThread() noexcept override
   {
-    DEBUG_PRINTFA("~TPluginIdleThread (finished=%s)", FFinished ? "yes" : "no");
     TPluginIdleThread::Terminate();
     WaitFor();
     pthread_cond_destroy(&FCond);
@@ -68,7 +66,6 @@ public:
 
   virtual void Terminate() override
   {
-    DEBUG_PRINTFA("TPluginIdleThread::Terminate (finished=%s)", FFinished ? "yes" : "no");
     TCallback DoFinish = [this]
     {
       if (FFinished)
@@ -83,7 +80,6 @@ public:
 
   void InitIdleThread(const UnicodeString & Name)
   {
-    DEBUG_PRINTFA("TPluginIdleThread::InitIdleThread '%s'", W2MB(Name.c_str()).c_str());
     TSimpleThread::InitSimpleThread(Name);
     Start();
   }
@@ -188,11 +184,9 @@ TCustomFarPlugin::~TCustomFarPlugin() noexcept
   FConsoleOutput = INVALID_HANDLE_VALUE;
   DEBUG_PRINTFA("CONOUT$ handle closed");
 
-  DEBUG_PRINTFA("Closing remaining file systems (count=%d)", FOpenedPlugins->GetCount());
   while (FOpenedPlugins->GetCount() > 0)
   {
     TCustomFarFileSystem * FileSystem = FOpenedPlugins->GetAs<TCustomFarFileSystem>(0);
-    DEBUG_PRINTFA("Closing file system %p", static_cast<void*>(FileSystem));
     try__finally
     {
       CloseFileSystem(FileSystem);
@@ -204,7 +198,6 @@ TCustomFarPlugin::~TCustomFarPlugin() noexcept
       // it means the close succeeded — loop continues with next item.
     } end_try__finally
   }
-  DEBUG_PRINTFA("All file systems closed");
   ClearPluginInfo(FPluginInfo);
   DebugAssert(FOpenedPlugins->GetCount() == 0);
   for (int32_t Index = 0; Index < FSavedTitles->GetCount(); ++Index)

@@ -9,15 +9,6 @@
 #include "stdafx.h"
 #include "AsyncSocketEx.h"
 
-#ifndef DEBUG_PRINTFA
-#define DEBUG_PRINTFA(fmt, ...) do { \
-    char _dbg_buf[512]; \
-    _snprintf_s(_dbg_buf, sizeof(_dbg_buf), _TRUNCATE, \
-        "Plugin: [%s:%d] %s: " fmt "\n", \
-        __FILE__, __LINE__, __FUNCTION__, ##__VA_ARGS__); \
-    OutputDebugStringA(_dbg_buf); \
-} while(0)
-#endif
 
 #include "FileZillaApi.h"
 
@@ -73,12 +64,10 @@ public:
     m_hWnd=CreateWindow(L"CAsyncSocketEx Helper Window", L"CAsyncSocketEx Helper Window", 0, 0, 0, 0, 0, 0, 0, GetModuleHandle(0), 0);
     DebugAssert(m_hWnd);
     SetWindowLongPtr(m_hWnd, GWL_USERDATA, (LONG_PTR)this);
-    DEBUG_PRINTFA("CAsyncSocketExHelperWindow created (hwnd=%p this=%p)", static_cast<void*>(m_hWnd), static_cast<void*>(this));
   }
 
   virtual ~CAsyncSocketExHelperWindow()
   {
-    DEBUG_PRINTFA("~CAsyncSocketExHelperWindow (hwnd=%p this=%p)", static_cast<void*>(m_hWnd), static_cast<void*>(this));
     //Clean up socket storage
     nb_free(m_pAsyncSocketExWindowData);
     m_pAsyncSocketExWindowData=0;

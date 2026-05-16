@@ -907,7 +907,6 @@ void FinalizeSystemSettings()
 
 void CleanupVCLCommon()
 {
-  DEBUG_PRINTFA("CleanupVCLCommon: DesktopFontManager.reset()");
   // Destroy DesktopFontManager explicitly before DLL unload to prevent
   // its hidden window from receiving messages after the DLL code is gone.
   DesktopFontManager.reset();

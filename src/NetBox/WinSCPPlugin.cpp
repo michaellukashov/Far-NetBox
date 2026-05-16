@@ -114,7 +114,6 @@ TWinSCPPlugin::TWinSCPPlugin(HINSTANCE HInst) noexcept :
 
 TWinSCPPlugin::~TWinSCPPlugin() noexcept
 {
-  DEBUG_PRINTFA("~TWinSCPPlugin begin");
   // DEBUG_PRINTF("begin");
   if (FInitialized)
   {
@@ -134,7 +133,6 @@ TWinSCPPlugin::~TWinSCPPlugin() noexcept
   // DEBUG_PRINTF("begin");
   SetUnhandledExceptionFilter(FPrevFilter);
   OutputDebugStringA("NetBox: Exception filter removed\n");
-  DEBUG_PRINTFA("~TWinSCPPlugin end");
 }
 
 bool TWinSCPPlugin::HandlesFunction(THandlesFunction Function) const

@@ -406,7 +406,6 @@ void TFTPFileSystem::Init(void *)
 
 TFTPFileSystem::~TFTPFileSystem() noexcept
 {
-  DEBUG_PRINTFA("~TFTPFileSystem (filelist=%p)", static_cast<void*>(FFileList));
   DebugAssert(FFileList == nullptr);
 
   if (FFileZillaIntf)
@@ -447,12 +446,10 @@ TFTPFileSystem::~TFTPFileSystem() noexcept
 #endif // defined(__BORLANDC__)
 
   ResetCaches();
-  DEBUG_PRINTFA("~TFTPFileSystem end");
 }
 void TFTPFileSystem::Open()
 {
 
-  DEBUG_PRINTFA("TFTPFileSystem::Open begin");
   // Check for user cancellation before FTP connect
   FTerminal->CheckForEsc();
   // on reconnect, typically there may be pending status messages from previous session
@@ -691,13 +688,11 @@ void TFTPFileSystem::Open()
   const UnicodeString TlsVersionStr = FFileZillaIntf->GetTlsVersionStr().c_str();
   AddToList(FSessionInfo.SecurityProtocolName, TlsVersionStr, L", ");
   FLoggedIn = true;
-  DEBUG_PRINTFA("TFTPFileSystem::Open end");
 }
 
 void TFTPFileSystem::Close()
 {
   DebugAssert(FActive);
-  DEBUG_PRINTFA("TFTPFileSystem::Close begin");
 
   bool Result = DoQuit();
   if (!Result)
@@ -723,13 +718,11 @@ void TFTPFileSystem::Close()
   else
   {
     // Connection was already closed or in a bad state; force cleanup.
-    DEBUG_PRINTFA("TFTPFileSystem::Close: Result=false, forcing Disconnect");
     if (FActive)
     {
       Disconnect();
     }
   }
-  DEBUG_PRINTFA("TFTPFileSystem::Close end (result=%s)", Result ? "yes" : "no");
 }
 
 bool TFTPFileSystem::GetActive() const

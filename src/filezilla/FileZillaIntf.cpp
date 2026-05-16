@@ -1,14 +1,5 @@
 
 #include "stdafx.h"
-#ifndef DEBUG_PRINTFA
-#define DEBUG_PRINTFA(fmt, ...) do { \
-    char _dbg_buf[512]; \
-    _snprintf_s(_dbg_buf, sizeof(_dbg_buf), _TRUNCATE, \
-        "Plugin: [%s:%d] %s: " fmt "\n", \
-        __FILE__, __LINE__, __FUNCTION__, ##__VA_ARGS__); \
-    OutputDebugStringA(_dbg_buf); \
-} while(0)
-#endif
 
 #include "FileZillaIntf.h"
 #include "FileZillaIntern.h"
@@ -123,7 +114,6 @@ bool TFileZillaIntf::Init()
 
 void TFileZillaIntf::Destroying()
 {
-  DEBUG_PRINTFA("TFileZillaIntf::Destroying (FFileZillaApi=%p)", static_cast<void*>(FFileZillaApi));
   // need to close FZAPI before calling destructor as it in turn post messages
   // back while being destroyed, what may result in calling virtual methods
   // of already destroyed descendants
