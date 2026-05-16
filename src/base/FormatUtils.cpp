@@ -55,7 +55,7 @@ UnicodeString FmtLoadStr(int32_t id, fmt::ArgList args)
 UnicodeString EscapeFmtChars(const UnicodeString & Str)
 {
   UnicodeString Result;
-  for (int32_t I = 1; I < Str.GetLength(); ++I)
+  for (int32_t I = 1; I <= Str.GetLength(); ++I)
   {
     if (Str[I] == '%')
     {
