@@ -67,16 +67,16 @@ TUnguard::~TUnguard() noexcept
 #ifdef _DEBUG
 
 static HANDLE TraceFile = nullptr;
+static TCriticalSection TracingCriticalSection;
 bool IsTracing = false;
 const uint32_t CallstackTlsOff = static_cast<uint32_t>(-1);
 uint32_t CallstackTls = CallstackTlsOff;
-TCriticalSection * TracingCriticalSection = nullptr;
 
 bool TracingInMemory = false;
 HANDLE TracingThread = nullptr;
 // Thread-safety inventory (debug-only):
 // - TraceFile / IsTracing: guarded by TracingCriticalSection in WriteTraceBuffer and SetTraceFile.
-// - TracingCriticalSection: created on first SetTraceFile() call; leaf lock.
+// - TracingCriticalSection: static object, initialized before main().
 // - CallstackTls: set once during startup; read without lock (TLS index).
 // - TracingInMemory / TracingThread: set during startup; no worker access.
 #define DirectTrace(MESSAGE) \
@@ -101,14 +101,11 @@ inline static UTF8String TraceFormat(const TDateTime & Time, DWORD Thread, const
 
 inline static void WriteTraceBuffer(const char * Buffer, size_t Length)
 {
-  if (TracingCriticalSection != nullptr)
+  const TGuard Guard(TracingCriticalSection);
+  if (TraceFile != nullptr)
   {
-    const TGuard Guard(*TracingCriticalSection);
-    if (TraceFile != nullptr)
-    {
-      DWORD Written;
-      ::WriteFile(TraceFile, Buffer, static_cast<DWORD>(Length), &Written, nullptr);
-    }
+    DWORD Written;
+    ::WriteFile(TraceFile, Buffer, static_cast<DWORD>(Length), &Written, nullptr);
   }
 }
 inline static void DoDirectTrace(DWORD Thread, const wchar_t * SourceFile,
@@ -120,22 +117,16 @@ inline static void DoDirectTrace(DWORD Thread, const wchar_t * SourceFile,
 
 void SetTraceFile(HANDLE ATraceFile)
 {
-  if (TracingCriticalSection == nullptr)
-  {
-    TracingCriticalSection = new TCriticalSection();
-  }
-  const TGuard Guard(*TracingCriticalSection);
+  const TGuard Guard(TracingCriticalSection);
   TraceFile = ATraceFile;
   IsTracing = (TraceFile != nullptr);
 }
 
 void CleanupTracing()
 {
-  if (TracingCriticalSection != nullptr)
-  {
-    delete TracingCriticalSection;
-    TracingCriticalSection = nullptr;
-  }
+  const TGuard Guard(TracingCriticalSection);
+  TraceFile = nullptr;
+  IsTracing = false;
 }
 
 #ifndef TRACE_IN_MEMORY_NO_FORMATTING
@@ -162,8 +153,9 @@ void DoTrace(const wchar_t * SourceFile, const wchar_t * Func,
 void DoTraceFmt(const wchar_t * SourceFile, const wchar_t * Func,
   uint32_t Line, const wchar_t * AFormat, fmt::ArgList args)
 {
-  DebugAssert(IsTracing);
-
+  // No naked IsTracing read; WriteTraceBuffer() handles inactive tracing
+  // under TracingCriticalSection. Removed DebugAssert(IsTracing) to avoid
+  // data race with SetTraceFile() on another thread.
   const UnicodeString Message = nb::Format(AFormat, args);
   DoTrace(SourceFile, Func, Line, Message.c_str());
 }
@@ -172,10 +164,9 @@ void DoTraceFmt(const wchar_t * SourceFile, const wchar_t * Func,
 
 void DoAssert(const wchar_t * Message, const wchar_t * Filename, int32_t LineNumber)
 {
-  if (IsTracing)
-  {
-    DoTrace(Filename, L"assert", LineNumber, Message);
-  }
+  // WriteTraceBuffer() already skips when TraceFile is nullptr under lock,
+  // so no need for a naked IsTracing read that races with SetTraceFile().
+  DoTrace(Filename, L"assert", LineNumber, Message);
   _wassert(Message, Filename, static_cast<uint32_t>(LineNumber));
 }
 
