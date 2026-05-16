@@ -1476,6 +1476,7 @@ void TWebDAVFileSystem::Source(
     try
     {
       const TValueRestorer<TIgnoreAuthenticationFailure> IgnoreAuthenticationFailureRestorer(FIgnoreAuthenticationFailure);
+      nb::used(IgnoreAuthenticationFailureRestorer);
       FIgnoreAuthenticationFailure = iafWaiting;
 
       TRemoteFile * RemoteFilePtr = nullptr;

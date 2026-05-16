@@ -314,6 +314,7 @@ void TTerminalManager::DoConnectTerminal(TTerminal * Terminal, bool Reopen, bool
   try
   {
     TValueRestorer<TTerminal *> OpeningTerminalRestorer(FOpeningTerminal);
+    nb::used(OpeningTerminalRestorer);
     FOpeningTerminal = Terminal;
     TTerminalThread * TerminalThread = new TTerminalThread(Terminal);
     TerminalThread->AllowAbandon = (Terminal == FActiveTerminal);

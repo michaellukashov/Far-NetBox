@@ -4929,6 +4929,7 @@ void TTerminal::ChangeFilesProperties(TStrings * AFileList,
 bool TTerminal::LoadFilesProperties(TStrings * AFileList)
 {
   TValueRestorer<bool> UseBusyCursorRestorer(FUseBusyCursor, false);
+  nb::used(UseBusyCursorRestorer);
   FUseBusyCursor = false;
 
   // see comment in TSFTPFileSystem::IsCapable
@@ -5159,6 +5160,7 @@ bool TTerminal::CalculateFilesSize(TStrings * AFileList, int64_t & Size, TCalcul
   }
 
   TValueRestorer<bool> UseBusyCursorRestorer(FUseBusyCursor, false);
+  nb::used(UseBusyCursorRestorer);
   FUseBusyCursor = false;
 
   ProcessFiles(AFileList, foCalculateSize, nb::bind(&TTerminal::DoCalculateFileSize, this), &Params);
@@ -7184,6 +7186,7 @@ void TTerminal::SynchronizeApply(
   BeginTransaction();
   TValueRestorer<TFileOperationProgressType::TPersistence *> OperationProgressPersistenceRestorer(FOperationProgressPersistence);
   TValueRestorer<TOnceDoneOperation> OperationProgressOnceDoneOperationRestorer(FOperationProgressOnceDoneOperation);
+  nb::used(OperationProgressOnceDoneOperationRestorer);
   TFileOperationProgressType::TPersistence OperationProgressPersistence;
   OperationProgressPersistence.Statistics = Statistics;
   FOperationProgressPersistence = &OperationProgressPersistence;
