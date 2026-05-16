@@ -3432,7 +3432,8 @@ UnicodeString TFTPFileSystem::GotReply(uint32_t Reply, uint32_t Flags,
       // everything else must be an error or disconnect notification
       DebugAssert(
         FLAGSET(Reply, TFileZillaIntf::REPLY_ERROR) ||
-        FLAGSET(Reply, TFileZillaIntf::REPLY_DISCONNECTED));
+        FLAGSET(Reply, TFileZillaIntf::REPLY_DISCONNECTED) ||
+        FLAGSET(Reply, TFileZillaIntf::REPLY_NOTCONNECTED));
 
       TODO("REPLY_CRITICALERROR ignored");
 
@@ -4899,9 +4900,21 @@ bool TFTPFileSystem::CheckError(int32_t ReturnCode, const wchar_t * Context)
   {
     if (!FWaitingForReply)
     {
+      // If the terminal is already closed, the disconnect reply was either
+      // already consumed or will never arrive. Do not wait indefinitely.
+      if (FTerminal->GetStatus() == ssClosed)
+      {
+        return false;
+      }
       // throws
       WaitForFatalNonCommandReply();
     }
+  }
+  else if (FTerminal->GetStatus() == ssClosed)
+  {
+    // If the terminal is already closed (e.g. due to fatal error), do not
+    // try to fatal-error again, as that would cause infinite recursion.
+    return false;
   }
   else
   {
