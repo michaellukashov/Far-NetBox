@@ -3211,9 +3211,9 @@ void TTerminal::CommandError(Exception * E, const UnicodeString & AMsg)
 uint32_t TTerminal::CommandError(Exception * E, const UnicodeString & AMsg,
   uint32_t Answers, const UnicodeString & AHelpKeyword)
 {
-  // may not be, particularly when TTerminal::Reopen is being called
-  // from within OnShowExtendedException handler
-  DebugAssert(FCallbackGuard == nullptr);
+  // FCallbackGuard may legitimately be non-null here (e.g. when Reopen is
+  // called from within an OnShowExtendedException handler). The code below
+  // handles both cases correctly.
   uint32_t Result = 0;
   if (E && nb::isa<EFatal>(E))
   {
