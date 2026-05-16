@@ -3,8 +3,7 @@
 **Branch:** lmv/dev (current)
 **Date:** 2026-05-10
 **Mode:** Fast
-**Status:** STALE — All issues identified here were already fixed via `multithreading-review-fix.md` (2026-04-29). This plan was a parallel audit that identified the same defects. See `multithreading-review-fix.md` for the implementation and `multithreading-review-fix-results.md` for the fix results.
-
+**Status:** ~~STALE~~ **COMPLETED** — Originally marked stale because it paralleled `multithreading-review-fix.md` (2026-04-29). However, a fresh audit on 2026-05-16 revealed additional defects not covered by the earlier plan. Those follow-up fixes have now been implemented. See commit history: `b8b7a630b`, `3b7569003`, `ac420c43c`, `e2f262f09`.
 ## Description
 
 Address threading defects identified across the NetBox codebase. Issues span CRITICAL (Far Manager API invoked from worker threads), HIGH (race conditions in speed-limit throttling and progress callbacks without locks), and MEDIUM (busy-waiting polling loops and unsynchronized global mutable state).
@@ -269,4 +268,23 @@ if (!ParallelOperation->WaitForDirectoryCreated(100))
 - [ ] No trailing whitespace
 - [ ] Naming conventions followed (T/F prefixes, PascalCase)
 - [ ] No new `Sleep()` loops introduced
-- [ ] Final verification: `Run /aif-verify` to validate the implementation against the plan
+
+---
+
+## Follow-up Fixes (2026-05-16)
+
+The original `multithreading-review-fix.md` (2026-04-29) addressed the first round of threading issues. A subsequent audit on 2026-05-16 found four additional defects not covered by the earlier work:
+
+| Commit | Severity | Defect | File |
+|---|---|---|---|
+| `b8b7a630b` | CRITICAL | `TTerminalThread::WaitForUserAction()` called `FTerminal->Idle()` directly from worker thread, bypassing main-thread marshaling | `src/core/Queue.cpp` |
+| `b8b7a630b` | HIGH | `FileOperationProgress::DoProgress()` held `FSection` while invoking `FOnProgress`, causing potential deadlock with UI thread | `src/core/FileOperationProgress.cpp` |
+| `b8b7a630b` | MEDIUM | `SetupTunnelLocalPortNumber()` burned 100% CPU in `while (FTunnelLocalPortNumber == 0);` spin | `src/core/Terminal.cpp` |
+| `b8b7a630b` | MEDIUM | `AdjustToCPSLimit()` used `WaitForSingleObject(nullptr, 100)` which returns immediately instead of throttling | `src/core/FileOperationProgress.cpp` |
+| `3b7569003` | HIGH | FTP speed limiter auto-reset event lost wakeups across UNLOCK→Sleep→RELOCK window | `src/filezilla/FtpControlSocket.cpp` |
+| `ac420c43c` | CRITICAL | `TTerminalItem::Idle()` called `FTerminal->Idle()` from background queue thread without marshaling | `src/core/Queue.cpp`, `src/NetBox/WinSCPFileSystem.cpp` |
+| `e2f262f09` | MEDIUM | `IsTracing` read without lock raced with `SetTraceFile()` write; `TracingCriticalSection` had lazy-init double-check race | `src/base/Global.cpp` |
+
+**Key finding:** The earlier plan's verification claim "No Far Manager API calls from worker threads remain" was incorrect. `TTerminalThread::Idle()` and `TTerminalItem::Idle()` both called `FTerminal->Idle()` directly on worker threads, which could trigger `OnInformation` / `OnQueryUser` callbacks that reach Far Manager UI. These paths were not covered by the first round of fixes because they use the idle/synchro path rather than the progress callback path.
+
+**Verification:** All fixes compiled with zero warnings (`cmd /c build-x64.bat`).

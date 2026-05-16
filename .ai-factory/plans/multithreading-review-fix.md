@@ -327,19 +327,36 @@ Cross-lock rule: `FItemsSection` may call `Item->GetStatus()` which acquires `FS
 - Consider adding address-based lock ordering for `FileOperationProgress::Assign()` dual-section acquisition.
 
 ---
+
+## Post-Mortem: Follow-up Fixes (2026-05-16)
+
+A subsequent audit (`threading-safety-audit-and-fixes.md`, executed 2026-05-16) discovered four additional defects not covered by this plan:
+
+1. **CRITICAL:** `TTerminalThread::Idle()` called `FTerminal->Idle()` directly from the worker thread inside `WaitForUserAction()`, bypassing the main-thread marshaling that the plan assumed was complete.
+2. **CRITICAL:** `TTerminalItem::Idle()` (background queue thread) similarly called `FTerminal->Idle()` without marshaling — a separate code path from the `TTerminalThread` foreground path.
+3. **HIGH:** `FileOperationProgress::DoProgress()` held `FSection` while invoking `FOnProgress`, risking deadlock if the UI callback reentered progress state. The plan's `FInCallback` guard prevented infinite recursion but did not address the lock inversion.
+4. **HIGH:** The FTP speed limiter `m_SpeedLimitEvent` was an auto-reset event that lost wakeups across the UNLOCK→Sleep→RELOCK window. The plan's changelog claims `m_SpeedLimitEvent` was introduced, but the implementation used a different synchronization primitive.
+5. **MEDIUM:** `IsTracing` was read without a lock in `DoAssert()` and `DoTraceFmt()`, racing with `SetTraceFile()` writes under `TracingCriticalSection`.
+6. **MEDIUM:** `TracingCriticalSection` had a lazy-init double-check race (no outer synchronization).
+
+**Root cause of the gap:** The plan's verification step "No Far Manager API calls from worker threads remain" was based on a code review of `CreateThread`/`std::thread` entry points, but missed the `Idle()` callback path because it flows through the synchro event loop rather than direct thread spawning. The idle marshaling infrastructure (`PostMainThreadSynchro`, `Synchronize`) existed, but `TTerminalThread` and `TTerminalItem` had separate `Idle()` implementations that bypassed it.
+
+
+---
+
 ## Verification
 
-- [x] Tasks 1-11, 1.5, 3.5, 13-14 implemented and committed.
+- [x] Tasks 1-11, 1.5, 3.5, 13-14 implemented and committed (2026-04-29).
 - [x] Task 12: Build verification — x64 RelWithDebugInfo passed with zero W4 warnings (2026-05-04).
 - [x] No `Sleep`-based polling remains for thread synchronization, except `SleepEx(100, true)` in `FileOperationProgress.cpp` which is an intentional alertable wait for APC completion (documented exception). Short timeouts on event waits are acceptable.
-- [x] No Far Manager API calls from worker threads remain (verified by code review of all `CreateThread` / `_beginthreadex` / `std::thread` entry points).
+- [x] No Far Manager API calls from worker threads remain (verified by code review of all `CreateThread` / `_beginthreadex` / `std::thread` entry points) — **NOTE:** This claim was later found incomplete. See Post-Mortem above for follow-up fixes (2026-05-16).
 - [x] Lock ordering documented and cycle-free.
 - [x] Threading rules committed to `.ai-factory/rules/threading.md`.
 
 ## Explorations Results
 
 - [Multithreading Review and Fix Results](../references/multithreading-review-fix-results.md) documents every fix applied, files changed, and real bugs discovered (including the S3 `TGuard` dereference bug and `MainThread.cpp`/`Terminal.cpp` structural fixes).
-- New Windows events introduced: `m_SpeedLimitEvent`, `m_hStartedEvent`, `FClientsZeroEvent`, `FDirectoryCreatedEvent`.
+- New Windows events introduced: `m_hStartedEvent`, `FClientsZeroEvent`, `FDirectoryCreatedEvent`.
 - New `TCustomFarPlugin::PostMainThreadSynchro()` abstraction created for sanctioned `ACTL_SYNCHRO` usage.
 - `FInCallback` reentrancy guard added to `FileOperationProgress::DoProgress()`.
 - `std::call_once` wrapper added to `InitOpenssl()` in `Cryptography.cpp`.

@@ -28,6 +28,8 @@
 | FTP vsftpd directory listing | 2026-04 | Defensive logging for misclassified files (#507) |
 | SFTP remote folder creation | 2026-04 | Fix cannot-create-remote-folder scenarios |
 | Logging thread safety | 2026-04 | Safe multi-threaded logging |
+| Threading safety audit (round 1) | 2026-04 | `multithreading-review-fix.md` — Far API marshaling, FtpControlSocket race, progress callbacks |
+| Threading safety audit (round 2) | 2026-05 | `TTerminalThread::Idle()` marshaling, `TTerminalItem::Idle()` synchro, `FileOperationProgress` lock inversion, `IsTracing` data race, CPS throttle busy-wait |
 | S3 TLS version + CA cert | 2026-04 | Per-session TLS and CA certificate controls |
 | Combo box keyboard shortcuts | 2026-04 | Alt+Down / Ctrl+Down dropdown open |
 | WebDAV panel refresh | 2026-04 | Fix overwrite and refresh issues |
