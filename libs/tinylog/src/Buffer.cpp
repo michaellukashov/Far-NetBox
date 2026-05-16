@@ -4,6 +4,7 @@
 #include <memory>
 
 #include <tinylog/Buffer.h>
+#include <nbsystem.h>
 
 namespace tinylog {
 
@@ -28,7 +29,7 @@ Buffer::~Buffer()
 size_t Buffer::TryAppend(const void * pt_log, size_t ToWrite)
 {
   const size_t available_space = capacity_ - size_;
-  size_t to_write = std::min(available_space, ToWrite);
+  size_t to_write = nb::Min(available_space, ToWrite);
   if (to_write > 0)
   {
     memmove(data_ + size_, pt_log, to_write);
