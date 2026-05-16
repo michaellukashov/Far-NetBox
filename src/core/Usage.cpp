@@ -8,9 +8,9 @@
 #include <Usage.h>
 #include <FileInfo.h>
 
-// #pragma package(smart_init)
-
 #if defined(__BORLANDC__)
+#pragma package(smart_init)
+
 const UnicodeString LastInternalExceptionCounter("LastInternalException2");
 const UnicodeString LastUpdateExceptionCounter("LastUpdateException");
 #endif // defined(__BORLANDC__)
@@ -263,6 +263,12 @@ void TUsage::SetMax(const UnicodeString & AKey, int32_t Value)
   }
 }
 
+void TUsage::IncAndSetMax(const UnicodeString & IncKey, const UnicodeString & MaxKey, int32_t Value)
+{
+  Inc(IncKey, Value);
+  SetMax(MaxKey, Value);
+}
+
 void TUsage::SetMax(const UnicodeString & AKey, int32_t Value,
   TCounters & Counters)
 {
@@ -342,6 +348,6 @@ void TUsage::Serialize(
 
 int32_t TUsage::CalculateCounterSize(int64_t Size)
 {
-  constexpr int32_t SizeCounterFactor = 10 * 1024;
-  return (int32_t)((Size <= 0) ? 0 : (Size < SizeCounterFactor ? 1 : Size / SizeCounterFactor));
+  constexpr int32_t SizeCounterFactor = 10240;
+  return (Size <= 0) ? 0 : (Size < SizeCounterFactor ? 1 : static_cast<int32_t>(Size / SizeCounterFactor));
 }

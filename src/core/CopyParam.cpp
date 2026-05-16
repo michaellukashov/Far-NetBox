@@ -11,7 +11,7 @@
 
 #if defined(__BORLANDC__)
 const wchar_t * TransferModeNames[] = { L"binary", L"ascii", L"automatic" };
-const int TransferModeNamesCount = LENOF(TransferModeNames);
+const int32_t TransferModeNamesCount = LENOF(TransferModeNames);
 #endif // defined(__BORLANDC__)
 
 TCopyParamType::TCopyParamType(TObjectClassId Kind) noexcept : TObject(Kind)
@@ -418,7 +418,9 @@ void TCopyParamType::DoGetInfoStr(
     {
       if (ADD(StripHotkey(LoadStr(COPY_PARAM_NEWER_ONLY)), cpaIncludeMaskOnly | cpaNoNewerOnly))
       {
-//        ScriptArgs += RtfSwitch(NEWERONLY_SWITCH, Link);
+#if defined(__BORLANDC__)
+        ScriptArgs += RtfSwitch(NEWERONLY_SWITCH, Link);
+#endif // defined(__BORLANDC__)
         CodeNonDefaults.NewerOnly = NewerOnly;
       }
     }
@@ -506,11 +508,11 @@ void TCopyParamType::DoGetInfoStr(
 
 #if defined(__BORLANDC__)
   std::unique_ptr<TStringList> RawOptions;
-  // std::unique_ptr<TOptionsStorage> OptionsStorage;
+  std::unique_ptr<TOptionsStorage> OptionsStorage;
 
   RawOptions = std::make_unique<TStringList>();
-  // OptionsStorage = std::make_unique<TOptionsStorage>(RawOptions.get(), true);
-  // ScriptNonDefaults.Save(OptionsStorage.get(), &Defaults);
+  OptionsStorage = std::make_unique<TOptionsStorage>(RawOptions.get(), true);
+  ScriptNonDefaults.Save(OptionsStorage.get(), &Defaults);
 
   if (RawOptions->Count > 0)
   {
@@ -657,9 +659,10 @@ UnicodeString TCopyParamType::RestoreChars(const UnicodeString & AFileName) cons
       {
         const UnicodeString Hex = FileName.SubString(Index + 1, 2);
         const wchar_t Char = static_cast<wchar_t>(HexToByte(Hex));
-        if ((Char != L'\0') &&
+        if ((Char != L'\0') && (Char != L'/') &&
             ((FTokenizibleChars.Pos(Char) > 0) ||
-             (((Char == L' ') || (Char == L'.')) && (Index == FileName.Length() - 2))))
+             // not decoding lone dot
+             (((Char == L' ') || ((Char == L'.') && (Index > 1))) && (Index == FileName.Length() - 2))))
         {
           FileName[Index] = Char;
           FileName.Delete(Index + 1, 2);
@@ -1170,4 +1173,159 @@ TOperationSide ReverseOperationSide(TOperationSide Side)
       break;
   }
   return Result;
+}
+
+//---------------------------------------------------------------------------
+// TCopyParamPreset
+//---------------------------------------------------------------------------
+TCopyParamPreset::TCopyParamPreset() noexcept : TObject(OBJECT_CLASS_TCopyParamPreset)
+{
+}
+
+TCopyParamPreset::TCopyParamPreset(const UnicodeString & Name) noexcept : TCopyParamPreset()
+{
+  FName = Name;
+}
+
+TCopyParamPreset::TCopyParamPreset(const TCopyParamPreset & Source) noexcept : TCopyParamPreset()
+{
+  Assign(&Source);
+}
+
+TCopyParamPreset::~TCopyParamPreset() noexcept
+{
+}
+
+TCopyParamPreset & TCopyParamPreset::operator =(const TCopyParamPreset & rhs)
+{
+  Assign(&rhs);
+  return *this;
+}
+
+void TCopyParamPreset::Assign(const TCopyParamPreset * Source)
+{
+  if (Source)
+  {
+    FName = Source->FName;
+    FCopyParam.Assign(&Source->FCopyParam);
+  }
+}
+
+void TCopyParamPreset::Load(THierarchicalStorage * Storage)
+{
+  FName = Storage->ReadString(L"Name", FName);
+  FCopyParam.Load(Storage);
+}
+
+void TCopyParamPreset::Save(THierarchicalStorage * Storage) const
+{
+  Storage->WriteString(L"Name", FName);
+  FCopyParam.Save(Storage);
+}
+
+//---------------------------------------------------------------------------
+// TCopyParamPresetList
+//---------------------------------------------------------------------------
+TCopyParamPresetList::TCopyParamPresetList() noexcept : TObject(OBJECT_CLASS_TCopyParamPresetList)
+{
+}
+
+TCopyParamPresetList::~TCopyParamPresetList() noexcept
+{
+  Clear();
+}
+
+TCopyParamPreset * TCopyParamPresetList::GetPreset(int32_t Index) const
+{
+  DebugAssert(Index >= 0 && Index < GetCount());
+  return FPresets.at(nb::ToSizeT(Index)).get();
+}
+
+int32_t TCopyParamPresetList::FindPreset(const UnicodeString & Name) const
+{
+  for (int32_t I = 0; I < GetCount(); I++)
+  {
+    if (GetPreset(I)->GetName() == Name)
+    {
+      return I;
+    }
+  }
+  return -1;
+}
+
+int32_t TCopyParamPresetList::AddPreset(std::unique_ptr<TCopyParamPreset> Preset)
+{
+  FPresets.push_back(std::move(Preset));
+  return GetCount() - 1;
+}
+
+void TCopyParamPresetList::DeletePreset(int32_t Index)
+{
+  DebugAssert(Index >= 0 && Index < GetCount());
+  FPresets.erase(FPresets.begin() + Index);
+}
+
+void TCopyParamPresetList::Clear()
+{
+  FPresets.clear();
+}
+
+void TCopyParamPresetList::Load(THierarchicalStorage * Storage)
+{
+  Clear();
+  const int32_t Count = Storage->ReadInteger(L"Count", 0);
+  for (int32_t I = 0; I < Count; I++)
+  {
+    const UnicodeString SubKey = FORMAT(L"Preset_%d", (I));
+    if (Storage->OpenSubKey(SubKey, false))
+    {
+      auto Preset = std::make_unique<TCopyParamPreset>();
+      Preset->Load(Storage);
+      AddPreset(std::move(Preset));
+      Storage->CloseSubKey();
+    }
+  }
+}
+
+void TCopyParamPresetList::Save(THierarchicalStorage * Storage) const
+{
+  Storage->WriteInteger(L"Count", GetCount());
+  for (int32_t I = 0; I < GetCount(); I++)
+  {
+    const UnicodeString SubKey = FORMAT(L"Preset_%d", (I));
+    if (Storage->OpenSubKey(SubKey, true))
+    {
+      GetPreset(I)->Save(Storage);
+      Storage->CloseSubKey();
+    }
+  }
+}
+
+void TCopyParamPresetList::AddDefaultPresets()
+{
+  // Default
+  {
+    auto Preset = std::make_unique<TCopyParamPreset>(L"Default");
+    // TCopyParamType defaults are already applied by constructor
+    AddPreset(std::move(Preset));
+  }
+  // Text files (ASCII)
+  {
+    auto Preset = std::make_unique<TCopyParamPreset>(L"Text files (ASCII)");
+    Preset->GetCopyParam().SetTransferMode(tmAscii);
+    AddPreset(std::move(Preset));
+  }
+  // Binary all
+  {
+    auto Preset = std::make_unique<TCopyParamPreset>(L"Binary all");
+    Preset->GetCopyParam().SetTransferMode(tmBinary);
+    Preset->GetCopyParam().SetPreserveRights(true);
+    AddPreset(std::move(Preset));
+  }
+  // No preserve time
+  {
+    auto Preset = std::make_unique<TCopyParamPreset>(L"No preserve time");
+    Preset->GetCopyParam().SetPreserveTime(false);
+    AddPreset(std::move(Preset));
+  }
 }

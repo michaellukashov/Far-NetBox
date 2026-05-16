@@ -62,7 +62,9 @@ private:
   bool FIgnorePermErrors{false};
   TResumeSupport FResumeSupport{rsOn};
   int64_t FResumeThreshold{0};
-  // UnicodeString GetLogStr() const;
+#if defined(__BORLANDC__)
+  UnicodeString GetLogStr() const;
+#endif // defined(__BORLANDC__)
   wchar_t FInvalidCharsReplacement{L'-'};
   UnicodeString FLocalInvalidChars;
   UnicodeString FTokenizibleChars;
@@ -101,7 +103,7 @@ public:
   explicit TCopyParamType(TObjectClassId Kind = OBJECT_CLASS_TCopyParamType) noexcept;
   TCopyParamType(const TCopyParamType & Source) noexcept;
   virtual ~TCopyParamType() noexcept override;
-  TCopyParamType & operator =(const TCopyParamType & rhs);
+  virtual TCopyParamType & operator =(const TCopyParamType & rhs);
   virtual void Assign(const TCopyParamType * Source);
   virtual void Default();
   UnicodeString ChangeFileName(const UnicodeString & AFileName,
@@ -177,7 +179,7 @@ public:
   bool& RemoveCtrlZ{FRemoveCtrlZ};
   __property bool RemoveBOM = { read = FRemoveBOM, write = FRemoveBOM };
   bool& RemoveBOM{FRemoveBOM};
-  __property unsigned long CPSLimit = { read = FCPSLimit, write = FCPSLimit };
+  __property uint32_t CPSLimit = { read = FCPSLimit, write = FCPSLimit };
   uint32_t& CPSLimit{FCPSLimit};
   __property bool NewerOnly = { read = FNewerOnly, write = FNewerOnly };
   bool& NewerOnly{FNewerOnly};
@@ -189,14 +191,16 @@ public:
   bool& ExcludeEmptyDirectories{FExcludeEmptyDirectories};
   __property int64_t Size = { read = FSize, write = FSize };
   int64_t& Size{FSize};
-  __property __int64 PartSize = { read = FPartSize, write = FPartSize };
+  __property int64_t PartSize = { read = FPartSize, write = FPartSize };
   int64_t& PartSize{FPartSize};
-  __property __int64 PartOffset = { read = FPartOffset, write = FPartOffset };
+  __property int64_t PartOffset = { read = FPartOffset, write = FPartOffset };
   int64_t& PartOffset{FPartOffset};
   __property TOnceDoneOperation OnceDoneOperation = { read = FOnceDoneOperation, write = FOnceDoneOperation };
   TOnceDoneOperation& OnceDoneOperation{FOnceDoneOperation};
   __property TTransferOutEvent OnTransferOut = { read = FOnTransferOut, write = FOnTransferOut };
+  TTransferOutEvent& OnTransferOut{FOnTransferOut};
   __property TTransferInEvent OnTransferIn = { read = FOnTransferIn, write = FOnTransferIn };
+  TTransferInEvent& OnTransferIn{FOnTransferIn};
 
   const TFileMasks & GetAsciiFileMask() const { return FAsciiFileMask; }
   TFileMasks & GetAsciiFileMask() { return FAsciiFileMask; }
@@ -248,6 +252,58 @@ public:
   bool GetNewerOnly() const { return FNewerOnly; }
   void SetNewerOnly(bool Value) { FNewerOnly = Value; }
 
+};
+
+class NB_CORE_EXPORT TCopyParamPreset : public TObject
+{
+public:
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TCopyParamPreset); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCopyParamPreset) || TObject::is(Kind); }
+public:
+  explicit TCopyParamPreset() noexcept;
+  explicit TCopyParamPreset(const UnicodeString & Name) noexcept;
+  TCopyParamPreset(const TCopyParamPreset & Source) noexcept;
+  virtual ~TCopyParamPreset() noexcept override;
+  TCopyParamPreset & operator =(const TCopyParamPreset & rhs);
+  void Assign(const TCopyParamPreset * Source);
+
+  void Load(THierarchicalStorage * Storage);
+  void Save(THierarchicalStorage * Storage) const;
+
+  UnicodeString GetName() const { return FName; }
+  void SetName(const UnicodeString & Value) { FName = Value; }
+  const TCopyParamType & GetCopyParam() const { return FCopyParam; }
+  TCopyParamType & GetCopyParam() { return FCopyParam; }
+  void SetCopyParam(const TCopyParamType & Value) { FCopyParam.Assign(&Value); }
+
+private:
+  UnicodeString FName;
+  TCopyParamType FCopyParam;
+};
+
+class NB_CORE_EXPORT TCopyParamPresetList : public TObject
+{
+public:
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TCopyParamPresetList); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCopyParamPresetList) || TObject::is(Kind); }
+public:
+  TCopyParamPresetList() noexcept;
+  virtual ~TCopyParamPresetList() noexcept override;
+
+  int32_t GetCount() const { return nb::ToInt32(FPresets.size()); }
+  TCopyParamPreset * GetPreset(int32_t Index) const;
+  int32_t FindPreset(const UnicodeString & Name) const;
+  int32_t AddPreset(std::unique_ptr<TCopyParamPreset> Preset);
+  void DeletePreset(int32_t Index);
+  void Clear();
+
+  void Load(THierarchicalStorage * Storage);
+  void Save(THierarchicalStorage * Storage) const;
+
+  void AddDefaultPresets();
+
+private:
+  std::vector<std::unique_ptr<TCopyParamPreset>> FPresets;
 };
 
 NB_CORE_EXPORT uint32_t GetSpeedLimit(const UnicodeString & Text);
