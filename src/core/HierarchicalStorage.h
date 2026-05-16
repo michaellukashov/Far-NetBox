@@ -1,9 +1,11 @@
 
 #pragma once
 
-#include <registry.hpp>
+#include <Registry.hpp>
 #include <memory>
-// #include <map>
+#if defined(__BORLANDC__)
+#include <map>
+#endif // defined(__BORLANDC__)
 
 enum TStorage { stDetect, stRegistry, stIniFile, stXmlFile, stFar3Storage, stNul };
 enum TStorageAccessMode { smRead, smReadWrite };
@@ -41,7 +43,7 @@ public:
 
   bool ReadBool(const UnicodeString & Name, bool Default);
   template<typename T>
-  typename T ReadEnum(
+  T ReadEnum(
     const UnicodeString & Name, const T Default, const TIntMapping & Mapping = TIntMapping());
   int32_t ReadInteger(const UnicodeString & Name, int32_t Default);
   int64_t ReadInt64(const UnicodeString & Name, int64_t Default);
