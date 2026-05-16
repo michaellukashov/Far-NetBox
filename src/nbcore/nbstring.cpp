@@ -21,7 +21,6 @@ CNilMStringData::CNilMStringData() : CMStringData()
   achNil[1] = 0;
 }
 
-static CNilMStringData *m_nil = nullptr;
 
 /////////////////////////////////////////////////////////////////////////////////////////
 // CMBaseString
@@ -69,15 +68,18 @@ NB_CORE_DLL(void *) nbstr_memcpy(void *pDst, void const *pSrc, size_t nSize)
 
 NB_CORE_DLL(CMStringData *) nbstr_getNil()
 {
-  if (m_nil == nullptr)
-    m_nil = new CNilMStringData();
-  m_nil->AddRef();
-  return m_nil;
+  // C++11 guarantees thread-safe initialization of function-local statics.
+  static CNilMStringData * nil = new CNilMStringData();
+  nil->AddRef();
+  return nil;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 // CMStringData
 
+// nbstr_lock / nbstr_unlock intentionally avoid Interlocked ops because a locked
+// buffer is never shared across threads (IsShared() == false). The caller must
+// ensure no concurrent AddRef/Release while the buffer is locked.
 NB_CORE_DLL(void) nbstr_lock(CMStringData *pThis)
 {
   pThis->nRefs--; // Locked buffers can't be shared, so no interlocked operation necessary
