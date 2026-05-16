@@ -111,9 +111,9 @@ static UnicodeString DoXmlEscape(const UnicodeString & AStr, bool NewLine)
   return Str;
 }
 
-static UnicodeString XmlEscape(const UnicodeString & Str)
+UnicodeString XmlEscape(const UnicodeString & AStr)
 {
-  return DoXmlEscape(Str, false);
+  return DoXmlEscape(AStr, false);
 }
 
 static UnicodeString XmlAttributeEscape(const UnicodeString & Str)
@@ -445,30 +445,33 @@ protected:
 #if defined(__BORLANDC__)
   void RecordFile(const UnicodeString & AIndent, TRemoteFile * AFile, bool IncludeFileName)
   {
-    FLog->AddIndented(AIndent + L"<file>");
-    FLog->AddIndented(AIndent + FORMAT(L"  <filename value=\"%s\" />", (XmlAttributeEscape(AFile->FileName))));
-    FLog->AddIndented(AIndent + FORMAT(L"  <type value=\"%s\" />", (XmlAttributeEscape(towupper(AFile->Type)))));
-    if (!AFile->IsDirectory)
+    FLog->AddIndented(Indent + L"<file>");
+    if (IncludeFileName)
     {
-      FLog->AddIndented(AIndent + FORMAT(L"  <size value=\"%s\" />", (IntToStr(AFile->Size))));
+      FLog->AddIndented(Indent + FORMAT(L"  <filename value=\"%s\" />", (XmlAttributeEscape(File->FileName))));
     }
-    if (AFile->ModificationFmt != mfNone)
+    FLog->AddIndented(Indent + FORMAT(L"  <type value=\"%s\" />", (XmlAttributeEscape(::UpCase(File->Type)))));
+    if (!File->IsDirectory)
     {
-      FLog->AddIndented(AIndent + FORMAT(L"  <modification value=\"%s\" />", (StandardTimestamp(AFile->Modification))));
+      FLog->AddIndented(Indent + FORMAT(L"  <size value=\"%s\" />", (IntToStr(File->Size))));
     }
-    if (!AFile->Rights->Unknown)
+    if (File->ModificationFmt != mfNone)
     {
-      FLog->AddIndented(AIndent + FORMAT(L"  <permissions value=\"%s\" />", (XmlAttributeEscape(AFile->Rights->Text))));
+      FLog->AddIndented(Indent + FORMAT(L"  <modification value=\"%s\" />", (StandardTimestamp(File->Modification))));
     }
-    if (AFile->Owner.IsSet)
+    if (!File->Rights->Unknown)
     {
-      FLog->AddIndented(AIndent + FORMAT(L"  <owner value=\"%s\" />", (XmlAttributeEscape(AFile->Owner.DisplayText))));
+      FLog->AddIndented(Indent + FORMAT(L"  <permissions value=\"%s\" />", (XmlAttributeEscape(File->Rights->Text))));
     }
-    if (AFile->Group.IsSet)
+    if (File->Owner.IsSet)
     {
-      FLog->AddIndented(AIndent + FORMAT(L"  <group value=\"%s\" />", (XmlAttributeEscape(AFile->Group.DisplayText))));
+      FLog->AddIndented(Indent + FORMAT(L"  <owner value=\"%s\" />", (XmlAttributeEscape(File->Owner.DisplayText))));
     }
-    FLog->AddIndented(AIndent + L"</file>");
+    if (File->Group.IsSet)
+    {
+      FLog->AddIndented(Indent + FORMAT(L"  <group value=\"%s\" />", (XmlAttributeEscape(File->Group.DisplayText))));
+    }
+    FLog->AddIndented(Indent + L"</file>");
   }
 
   void SynchronizeChecklistItemFileInfo(
@@ -812,12 +815,47 @@ static FILE * OpenLogFile(const UnicodeString & LogFileName, const TDateTime & S
 {
   // FILE * Result;
   const UnicodeString NewFileName = StripPathQuotes(GetExpandedLogFileName(LogFileName, Started, SessionData));
-  FILE * Result = _wfsopen(ApiPath(NewFileName).c_str(), Append ? L"ab" : L"wb", SH_DENYWR);
+  const UnicodeString NewFilePath = ::ExtractFilePath(NewFileName);
+  if (!NewFilePath.IsEmpty())
+  {
+    const bool DirCreated = ::ForceDirectories(ApiPath(NewFilePath));
+    if (!DirCreated && !base::DirectoryExists(NewFilePath))
+    {
+      throw ECRTExtException(FMTLOAD(LOG_OPENERROR, NewFileName) + L"\n" + LastSysErrorMessage());
+    }
+  }
+  UnicodeString ActualFileName = NewFileName;
+  FILE * Result = _wfsopen(ApiPath(ActualFileName).c_str(), Append ? L"ab" : L"wb", SH_DENYWR);
+  if (Result == nullptr)
+  {
+    // Retry with no sharing restrictions - allows multiple concurrent sessions
+    // to append to the same log file (e.g., multiple NetBox panels)
+    Result = _wfsopen(ApiPath(ActualFileName).c_str(), Append ? L"ab" : L"wb", SH_DENYNO);
+  }
+  if (Result == nullptr)
+  {
+    // If still locked (same process, same file), generate a unique suffix
+    const UnicodeString Ext = ::ExtractFileExt(NewFileName);
+    const UnicodeString NameOnly = ::ChangeFileExt(NewFileName, "");
+    for (int32_t N = 1; (N < 100) && (Result == nullptr); ++N)
+    {
+      UnicodeString Suffix = FORMAT("-%d", N);
+      if (!Ext.IsEmpty())
+      {
+        ActualFileName = NameOnly + Suffix + L"." + Ext;
+      }
+      else
+      {
+        ActualFileName = NameOnly + Suffix;
+      }
+      Result = _wfsopen(ApiPath(ActualFileName).c_str(), Append ? L"ab" : L"wb", SH_DENYNO);
+    }
+  }
   if (Result != nullptr)
   {
     constexpr size_t BUFSIZE = 4 * 1024;
     setvbuf(Result, nullptr, _IONBF, BUFSIZE);
-    ANewFileName = NewFileName;
+    ANewFileName = ActualFileName;
   }
   else
   {
@@ -827,7 +865,7 @@ static FILE * OpenLogFile(const UnicodeString & LogFileName, const TDateTime & S
 }
 
 
-constexpr wchar_t * LogLineMarks = L"<>!.*";
+constexpr const wchar_t * LogLineMarks = L"<>!.*";
 TSessionLog::TSessionLog(gsl::not_null<TSessionUI *> UI, const TDateTime & Started, gsl::not_null<TSessionData *> SessionData,
   TConfiguration * Configuration) noexcept :
   FConfiguration(Configuration),
@@ -1180,7 +1218,8 @@ UnicodeString TSessionLog::GetCmdLineLog(TConfiguration * AConfiguration)
 template <typename T>
 UnicodeString EnumName(T Value, const UnicodeString & ANames)
 {
-  int32_t N = nb::ToInt32(Value);
+  int32_t ValueI = nb::ToInt32(Value);
+  int32_t N = ValueI;
   UnicodeString Names = ANames;
   do
   {
@@ -1193,7 +1232,7 @@ UnicodeString EnumName(T Value, const UnicodeString & ANames)
   }
   while ((N >= 0) && !Names.IsEmpty());
 
-  return L"(unknown)";
+  return FORMAT(L"(unknown %d)", ValueI);
 }
 #if defined(__BORLANDC__)
 #define ADSTR(S) AddLogEntry(S)
@@ -1236,9 +1275,13 @@ void TSessionLog::DoAddStartupInfo(TAddLogEntryEvent && OnAddLogEntry, TConfigur
   {
     LogStr = L"Debug 1";
   }
-  else if (AConfiguration->LogProtocol >= 2)
+  else if (AConfiguration->LogProtocol == 2)
   {
     LogStr = L"Debug 2";
+  }
+  else if (AConfiguration->LogProtocol >= 3)
+  {
+    LogStr = L"Debug 3";
   }
   if (AConfiguration->FLogSensitive)
   {
@@ -1745,7 +1788,7 @@ void TActionLog::ReflectSettings()
   {
     FLogging = true;
 #if defined(__BORLANDC__)
-    Add(L"<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+    Add(XmlDeclaration);
     UnicodeString SessionName =
       (FSessionData != nullptr) ? XmlAttributeEscape(FSessionData->SessionName) : UnicodeString(L"nosession");
     Add(FORMAT(L"<session xmlns=\"http://winscp.net/schema/session/1.0\" name=\"%s\" start=\"%s\">",
@@ -1982,4 +2025,24 @@ void TApplicationLog::Log(const UnicodeString & S)
       }
     }
   }
+}
+
+bool TApplicationLog::EmergencyFlush()
+{
+  bool Result = false;
+  if (FFile != nullptr)
+  {
+    if (FCriticalSection.TryEnter())
+    {
+      fflush(static_cast<FILE *>(FFile));
+      FCriticalSection.Leave();
+      Result = true;
+      OutputDebugStringA("NetBox: TApplicationLog emergency flush succeeded\n");
+    }
+    else
+    {
+      OutputDebugStringA("NetBox: TApplicationLog emergency flush skipped (mutex busy)\n");
+    }
+  }
+  return Result;
 }
