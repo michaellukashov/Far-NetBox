@@ -85,10 +85,15 @@ static void initDll(HINSTANCE hSecDll)
 {
     INIT_SECURITY_INTERFACE initSecurityInterface = NULL;
 
+#ifdef WINSCP
+    initSecurityInterface =
+        (INIT_SECURITY_INTERFACE) GetProcAddress(hSecDll,
+                                                 (LPCSTR)SECURITY_ENTRYPOINT_ANSIW);
+#else
     initSecurityInterface =
         (INIT_SECURITY_INTERFACE) GetProcAddress(hSecDll,
                                                  (LPCSTR)SECURITY_ENTRYPOINTA);
-
+#endif
     if (initSecurityInterface == NULL) {
         NE_DEBUG(NE_DBG_HTTPAUTH,
                  "sspi: Obtaining security interface [fail].\n");
