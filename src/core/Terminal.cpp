@@ -4151,7 +4151,19 @@ bool TTerminal::DeleteContentsIfDirectory(
   {
     try
     {
-      ProcessDirectory(AFileName, nb::bind(&TTerminal::DeleteFile, this), &AParams);
+      // Avoid resolving symlinks while reading subdirectories for deletion.
+      // Resolution fails for relative symlinks in subdirectories (wrong base
+      // directory) and is unnecessary since we delete the symlink itself.
+      const bool PrevResolveSymlinks = FSessionData->GetResolveSymlinks();
+      FSessionData->SetResolveSymlinks(false);
+      try__finally
+      {
+        ProcessDirectory(AFileName, nb::bind(&TTerminal::DeleteFile, this), &AParams);
+      }
+      __finally
+      {
+        FSessionData->SetResolveSymlinks(PrevResolveSymlinks);
+      } end_try__finally
     }
     catch(...)
     {

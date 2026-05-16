@@ -131,7 +131,7 @@ src/
 9. **Use `UnicodeString` and `AnsiString` instead of `std::wstring` / `std::string`** — NetBox provides its own string types that are used consistently across the codebase. Prefer them over standard C++ string types for API compatibility and to avoid type mismatches with Far Manager and protocol layers.
 10. **Modernize legacy C types to fixed-width C++ types** — Prefer `uint8_t` over `unsigned char`, `uint32_t` over `unsigned int`, and `int32_t` over `int` for platform-independent, self-documenting code. Apply this when touching existing code that uses legacy C-style integer types, especially in cryptography, protocol, and binary handling modules.
 11. **UnicodeString/AnsiString index and iterator positions start at 1** — NetBox string types use 1-based indexing (`operator[]`, `SubString`, iterators). Accessing index `0` or calling `SubString(1, N)` on an empty string throws `Exception("Index is out of range")`. Always guard with `!Str.IsEmpty()` and `Str.Length() > 0` before 1-based operations. Loop counters over characters must start at `1`, not `0`.
-
+12. **Escape user-controlled strings before passing to `FORMAT()`** — `FORMAT()` is a printf-style formatter. Any string that originates from user input, remote filenames, paths, or external data must be passed through `nb::EscapeFmtChars()` before interpolation to prevent format-string injection and malformed output. Example: `FORMAT("File: %s", nb::EscapeFmtChars(UserPath))`. Static literals and trusted internal identifiers do not need escaping.
 - **Manual testing:** Required for affected functionality
 - **Build verification:** Clean build with no warnings
 - **No automated tests:** Currently no test framework in place

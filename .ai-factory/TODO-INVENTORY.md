@@ -87,7 +87,7 @@
 | 3.1 | `Terminal.cpp` | 1479 | TODO | Handle complex relative paths (`../../xxx`) | M | — |
 | 3.2 | `Terminal.cpp` | 1625 | TODO | Warn user on certain path conditions | M | — |
 | 3.3 | `Terminal.cpp` | 3222 | HACK | Enable "skip to all" for `TRetryOperationLoop` | M | — |
-| 3.4 | `Terminal.cpp` | 4646 | TODO | Avoid resolving symlinks when reading subdirectories | H | — |
+| 3.4 | `Terminal.cpp` | 4646 | TODO | ~~Avoid resolving symlinks when reading subdirectories~~ **FIXED** (2026-05-16): `DeleteContentsIfDirectory` now temporarily disables `ResolveSymlinks` during `ProcessDirectory` | ~~H~~ **L** | — |
 | 3.5 | `Terminal.cpp` | 8183 | TODO | Delete read-only directories | M | — |
 | 3.6 | `Terminal.cpp` | 8184 | TODO | Show error message on delete failure | M | — |
 | 3.7 | `Terminal.cpp` | 8271 | TODO | Delete read-only files | M | — |
@@ -113,11 +113,11 @@
 | 3.27 | `FtpFileSystem.cpp` | 592 | TODO | Handle account parameter (rarely used) | L | — |
 | 3.28 | `FtpFileSystem.cpp` | 1007 | TODO | Improve path handling (handle `..` etc.) | M | — |
 | 3.29 | `FtpFileSystem.cpp` | 1316 | TODO | Parse `SITE SYMLINK target link` format | L | — |
-| 3.30 | `FtpFileSystem.cpp` | 1445 | TODO | Implement retries/resume on transfer abort | H | — |
+| 3.30 | `FtpFileSystem.cpp` | 1445 | TODO | Implement retries/resume on transfer abort | L | — |
 | 3.31 | `FtpFileSystem.cpp` | 3434 | TODO | Handle `REPLY_CRITICALERROR` properly | M | — |
 | 3.32 | `FtpFileSystem.cpp` | 4263 | TODO | Use `Sysutils::FormatDateTime` | L | — |
 | 3.33 | `ScpFileSystem.cpp` | 132 | TODO | Remove `mf`/`cd` flags (already in `TTerminal`) | L | — |
-| 3.34 | `ScpFileSystem.cpp` | 1619 | TODO | Implement retries/resume on batch abort | H | — |
+| 3.34 | `ScpFileSystem.cpp` | 1619 | TODO | Implement retries/resume on batch abort | L | — |
 | 3.35 | `ScpFileSystem.cpp` | 1761 | TODO | Show stderr to user | M | — |
 | 3.36 | `ScpFileSystem.cpp` | 2021 | TODO | Show stderr to user (duplicate) | M | — |
 | 3.37 | `ScpFileSystem.cpp` | 2200 | TODO | Support >32-bit file sizes in ASCII mode | H | — |
@@ -127,7 +127,7 @@
 | 3.41 | `ScpFileSystem.cpp` | 2660 | TODO | Show stderr to user (triplicate) | M | — |
 | 3.42 | `ScpFileSystem.cpp` | 2835 | TODO | Turn off read-only attribute before operations | M | — |
 | 3.43 | `SftpFileSystem.cpp` | 3127 | TODO | Improve path handling (handle `..` etc.) | M | — |
-| 3.44 | `SftpFileSystem.cpp` | 4546 | TODO | Implement retries/resume on error | H | — |
+| 3.44 | `SftpFileSystem.cpp` | 4546 | TODO | Implement retries/resume on error | L | — |
 | 3.45 | `SftpFileSystem.cpp` | 5732 | TODO | Use `std::unique_ptr<>` for `FileStream` | L | — |
 | 3.46 | `WebDAVFileSystem.cpp` | 615 | TODO | Keep WebDAV session alive (noop placeholder) | M | — |
 | 3.47 | `WebDAVFileSystem.cpp` | 2371 | TODO | Implement unimplemented function | M | — |
@@ -208,11 +208,12 @@ The following existing plans already cover subsets of this inventory:
 
 ## Recommended Next Steps
 
-1. **High Priority** — Retry/resume handling (3.30, 3.34, 3.44): User-facing reliability improvement
-2. **High Priority** — Symlink/subdirectory issues (3.4, 3.28, 3.43): Data integrity risk
+1. **High Priority** — Symlink/subdirectory issues (3.28, 3.43): Path handling for `..` in FTP/SFTP `AbsolutePath`
+2. **High Priority** — Support >32-bit file sizes in ASCII mode (3.37): Data integrity risk for SCP
 3. **Medium Priority** — WinSCP UI sync (1.14, 1.15): Feature parity with upstream
 4. **Medium Priority** — `RecryptPasswords` (5.16): Security-related stub
-5. **Low Priority** — Logging level configuration (1.19–1.21): Developer experience
+5. **Low Priority** — Checksum retry/resume (3.30, 3.34, 3.44): `TRetryOperationLoop` already handles retry UI; "resume" doesn't apply to checksums
+6. **Low Priority** — Logging level configuration (1.19–1.21): Developer experience
 
 ---
 
