@@ -326,6 +326,7 @@ public:
   bool ProcessUserAction(void * Arg);
   void Cancel();
   void Idle();
+  void DoIdle();
   bool Pause();
   bool Resume();
   bool IsCancelled() const;
@@ -1537,6 +1538,21 @@ void TTerminalItem::ProcessEvent()
 }
 
 void TTerminalItem::Idle()
+{
+  // Idle() triggers callbacks that may reach Far Manager UI.
+  // If a marshal callback is configured and we're not on the main thread,
+  // post FE_IDLE synchro to marshal to the main thread
+  // (same pattern as TKeepAliveThread::Execute()).
+  if ((::GetCurrentThreadId() != FQueue->GetMainThreadId()) &&
+      !FQueue->GetOnIdleMarshal().empty())
+  {
+    FQueue->GetOnIdleMarshal()();
+    return;
+  }
+  DoIdle();
+}
+
+void TTerminalItem::DoIdle()
 {
   const TGuard Guard(FCriticalSection);
 

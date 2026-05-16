@@ -87,6 +87,7 @@ using TQueueItemUpdateEvent = nb::FastDelegate2<void,
 enum TQueueEventType { qeEmpty, qeEmptyButMonitored, qePendingUserAction };
 using TQueueEvent = nb::FastDelegate2<void,
   TTerminalQueue * /*Queue*/, TQueueEventType /*Event*/>;
+using TIdleMarshalEvent = nb::FastDelegate0<void>;
 
 class NB_CORE_EXPORT TTerminalQueue final : public TSignalThread
 {
@@ -115,7 +116,10 @@ public:
   __property TQueueListUpdate OnListUpdate = { read = FOnListUpdate, write = FOnListUpdate };
   __property TQueueItemUpdateEvent OnQueueItemUpdate = { read = FOnQueueItemUpdate, write = FOnQueueItemUpdate };
   __property TQueueEventEvent OnEvent = { read = FOnEvent, write = FOnEvent };
+  __property TIdleMarshalEvent OnIdleMarshal = { read = FOnIdleMarshal, write = FOnIdleMarshal };
 
+  DWORD GetMainThreadId() const { return FMainThreadId; }
+  void SetMainThreadId(DWORD Value) { FMainThreadId = Value; }
 protected:
   friend class TTerminalItem;
   friend class TQueryUserAction;
@@ -138,7 +142,8 @@ public:
   void SetOnQueueItemUpdate(TQueueItemUpdateEvent && Value) { FOnQueueItemUpdate = std::move(Value); }
   TQueueEvent & GetOnEvent() { return FOnEvent; }
   void SetOnEvent(TQueueEvent && Value) { FOnEvent = std::move(Value); }
-
+  TIdleMarshalEvent & GetOnIdleMarshal() { return FOnIdleMarshal; }
+  void SetOnIdleMarshal(TIdleMarshalEvent && Value) { FOnIdleMarshal = std::move(Value); }
 protected:
   TQueryUserEvent FOnQueryUser;
   TPromptUserEvent FOnPromptUser;
@@ -146,6 +151,8 @@ protected:
   TQueueItemUpdateEvent FOnQueueItemUpdate;
   TQueueListUpdateEvent FOnListUpdate;
   TQueueEvent FOnEvent;
+  TIdleMarshalEvent FOnIdleMarshal;
+  DWORD FMainThreadId{0};
   gsl::not_null<TTerminal *> FTerminal;
   gsl::not_null<TConfiguration *> FConfiguration;
   std::unique_ptr<TSessionData> FSessionData;

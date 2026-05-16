@@ -3015,6 +3015,7 @@ TTerminalQueue * TWinSCPFileSystem::GetQueue()
   {
     FQueue = new TTerminalQueue(FTerminal, GetConfiguration());
     FQueue->InitTerminalQueue();
+    FQueue->SetMainThreadId(FMainThreadId);
     FQueue->SetTransfersLimit(GetGUIConfiguration()->QueueTransfersLimit());
     FQueue->SetOnQueryUser(nb::bind(&TWinSCPFileSystem::TerminalQueryUser, this));
     FQueue->SetOnPromptUser(nb::bind(&TWinSCPFileSystem::TerminalPromptUser, this));
@@ -3022,6 +3023,7 @@ TTerminalQueue * TWinSCPFileSystem::GetQueue()
     FQueue->SetOnListUpdate(nb::bind(&TWinSCPFileSystem::QueueListUpdate, this));
     FQueue->SetOnQueueItemUpdate(nb::bind(&TWinSCPFileSystem::QueueItemUpdate, this));
     FQueue->SetOnEvent(nb::bind(&TWinSCPFileSystem::QueueEvent, this));
+    FQueue->SetOnIdleMarshal(nb::bind(&TWinSCPFileSystem::QueueIdleMarshal, this));
   }
   return FQueue;
 }
@@ -4375,6 +4377,13 @@ void TWinSCPFileSystem::QueueEvent(TTerminalQueue * Queue,
     FQueueEventPending = true;
     FQueueEvent = Event;
   }
+}
+
+void TWinSCPFileSystem::QueueIdleMarshal()
+{
+  // Marshal queue idle to the main thread by posting FE_IDLE synchro.
+  // Same pattern as TKeepAliveThread::Execute().
+  GetPlugin()->PostMainThreadSynchro(nullptr);
 }
 
 void TWinSCPFileSystem::CancelConfiguration(TFileOperationProgressType & ProgressData)

@@ -304,6 +304,7 @@ private:
   void QueueListUpdate(TTerminalQueue * Queue);
   void QueueItemUpdate(const TTerminalQueue * Queue, TQueueItem * Item);
   void QueueEvent(TTerminalQueue * Queue, TQueueEventType Event);
+  void QueueIdleMarshal();
   void GetSpaceAvailable(const UnicodeString & APath,
     TSpaceAvailable & ASpaceAvailable, bool & Close);
   void QueueAddItem(TQueueItem * Item);
