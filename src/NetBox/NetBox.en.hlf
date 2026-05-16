@@ -1,0 +1,561 @@
+.Language=English,English
+.PluginContents=NetBox
+
+@contents
+$# NetBox
+
+    ~Plugin menu~@menu@
+    ~Settings menu~@settingsmenu@
+    ~Configuration options~@config@
+    ~Session/connection~@session@
+    ~Command line~@cmdline@
+    ~Commands menu~@commands@
+    ~File operations~@fileops@
+    ~Synchronization~@sync@
+    ~Queue~@queue@
+    ~Editor integration~@editor@
+    ~Security~@security@
+    ~Protocols~@protocols@
+    ~Error messages~@errors@
+    ~Plugin GUIDs~@guids@
+    ~Macro functions~@macro@
+    ~About~@author@
+
+@settingsmenu
+$# Settings Menu
+
+  #Interface#
+     Open dialog for interface settings.
+
+  #Confirmations#
+     Open dialog for confirmation settings.
+
+  #Panel#
+     Open dialog for panel settings.
+
+  #Transfer#
+     Open dialog for transfer settings.
+
+  #Background/Queue#
+     Open dialog for background queue settings.
+
+  #Endurance#
+     Open dialog for endurance (keep-alive) settings.
+
+  #Transfer Editor#
+     Open dialog for editor integration settings.
+
+  #Logging#
+     Open dialog for logging settings.
+
+  #Integration#
+     Open dialog for external tool integration (PuTTY, Pageant, etc.).
+
+  #About#
+     Show plugin information.
+
+@config
+$# Configuration Options
+
+  #Disks Menu#
+     Add NetBox to the Disks menu (available from Alt-Shift-0).
+
+  #Plugins Menu#
+     Add main NetBox entry to the Plugins menu.
+
+  #Plugins Menu Commands#
+     Add NetBox Commands submenu to the Plugins menu.
+
+  #Session Name in Title#
+     Show session name in the plugin title.
+
+  #Command Prefixes#
+     Command line prefixes that can be used to open NetBox
+     (default: netbox,ftp,scp,sftp,ftps,webdav,s3).
+
+  #Custom Panel Mode#
+     Define detailed panel mode configuration (column types, widths, etc.).
+
+  #Auto-read directory after operation#
+     Automatically refresh directory after file operations.
+
+  #Editor download defaults#
+     Configure default options for downloading files to editor.
+
+  #Editor upload on save#
+     Automatically upload file to server when saving in editor.
+
+  #Editor multiple instances#
+     Allow multiple editor instances for the same file.
+
+  #Queue beep#
+     Beep when queue operation completes or fails.
+
+@session
+$# Session/Connection Dialog
+
+  The session dialog allows creating and managing connections to remote servers.
+
+  #Session tabs#
+     Basic session properties, environment, directories, and protocol-specific settings.
+
+  #Session groups#
+     - SSH/SCP/SFTP settings
+     - FTP/FTPS settings
+     - WebDAV settings
+     - S3 settings
+     - Connection and proxy settings
+     - Authentication methods
+     - Keyboard exchange (KEX) options
+
+  #Session management#
+     Create, edit, copy, rename, export, import, and delete stored sessions.
+
+  #Quick connect#
+     Use command line or shortcuts to connect quickly without storing session.
+
+@cmdline
+$# Command Line Support
+
+  NetBox can be invoked from FAR command line using any of the configured
+  command prefixes (default: netbox,ftp,scp,sftp,ftps,webdav,s3).
+
+  Syntax:
+    <prefix>:[//[user[:password]@]host[:port]/][path]
+
+  Examples:
+    netbox:example.com/public/
+    sftp:user@ssh.example.com:2222/projects
+    ftps:ftp.example.com
+    webdav:https://webdav.example.com/dav
+
+  Command line can also be used to execute custom commands:
+    <prefix>:<command>[ parameters]
+
+  For session names with spaces, enclose in quotes or use the full syntax.
+
+@commands
+$# Commands Menu
+
+  Access via Plugins → NetBox Commands or Ctrl-Alt-Shift-W when
+  NetBox panel is active.
+
+  #Attributes#
+     Change file attributes on remote server (permissions, timestamps).
+
+  #Create symbolic/hard link#
+     Create link on remote server.
+
+  #Apply command#
+     Execute shell command on selected files/directories on server.
+
+  #Synchronize#
+     Compare and synchronize local and remote directories.
+
+  #Full Synchronize#
+     Full directory synchronization with more options.
+
+  #Queue#
+     Open transfer queue manager.
+
+  #Information#
+     Show server protocol and capability information.
+
+  #Show log#
+     Display current session log.
+
+  #Clear caches#
+     Clear directory and session caches.
+
+  #PuTTY/Pageant/PuTTYgen#
+     Launch external PuTTY tools (if configured).
+
+  #Edit history#
+     View and edit command history.
+
+  #Add bookmark#
+     Add current directory to bookmarks.
+
+  #Open directory#
+     Navigate to a specific directory on current panel.
+
+  #Home directory#
+     Go to remote user's home directory.
+
+  #Synchronize browsing#
+     Toggle synchronized browsing mode.
+
+  #Cleanup Configuration#
+     Selectively clean up configuration, stored sessions, caches, INI file, or random seed.
+
+  #Generate URL#
+     Generate a session URL or script snippet for automation.
+     Supports URL format and Batch/CmdLine/PowerShell script formats.
+
+  #Location Profiles#
+     Manage session and shared bookmark profiles.
+     Add, remove, rename, and open bookmarked directory pairs.
+
+  #Configure#
+     Open main configuration dialog.
+
+  #About#
+     Show plugin information.
+
+@fileops
+$# File Operations
+
+  NetBox supports standard file operations:
+
+  #Copy/Move#
+     Copy or move files between local and remote panels, or within remote panel.
+
+  #Create directory#
+     Create new remote directory.
+
+  #Rename#
+     Rename remote file or directory.
+
+  #Delete#
+     Delete remote file or directory (to recycle bin if enabled).
+
+  #Properties#
+     View and edit file properties (permissions, owner, timestamps, links).
+
+  #Resume and overwrite#
+     Handling of existing files, resume support, append mode.
+
+  #Transfer encoding#
+     Text (ASCII) vs binary transfer modes, automatic detection.
+
+  #Filename modification#
+     Case conversion, invalid character replacement.
+
+  #Transfer queue#
+     Background transfers that can be paused, resumed, reordered.
+
+  #Keep directory up-to-date#
+     Automated synchronization of directory changes.
+
+@sync
+$# Synchronization
+
+  #Synchronize Browsing#
+     When enabled, navigating in one panel automatically navigates
+     the other panel to corresponding directory.
+
+  #Manual Synchronization#
+     Compare directories and transfer differences.
+
+  #Synchronization criteria#
+     - By timestamp (newer files)
+     - By file size
+     - Both
+
+  #Direction#
+     - Upload (local → remote)
+     - Download (remote → local)
+     - Both ways
+
+  #Options#
+     - Preview changes before transfer
+     - Delete files not present on source
+     - Exclude by file mask
+     - Transfer only selected files
+
+@queue
+$# Transfer Queue
+
+  The Background Queue allows file transfers to run in the background.
+
+  #Queue management#
+     - Add files to queue (copy, move, download, upload)
+     - Pause/resume transfers
+     - Reorder queued items
+     - Cancel individual transfers
+     - Clear completed items
+
+  #Background operations#
+     Transfers continue even when panels are closed or other
+     operations are performed.
+
+  #Queue limits#
+     Configure maximum simultaneous transfers.
+
+  #Error handling#
+     Retry failed transfers, continue on error, prompt for user action.
+
+@editor
+$# Editor Integration
+
+  NetBox can integrate with FAR editor for remote file editing:
+
+  #Download on open#
+     When opening a remote file, it is automatically downloaded to temporary location.
+
+  #Upload on save#
+     When saving a file, it is automatically uploaded back to server.
+
+  #Editor options#
+     Configure automatic transfer options, transfer mode (text/binary),
+     and filename handling.
+
+  #Multiple instances#
+     Option to allow multiple editor instances for same file.
+
+  #History#
+     Track edited files for easy re-opening.
+
+@security
+$# Security Features
+
+  #Encryption (SSH/FTPS)#
+     - SSH-2 with strong ciphers (AES, ChaCha20, etc.)
+     - TLS/SSL for FTP (FTPS)
+     - WebDAV over HTTPS
+
+  #Authentication#
+     - Password
+     - Public key (SSH)
+     - Keyboard-interactive
+     - GSSAPI (Kerberos)
+     - Client certificates (FTPS/WebDAV)
+     - S3 access keys
+
+  # host key verification#
+     SSH host key fingerprint verification protects against MITM attacks.
+     Known hosts are stored and verified on connection.
+
+  #Proxy support#
+     SOCKS4, SOCKS5, HTTP, Telnet, and local proxy for firewalled environments.
+
+  #Tunneling#
+     SSH tunneling to connect through intermediate hosts.
+
+  #Agent support#
+     Pageant (PuTTY's SSH agent) for key management.
+
+@protocols
+$# Supported Protocols
+
+  #SSH/SFTP#
+     Secure Shell File Transfer Protocol (SFTP) and SCP.
+
+  #FTP/FTPS#
+     File Transfer Protocol with TLS/SSL support.
+
+  #WebDAV#
+     HTTP-based Web Distributed Authoring and Versioning.
+
+  #S3#
+     Amazon S3 and S3-compatible storage.
+
+  S3 tab settings in the session dialog:
+
+  \b Credentials from AWS environment\b0
+     When enabled, access key, secret key, session token, and role ARN are
+     populated from AWS environment variables and credentials files. Manual
+     entry fields for session token and role ARN are disabled.
+
+  \b Profile\b0
+     AWS configuration profile name. Select from profiles found in
+     ~/.aws/credentials and ~/.aws/config, or type a custom profile.
+     "General S3" uses the default profile.
+
+  \b Default Region\b0
+     AWS region for API requests. Select from known regions or type a custom
+     region name. If empty, the S3 library default is used.
+
+  \b URL Style\b0
+     How the bucket name is included in the request URL:
+     - Virtual-hosted style: bucket-name.s3.region.amazonaws.com
+     - Path style: s3.region.amazonaws.com/bucket-name
+
+  \b Requester Pays\b0
+     Enable requester pays mode for S3 requests.
+
+  \b Session token\b0
+     AWS STS session token for temporary credentials. Used with
+     AssumeRole, AssumeRoleWithWebIdentity, or IMDSv2.
+
+  \b Role ARN\b0
+     Amazon Resource Name of the IAM role to assume via STS AssumeRole.
+     Format: arn:aws:iam::account-id:role/role-name
+
+  \b Role session name\b0
+     Session name for the assumed role. Optional — AWS generates a default
+     if left empty.
+
+  \b TLS/SSL tab\b0
+     The TLS/SSL tab contains transport-layer security settings shared
+     across FTPS, WebDAV/HTTPS, and S3 protocols:
+
+  \b Minimum TLS version / Maximum TLS version\b0
+     Restrict the TLS protocol version range for secure connections.
+     Both endpoints must support a common version within this range.
+
+  \b Reuse TLS session ID for data connections\b0
+     (FTP only) Reuse the TLS session ID when opening data connections,
+     reducing handshake overhead. May be incompatible with some servers.
+  Each protocol has its own configuration options in the session dialog.
+
+@errors
+$# Error Messages
+
+  Common error messages and their meanings:
+
+  #Connection failed#
+     Unable to establish connection. Check host, port, network, firewall.
+
+  #Authentication failed#
+     Invalid username/password, key, or authentication method.
+
+  #Permission denied#
+     Insufficient permissions for the operation on server.
+
+  #File not found#
+     Specified file or directory does not exist on server.
+
+  #Disk full#
+     Not enough space on target device.
+
+  #Transfer error#
+     File transfer failed. Check log for details.
+
+  #Timeout#
+     Operation exceeded timeout limit. Server may be slow or unavailable.
+
+  #Protocol error#
+     Server responded with unexpected data. May indicate protocol mismatch.
+
+  #Certificate error#
+     SSL/TLS certificate validation failed.
+
+  #Lock conflict#
+     File is locked by another process.
+
+  #Quota exceeded#
+     Server storage quota limit reached.
+
+  Detailed error information is available in session log.
+
+@guids
+$# Plugin GUIDs
+
+  Plugin Guid: {42E4AEB1-A230-44F4-B33C-F195BB654931}
+
+  Dialogs:
+    Main plugin dialog           {3A32BE91-6BDF-4E90-B779-8374875390A1}
+    Message dialog              {16D8E1A7-ACB1-4228-8B6F-B9B3C8AF16F6}
+    Input box                   {B1244FD0-0C7F-4DF1-866E-AB2F630092BE}
+    Far message dialog          {345F99B0-1722-495B-BDE0-CCD217E138FB}
+    Password dialog             {4D9E158F-B0B7-4F93-BCD4-58625995E413}
+    Properties dialog           {D5C65C2D-219A-4335-9E22-4BAC0D7426DE}
+    Queue dialog                {A22C304F-C0CB-47FF-B752-AB1B0D887EC2}
+    About dialog                {1AB95B6A-9F2A-4870-9C47-E733B3B32339}
+    Copy dialog                 {4923BCD8-E1D7-4A96-906D-6CB1D72BD289}
+    Link dialog                 {5B19775E-DD59-43CD-9B63-35B988BE5615}
+    Synchronize dialog          {24A78A92-E48D-4E96-BE1A-BD5EAAE87B6B}
+    Session dialog              {D3D0BC72-0473-47E2-9DF8-19B0DC2E0F0A}
+    Transfer editor dialog      {33906B6C-7885-484E-A773-99D91974582C}
+    Cleanup dialog              {88A02D0F-73E4-4D1A-9394-D63C63C2FECD}
+    Generate URL dialog         {C20227CE-08CB-47F4-9864-2A35E546D6C6}
+    Location Profiles dialog    {9EC9FAE6-83A4-46C7-9FC7-D9D330B27532}
+    File system info dialog     {77C86B6-3FDD-498C-9256-3ED0BA70D03D}
+    Apply command dialog        {AF95C5A6-04FC-4979-863D-9AF4E537CEC5}
+    Full synchronize dialog     {8169A8EE-A920-4ED6-B4A8-A209FA5A71D7}
+    Synchronize checklist       {C7064DED-6C81-40A3-B5C9-0EEDFA0CA0FF}
+    Configuration dialog        {4609C5E7-D133-4E39-9CEC-B0F77DE37A86}
+    Panel configuration         {E3A707F0-8986-45ED-83EC-23D8D2644929}
+    Logging configuration       {7D820959-80E0-4A67-98C6-F74389FF93B2}
+    Endurance configuration     {1DBE46DF-D175-4078-A8CA-7B971B9BF648}
+    Queue configuration         {A28B5BCA-CFD4-46AE-B16F-668594F70408}
+    Confirmations configuration {CCA69F1B-7B6A-448B-A307-3A2EAAB5943D}
+    Integration configuration   {5F3E08E2-B1FD-443F-A568-12ED4B997F16}
+
+  Menus:
+    Disks menu                  {C9FB4F53-54B5-48FF-9BA2-E8EB27F012A2}
+    Main menu                   {76BD423A-3EC0-47B3-BA31-1D17F49124D5}
+    Commands menu               {FE360D25-5004-40C1-97D5-54A2EED8E675}
+    Configuration menu          {F8025565-76B2-4BCD-9F1F-3462256B8ACF}
+
+  Messages:
+    Error message               {0C954AC8-2B69-4C74-94C8-7AB10324A005}
+    Reload base                 {DEE3B49D-4A55-48A8-9DC8-D11DA04CBF37}
+    Nothing found               {AB214DCE-450B-4389-9E3B-533C7A6D786C}
+    Region name                 {70657884-B7BD-4440-A8FF-6CE781C7DC6A}
+
+@macro
+$# Macro Functions
+
+  NetBox can be controlled from FAR macros using Plugin.Call.
+
+  General format:
+    Plugin.Call("{GUID}", <Function>, <Parameters>...)
+
+  #Main plugin GUID:#
+    {42E4AEB1-A230-44F4-B33C-F195BB654931}
+
+  #Available functions:#
+
+    "Menu" - Open configuration menu.
+    "Main" - Open main configuration dialog.
+    "Log" - Open logging configuration.
+    "Hrc" - Open session/protocol configuration.
+    "Reload" - Reload plugin configuration and sessions.
+    "Status", [0|1] - Get or set plugin status (disable/enable).
+    "SaveSettings" - Save current settings.
+
+    "Types", "Menu" - Show file type selection menu.
+    "Types", "List" - Get list of available types.
+    "Types", "Get" - Get current file type and group.
+    "Types", "Set", <Type> - Set file type for current file.
+
+    "Brackets", "Match" - Find matching bracket.
+    "Brackets", "SelectAll" - Select block including brackets.
+    "Brackets", "SelectIn" - Select content between brackets.
+
+    "Region", "Select" - Select current region.
+    "Region", "Show" - Show region information.
+    "Region", "List" - Get region description.
+
+    "Functions", "Show" - Show function list.
+    "Functions", "Find" - Find function under cursor.
+    "Functions", "List" - Get all functions array.
+
+    "Errors", "Show" - Show error list.
+    "Errors", "List" - Get all errors array.
+
+    "Editor", "Refresh" - Refresh syntax highlighting.
+    "Editor", "Status", [0|1] - Get/set editor-specific status.
+    "Editor", "CrossVisible", [style] - Control crosshair display.
+    "Editor", "Pair", [0|1] - Show/hide paired elements.
+    "Editor", "Syntax", [0|1] - Show/hide syntax coloring.
+    "Editor", "Progress" - Get current parsing progress.
+
+@author
+$# About NetBox
+
+  NetBox is a plugin for FAR Manager providing access to remote
+  file systems via various protocols.
+
+  #Home page:#
+     https://github.com/NetBox-WinSCP/NetBox
+
+  #Based on:#
+     WinSCP (https://winscp.net/)
+     FileZilla (https://filezilla-project.org/)
+     PuTTY (https://www.putty.org/)
+     OpenSSL (https://openssl.org/)
+     neon (https://notroj.github.io/neon/)
+     libs3 (https://github.com/bji/libs3)
+
+  #License:#
+     GPL v3 or later (NetBox, WinSCP)
+     LGPL v2.1+ (FileZilla)
+     MIT (some components)
+
+  #Contributors:#
+     See project repository for full list of authors and contributors.
+
+@end
