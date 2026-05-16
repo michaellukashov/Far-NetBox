@@ -579,9 +579,9 @@ void TCustomFarPlugin::GetOpenPanelInfo(struct OpenPanelInfo * Info)
   if (!FarFileSystem || !FOpenedPlugins || (FOpenedPlugins->IndexOf(FarFileSystem) == nb::NPOS))
   {
     TINYLOG_WARNING(g_tinylog) << TLogContext::Format()
-        << "GetOpenPanelInfo: invalid hPanel=" << Info->hPanel
-        << " FarFileSystem=" << FarFileSystem
-        << " FOpenedPlugins=" << FOpenedPlugins;
+        << "GetOpenPanelInfo: invalid hPanel=" << to_str(nb::ToPtr(Info->hPanel))
+        << " FarFileSystem=" << to_str(FarFileSystem)
+        << " FOpenedPlugins=" << to_str(FOpenedPlugins.get());
     return;
   }
   try
@@ -739,11 +739,11 @@ intptr_t TCustomFarPlugin::SetDirectory(const struct SetDirectoryInfo * Info)
   if (!FarFileSystem || !FOpenedPlugins || (FOpenedPlugins->IndexOf(FarFileSystem) == nb::NPOS))
   {
     TINYLOG_WARNING(g_tinylog) << TLogContext::Format()
-        << "SetDirectory: invalid hPanel=" << Info->hPanel
-        << " FarFileSystem=" << FarFileSystem
-        << " FOpenedPlugins=" << FOpenedPlugins
-        << " Dir=" << (Info->Dir ? Info->Dir : L"<null>")
-        << " OpMode=" << Info->OpMode;
+        << "SetDirectory: invalid hPanel=" << to_str(Info->hPanel)
+        << " FarFileSystem=" << to_str(FarFileSystem)
+        << " FOpenedPlugins=" << to_str(FOpenedPlugins.get())
+        << " Dir=" << to_str(Info->Dir ? Info->Dir : L"<null>")
+        << " OpMode=" << to_str(Info->OpMode);
     return 0;
   }
   DebugAssert(FarFileSystem);
