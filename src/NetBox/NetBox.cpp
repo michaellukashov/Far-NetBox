@@ -10,6 +10,7 @@
 #include "plugin_version.hpp"
 
 static HINSTANCE HInstanceDLL;
+static _invalid_parameter_handler PrevInvalidParameterHandler = nullptr;
 
 // extern void InitExtensionModule(HINSTANCE HInst);
 // extern void TermExtensionModule();
@@ -42,6 +43,11 @@ void DestroyPlugin()
 {
   TermExtensionModule();
   DestroyFarPlugin(FarPlugin);
+  if (PrevInvalidParameterHandler)
+  {
+    _set_invalid_parameter_handler(PrevInvalidParameterHandler);
+    PrevInvalidParameterHandler = nullptr;
+  }
 }
 
 [[noreturn]]
@@ -334,7 +340,7 @@ BOOL WINAPI DllMain(HINSTANCE HInstDLL, DWORD Reason, LPVOID /*ptr*/ )
   if (Reason == DLL_PROCESS_ATTACH)
   {
     HInstanceDLL = HInstDLL;
-    (void) _set_invalid_parameter_handler(InvalidParameterHandler);
+    PrevInvalidParameterHandler = _set_invalid_parameter_handler(InvalidParameterHandler);
   }
   else if (Reason == DLL_PROCESS_DETACH)
   {
