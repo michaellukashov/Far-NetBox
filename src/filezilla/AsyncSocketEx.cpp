@@ -6,12 +6,19 @@
 // If you use this class in commercial applications, please send a short message
 // to tim.kosse@gmx.de
 
-#include <Sysutils.hpp>
-
 #include "stdafx.h"
 #include "AsyncSocketEx.h"
 
-#include "AsyncSocketExLayer.h"
+#ifndef DEBUG_PRINTFA
+#define DEBUG_PRINTFA(fmt, ...) do { \
+    char _dbg_buf[512]; \
+    _snprintf_s(_dbg_buf, sizeof(_dbg_buf), _TRUNCATE, \
+        "Plugin: [%s:%d] %s: " fmt "\n", \
+        __FILE__, __LINE__, __FUNCTION__, ##__VA_ARGS__); \
+    OutputDebugStringA(_dbg_buf); \
+} while(0)
+#endif
+
 #include "FileZillaApi.h"
 
 #ifndef GWL_USERDATA

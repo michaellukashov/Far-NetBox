@@ -1,10 +1,17 @@
 
-#include <Sysutils.hpp>
-
 #include "stdafx.h"
 #include "FileZillaApi.h"
 #include "MainThread.h"
 
+#ifndef DEBUG_PRINTFA
+#define DEBUG_PRINTFA(fmt, ...) do { \
+    char _dbg_buf[512]; \
+    _snprintf_s(_dbg_buf, sizeof(_dbg_buf), _TRUNCATE, \
+        "Plugin: [%s:%d] %s: " fmt "\n", \
+        __FILE__, __LINE__, __FUNCTION__, ##__VA_ARGS__); \
+    OutputDebugStringA(_dbg_buf); \
+} while(0)
+#endif
 //////////////////////////////////////////////////////////////////////
 // Konstruktion/Destruktion
 //////////////////////////////////////////////////////////////////////
