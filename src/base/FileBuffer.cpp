@@ -5,11 +5,13 @@
 #include <Common.h>
 #include <FileBuffer.h>
 
-// #pragma package(smart_init)
+#if defined(__BORLANDC__)
+#pragma package(smart_init)
+#endif // defined(__BORLANDC__)
 
 const wchar_t * EOLTypeNames = L"LF;CRLF;CR";
 
-char * EOLToStr(TEOLType EOLType)
+const char * EOLToStr(TEOLType EOLType)
 {
   switch (EOLType)
   {
@@ -108,13 +110,13 @@ DWORD TFileBuffer::LoadFromIn(TTransferInEvent && OnTransferIn, TObject * Sender
   return nb::ToDWord(Result);
 }
 
-void TFileBuffer::Convert(char * Source, char * Dest, int32_t Params,
+void TFileBuffer::Convert(const char * Source, const char * Dest, int32_t Params,
   bool & Token)
 {
   DebugAssert(NBChTraitsCRT<char>::SafeStringLen(Source) <= 2);
   DebugAssert(NBChTraitsCRT<char>::SafeStringLen(Dest) <= 2);
 
-  const AnsiString Bom(CONST_BOM);
+  static const AnsiString Bom(CONST_BOM);
   if (FLAGSET(Params, cpRemoveBOM) && (GetSize() >= 3) &&
       (memcmp(GetData(), Bom.c_str(), Bom.GetLength()) == 0))
   {
@@ -214,13 +216,13 @@ void TFileBuffer::Convert(TEOLType Source, TEOLType Dest, int32_t Params,
   Convert(EOLToStr(Source), EOLToStr(Dest), Params, Token);
 }
 
-void TFileBuffer::Convert(char * Source, TEOLType Dest, int32_t Params,
+void TFileBuffer::Convert(const char * Source, TEOLType Dest, int32_t Params,
   bool & Token)
 {
   Convert(Source, EOLToStr(Dest), Params, Token);
 }
 
-void TFileBuffer::Convert(TEOLType Source, char * Dest, int32_t Params,
+void TFileBuffer::Convert(TEOLType Source, const char * Dest, int32_t Params,
   bool & Token)
 {
   Convert(EOLToStr(Source), Dest, Params, Token);

@@ -24,10 +24,10 @@ NB_DISABLE_COPY(TFileBuffer)
 public:
   TFileBuffer() noexcept;
   virtual ~TFileBuffer() noexcept;
-  void Convert(char * Source, char * Dest, int32_t Params, bool & Token);
+  void Convert(const char * Source, const char * Dest, int32_t Params, bool & Token);
   void Convert(TEOLType Source, TEOLType Dest, int32_t Params, bool & Token);
-  void Convert(char * Source, TEOLType Dest, int32_t Params, bool & Token);
-  void Convert(TEOLType Source, char * Dest, int32_t Params, bool & Token);
+  void Convert(const char * Source, TEOLType Dest, int32_t Params, bool & Token);
+  void Convert(TEOLType Source, const char * Dest, int32_t Params, bool & Token);
   void Insert(int64_t Index, const char * Buf, int64_t Len);
   void Delete(int64_t Index, int64_t Len);
   int64_t LoadStream(TStream * Stream, const int64_t Len, bool ForceLen);
@@ -45,7 +45,9 @@ public:
 
 private:
   std::unique_ptr<TMemoryStream> FMemory;
-  // int32_t FSize;
+#if defined(__BORLANDC__)
+  int32_t FSize;
+#endif // defined(__BORLANDC__)
 
 public:
   int64_t GetSize() const { return FMemory->GetSize(); }
@@ -76,10 +78,9 @@ public:
   virtual int32_t Write(const System::DynamicArray<System::Byte> Buffer, int32_t Offset, int32_t Count);
 private:
   THandleStream * FSource;
-  bool FOwned;
 };
 
 #endif // defined(__BORLANDC__)
 
-char * EOLToStr(TEOLType EOLType);
+const char * EOLToStr(TEOLType EOLType);
 
