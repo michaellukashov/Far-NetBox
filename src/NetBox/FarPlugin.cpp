@@ -212,6 +212,12 @@ TCustomFarPlugin::~TCustomFarPlugin() noexcept
     TObject * Object = FSavedTitles->Get(Index);
     SAFE_DESTROY(Object);
   }
+  // Diagnostic: give any background threads a grace period to exit before
+  // FreeLibrary is called. If this Sleep fixes the crash, the root cause is
+  // a thread that outlives the explicit cleanup by a small window.
+  DEBUG_PRINTFA("TCustomFarPlugin::~TCustomFarPlugin: sleeping 500ms for background threads");
+  ::Sleep(500);
+  DEBUG_PRINTFA("TCustomFarPlugin::~TCustomFarPlugin: sleep done");
   DEBUG_PRINTF("end");
 }
 
