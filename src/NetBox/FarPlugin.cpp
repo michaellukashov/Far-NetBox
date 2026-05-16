@@ -27,12 +27,14 @@ public:
     FPlugin(Plugin),
     FMillisecs(Millisecs)
   {
+    DEBUG_PRINTFA("TPluginIdleThread constructor");
     pthread_mutex_init(&FMutex, nullptr);
     pthread_cond_init(&FCond, nullptr);
   }
 
   virtual ~TPluginIdleThread() noexcept override
   {
+    DEBUG_PRINTFA("~TPluginIdleThread (finished=%s)", FFinished ? "yes" : "no");
     TPluginIdleThread::Terminate();
     WaitFor();
     pthread_cond_destroy(&FCond);
@@ -66,6 +68,7 @@ public:
 
   virtual void Terminate() override
   {
+    DEBUG_PRINTFA("TPluginIdleThread::Terminate (finished=%s)", FFinished ? "yes" : "no");
     TCallback DoFinish = [this]
     {
       if (FFinished)
@@ -80,6 +83,7 @@ public:
 
   void InitIdleThread(const UnicodeString & Name)
   {
+    DEBUG_PRINTFA("TPluginIdleThread::InitIdleThread '%s'", W2MB(Name.c_str()).c_str());
     TSimpleThread::InitSimpleThread(Name);
     Start();
   }

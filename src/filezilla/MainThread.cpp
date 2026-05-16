@@ -1,4 +1,6 @@
 
+#include <Sysutils.hpp>
+
 #include "stdafx.h"
 #include "afxdll.h"
 #include "MainThread.h"
@@ -61,6 +63,7 @@ BOOL CMainThread::InitInstance()
     res=FALSE;
   }
 
+  DEBUG_PRINTFA("CMainThread::InitInstance (this=%p)", this);
   m_pControlSocket=new CFtpControlSocket(this, m_pTools);
   m_pControlSocket->InitIntern(GetIntern());
   return TRUE;
@@ -68,6 +71,7 @@ BOOL CMainThread::InitInstance()
 
 DWORD CMainThread::ExitInstance()
 {
+  DEBUG_PRINTFA("CMainThread::ExitInstance (this=%p)", this);
   KillTimer(0,m_nTimerID);
   if (m_pControlSocket)
     delete m_pControlSocket;
@@ -282,6 +286,7 @@ void CMainThread::Quit()
     PostThreadMessage(m_nInternalMessageID, FZAPI_THREADMSG_CANCEL, 1);
   // Post WM_QUIT aggressively: the thread may be stuck in GetMessage with
   // a saturated queue.  Retry up to 50 times (5 s) before giving up.
+  DEBUG_PRINTFA("CMainThread::Quit posting WM_QUIT (this=%p)", this);
   for (int Retry = 0; Retry < 50; ++Retry)
   {
     if (PostThreadMessage(WM_QUIT, 0, 0))
@@ -395,6 +400,7 @@ CMainThread* CMainThread::Create(int nPriority, DWORD dwCreateFlags)
   }
   ::SetThreadPriority(pMainThread->m_hThread, nPriority);
   os::debug::SetThreadName(pMainThread->m_hThread, L"NetBox FTP Main Thread");
+  DEBUG_PRINTFA("CMainThread::Create (this=%p thread=%p)", pMainThread, pMainThread->m_hThread);
   return pMainThread;
 }
 
@@ -431,6 +437,7 @@ DWORD CMainThread::Run()
   if (m_hStartedEvent != nullptr)
     ::SetEvent(m_hStartedEvent);
   LCS;
+  DEBUG_PRINTFA("CMainThread::Run message loop started (this=%p)", this);
   MSG msg;
   while (GetMessage(&msg, 0, 0, 0))
   {
@@ -441,6 +448,7 @@ DWORD CMainThread::Run()
     }
     DispatchMessage(&msg);
   }
+  DEBUG_PRINTFA("CMainThread::Run message loop exiting (this=%p)", this);
   DWORD res = ExitInstance();
   delete this;
   return res;

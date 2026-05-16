@@ -40,8 +40,10 @@ void CreatePlugin()
 
 void DestroyPlugin()
 {
+  DEBUG_PRINTFA("DestroyPlugin begin");
   TermExtensionModule();
   DestroyFarPlugin(FarPlugin);
+  DEBUG_PRINTFA("DestroyPlugin end");
 }
 
 [[noreturn]]
@@ -129,6 +131,7 @@ void WINAPI ExitFARW(const struct ExitInfo * Info)
   }
   // Now Guard is released
   DestroyPlugin();
+  DEBUG_PRINTFA("ExitFARW: plugin destroyed, FarPlugin=%p", static_cast<void*>(FarPlugin));
 }
 
 void WINAPI GetPluginInfoW(PluginInfo * Info)

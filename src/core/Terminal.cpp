@@ -1350,7 +1350,8 @@ void TTerminal::Init(gsl::not_null<TSessionData *> ASessionData, gsl::not_null<T
 
 TTerminal::~TTerminal() noexcept
 {
-  // DEBUG_PRINTF("end");
+  DEBUG_PRINTFA("~TTerminal (active=%s)", GetActive() ? "yes" : "no");
+  // DEBUG_PRINTF("begin");
   try
   {
     if (GetActive())
@@ -1394,9 +1395,10 @@ TTerminal::~TTerminal() noexcept
   delete FFiles;
   delete FDirectoryCache;
   delete FDirectoryChangesCache;
-  SAFE_DESTROY(FSessionData);
+  delete FSessionData;
 #endif
   // DEBUG_PRINTF("end");
+  DEBUG_PRINTFA("~TTerminal end");
 }
 
 void TTerminal::Idle()
@@ -1493,6 +1495,7 @@ bool TTerminal::GetActive() const
 
 void TTerminal::Close()
 {
+  DEBUG_PRINTFA("TTerminal::Close (status=%d)", FStatus);
   Expects(FFileSystem);
   FStatus = ssClosed;
   FFileSystem->Close();
@@ -1504,8 +1507,8 @@ void TTerminal::Close()
     FCommandSession->SetOnClose(nullptr);
     FCommandSession->Close();
   }
+  DEBUG_PRINTFA("TTerminal::Close end");
 }
-
 void TTerminal::ResetConnection()
 {
   // used to be called from Reopen(), why?
@@ -1556,6 +1559,7 @@ void TTerminal::FingerprintScan(UnicodeString & SHA256, UnicodeString & SHA1, Un
 
 void TTerminal::Open()
 {
+  DEBUG_PRINTFA("TTerminal::Open begin");
   {
     const TGuard Guard(*CoreMainCriticalSection);
     AnySession = true;
@@ -1600,6 +1604,7 @@ void TTerminal::Open()
     FatalError(&E, "");
   }
   FSessionData->SetNumberOfRetries(0);
+  DEBUG_PRINTFA("TTerminal::Open end");
 }
 
 void TTerminal::InternalTryOpen()

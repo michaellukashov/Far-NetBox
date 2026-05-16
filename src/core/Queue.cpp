@@ -409,6 +409,7 @@ void TSimpleThread::InitSimpleThread(const UnicodeString & Name)
 
 TSimpleThread::~TSimpleThread() noexcept
 {
+  DEBUG_PRINTFA("~TSimpleThread (handle=%p finished=%s)", FThread, FFinished ? "yes" : "no");
   if (!FFinished)
   {
     SignalStop();
@@ -431,6 +432,7 @@ void TSimpleThread::Start()
   if (::ResumeThread(FThread) == 1)
   {
     FFinished = false;
+    DEBUG_PRINTFA("TSimpleThread started (handle=%p)", FThread);
   }
 }
 
@@ -443,8 +445,10 @@ void TSimpleThread::Close()
 {
   if (!FFinished)
   {
+    DEBUG_PRINTFA("TSimpleThread::Close (handle=%p)", FThread);
     SignalStop();
     WaitFor();
+    DEBUG_PRINTFA("TSimpleThread::Close finished (handle=%p)", FThread);
   }
 }
 
@@ -452,6 +456,7 @@ void TSimpleThread::SignalStop()
 {
   if (!FFinished)
   {
+    DEBUG_PRINTFA("TSimpleThread::SignalStop (handle=%p)", FThread);
     FFinished = true;
     Terminate();
   }
@@ -494,6 +499,7 @@ void TSignalThread::InitSignalThread(bool LowPriority, HANDLE Event)
 
 TSignalThread::~TSignalThread() noexcept
 {
+  DEBUG_PRINTFA("~TSignalThread (handle=%p finished=%s)", FThread, FFinished ? "yes" : "no");
   // cannot leave closing to TSimpleThread as we need to close it before
   // destroying the event
   TSimpleThread::Close();
@@ -508,6 +514,7 @@ void TSignalThread::Start()
 {
   FTerminated = false;
   TSimpleThread::Start();
+  DEBUG_PRINTFA("TSignalThread started (handle=%p)", FThread);
 }
 
 void TSignalThread::TriggerEvent() const
@@ -552,6 +559,7 @@ void TSignalThread::Execute()
 
 void TSignalThread::Terminate()
 {
+  DEBUG_PRINTFA("TSignalThread::Terminate (handle=%p finished=%s)", FThread, FFinished ? "yes" : "no");
   FTerminated = true;
   TriggerEvent();
 }
@@ -601,10 +609,12 @@ void TTerminalQueue::InitTerminalQueue()
   DebugAssert(FForcedItems);
 
   Start();
+  DEBUG_PRINTFA("TTerminalQueue started (handle=%p)", FThread);
 }
 
 TTerminalQueue::~TTerminalQueue() noexcept
 {
+  DEBUG_PRINTFA("~TTerminalQueue (handle=%p finished=%s)", FThread, FFinished ? "yes" : "no");
   TSimpleThread::Close();
 
   {
@@ -1438,10 +1448,12 @@ void TTerminalItem::InitTerminalItem(int32_t Index)
   } end_try__catch
 
   Start();
+  DEBUG_PRINTFA("TTerminalItem started (handle=%p)", FThread);
 }
 
 TTerminalItem::~TTerminalItem() noexcept
 {
+  DEBUG_PRINTFA("~TTerminalItem (handle=%p finished=%s)", FThread, FFinished ? "yes" : "no");
   TSimpleThread::Close();
 
   DebugAssert(FItem == nullptr);

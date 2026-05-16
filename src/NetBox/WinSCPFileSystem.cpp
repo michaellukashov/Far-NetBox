@@ -272,6 +272,7 @@ TKeepAliveThread::TKeepAliveThread(gsl::not_null<TWinSCPFileSystem *> FileSystem
 
 void TKeepAliveThread::InitKeepaliveThread()
 {
+  DEBUG_PRINTFA("TKeepAliveThread::InitKeepaliveThread (interval=%f)", FInterval.GetValue());
   TSimpleThread::InitSimpleThread("NetBox KeepAlive Thread");
   FEvent = ::CreateEvent(nullptr, false, false, nullptr);
   Start();
@@ -279,12 +280,14 @@ void TKeepAliveThread::InitKeepaliveThread()
 
 void TKeepAliveThread::Terminate()
 {
+  DEBUG_PRINTFA("TKeepAliveThread::Terminate (event=%p)", FEvent);
   // TCompThread::Terminate();
   ::SetEvent(FEvent);
 }
 
 void TKeepAliveThread::Execute()
 {
+  DEBUG_PRINTFA("TKeepAliveThread::Execute begin");
   while (!IsFinished())
   {
     if ((::WaitForSingleObject(FEvent, nb::ToDWord(FInterval.GetValue() * MSecsPerDay)) != WAIT_FAILED) &&
@@ -295,6 +298,7 @@ void TKeepAliveThread::Execute()
       FFileSystem->GetPlugin()->PostMainThreadSynchro(nullptr);
     }
   }
+  DEBUG_PRINTFA("TKeepAliveThread::Execute end");
   SAFE_CLOSE_HANDLE(FEvent);
 }
 
@@ -312,6 +316,7 @@ void TWinSCPFileSystem::InitWinSCPFileSystem(const TSecureShell * /*SecureShell*
 
 TWinSCPFileSystem::~TWinSCPFileSystem() noexcept
 {
+  DEBUG_PRINTFA("~TWinSCPFileSystem (terminal=%p)", FTerminal);
   // DEBUG_PRINTF("begin");
   Disconnect();
   // SAFE_DESTROY(FPathHistory);
@@ -391,6 +396,7 @@ void TWinSCPFileSystem::Close()
   SCOPE_EXIT
   {
     TCustomFarFileSystem::Close();
+    DEBUG_PRINTFA("TWinSCPFileSystem::Close end");
   };
   if (FKeepaliveThread != nullptr)
   {
@@ -409,7 +415,6 @@ void TWinSCPFileSystem::Close()
       }
     }
   }
-  DEBUG_PRINTF("TWinSCPFileSystem::Close end");
 }
 
 void TWinSCPFileSystem::GetOpenPanelInfoEx(OPENPANELINFO_FLAGS & Flags,
@@ -3608,6 +3613,7 @@ void TWinSCPFileSystem::SetPrevSessionName(const UnicodeString & Value)
 
 void TWinSCPFileSystem::Disconnect()
 {
+  DEBUG_PRINTFA("TWinSCPFileSystem::Disconnect begin (terminal=%p)", FTerminal);
   if (FTerminal && FTerminal->GetActive())
   {
     if (!GetSessionData()->GetName().IsEmpty())
@@ -3653,6 +3659,7 @@ void TWinSCPFileSystem::Disconnect()
   }
   SAFE_DESTROY(FTerminal);
   ClearConnectedState();
+  DEBUG_PRINTFA("TWinSCPFileSystem::Disconnect end");
 }
 
 void TWinSCPFileSystem::ConnectTerminal(TTerminal * Terminal)

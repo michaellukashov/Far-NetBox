@@ -1,4 +1,6 @@
 
+#include <Sysutils.hpp>
+
 #include "stdafx.h"
 #include "FileZillaApi.h"
 #include "MainThread.h"
@@ -16,9 +18,9 @@ CFileZillaApi::CFileZillaApi()
 
 CFileZillaApi::~CFileZillaApi()
 {
+  DEBUG_PRINTFA("~CFileZillaApi (initialized=%s)", m_bInitialized ? "yes" : "no");
   Destroy();
 }
-
 int CFileZillaApi::Init(TFileZillaIntern * Intern, CFileZillaTools * pTools)
 {
   //Check if call allowed
@@ -44,6 +46,7 @@ int CFileZillaApi::Init(TFileZillaIntern * Intern, CFileZillaTools * pTools)
 
   //Initialization OK
   m_bInitialized=TRUE;
+  DEBUG_PRINTFA("CFileZillaApi::Init OK (thread=%p)", m_pMainThread);
   return FZ_REPLY_OK;
 }
 
@@ -126,7 +129,10 @@ int CFileZillaApi::Cancel()
 void CFileZillaApi::Destroy()
 {
   if (!m_bInitialized)
+  {
+    DEBUG_PRINTFA("CFileZillaApi::Destroy: not initialized, returning");
     return;
+  }
   DebugAssert(m_pMainThread);
 
   // Duplicate the thread handle so that the thread closing its own
@@ -141,6 +147,7 @@ void CFileZillaApi::Destroy()
     hDup = tmp; // fall back to original handle
   }
 
+  DEBUG_PRINTFA("CFileZillaApi::Destroy: calling Quit on thread %p", m_pMainThread);
   m_pMainThread->Quit();
 
   // Wait for the main thread to quit — up to 30 seconds.
@@ -148,9 +155,11 @@ void CFileZillaApi::Destroy()
   // a DLL unload crash (the thread's code would be unmapped while
   // its RIP is still inside the DLL).
   constexpr DWORD QuitWaitMs = 30000;
+  DEBUG_PRINTFA("CFileZillaApi::Destroy: waiting for thread exit (timeout=%lu)", QuitWaitMs);
   DWORD WaitRes = ::WaitForSingleObject(hDup, QuitWaitMs);
   if (WaitRes == WAIT_TIMEOUT)
   {
+    DEBUG_PRINTFA("CFileZillaApi::Destroy: thread did not exit in %lu ms, calling TerminateThread", QuitWaitMs);
     ::TerminateThread(hDup, 1);
     // TerminateThread does not interrupt a thread blocked in GetMessage.
     // Post a dummy message to force GetMessage to return so the kernel
@@ -162,7 +171,12 @@ void CFileZillaApi::Destroy()
       ::Sleep(50);
     }
     // Wait again — up to 5 seconds — for the thread to actually exit.
+    DEBUG_PRINTFA("CFileZillaApi::Destroy: waiting again after TerminateThread");
     ::WaitForSingleObject(hDup, 5000);
+  }
+  else
+  {
+    DEBUG_PRINTFA("CFileZillaApi::Destroy: thread exited (wait result=%lu)", WaitRes);
   }
 
   if (hDup != nullptr && hDup != tmp)
@@ -172,6 +186,7 @@ void CFileZillaApi::Destroy()
 
   m_pMainThread=0;
   m_bInitialized=FALSE;
+  DEBUG_PRINTFA("CFileZillaApi::Destroy: done");
 }
 
 int CFileZillaApi::Disconnect()

@@ -1,4 +1,6 @@
 
+#include <Sysutils.hpp>
+
 #include "stdafx.h"
 
 #include "FileZillaIntf.h"
@@ -115,6 +117,7 @@ bool TFileZillaIntf::Init()
 
 void TFileZillaIntf::Destroying()
 {
+  DEBUG_PRINTFA("TFileZillaIntf::Destroying (FFileZillaApi=%p)", FFileZillaApi);
   // need to close FZAPI before calling destructor as it in turn post messages
   // back while being destroyed, what may result in calling virtual methods
   // of already destroyed descendants
