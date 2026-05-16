@@ -6,77 +6,193 @@ on:
     branches:
       - main
 
+# Least-privilege permissions for GITHUB_TOKEN
+permissions:
+  contents: write
+  actions: read
+
+# Cancel redundant runs on the same branch
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
 
   build:
     strategy:
       fail-fast: false
       matrix:
-        build: [
-                 cl_x64_release,
-                 cl_x86_release,
-                 cl_ARM64_release,
-               ]
-
+        build:
+          - cl_x64_release
+          - cl_x86_release
+          - cl_ARM64_release
         include:
-          - { build: cl_x64_release,    arch: amd64,       platform: x64,   }
-          - { build: cl_x86_release,    arch: amd64_x86,   platform: x86,   }
-          - { build: cl_ARM64_release,  arch: amd64_arm64, platform: ARM64, }
+          - build: cl_x64_release
+            arch: amd64
+            platform: x64
+            platform_label: x64
+            toolset: default
+          - build: cl_x86_release
+            arch: amd64_x86
+            platform: x86
+            platform_label: x86
+            toolset: default
+          - build: cl_ARM64_release
+            arch: amd64_arm64
+            platform: ARM64
+            platform_label: ARM64
+            toolset: default
 
     env:
       BUILD_TYPE: RelWithDebInfo
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     runs-on: windows-2022
+    timeout-minutes: 45
+
+    # Pass version to downstream jobs via outputs
+    outputs:
+      version: ${{ steps.get-version.outputs.version }}
+      version_short: ${{ steps.get-version.outputs.version_short }}
+
     steps:
       - name: Checkout source
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
+        with:
+          # Ensure full history for accurate version extraction
+          fetch-depth: 0
 
       - name: Get version
+        id: get-version
         shell: bash
         run: |
-          export VERSION_MAJOR=$(grep "NETBOX_VERSION_MAJOR" src/NetBox/plugin_version.hpp | sed -e "s/^.* NETBOX_VERSION_MAJOR\s*\([0-9]\+\)/\1/g")
-          export VERSION_MINOR=$(grep "NETBOX_VERSION_MINOR" src/NetBox/plugin_version.hpp | sed -e "s/^.* NETBOX_VERSION_MINOR\s*\([0-9]\+\)/\1/g")
-          export VERSION_PATCH=$(grep "NETBOX_VERSION_PATCH" src/NetBox/plugin_version.hpp | sed -e "s/^.* NETBOX_VERSION_PATCH\s*\([0-9]\+\)/\1/g")
-          export VERSION_BUILD=$(grep "NETBOX_VERSION_BUILD" src/NetBox/plugin_version.hpp | sed -e "s/^.* NETBOX_VERSION_BUILD\s*\([0-9]\+\)/\1/g")
-          echo "VERSION=$VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH.$VERSION_BUILD.$GITHUB_RUN_NUMBER">> $GITHUB_ENV
+          set -euo pipefail
 
-      - name: Set the pack file name
+          VERSION_FILE="src/NetBox/plugin_version.hpp"
+          if [[ ! -f "$VERSION_FILE" ]]; then
+            echo "::error::Version file not found: $VERSION_FILE"
+            exit 1
+          fi
+
+          VERSION_MAJOR=$(grep "NETBOX_VERSION_MAJOR" "$VERSION_FILE" | sed -e "s/^.* NETBOX_VERSION_MAJOR\s*\([0-9]\+\)/\1/g")
+          VERSION_MINOR=$(grep "NETBOX_VERSION_MINOR" "$VERSION_FILE" | sed -e "s/^.* NETBOX_VERSION_MINOR\s*\([0-9]\+\)/\1/g")
+          VERSION_PATCH=$(grep "NETBOX_VERSION_PATCH" "$VERSION_FILE" | sed -e "s/^.* NETBOX_VERSION_PATCH\s*\([0-9]\+\)/\1/g")
+          VERSION_BUILD=$(grep "NETBOX_VERSION_BUILD" "$VERSION_FILE" | sed -e "s/^.* NETBOX_VERSION_BUILD\s*\([0-9]\+\)/\1/g")
+
+          VERSION="${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}.${VERSION_BUILD}.${GITHUB_RUN_NUMBER}"
+          VERSION_SHORT="${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}.${VERSION_BUILD}"
+
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "version_short=$VERSION_SHORT" >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_ENV"
+          echo "version_short=$VERSION_SHORT" >> "$GITHUB_ENV"
+
+          echo "Building NetBox v${VERSION_SHORT} (run #${GITHUB_RUN_NUMBER})"
+
+      - name: Set artifact names
         shell: bash
         run: |
-          echo "netbox_name=NetBox.${{ matrix.platform }}.${{ env.version }}.7z" >> $GITHUB_ENV
-          echo "netbox_pdb_name=NetBox.${{ matrix.platform }}.${{ env.version }}.pdb.7z" >> $GITHUB_ENV
+          echo "netbox_name=NetBox.${{ matrix.platform_label }}.${{ env.version }}.7z" >> "$GITHUB_ENV"
+          echo "netbox_pdb_name=NetBox.${{ matrix.platform_label }}.${{ env.version }}.pdb.7z" >> "$GITHUB_ENV"
 
       - name: Add C++ build tools to PATH
-        uses: ilammy/msvc-dev-cmd@v1
+        uses: step-security/msvc-dev-cmd@v1.13.1
+        with:
+          arch: ${{ matrix.arch }}
+          toolset: ${{ matrix.toolset != 'default' && matrix.toolset || '' }}
+        continue-on-error: ${{ matrix.toolset != 'default' }}
+        id: msvc-setup
+
+      - name: Fallback to default toolset
+        if: matrix.toolset != 'default' && steps.msvc-setup.outcome == 'failure'
+        uses: step-security/msvc-dev-cmd@v1.13.1
         with:
           arch: ${{ matrix.arch }}
 
+      - name: Verify MSVC toolset
+        shell: bash
+        run: |
+          echo "=== MSVC Toolset Version ==="
+          cl.exe /Bv 2>&1 | head -n 5 || true
+          if [[ "${{ matrix.toolset }}" != "default" && "${{ steps.msvc-setup.outcome }}" == "failure" ]]; then
+            echo "::warning::v141 toolset not available; falling back to v143"
+          fi
+      - name: Cache CMake build
+        uses: actions/cache@v5
+        with:
+          path: |
+            build-${{ matrix.build }}/CMakeFiles
+            build-${{ matrix.build }}/.ninja_deps
+            build-${{ matrix.build }}/.ninja_log
+            build-${{ matrix.build }}/CMakeCache.txt
+          key: ${{ runner.os }}-cmake-${{ matrix.build }}-${{ hashFiles('**/CMakeLists.txt', '**/*.cmake') }}
+          restore-keys: |
+            ${{ runner.os }}-cmake-${{ matrix.build }}-
+            ${{ runner.os }}-cmake-
+
       - name: Create Build folder
-        run: cmake -E make_directory build
+        run: cmake -E make_directory build-${{ matrix.build }}
 
       - name: Configure CMake
         shell: bash
-        working-directory: build
+        working-directory: build-${{ matrix.build }}
         run: >
-          cmake -G "Ninja" -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DPROJECT_PLATFORM=${{ matrix.platform }} -DOPT_CREATE_PLUGIN_DIR=ON $GITHUB_WORKSPACE
+          cmake -G "Ninja"
+          -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
+          -DPROJECT_PLATFORM=${{ matrix.platform }}
+          -DOPT_CREATE_PLUGIN_DIR=ON
+          -DOPT_USE_UNITY_BUILD=OFF
+          $GITHUB_WORKSPACE
 
       - name: Build
-        working-directory: build
+        working-directory: build-${{ matrix.build }}
         shell: bash
-        run: cmake --build . --config $BUILD_TYPE --target all
+        run: cmake --build . --config ${{ env.BUILD_TYPE }} --target all
 
-      - name: Pack plugin
+      - name: Verify plugin directory
         shell: bash
         run: |
-          7z a -m0=LZMA -mf=BCJ2 -mx9 ${{ env.netbox_name }} ./Far3_${{ matrix.platform }}/Plugins/* -xr!*.pdb
-          if [[ -f ./Far3_${{ matrix.platform }}/Plugins/NetBox/NetBox.pdb ]] ; then
-            7z a -m0=LZMA -mf=off -mx9 ${{ env.netbox_pdb_name }} ./Far3_${{ matrix.platform }}/Plugins/NetBox/NetBox.pdb
+          PLUGIN_DIR="./Far3_${{ matrix.platform }}/Plugins/NetBox"
+          if [[ ! -d "$PLUGIN_DIR" ]]; then
+            echo "::error::Plugin directory not found: $PLUGIN_DIR"
+            exit 1
+          fi
+          echo "Plugin directory contents:"
+          ls -la "$PLUGIN_DIR"
+
+      - name: Pack artifacts
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          PLUGIN_DIR="./Far3_${{ matrix.platform }}/Plugins"
+
+          # Main archive (exclude PDB files)
+          echo "Creating main archive: ${{ env.netbox_name }}"
+          7z a -m0=LZMA -mf=BCJ2 -mx9 "${{ env.netbox_name }}" "${PLUGIN_DIR}/" -xr!*.pdb
+
+          # PDB archive (only if exists)
+          PDB_FILE="${PLUGIN_DIR}/NetBox/NetBox.pdb"
+          if [[ -f "$PDB_FILE" ]]; then
+            echo "Creating PDB archive: ${{ env.netbox_pdb_name }}"
+            7z a -m0=LZMA -mf=off -mx9 "${{ env.netbox_pdb_name }}" "$PDB_FILE"
+          else
+            echo "::warning::PDB file not found: $PDB_FILE"
           fi
 
-      - name: Upload result
-        uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3 # v4.3.1
+          # Display archive sizes
+          if [[ -f "${{ env.netbox_name }}" ]]; then
+            echo "Main archive size: $(du -h "${{ env.netbox_name }}" | cut -f1)"
+            7z l "${{ env.netbox_name }}"
+          fi
+          if [[ -f "${{ env.netbox_pdb_name }}" ]]; then
+            echo "PDB archive size: $(du -h "${{ env.netbox_pdb_name }}" | cut -f1)"
+          fi
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v7
         with:
-          name: FarNetBox.${{ matrix.platform }}
+          name: FarNetBox.${{ matrix.platform_label }}
           path: ./*.7z
           overwrite: true
           retention-days: 30
@@ -84,35 +200,56 @@ jobs:
   create-release:
     needs: [build]
     runs-on: windows-2022
+    timeout-minutes: 10
+
+    env:
+      version: ${{ needs.build.outputs.version }}
+      version_short: ${{ needs.build.outputs.version_short }}
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
       - name: Checkout source
-        uses: actions/checkout@v4
-
-      - name: Get plugin version
-        shell: bash
-        run: |
-          export VERSION_MAJOR=$(grep "NETBOX_VERSION_MAJOR" src/NetBox/plugin_version.hpp | sed -e "s/^.* NETBOX_VERSION_MAJOR\s*\([0-9]\+\)/\1/g")
-          export VERSION_MINOR=$(grep "NETBOX_VERSION_MINOR" src/NetBox/plugin_version.hpp | sed -e "s/^.* NETBOX_VERSION_MINOR\s*\([0-9]\+\)/\1/g")
-          export VERSION_PATCH=$(grep "NETBOX_VERSION_PATCH" src/NetBox/plugin_version.hpp | sed -e "s/^.* NETBOX_VERSION_PATCH\s*\([0-9]\+\)/\1/g")
-          export VERSION_BUILD=$(grep "NETBOX_VERSION_BUILD" src/NetBox/plugin_version.hpp | sed -e "s/^.* NETBOX_VERSION_BUILD\s*\([0-9]\+\)/\1/g")
-          echo "VERSION_SHORT=$VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH.$VERSION_BUILD">> $GITHUB_ENV
-          echo "VERSION=$VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH.$VERSION_BUILD.$GITHUB_RUN_NUMBER">> $GITHUB_ENV
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
 
       - name: Download archives
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           pattern: FarNetBox.*
           path: FarNetBox/
           merge-multiple: true
 
-      - name: Display structure of downloaded files
-        run: ls -R FarNetBox/
-
-      - name: Create release
+      - name: Verify downloaded files
         shell: bash
         run: |
-          gh release create v${{ env.version }} --draft --generate-notes --title "NetBox ${{ env.version_short }}" FarNetBox/*.7z
+          echo "Downloaded artifacts:"
+          ls -laR FarNetBox/
+          ARCHIVE_COUNT=$(find FarNetBox/ -name "*.7z" | wc -l)
+          echo "Total .7z archives: $ARCHIVE_COUNT"
+          if [[ "$ARCHIVE_COUNT" -lt 1 ]]; then
+            echo "::error::No .7z archives found"
+            exit 1
+          fi
+
+      - name: Create GitHub Release
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          RELEASE_TAG="v${{ env.version }}"
+          RELEASE_TITLE="NetBox ${{ env.version_short }}"
+
+          echo "Creating release: $RELEASE_TAG"
+          echo "Title: $RELEASE_TITLE"
+
+          gh release create "$RELEASE_TAG" \
+            --draft \
+            --generate-notes \
+            --title "$RELEASE_TITLE" \
+            FarNetBox/*.7z
+
+          echo "Release created successfully"
         env:
-          # GITHUB_TOKEN: ${{ secrets.NETBOX_GITHUB_TOKEN }}
-          GH_TOKEN: ${{ github.token }}
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

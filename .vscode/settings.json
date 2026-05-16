@@ -1,0 +1,32 @@
+{
+    // Markdownlint configuration
+    "markdownlint.config": {
+        // Enable MD060: Spaces inside code span elements
+        "MD060": false,
+
+        // Enable MD033: Inline HTML with allowed elements
+        "MD033": {
+            "allowed_elements": ["br", "img", "a"]
+        },
+        "MD056": false,
+        // Enable MD013: Line length with 120 character limit
+        "MD013": {
+            "line_length": 140,
+            "heading_line_length": 140,
+            "code_block_line_length": 140,
+            "code_blocks": true,
+            "tables": false,
+            "headings": true,
+            "strict": false
+        },
+        "MD014": false,
+        "MD031": false,
+    },
+
+    // Other VS Code settings for markdown
+    "[markdown]": {
+        "editor.formatOnSave": false,
+        "editor.wordWrap": "on",
+        "editor.colorDecorators": false,
+    }
+}
