@@ -577,7 +577,13 @@ void TCustomFarPlugin::GetOpenPanelInfo(struct OpenPanelInfo * Info)
     return;
   TCustomFarFileSystem * FarFileSystem = static_cast<TCustomFarFileSystem *>(Info->hPanel);
   if (!FarFileSystem || !FOpenedPlugins || (FOpenedPlugins->IndexOf(FarFileSystem) == nb::NPOS))
+  {
+    TINYLOG_WARNING(g_tinylog) << TLogContext::Format()
+        << "GetOpenPanelInfo: invalid hPanel=" << Info->hPanel
+        << " FarFileSystem=" << FarFileSystem
+        << " FOpenedPlugins=" << FOpenedPlugins;
     return;
+  }
   try
   {
     ResetCachedInfo();
@@ -731,7 +737,15 @@ intptr_t TCustomFarPlugin::SetDirectory(const struct SetDirectoryInfo * Info)
 {
   TCustomFarFileSystem * FarFileSystem = static_cast<TCustomFarFileSystem *>(Info->hPanel);
   if (!FarFileSystem || !FOpenedPlugins || (FOpenedPlugins->IndexOf(FarFileSystem) == nb::NPOS))
+  {
+    TINYLOG_WARNING(g_tinylog) << TLogContext::Format()
+        << "SetDirectory: invalid hPanel=" << Info->hPanel
+        << " FarFileSystem=" << FarFileSystem
+        << " FOpenedPlugins=" << FOpenedPlugins
+        << " Dir=" << (Info->Dir ? Info->Dir : L"<null>")
+        << " OpMode=" << Info->OpMode;
     return 0;
+  }
   DebugAssert(FarFileSystem);
   const UnicodeString PrevCurrentDirectory = FarFileSystem->GetCurrentDirectory();
   try

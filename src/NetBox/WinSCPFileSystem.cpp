@@ -421,31 +421,46 @@ void TWinSCPFileSystem::GetOpenPanelInfoEx(OPENPANELINFO_FLAGS & Flags,
     Flags = !OPIF_DISABLEFILTER | !OPIF_DISABLESORTGROUPS | !OPIF_DISABLEHIGHLIGHTING |
       OPIF_SHOWPRESERVECASE | OPIF_COMPAREFATTIME | OPIF_SHORTCUT;
 
-    // When slash is added to the end of path, windows style paths
-    // (vandyke: c:/windows/system) are displayed correctly on command-line, but
-    // leaved subdirectory is not focused, when entering parent directory.
-    HostFile = GetSessionData()->GetHostName(); // GenerateSessionUrl(sufHostKey); // GetSessionData()->GetSessionName();
-    CurDir = FTerminal->GetCurrentDirectory();
-    const UnicodeString FolderName = GetSessionData()->GetFolderName();
-    const UnicodeString SessionName = GetSessionData()->GetLocalName();
-    AFormat = FORMAT("netbox:%s", SessionName);
-    const UnicodeString HostName = GetSessionData()->GetHostNameExpanded();
-    // const UnicodeString Url = GetSessionData()->GenerateSessionUrl(sufComplete);
-    if (GetFarConfiguration()->GetSessionNameInTitle())
+    // Defensive: if terminal was destroyed (e.g. by Disconnect during SetDirectory),
+    // return safe defaults so Far Manager does not crash on dangling panel state.
+    if (FTerminal == nullptr)
     {
-      PanelTitle = FORMAT(" %s:%s ", SessionName, CurDir);
+      HostFile.Clear();
+      CurDir = FLastPath;
+      AFormat = L"netbox";
+      PanelTitle = L" netbox ";
+      ShortcutData.Clear();
+      TINYLOG_WARNING(g_tinylog) << TLogContext::Format()
+          << "GetOpenPanelInfoEx: FTerminal is null, returning safe defaults";
     }
     else
     {
-      PanelTitle = FORMAT(" %s:%s ", HostName, CurDir);
+      // When slash is added to the end of path, windows style paths
+      // (vandyke: c:/windows/system) are displayed correctly on command-line, but
+      // leaved subdirectory is not focused, when entering parent directory.
+      HostFile = GetSessionData()->GetHostName(); // GenerateSessionUrl(sufHostKey); // GetSessionData()->GetSessionName();
+      CurDir = FTerminal->GetCurrentDirectory();
+      const UnicodeString FolderName = GetSessionData()->GetFolderName();
+      const UnicodeString SessionName = GetSessionData()->GetLocalName();
+      AFormat = FORMAT("netbox:%s", SessionName);
+      const UnicodeString HostName = GetSessionData()->GetHostNameExpanded();
+      // const UnicodeString Url = GetSessionData()->GenerateSessionUrl(sufComplete);
+      if (GetFarConfiguration()->GetSessionNameInTitle())
+      {
+        PanelTitle = FORMAT(" %s:%s ", SessionName, CurDir);
+      }
+      else
+      {
+        PanelTitle = FORMAT(" %s:%s ", HostName, CurDir);
+      }
+      UnicodeString FolderAndSessionName;
+      if (!FolderName.IsEmpty())
+        FolderAndSessionName = FORMAT("%s/%s", FolderName, SessionName);
+      else
+        FolderAndSessionName = FORMAT("%s", SessionName);
+      ShortcutData = nb::EncodeSessionParam(FolderAndSessionName, CurDir);
+      FTerminal->LogEvent(FORMAT(L"GetOpenPanelInfoEx: ShortcutData=%s", ShortcutData));
     }
-    UnicodeString FolderAndSessionName;
-    if (!FolderName.IsEmpty())
-      FolderAndSessionName = FORMAT("%s/%s", FolderName, SessionName);
-    else
-      FolderAndSessionName = FORMAT("%s", SessionName);
-    ShortcutData = nb::EncodeSessionParam(FolderAndSessionName, CurDir);
-    FTerminal->LogEvent(FORMAT(L"GetOpenPanelInfoEx: ShortcutData=%s", ShortcutData));
 
     /*DEBUG_PRINTF("FolderName: %s", FolderName);
     DEBUG_PRINTF("SessionName: %s", SessionName);
@@ -2467,7 +2482,15 @@ bool TWinSCPFileSystem::SetDirectoryEx(const UnicodeString & ADir, OPERATION_MOD
   {
     DebugAssert(!FNoProgress);
     const bool Normal = FLAGCLEAR(OpMode, OPM_FIND | OPM_SILENT);
-    const UnicodeString PrevPath = FTerminal ? FTerminal->GetCurrentDirectory() : "";
+    // Defensive: if terminal was destroyed (e.g. Disconnect from root + ".."),
+    // reject further directory changes so Far Manager does not crash.
+    if (FTerminal == nullptr)
+    {
+      TINYLOG_WARNING(g_tinylog) << TLogContext::Format()
+          << "SetDirectoryEx: FTerminal is null, rejecting dir=" << ADir;
+      return false;
+    }
+    const UnicodeString PrevPath = FTerminal->GetCurrentDirectory();
     FNoProgress = !Normal;
     if (!FNoProgress)
     {
@@ -2479,7 +2502,6 @@ bool TWinSCPFileSystem::SetDirectoryEx(const UnicodeString & ADir, OPERATION_MOD
     }
     try__finally
     {
-      DebugAssert(FTerminal);
       if (ADir == BACKSLASH)
       {
         FTerminal->ChangeDirectory(ROOTDIRECTORY);
