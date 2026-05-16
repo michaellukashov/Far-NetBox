@@ -21,12 +21,10 @@ TCustomFarPlugin * CreateFarPlugin(HINSTANCE HInst)
   Result->Initialize();
   return Result;
 }
-extern void CleanupVCLCommon();
 void DestroyFarPlugin(TCustomFarPlugin *& Plugin)
 {
   DebugAssert(FarPlugin);
   Plugin->Finalize();
-  CleanupVCLCommon();
   delete Plugin;
   Plugin = nullptr;
 }
