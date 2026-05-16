@@ -13,7 +13,7 @@ enum MsgIDs {
     NB_STATUS_AUTHENTICATE,  // "Authenticating..."
     NB_STATUS_AUTHENTICATED,  // "Authenticated."
     NB_STATUS_STARTUP,  // "Starting the session..."
-    NB_STATUS_OPEN_DIRECTORY,  // "Reading remote directory..."
+    NB_STATUS_OPEN_DIRECTORY,  // "Reading remote directory ..."
     NB_STATUS_READY,  // "Session started."
 
     MSG_TITLE_CONFIRMATION,  // "Confirmation"
@@ -1229,7 +1229,7 @@ enum MsgIDs {
     MSG_STATUS_AUTHENTICATED,  // "Authenticated."
     MSG_STATUS_STARTUP,  // "Starting the session..."
     MSG_STATUS_READY,  // "Session started."
-    MSG_STATUS_OPEN_DIRECTORY,  // "Reading remote directory..."
+    MSG_STATUS_OPEN_DIRECTORY,  // "Reading remote directory ..."
     MSG_USING_TUNNEL,  // "Connecting through tunnel..."
     MSG_AUTH_TRANSL_KEY_REFUSED,  // "Server refused our key."
     MSG_PFWD_TRANSL_ADMIN,  // "Administratively prohibited (%s)."

@@ -13,7 +13,7 @@
 "Аутентификация..."
 "Аутентификация пройдена."
 "Старт сессии..."
-"Чтение удалённого каталога %s..."
+"Чтение удалённого каталога %s ..."
 "Подключено."
 
 "Подтверждение"
@@ -1228,7 +1228,7 @@
 "Authenticated."
 "Starting the session..."
 "Session started."
-"Reading remote directory %s..."
+"Reading remote directory %s ..."
 "Connecting through tunnel..."
 "Server refused our key."
 "Administratively prohibited (%s)."

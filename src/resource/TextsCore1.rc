@@ -439,7 +439,7 @@ BEGIN
   STATUS_AUTHENTICATED, "Authenticated."
   STATUS_STARTUP, "Starting the session..."
   STATUS_READY, "Session started."
-  STATUS_OPEN_DIRECTORY, "Reading remote directory %s..."
+  STATUS_OPEN_DIRECTORY, "Reading remote directory %s ..."
   USING_TUNNEL, "Connecting through tunnel..."
   AUTH_TRANSL_KEY_REFUSED, "Server refused our key."
   PFWD_TRANSL_ADMIN, "Administratively prohibited (%s)."

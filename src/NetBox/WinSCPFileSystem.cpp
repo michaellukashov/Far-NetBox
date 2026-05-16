@@ -3777,7 +3777,15 @@ void TWinSCPFileSystem::TerminalStartReadDirectory(TObject * /*Sender*/)
 {
   if (!FNoProgress)
   {
-    GetWinSCPPlugin()->ShowConsoleTitle(GetMsg(NB_READING_DIRECTORY_TITLE));
+    if (!FLastPath.IsEmpty())
+    {
+      GetWinSCPPlugin()->ShowConsoleTitle(
+        FORMAT("%s %s", GetMsg(NB_READING_DIRECTORY_TITLE), FLastPath));
+    }
+    else
+    {
+      GetWinSCPPlugin()->ShowConsoleTitle(GetMsg(NB_READING_DIRECTORY_TITLE));
+    }
   }
 }
 
@@ -3811,8 +3819,16 @@ void TWinSCPFileSystem::TerminalReadDirectoryProgress(
 
     if (!FNoProgress)
     {
-      GetWinSCPPlugin()->UpdateConsoleTitle(
-        FORMAT("%s (%d)", GetMsg(NB_READING_DIRECTORY_TITLE), Progress));
+      if (!FLastPath.IsEmpty())
+      {
+        GetWinSCPPlugin()->UpdateConsoleTitle(
+          FORMAT("%s %s (%d)", GetMsg(NB_READING_DIRECTORY_TITLE), FLastPath, Progress));
+      }
+      else
+      {
+        GetWinSCPPlugin()->UpdateConsoleTitle(
+          FORMAT("%s (%d)", GetMsg(NB_READING_DIRECTORY_TITLE), Progress));
+      }
     }
   }
 }
