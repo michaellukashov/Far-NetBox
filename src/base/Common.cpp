@@ -960,12 +960,12 @@ UnicodeString DelimitStr(const UnicodeString & Str, wchar_t Quote)
     }
   }
   UnicodeString Result(Str);
-  for (int32_t i = 1; i <= Result.Length(); i++)
+  for (int32_t I = 1; I <= Result.Length(); I++)
   {
-    if (Result.IsDelimiter(SpecialChars, i))
+    if (Result.IsDelimiter(SpecialChars, I))
     {
-      Result.Insert(L"\\", i);
-      i++;
+      Result.Insert(L"\\", I);
+      I++;
     }
   }
   if (Result.IsDelimiter(L"-", 1))

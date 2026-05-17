@@ -1658,9 +1658,9 @@ bool TSecurityConfigurationDialog::Execute()
   const TSshHostCAList * SrcList = GetConfiguration()->GetActiveSshHostCAList();
   if (SrcList)
   {
-    for (int32_t i = 0; i < SrcList->GetCount(); ++i)
+    for (int32_t I = 0; I < SrcList->GetCount(); ++I)
     {
-      FLocalCaList.push_back(*SrcList->Get(i));
+      FLocalCaList.push_back(*SrcList->Get(I));
     }
   }
 
@@ -1750,9 +1750,9 @@ void TSecurityConfigurationDialog::FromPuTTYCheckChange(TFarDialogItem * /*Sende
     const TSshHostCAList * SrcList = GetConfiguration()->GetPuttySshHostCAList();
     if (SrcList)
     {
-      for (int32_t i = 0; i < SrcList->GetCount(); ++i)
+      for (int32_t I = 0; I < SrcList->GetCount(); ++I)
       {
-        FLocalCaList.push_back(*SrcList->Get(i));
+        FLocalCaList.push_back(*SrcList->Get(I));
       }
     }
   }
@@ -1761,9 +1761,9 @@ void TSecurityConfigurationDialog::FromPuTTYCheckChange(TFarDialogItem * /*Sende
     const TSshHostCAList * SrcList = GetConfiguration()->GetSshHostCAList();
     if (SrcList)
     {
-      for (int32_t i = 0; i < SrcList->GetCount(); ++i)
+      for (int32_t I = 0; I < SrcList->GetCount(); ++I)
       {
-        FLocalCaList.push_back(*SrcList->Get(i));
+        FLocalCaList.push_back(*SrcList->Get(I));
       }
     }
   }
