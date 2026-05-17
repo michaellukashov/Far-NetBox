@@ -245,6 +245,11 @@ jobs:
       version_short: ${{ needs.build.outputs.version_short }}
 
     steps:
+      - name: Checkout source
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
       - name: Download archives
         uses: actions/download-artifact@v6
         with:
