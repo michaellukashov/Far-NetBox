@@ -91,7 +91,7 @@
 
  * Upgrade WinSCP sources: WinSCP 6.5.6
  * Upgrade openssl sources: openssl 3.3.7
- * Upgrade dependencies: expat 2.7.5 (security fixes: CVE-2026-32776, CVE-2026-32777, CVE-2026-32778)
+ * Upgrade dependencies: expat 2.8.1 (hash salt hardening with 128-bit SipHash key, default attribute deduplication fix)
 
 ## [26.05.1.610] - 2026-05-16
 
