@@ -51,6 +51,7 @@ jobs:
 
     env:
       BUILD_TYPE: RelWithDebInfo
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     runs-on: windows-2022
     timeout-minutes: 45
@@ -123,7 +124,7 @@ jobs:
             echo "::warning::v141 toolset not available; falling back to v143"
           fi
       - name: Cache CMake build
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             build-${{ matrix.build }}/CMakeFiles
@@ -227,7 +228,7 @@ jobs:
           fi
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: FarNetBox.${{ matrix.platform_label }}
           path: ./*.7z
