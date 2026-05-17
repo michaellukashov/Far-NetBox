@@ -1143,10 +1143,10 @@ UnicodeString TGUIConfiguration::AppliedLocaleVersion()
   return Result;
 }
 
-void TGUIConfiguration::SetAppliedLocale(LCID AppliedLocale, const UnicodeString & LocaleModuleName)
+void TGUIConfiguration::SetAppliedLocale(LCID AAppliedLocale, const UnicodeString & ALocaleModuleName)
 {
-  FAppliedLocale = AppliedLocale;
-  FLocaleModuleName = LocaleModuleName;
+  FAppliedLocale = AAppliedLocale;
+  FLocaleModuleName = ALocaleModuleName;
 }
 
 void TGUIConfiguration::FreeResourceModule(HANDLE /*Instance*/)

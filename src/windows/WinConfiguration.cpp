@@ -523,7 +523,7 @@ void TWinConfiguration::ConfigurationInit()
 
   // Load complete locale according to the UI language
   SetLocaleInternal(0, true, true);
-  FDefaultLocale = AppliedLocale;
+  FDefaultLocale = GetAppliedLocale();
 }
 
 TWinConfiguration::~TWinConfiguration()
@@ -1069,9 +1069,11 @@ THierarchicalStorage * TWinConfiguration::CreateScpStorage(bool & SessionList)
 
 // duplicated from core\configuration.cpp
 #undef LASTELEM
+#undef BLOCK
 #define BLOCK(KEY, CANCREATE, BLOCK) \
   do { if (Storage->OpenSubKeyPath(KEY, CANCREATE)) try__finally { BLOCK } __finally { Storage->CloseSubKeyPath(); } end_try__finally } while(0)
 #define KEY(TYPE, VAR) KEYEX(TYPE, F##VAR, PropertyToKey(TEXT(#VAR)))
+#undef REGCONFIG
 #define REGCONFIG(CANCREATE) \
   BLOCK("Interface", CANCREATE, \
     KEYEX(Integer, FDoubleClickAction, "CopyOnDoubleClick"); \

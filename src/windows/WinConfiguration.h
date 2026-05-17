@@ -47,7 +47,7 @@ struct TTerminalManager { static TTerminalManager * Instance() { static TTermina
 class TIniFileStorage : public THierarchicalStorage { public: static TIniFileStorage * CreateFromPath(const UnicodeString &) { return nullptr; } };
 
 inline LCID GetAppliedLocale() { return 0; }
-#define AppliedLocale (GetAppliedLocale())
+//#define AppliedLocale (GetAppliedLocale())
 
 bool DumpResourceToFile(const UnicodeString &, const UnicodeString &);
 
