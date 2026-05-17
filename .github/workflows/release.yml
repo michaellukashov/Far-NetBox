@@ -26,7 +26,6 @@ jobs:
           - cl_x64_release
           - cl_x86_release
           - cl_ARM64_release
-          - cl_x86_winxp_release
         include:
           - build: cl_x64_release
             arch: amd64
@@ -119,7 +118,7 @@ jobs:
         shell: bash
         run: |
           echo "=== MSVC Toolset Version ==="
-          cl.exe -Bv 2>&1 | head -n 5
+          cl.exe /Bv 2>&1 | head -n 5 || true
           if [[ "${{ matrix.toolset }}" != "default" && "${{ steps.msvc-setup.outcome }}" == "failure" ]]; then
             echo "::warning::v141 toolset not available; falling back to v143"
           fi
@@ -165,38 +164,6 @@ jobs:
           fi
           echo "Plugin directory contents:"
           ls -la "$PLUGIN_DIR"
-
-      - name: Verify WinXP binary compatibility
-        if: matrix.build == 'cl_x86_winxp_release'
-        shell: bash
-        run: |
-          DLL_PATH="./Far3_${{ matrix.platform }}/Plugins/NetBox/NetBox.dll"
-
-          echo "=== DLL Headers ==="
-          dumpbin /headers "$DLL_PATH"
-
-          echo "=== Subsystem Check ==="
-          SUBSYSTEM=$(dumpbin /headers "$DLL_PATH" | findstr /i "subsystem" || true)
-          echo "$SUBSYSTEM"
-
-          if ! echo "$SUBSYSTEM" | findstr "5.01" > /dev/null; then
-            echo "::error::Subsystem version is not 5.01 — binary is not Windows XP compatible"
-            exit 1
-          fi
-
-          echo "=== Dependents ==="
-          dumpbin /dependents "$DLL_PATH"
-
-          echo "=== API Set Imports Check ==="
-          APISET=$(dumpbin /imports "$DLL_PATH" | findstr /i "api-ms-win-core" || true)
-          if [[ -n "$APISET" ]]; then
-            echo "::warning::Found API set dependencies (may indicate Vista+ compatibility issues):"
-            echo "$APISET"
-          else
-            echo "No API set dependencies found"
-          fi
-
-          echo "=== WinXP compatibility verified ==="
 
       - name: Pack artifacts
         shell: bash
@@ -249,7 +216,6 @@ jobs:
         uses: actions/checkout@v5
         with:
           fetch-depth: 0
-
       - name: Download archives
         uses: actions/download-artifact@v6
         with:

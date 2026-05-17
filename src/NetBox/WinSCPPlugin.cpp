@@ -193,7 +193,9 @@ bool TWinSCPPlugin::ConfigureEx(const GUID * /* Item */)
   const int32_t MTransferEditor = MenuItems->AddString(GetMsg(NB_CONFIG_TRANSFER_EDITOR));
   const int32_t MLogging = MenuItems->AddString(GetMsg(NB_CONFIG_LOGGING));
   const int32_t MIntegration = MenuItems->AddString(GetMsg(NB_CONFIG_INTEGRATION));
+#if defined(FLAG_DEV)
   const int32_t MSecurity = MenuItems->AddString(GetMsg(NB_CONFIG_SECURITY));
+#endif //#if defined(FLAG_DEV)
   MenuItems->AddSeparator();
   const int32_t MAbout = MenuItems->AddString(GetMsg(NB_CONFIG_ABOUT));
 
@@ -268,6 +270,7 @@ bool TWinSCPPlugin::ConfigureEx(const GUID * /* Item */)
           Change = true;
         }
       }
+#if defined(FLAG_DEV)
       else if (Result == MSecurity)
       {
         if (SecurityConfigurationDialog())
@@ -275,6 +278,7 @@ bool TWinSCPPlugin::ConfigureEx(const GUID * /* Item */)
           Change = true;
         }
       }
+#endif //#if defined(FLAG_DEV)
       else if (Result == MAbout)
       {
         AboutDialog();
