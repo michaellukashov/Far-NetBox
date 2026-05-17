@@ -25,6 +25,7 @@ function(expat_get_sources EXPAT_SOURCES)
         lib/xmltok.c
         lib/xmltok_impl.c
         lib/loadlibrary.c
+        lib/random_rand_s.c
         PARENT_SCOPE
     )
 endfunction()
