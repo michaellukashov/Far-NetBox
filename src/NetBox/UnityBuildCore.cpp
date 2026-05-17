@@ -11,6 +11,7 @@
 #include "../nbcore/nbmemory.cpp"
 #include "../nbcore/nbstring.cpp"
 #include "../nbcore/nbutils.cpp"
+#include "../nbcore/SessionHistory.cpp"
 
 #include "../base/UnicodeString.cpp"
 #include "../base/Classes.cpp"
@@ -28,6 +29,7 @@
 #include "../base/FormatUtils.cpp"
 #include "../base/ObjIDs.cpp"
 #include "../base/LogContext.cpp"
+#include "../base/SecureString.cpp"
 
 #include "../core/RemoteFiles.cpp"
 #include "../core/Terminal.cpp"
@@ -59,8 +61,6 @@
 #include "../core/Http.cpp"
 #include "../core/NeonIntf.cpp"
 #include "../core/Certificates.cpp"
-#include "../core/KittyKeyboard.cpp"
-#include "../core/Win32Input.cpp"
 
 #include "../windows/SynchronizeController.cpp"
 #include "../windows/GUITools.cpp"
@@ -69,5 +69,7 @@
 #include "../windows/ProgParams.cpp"
 #include "../windows/UserInterface.cpp"
 #include "../windows/WinInterface.cpp"
+#include "../windows/WinConfiguration.cpp"
+#include "../windows/CustomWinConfiguration.cpp"
 
 #include <disable_warnings_in_std_end.hpp>

@@ -1,6 +1,7 @@
 #include <vcl.h>
 #pragma hdrstop
 
+#include <commdlg.h>
 #include "WinSCPPlugin.h"
 #include "WinConfiguration.h"
 #include <Cryptography.h>
@@ -29,7 +30,6 @@
 #include "plugin_version.hpp"
 #include "resource.h"
 #include <System.IOUtils.hpp>
-#include <commdlg.h>
 #include <S3FileSystem.h>
 #include <Sysutils.hpp>
 
