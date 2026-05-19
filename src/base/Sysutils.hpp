@@ -624,7 +624,7 @@ public:
 
   explicit scope_guard0(F&& f) noexcept : m_f(std::move(f)) {}
 
-  ~scope_guard0() noexcept(Type == scope_type::fail)
+  ~scope_guard0() noexcept
   {
     if (*m_Active && (Type == scope_type::exit || (Type == scope_type::fail) == m_Ec.is_new()))
       m_f();

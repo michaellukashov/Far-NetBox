@@ -3603,8 +3603,8 @@ void TCustomCommandType::LoadExtension(TStrings * Lines, const UnicodeString & P
 
     if (!Continuation)
     {
-      int32_t P;
-      if (!ExtensionLine.IsEmpty() && (ExtensionLine[1] == ExtensionMark) && ((P = Pos(L" ", ExtensionLine)) >= 2))
+      int32_t P = Pos(L" ", ExtensionLine);
+      if (!ExtensionLine.IsEmpty() && (ExtensionLine[1] == ExtensionMark) && (P >= 2))
       {
         UnicodeString Key = ExtensionLine.SubString(2, P - 2).LowerCase();
         UnicodeString Directive = UnicodeString(&ExtensionMark, 1) + Key;

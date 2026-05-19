@@ -232,8 +232,11 @@ bool TCommandSet::GetOneLineCommand(TFSCommand /*Cmd*/) const
 void TCommandSet::SetCommands(TFSCommand Cmd, const UnicodeString & Value)
 {
   CHECK_CMD;
-  const AnsiString AnsiValue(Value);
-  strcpy_s(const_cast<char *>(CommandSet[Cmd].Command), MaxCommandLen, AnsiValue.SubString(1, MaxCommandLen - 1).c_str());
+  if ((Cmd >=0) && (Cmd <= MaxShellCommand))
+  {
+    const AnsiString AnsiValue(Value);
+    strcpy_s(const_cast<char *>(CommandSet[Cmd].Command), MaxCommandLen, AnsiValue.SubString(1, MaxCommandLen - 1).c_str());
+  }
 }
 
 UnicodeString TCommandSet::GetCommands(TFSCommand Cmd) const
