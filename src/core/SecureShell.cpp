@@ -18,6 +18,7 @@
 #include <WinSock2.h>
 #endif
 #include <ws2ipdef.h>
+#include <ws2tcpip.h>
 #ifndef SIO_IDEAL_SEND_BACKLOG_QUERY
 #define SIO_IDEAL_SEND_BACKLOG_QUERY   _IOR('t', 123, ULONG)
 #define SIO_IDEAL_SEND_BACKLOG_CHANGE   _IO('t', 122)
@@ -632,8 +633,13 @@ bool TSecureShell::TryFtp()
       Result = (Socket != INVALID_SOCKET);
       if (Result)
       {
-        const LPHOSTENT HostEntry = gethostbyname(AnsiString(FSessionData->GetHostNameExpanded()).c_str());
-        Result = (HostEntry != nullptr);
+        addrinfo hints{};
+        hints.ai_family = AF_INET;
+        hints.ai_socktype = SOCK_STREAM;
+        const AnsiString HostName = AnsiString(FSessionData->GetHostNameExpanded());
+        addrinfo * AddrResult = nullptr;
+        const int GaiResult = getaddrinfo(HostName.c_str(), nullptr, &hints, &AddrResult);
+        Result = (GaiResult == 0);
         if (Result)
         {
           SOCKADDR_IN Address;
@@ -645,7 +651,8 @@ bool TSecureShell::TryFtp()
           Address.sin_family = AF_INET;
           const int32_t Port = FtpPortNumber;
           Address.sin_port = htons(static_cast<short>(Port));
-          Address.sin_addr.s_addr = *(reinterpret_cast<uint32_t *>(*HostEntry->h_addr_list));
+          Address.sin_addr.s_addr = reinterpret_cast<sockaddr_in *>(AddrResult->ai_addr)->sin_addr.s_addr;
+          freeaddrinfo(AddrResult);
 
           HANDLE Event = ::CreateEvent(nullptr, false, false, nullptr);
           Result = (::WSAEventSelect(Socket, static_cast<WSAEVENT>(Event), FD_CONNECT | FD_CLOSE) != SOCKET_ERROR);

@@ -1227,7 +1227,8 @@ TSafeHandleStream::TSafeHandleStream(gsl::not_null<THandleStream *> Source, bool
 
 TSafeHandleStream * TSafeHandleStream::CreateFromFile(const UnicodeString & FileName, uint16_t Mode)
 {
-  return new TSafeHandleStream(new TFileStream(ApiPath(FileName), Mode), true);
+  TFileStream * FileStream = new TFileStream(ApiPath(FileName), Mode);
+  return new TSafeHandleStream(FileStream, true);
 }
 
 TSafeHandleStream::~TSafeHandleStream() noexcept

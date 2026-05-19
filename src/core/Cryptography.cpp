@@ -654,7 +654,7 @@ void CryptographyInitialize()
   {
     UnscrambleTable[SScrambleTable[Index]] = static_cast<uint8_t>(Index);
   }
-  srand(nb::ToUInt32(time(nullptr)) ^ nb::ToUInt32(_getpid()));
+  // srand removed: unused in this module; <random> should be used instead of C random facilities
 
   // The results are partly cached. So when later some OpenSSL function is called, which internally
   // calls OPENSSL_init_crypto, it will fail, without doing full initialization. So afterwards

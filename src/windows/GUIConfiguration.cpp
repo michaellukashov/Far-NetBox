@@ -655,19 +655,19 @@ void TGUIConfiguration::DefaultLocalized()
     {
       TCopyParamType * CopyParam{nullptr};
 
-      CopyParam = new TCopyParamType(FDefaultCopyParam);
+      CopyParam = new TGUICopyParamType(FDefaultCopyParam);
       CopyParam->SetTransferMode(tmAscii);
       FCopyParamList->Add(LoadStr(COPY_PARAM_PRESET_ASCII), CopyParam, nullptr);
 
-      CopyParam = new TCopyParamType(FDefaultCopyParam);
+      CopyParam = new TGUICopyParamType(FDefaultCopyParam);
       CopyParam->SetTransferMode(tmBinary);
       FCopyParamList->Add(LoadStr(COPY_PARAM_PRESET_BINARY), CopyParam, nullptr);
 
-      CopyParam = new TCopyParamType(FDefaultCopyParam);
+      CopyParam = new TGUICopyParamType(FDefaultCopyParam);
       CopyParam->SetNewerOnly(true);
       FCopyParamList->Add(LoadStr(COPY_PARAM_NEWER_ONLY), CopyParam, nullptr);
 
-      CopyParam = new TCopyParamType(FDefaultCopyParam);
+      CopyParam = new TGUICopyParamType(FDefaultCopyParam);
       CopyParam->IncludeFileMask = TFileMasks(FORMAT("%s */", IncludeExcludeFileMasksDelimiter));
       FCopyParamList->Add(LoadStr(COPY_PARAM_PRESET_EXCLUDE_ALL_DIR), CopyParam, nullptr);
     }
