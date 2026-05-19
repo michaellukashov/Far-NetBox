@@ -97,11 +97,11 @@ Exception::Exception(TObjectClassId Kind, int32_t Ident) noexcept :
   throw EOSError(ErrorMsg, LastError);
 }
 
-std::mt19937 engine;
+std::random_device engine;
 
 void Randomize()
 {
-  engine.seed(nb::ToUInt32(time(nullptr)));
+  // std::random_device provides non-deterministic entropy; no seeding required
 }
 
 int32_t Random(int32_t Max)

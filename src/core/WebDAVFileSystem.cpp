@@ -53,7 +53,7 @@ constexpr const char * CONST_WEBDAV_PROTOCOL_BASE_NAME = "WebDAV";
 constexpr const int32_t HttpUnauthorized = 401;
 
 constexpr const char * DAV_PROP_NAMESPACE = "DAV:";
-constexpr const char * MODDAV_PROP_NAMESPACE = "http://apache.org/dav/props/";
+constexpr const char * MODDAV_PROP_NAMESPACE = "http://apache.org/dav/props/"; // NOSONAR cpp:S5332: XML namespace URI, not an HTTP connection
 constexpr const char * PROP_CONTENT_LENGTH = "getcontentlength";
 constexpr const char * PROP_LAST_MODIFIED = "getlastmodified";
 constexpr const char * PROP_RESOURCE_TYPE = "resourcetype";

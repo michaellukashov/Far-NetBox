@@ -13,6 +13,7 @@
 #include "CoreMain.h"
 #include "WinSCPSecurity.h"
 #include "FileMasks.h"
+#include "Certificates.hpp"
 #include "CopyParam.h"
 #include <System.ShlObj.hpp>
 #include <System.IOUtils.hpp>
@@ -2208,7 +2209,7 @@ UnicodeString TConfiguration::GetCertificateStorageExpanded() const
        std::unique_ptr<TStream> Stream(std::make_unique<TFileStream>(TempCertFile, fmCreate));
       if (Stream)
       {
-        Stream->Write(EmbeddedCacertPem, strlen(EmbeddedCacertPem));
+        Stream->Write(EmbeddedCacertPem, EmbeddedCacertPemSize);
         CachedCertFile = TempCertFile;
         return TempCertFile;
       }
