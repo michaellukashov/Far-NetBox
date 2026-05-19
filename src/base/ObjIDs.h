@@ -16,6 +16,7 @@ extern const TObjectClassId OBJECT_CLASS_TList;
 extern const TObjectClassId OBJECT_CLASS_TObjectList;
 extern const TObjectClassId OBJECT_CLASS_TStrings;
 extern const TObjectClassId OBJECT_CLASS_TStringList;
+extern const TObjectClassId OBJECT_CLASS_THistoryStrings;
 
 extern const TObjectClassId OBJECT_CLASS_Exception;
 extern const TObjectClassId OBJECT_CLASS_EAbort;
@@ -75,7 +76,8 @@ extern const TObjectClassId OBJECT_CLASS_TLocatedQueueItem;
 extern const TObjectClassId OBJECT_CLASS_TTransferQueueItem;
 extern const TObjectClassId OBJECT_CLASS_TUploadQueueItem;
 extern const TObjectClassId OBJECT_CLASS_TDownloadQueueItem;
-extern const TObjectClassId OBJECT_CLASS_TDeleteQueueItem;
+extern const TObjectClassId OBJECT_CLASS_TRemoteDeleteQueueItem;
+extern const TObjectClassId OBJECT_CLASS_TLocalDeleteQueueItem;
 extern const TObjectClassId OBJECT_CLASS_TTerminalThread;
 extern const TObjectClassId OBJECT_CLASS_TRemoteFile;
 extern const TObjectClassId OBJECT_CLASS_TRemoteDirectoryFile;
@@ -106,7 +108,10 @@ extern const TObjectClassId OBJECT_CLASS_TSFTPFileSystem;
 extern const TObjectClassId OBJECT_CLASS_TWebDAVFileSystem;
 extern const TObjectClassId OBJECT_CLASS_TGUICopyParamType;
 extern const TObjectClassId OBJECT_CLASS_TCopyParamRule;
+extern const TObjectClassId OBJECT_CLASS_TCopyParamPreset;
+extern const TObjectClassId OBJECT_CLASS_TCopyParamPresetList;
 extern const TObjectClassId OBJECT_CLASS_TGUIConfiguration;
+extern const TObjectClassId OBJECT_CLASS_TCustomWinConfiguration;
 
 extern const TObjectClassId OBJECT_CLASS_TFarConfiguration;
 extern const TObjectClassId OBJECT_CLASS_TFarDialog;
@@ -151,6 +156,7 @@ extern const TObjectClassId OBJECT_CLASS_TBackgroundTerminal;
 extern const TObjectClassId OBJECT_CLASS_TDialogIdleThread;
 extern const TObjectClassId OBJECT_CLASS_TConsoleTitleParam;
 extern const TObjectClassId OBJECT_CLASS_TKeepAliveThread;
+extern const TObjectClassId OBJECT_CLASS_TSyncPoller;
 
 } // extern "C"
 

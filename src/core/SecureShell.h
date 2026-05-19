@@ -32,6 +32,7 @@ class TSecureShell : public TObject
   friend class TPoolForDataEvent;
   friend class TTerminal;
   friend class TSFTPFileSystem;
+  friend struct ScpSeat;
   NB_DISABLE_COPY(TSecureShell)
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TSecureShell); }
@@ -81,10 +82,18 @@ private:
   UnicodeString FCWriteTemp;
   UnicodeString FAuthenticationLog;
   UnicodeString FLastTunnelError;
+  UnicodeString FTempPPKFile;
   UnicodeString FUserName;
   bool FUtfStrings{false};
   DWORD FLastSendBufferUpdate{0};
   int32_t FSendBuf{0};
+  bool FInteractive{false};
+  int32_t FTerminalWidth{80};
+  int32_t FTerminalHeight{24};
+  UnicodeString FTerminalType{"xterm"};
+  bool FRawInput{false};
+  TNotifyEvent FOnRawInput{nullptr};
+  TNotifyEvent FOnWin32Input{nullptr};
   std::unique_ptr<callback_set> FCallbackSet;
   std::unique_ptr<ScpLogPolicy> FLogPolicy{nullptr};
   std::unique_ptr<ScpSeat> FSeat{nullptr};
@@ -140,7 +149,7 @@ protected:
   void FatalError(const UnicodeString & Error, const UnicodeString & HelpKeyword = "");
   UnicodeString FormatKeyStr(const UnicodeString & AKeyStr) const;
   void ParseFingerprint(const UnicodeString & Fingerprint, UnicodeString & SignKeyType, UnicodeString & Hash);
-  static Conf * StoreToConfig(TSessionData * Data, bool Simple);
+  Conf * StoreToConfig(TSessionData * Data, bool Simple);
 
 public:
   explicit TSecureShell(TSessionUI * UI, TSessionData * SessionData,
@@ -164,6 +173,8 @@ public:
   uint32_t MaxPacketSize() const;
   void ClearStdError();
   bool GetStoredCredentialsTried() const;
+  void ClearPending();
+  void DrainSocket();
   void CollectUsage();
   bool CanChangePassword() const;
 
@@ -217,5 +228,22 @@ public:
   TSshImplementation GetSshImplementation() const { return FSshImplementation; }
   bool GetUtfStrings() const { return FUtfStrings; }
   void SetUtfStrings(bool Value) { FUtfStrings = Value; }
+  bool GetInteractive() const { return FInteractive; }
+  void SetInteractive(bool Value) { FInteractive = Value; }
+  int32_t GetTerminalWidth() const { return FTerminalWidth; }
+  int32_t GetTerminalHeight() const { return FTerminalHeight; }
+  void SetTerminalSize(int32_t Width, int32_t Height);
+  UnicodeString GetTerminalType() const { return FTerminalType; }
+  void SetTerminalType(const UnicodeString & Value) { FTerminalType = Value; }
+  bool GetRawInput() const { return FRawInput; }
+  void SetRawInput(bool Value) { FRawInput = Value; }
+  void SendChar(const uint8_t * Buf, size_t Length);
+  void ProcessRawInput();
+  TNotifyEvent GetOnRawInput() const { return FOnRawInput; }
+  void SetOnRawInput(TNotifyEvent && Value) { FOnRawInput = std::move(Value); }
+  void SendInputRecord(const INPUT_RECORD & Record);
+  void ParseWin32Sequence(const UnicodeString & Sequence);
+  TNotifyEvent GetOnWin32Input() const { return FOnWin32Input; }
+  void SetOnWin32Input(TNotifyEvent && Value) { FOnWin32Input = std::move(Value); }
 };
 

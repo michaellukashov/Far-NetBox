@@ -7,7 +7,7 @@ void CryptographyInitialize();
 void CryptographyFinalize();
 void RequireTls();
 RawByteString ScramblePassword(const UnicodeString & Password);
-bool UnscramblePassword(const RawByteString & Scrambled, const UnicodeString & Password);
+bool UnscramblePassword(const RawByteString & Scrambled, UnicodeString & Password);
 void AES256EncryptWithMAC(const RawByteString & Input, const UnicodeString & Password,
   RawByteString & Output);
 bool AES256DecryptWithMAC(const RawByteString & Input, const UnicodeString & Password,
@@ -27,7 +27,7 @@ class TEncryption final : public TObject
   TEncryption() = delete;
 public:
   explicit TEncryption(const RawByteString & AKey) noexcept;
-  virtual ~TEncryption() = default;
+  virtual ~TEncryption();
   void Finalize();
 
   static bool IsEncryptedFileName(const UnicodeString & AFileName);

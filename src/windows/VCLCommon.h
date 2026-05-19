@@ -100,5 +100,6 @@ void GiveTBItemPriority(Tb2item::TTBCustomItem * Item);
 void DeleteChildren(TWinControl * Control);
 void AutoSizeLabel(TLabel * Label);
 void AutoSizeLabel(TStaticText * Label);
+void CleanupVCLCommon();
 
 #endif // defined(__BORLANDC__)

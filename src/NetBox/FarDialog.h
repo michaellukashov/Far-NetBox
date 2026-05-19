@@ -71,6 +71,7 @@ public:
   UnicodeString GetCaption() const;
   void SetCaption(const UnicodeString & Value);
   HANDLE GetHandle() const { return FHandle; }
+  HWND GetConsoleWindow() const { return FFarPlugin->GetConsoleWindow(); }
   TFarButton * GetDefaultButton() const { return FDefaultButton; }
   TFarBox * GetBorderBox() const { return FBorderBox; }
   // int32_t GetType(TFarDialogItem * Item) const;
@@ -478,6 +479,10 @@ public:
   RWProperty<UnicodeString> Text{nb::bind(&TFarEdit::GetText, this), nb::bind(&TFarEdit::SetText, this)};
 
   virtual UnicodeString GetText() const { return GetData(); }
+  // Retrieves text directly from Far dialog control, bypassing cached Data.
+  // Use when autocomplete or other Far-controlled text changes may have
+  // updated the control without firing DN_EDITCHANGE notification.
+  UnicodeString GetTextFromDialog();
   virtual void SetText(const UnicodeString & Value) { SetData(Value); }
   int32_t GetAsInteger() const;
   void SetAsInteger(int32_t Value);
@@ -712,7 +717,7 @@ private:
 inline TRect Rect(int32_t Left, int32_t Top, int32_t Right, int32_t Bottom);
 
 template<typename ObjectType, typename OwnerType>
-ObjectType * MakeOwnedObject(OwnerType * Owner)
+inline ObjectType * MakeOwnedObject(OwnerType * Owner)
 {
   std::unique_ptr<ObjectType> Object(std::make_unique<ObjectType>(Owner));
   return Object.release();

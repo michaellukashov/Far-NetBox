@@ -1,66 +1,45 @@
-Far-NetBox: SFTP/FTP/SCP/WebDAV/S3 client for Far Manager 3.0 x86/x64/ARM64
-==============
+# Far-NetBox
 
-| Workflow                    | Build status  |
-| --------------------------- | ------------- |
-| Github Actions              | [![build](https://github.com/michaellukashov/Far-NetBox/actions/workflows/release.yml/badge.svg)](https://github.com/michaellukashov/Far-NetBox/actions/workflows/release.yml/badge.svg)  |
-| Appveyor                    | [![Build status](https://ci.appveyor.com/api/projects/status/91lhdjygkenumcmv?svg=true)](https://ci.appveyor.com/project/michaellukashov/far-netbox)  |
+> SFTP/FTP/SCP/WebDAV/S3 client plugin for Far Manager 3.0 (x86/x64/ARM64)
 
+Far-NetBox is a file transfer plugin for [Far Manager](https://www.farmanager.com/) supporting multiple network protocols. Built on proven codebases — WinSCP 6.5.6, PuTTY 0.81, and FileZilla 2.2.32 — it delivers reliable remote file management inside Far's text-mode interface.
 
-Based on [WinSCP](http://winscp.net/eng/index.php) version 6.3.6 Copyright (c) 2000-2024 Martin Prikryl  
+| Workflow | Build status |
+|----------|-------------|
+| GitHub Actions | [![build](https://github.com/michaellukashov/Far-NetBox/actions/workflows/release.yml/badge.svg)](https://github.com/michaellukashov/Far-NetBox/actions/workflows/release.yml) |
+| AppVeyor | [![Build status](https://ci.appveyor.com/api/projects/status/91lhdjygkenumcmv?svg=true)](https://ci.appveyor.com/project/michaellukashov/far-netbox) |
 
-Based on [WinSCP as FAR Plugin: SFTP/FTP/SCP client for FAR version 1.6.2](http://winscp.net/download/winscpfar162setup.exe) Copyright (c) 2000-2009 Martin Prikryl  
+## Quick Start
 
-SSH and SCP code based on PuTTY 0.81 Copyright (c) 1997-2024 Simon Tatham  
+```cmd
+:: Build for x64 (requires Visual Studio 2022)
+cmd /c build-x64.bat
 
-FTP code based on FileZilla 2.2.32 Copyright (c) 2001-2007 Tim Kosse  
+:: Launch Far Manager from the platform directory
+Far3_x64\Far.exe
 
-How to build from source
-========================
-
-To build plugin from source, you will need:  
-
-  * Visual Studio 2022 build tools
-  * CMake 3.15
-  * Ninja (optional)
-
-Download the source:
-
-```
-cd C:/src
-git clone https://github.com/michaellukashov/Far-NetBox.git
+:: Press F11 and select NetBox to open the plugin
 ```
 
-From now on, we assume that your source tree is C:/src/Far-NetBox
+## Key Features
 
-Compile Far-NetBox plugin on the command line as follows:
+- **SFTP/SCP** — SSH file transfers via PuTTY
+- **FTP/FTPS** — File Transfer Protocol with TLS via FileZilla
+- **WebDAV/HTTPS** — Web-based distributed authoring via neon
+- **Amazon S3** — S3-compatible storage with TLS and custom CA certificates
+- **Session management** — XML-based configuration with password encryption
+- **Multi-architecture** — x86, x64, and ARM64 builds
 
-```
-"%VS170COMNTOOLS%\..\..\VC\vcvarsall.bat" x86_amd64
-cmake -S C:/src/Far-NetBox -B C:/build/Far-NetBox -G "Ninja" -DCMAKE_BUILD_TYPE=RelWithDebugInfo -DOPT_CREATE_PLUGIN_DIR=ON
-cmake --build C:/build/Far-NetBox
-```
+## Documentation
 
-You can generate solution for VS2022 IDE:
-```
-cmake -S C:/src/Far-NetBox -B C:/build/Far-NetBox -G "Visual Studio 17 2022" -DCMAKE_BUILD_TYPE=RelWithDebugInfo -DOPT_CREATE_PLUGIN_DIR=ON
-cmake --build C:/build/Far-NetBox
-```
+| Guide | Description |
+|-------|-------------|
+| [Getting Started](docs/getting-started.md) | Build, install, and first connection |
+| [User Guide](docs/user-guide.md) | Protocols, features, and internationalization |
+| [Architecture](docs/architecture.md) | Project structure, layers, and patterns |
+| [Contributing](docs/contributing.md) | Code conventions, build rules, and development workflow |
+| [Testing](docs/testing.md) | Manual regression testing and verification |
 
+## License
 
-Links
-========================
-
-* Project main page: [https://github.com/michaellukashov/Far-NetBox](https://github.com/michaellukashov/Far-NetBox)
-* Far Manager forum: [http://forum.farmanager.com/](http://forum.farmanager.com/)
-* Far-NetBox discussions (in Russian): [http://forum.farmanager.com/viewtopic.php?f=5&t=6317](http://forum.farmanager.com/viewtopic.php?f=5&t=6317)
-* Far-NetBox discussions (in English): [http://forum.farmanager.com/viewtopic.php?f=39&t=6638](http://forum.farmanager.com/viewtopic.php?f=39&t=6638)
-* Latest builds:
-https://nightly.link/michaellukashov/Far-NetBox/workflows/release/main?preview
-
-License
-========================
-
-Far-NetBox is [free](http://www.gnu.org/philosophy/free-sw.html) software: you can use it, redistribute it and/or modify it under the terms of the [GNU General Public License](http://www.gnu.org/licenses/gpl.html) as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.  
-
-Far-NetBox is distributed in the hope that it will be useful, but without any warranty; without even the implied warranty of merchantability or fitness for a particular purpose. See the [GNU General Public License](http://www.gnu.org/licenses/gpl.html) for more details.
+Far-NetBox is free software licensed under the [GNU General Public License v3](LICENSE.txt).

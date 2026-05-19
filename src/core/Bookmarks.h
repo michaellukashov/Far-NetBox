@@ -1,6 +1,5 @@
 #pragma once
 
-#include <string_view>
 #include <Classes.hpp>
 
 #include <CopyParam.h>
@@ -21,19 +20,21 @@ public:
   void ModifyAll(bool Modify);
   void Clear();
 
-  // __property TBookmarkList * Bookmarks[UnicodeString Index] = { read = GetBookmarks, write = SetBookmarks };
+#if defined(__BORLANDC__)
+  __property TBookmarkList * Bookmarks[UnicodeString Index] = { read = GetBookmarks, write = SetBookmarks };
+#endif // defined(__BORLANDC__)
   __property TBookmarkList * SharedBookmarks = { read = GetSharedBookmarks, write = SetSharedBookmarks };
 
 private:
   gsl::owner<TStringList *> FBookmarkLists;
   UnicodeString FSharedKey;
-  static constexpr const std::string_view Keys[] = {"Local", "Remote", "ShortCuts", "Options"};
+  static constexpr const char * Keys[] = {"Local", "Remote", "ShortCuts", "Options"};
 
 public:
-  TBookmarkList * GetBookmarks(const UnicodeString & AIndex);
+  TBookmarkList * GetBookmarks(const UnicodeString & AIndex) const;
   void SetBookmarks(const UnicodeString & AIndex, const TBookmarkList * Value);
   TBookmarkList * GetSharedBookmarks();
-  void SetSharedBookmarks(TBookmarkList * Value);
+  void SetSharedBookmarks(const TBookmarkList * Value);
 
 private:
   void LoadLevel(THierarchicalStorage * Storage, const UnicodeString & Key,
@@ -41,6 +42,7 @@ private:
 };
 
 class TBookmark;
+
 class NB_CORE_EXPORT TBookmarkList final : public TPersistent
 {
   friend class TBookmarks;
@@ -68,8 +70,10 @@ public:
 
   __property int32_t Count = { read = GetCount };
   const ROProperty<int32_t> Count{nb::bind(&TBookmarkList::GetCount, this)};
-  // __property TBookmark * Bookmarks[int32_t Index] = { read = GetBookmarks };
-  // __property bool NodeOpened[UnicodeString Index] = { read = GetNodeOpened, write = SetNodeOpened };
+#if defined(__BORLANDC__)
+  __property TBookmark * Bookmarks[int32_t Index] = { read = GetBookmarks };
+  __property bool NodeOpened[UnicodeString Index] = { read = GetNodeOpened, write = SetNodeOpened };
+#endif // defined(__BORLANDC__)
 
 protected:
   int32_t IndexOf(const TBookmark * Bookmark) const;

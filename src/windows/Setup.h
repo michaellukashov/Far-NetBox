@@ -1,6 +1,4 @@
 
-#if defined(__BORLANDC__)
-
 #ifndef SetupH
 #define SetupH
 
@@ -43,5 +41,3 @@ UnicodeString GetPowerShellCoreVersionStr();
 int ComRegistration(TConsole * Console);
 
 #endif
-
-#endif // defined(__BORLANDC__)

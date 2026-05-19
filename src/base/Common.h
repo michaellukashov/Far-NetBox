@@ -1,7 +1,10 @@
 
 #pragma once
 
-#include <Global.h>
+#if defined(__BORLANDC__)
+#include <vector>
+#endif // defined(__BORLANDC__)
+#include "Global.h"
 #include <Exceptions.h>
 
 #define EXCEPTION throw ExtException(nullptr, L"")
@@ -30,15 +33,23 @@ constexpr const wchar_t * QUOTE = L"\'";
 constexpr const wchar_t * DOUBLEQUOTE = L"\"";
 
 constexpr const wchar_t * AnyMask = L"*.*";
-//extern const wchar_t EngShortMonthNames[12][4];
 constexpr const wchar_t EngShortMonthNames[12][4] =
 {
   L"Jan", L"Feb", L"Mar", L"Apr", L"May", L"Jun",
   L"Jul", L"Aug", L"Sep", L"Oct", L"Nov", L"Dec"
 };
 
-// extern const char Bom[3];
 constexpr const char * CONST_BOM = "\xEF\xBB\xBF";
+#if defined(__BORLANDC__)
+#define PARENTDIRECTORY L".."
+#define THISDIRECTORY L"."
+
+extern const UnicodeString AnyMask;
+extern const wchar_t EngShortMonthNames[12][4];
+extern const char Bom[4];
+extern const UnicodeString XmlDeclaration;
+#endif // defined(__BORLANDC__)
+constexpr const wchar_t * XmlDeclaration = L"<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 constexpr const wchar_t TokenPrefix = L'%';
 constexpr const wchar_t NoReplacement = static_cast<wchar_t>(0);
 constexpr const wchar_t TokenReplacement = static_cast<wchar_t>(1);
@@ -63,6 +74,7 @@ NB_CORE_EXPORT void Shred(AnsiString & Str);
 NB_CORE_EXPORT void Shred(RawByteString & Str);
 NB_CORE_EXPORT UnicodeString AnsiToString(const RawByteString & S);
 NB_CORE_EXPORT UnicodeString AnsiToString(const char * S, int32_t Len);
+UnicodeString UTFToString(const RawByteString & S);
 NB_CORE_EXPORT UnicodeString MakeValidFileName(const UnicodeString & AFileName);
 UnicodeString RootKeyToStr(HKEY RootKey, const UnicodeString & Default = EmptyStr);
 UnicodeString BooleanToStr(bool B);
@@ -183,8 +195,7 @@ NB_CORE_EXPORT UnicodeString SizeToStr(int64_t ASize);
 NB_CORE_EXPORT LCID GetDefaultLCID();
 NB_CORE_EXPORT UnicodeString DefaultEncodingName();
 NB_CORE_EXPORT UnicodeString WindowsProductName();
-NB_CORE_EXPORT bool GetWindowsProductType(DWORD & Type);
-NB_CORE_EXPORT int32_t GetWindowsBuild();
+NB_CORE_EXPORT DWORD GetWindowsProductType();
 NB_CORE_EXPORT UnicodeString WindowsVersion();
 NB_CORE_EXPORT UnicodeString WindowsVersionLong();
 NB_CORE_EXPORT bool IsDirectoryWriteable(const UnicodeString & APath);
@@ -200,14 +211,16 @@ NB_CORE_EXPORT UnicodeString FormatVersion(int32_t MajorVersion, int32_t MinorVe
 NB_CORE_EXPORT TFormatSettings GetEngFormatSettings();
 NB_CORE_EXPORT int32_t ParseShortEngMonthName(const UnicodeString & MonthStr);
 // The defaults are equal to defaults of TStringList class (except for Sorted)
-NB_CORE_EXPORT TStringList * CreateSortedStringList(bool CaseSensitive = false, TDuplicatesEnum Duplicates = dupIgnore);
+NB_CORE_EXPORT TStringList * CreateSortedStringList(bool CaseSensitive = false, TDuplicatesEnum Duplicates = TDuplicatesEnum::dupIgnore);
+bool SameIdent(const UnicodeString & Ident1, const UnicodeString & Ident2);
 UnicodeString FindIdent(const UnicodeString & Ident, TStrings * Idents);
 UnicodeString GetTlsErrorStr(uint32_t Err);
 UnicodeString GetTlsErrorStrs();
-bool SameIdent(const UnicodeString & Ident1, const UnicodeString & Ident2);
-UnicodeString GetTlsErrorStr(uint32_t Err);
-UnicodeString GetTlsErrorStrs();
-NB_CORE_EXPORT void CheckCertificate(const UnicodeString & Path);
+void CheckCertificate(const UnicodeString & Path);
+#if defined(__BORLANDC__)
+typedef struct x509_st X509;
+typedef struct evp_pkey_st EVP_PKEY;
+#endif // defined(__BORLANDC__)
 using X509 = struct x509_st;
 using EVP_PKEY = struct evp_pkey_st;
 NB_CORE_EXPORT void ParseCertificate(const UnicodeString & Path,
@@ -225,8 +238,8 @@ NB_CORE_EXPORT UnicodeString GetEnvironmentInfo();
 void SetStringValueEvenIfEmpty(TStrings * Strings, const UnicodeString & Name, const UnicodeString & Value);
 UnicodeString GetAncestorProcessName(int32_t Levels = 1);
 UnicodeString GetAncestorProcessNames();
-[[noreturn]] void NotSupported();
-[[noreturn]] void NotImplemented();
+NORETURN void NotSupported();
+NORETURN void NotImplemented();
 UnicodeString GetDividerLine();
 TStrings * ProcessFeatures(TStrings * Features, const UnicodeString & FeaturesOverride);
 
@@ -246,7 +259,6 @@ private:
 
 using TProcessLocalFileEvent = nb::FastDelegate3<void,
   const UnicodeString & /*FileName*/, const TSearchRecSmart & /*Rec*/, void * /*Param*/>;
-
 NB_CORE_EXPORT bool FileSearchRec(const UnicodeString & FileName, TSearchRec & Rec);
 NB_CORE_EXPORT void CopySearchRec(const TSearchRec & Source, TSearchRec & Dest);
 struct NB_CORE_EXPORT TSearchRecChecked : public TSearchRecSmart
@@ -381,21 +393,13 @@ UnicodeString AssemblyAddRawSettings(
 #pragma warning(push)
 #pragma warning(disable: 4512) // assignment operator could not be generated
 
-#include "Global.h"
-
 template<typename T>
 class TValueRestorer // : public TObject
 {
 public:
   TValueRestorer() = delete;
   TValueRestorer(const TValueRestorer &) = delete;
-  TValueRestorer(T & Target) :
-    FTarget(Target),
-    FValue(Target)
-  {
-  }
-
-  TValueRestorer(T & Target, const T & Value) :
+  inline explicit TValueRestorer(T & Target, const T & Value) :
     FTarget(Target),
     FValue(Target),
     FArmed(true)
@@ -403,7 +407,14 @@ public:
     FTarget = Value;
   }
 
-  void Release()
+  inline TValueRestorer(T & Target) :
+    FTarget(Target),
+    FValue(Target),
+    FArmed(true)
+  {
+  }
+
+  inline void Release()
   {
     if (FArmed)
     {
@@ -445,13 +456,13 @@ class TAutoFlag : public TValueRestorer<bool>
   using parent = TValueRestorer<bool>;
 public:
   TAutoFlag() = default;
-  explicit TAutoFlag(bool & Target) :
+  inline explicit TAutoFlag(bool & Target) :
     parent(Target, true)
   {
     DebugAssert(!FValue);
   }
 
-  ~TAutoFlag()
+  inline ~TAutoFlag()
   {
     DebugAssert(!FArmed || FTarget);
   }

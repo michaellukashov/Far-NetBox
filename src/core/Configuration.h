@@ -1,25 +1,38 @@
 #pragma once
 
-// #include <set>
-// #include <list>
+#if defined(__BORLANDC__)
+#include <set>
+#include <list>
+#endif // defined(__BORLANDC__)
 #include "RemoteFiles.h"
 #include "FileBuffer.h"
 #include "HierarchicalStorage.h"
 #include "Usage.h"
+#include "Certificates.hpp"
 
+#if defined(__BORLANDC__)
+#define SET_CONFIG_PROPERTY_EX(PROPERTY, APPLY) \
+  if (PROPERTY != value) { F ## PROPERTY = value; Changed(); APPLY; }
+#else
 #define SET_CONFIG_PROPERTY_EX(PROPERTY, APPLY) \
   do { if (Get ## PROPERTY() != Value) { F ## PROPERTY = Value; Changed(); APPLY; } } while(0)
 #define SET_CONFIG_PROPERTY_EX2(PROPERTY, APPLY) \
   do { if (F ## PROPERTY != Value) { F ## PROPERTY = Value; Changed(); APPLY; } } while(0)
+#endif // defined(__BORLANDC__)
 #define SET_CONFIG_PROPERTY(PROPERTY) \
   SET_CONFIG_PROPERTY_EX(PROPERTY, )
 #define SET_CONFIG_PROPERTY2(PROPERTY) \
   SET_CONFIG_PROPERTY_EX2(PROPERTY, )
 
+#if defined(__BORLANDC__)
+extern const wchar_t * AutoSwitchNames;
+extern const wchar_t * NotAutoSwitchNames;
+#else
 constexpr const int32_t CONST_DEFAULT_NUMBER_OF_RETRIES = 2;
 
 constexpr const wchar_t * AutoSwitchNames = L"On;Off;Auto";
 constexpr const wchar_t * NotAutoSwitchNames = L"Off;On;Auto";
+#endif // defined(__BORLANDC__)
 enum TAutoSwitch { asOn, asOff, asAuto }; // Has to match PuTTY FORCE_ON, FORCE_OFF, AUTO
 
 class TStoredSessionList;
@@ -47,7 +60,6 @@ class TSshHostCAList final
 public:
   TSshHostCAList() noexcept = default;
   TSshHostCAList(const TSshHostCAList & Other) { operator =(Other); }
-  explicit TSshHostCAList(const TSshHostCA::TList & List);
   TSshHostCAList & operator =(const TSshHostCAList & Other);
   void Default();
   const TSshHostCA::TList & GetList() const;
@@ -58,6 +70,7 @@ public:
   void Save(THierarchicalStorage * Storage);
   void Load(THierarchicalStorage * Storage);
 
+  explicit TSshHostCAList(const TSshHostCA::TList & List);
 private:
   TSshHostCA::TList FList;
 };
@@ -92,7 +105,6 @@ private:
   bool FPermanentLogging{false};
   UnicodeString FLogFileName;
   UnicodeString FPermanentLogFileName;
-  int32_t FLogWindowLines{0};
   bool FLogFileAppend{false};
   bool FLogSensitive{false};
   bool FPermanentLogSensitive{false};
@@ -110,6 +122,7 @@ private:
   UnicodeString FPermanentActionsLogFileName;
   bool FConfirmOverwriting{false};
   bool FConfirmResume{false};
+  bool FSilentMode{false};
   bool FAutoReadDirectoryAfterOp{false};
   int32_t FSessionReopenAuto{0};
   int32_t FSessionReopenBackground{0};
@@ -141,12 +154,13 @@ private:
   int32_t FQueueTransfersLimit{0};
   int32_t FParallelTransferThreshold{0};
   UnicodeString FCertificateStorage;
-  UnicodeString FAWSMetadataService;
+  UnicodeString FAWSAPI;
   UnicodeString FChecksumCommands;
   std::unique_ptr<TSshHostCAList> FSshHostCAList;
   std::unique_ptr<TSshHostCAList> FPuttySshHostCAList;
   bool FSshHostCAsFromPuTTY{false};
   int32_t FHttpsCertificateValidation{0};
+  bool FHttpsSecureChannel{false};
   UnicodeString FSynchronizationChecksumAlgs;
 
   bool FDisablePasswordStoring{false};
@@ -212,10 +226,10 @@ public:
   void SetExternalIpAddress(const UnicodeString & Value);
   void SetTryFtpWhenSshFails(bool Value);
   void SetParallelDurationThreshold(int32_t Value);
-  void SetMimeTypes(const UnicodeString & Value);
-  void SetCertificateStorage(const UnicodeString & value);
-  UnicodeString GetCertificateStorageExpanded() const;
-  void SetAWSMetadataService(const UnicodeString & Value);
+void SetMimeTypes(const UnicodeString & Value);
+void SetCertificateStorage(const UnicodeString & value);
+UnicodeString GetCertificateStorageExpanded() const;
+void SetAWSAPI(const UnicodeString & Value);
   bool GetCollectUsage() const;
   void SetCollectUsage(bool Value);
   bool GetIsUnofficial() const;
@@ -267,6 +281,8 @@ public:
   virtual void SetConfirmOverwriting(bool Value);
   bool GetConfirmResume() const;
   void SetConfirmResume(bool Value);
+  bool GetSilentMode() const { return FSilentMode; }
+  void SetSilentMode(bool Value) { FSilentMode = Value; }
   bool GetAutoReadDirectoryAfterOp() const;
   void SetAutoReadDirectoryAfterOp(bool Value);
   virtual bool GetRememberPassword() const;
@@ -322,9 +338,9 @@ public:
   void BeginUpdate();
   void EndUpdate();
   void DontSave();
-  void LoadDirectoryChangesCache(const UnicodeString & SessionKey,
+  void LoadDirectoryChangesCache(const UnicodeString & ASessionKey,
     TRemoteDirectoryChangesCache * DirectoryChangesCache);
-  void SaveDirectoryChangesCache(const UnicodeString & SessionKey,
+  void SaveDirectoryChangesCache(const UnicodeString & ASessionKey,
     const TRemoteDirectoryChangesCache * DirectoryChangesCache);
   TStrings * LoadDirectoryStatisticsCache(
     const UnicodeString & SessionKey, const UnicodeString & Path, const TCopyParamType & CopyParam);
@@ -347,6 +363,8 @@ public:
   virtual RawByteString EncryptPassword(const UnicodeString & APassword, const UnicodeString & AKey);
   virtual UnicodeString DecryptPassword(const RawByteString & APassword, const UnicodeString & AKey);
   virtual RawByteString StronglyRecryptPassword(const RawByteString & APassword, const UnicodeString & Key);
+  virtual UnicodeString GetMasterKey() const { return UnicodeString(); }
+
   UnicodeString GetFileDescription(const UnicodeString & AFileName) const;
   UnicodeString GetFileVersion(const UnicodeString & AFileName) const;
   UnicodeString GetFileMimeType(const UnicodeString & AFileName) const;
@@ -371,7 +389,7 @@ public:
   __property void * ApplicationInfo  = { read=GetApplicationInfo };
   const ROProperty<void *> ApplicationInfo{nb::bind(&TConfiguration::GetApplicationInfo, this)};
   __property TUsage * Usage = { read = FUsage };
-  const ROProperty<TUsage*> Usage{nb::bind(&TConfiguration::GetUsage, this)};
+  const ROProperty<TUsage *> Usage{nb::bind(&TConfiguration::GetUsage, this)};
   __property bool CollectUsage = { read = GetCollectUsage, write = SetCollectUsage };
   RWProperty<bool> CollectUsage{nb::bind(&TConfiguration::GetCollectUsage, this), nb::bind(&TConfiguration::SetCollectUsage, this)};
   __property UnicodeString StoredSessionsSubKey = {read=GetStoredSessionsSubKey};
@@ -395,7 +413,7 @@ public:
   const ROProperty<UnicodeString> VersionStr{nb::bind(&TConfiguration::GetVersionStr, this)};
   __property UnicodeString Version = { read=GetVersion };
   const ROProperty<UnicodeString> Version {nb::bind(&TConfiguration::GetVersion, this)};
-  __property int CompoundVersion = { read=GetCompoundVersion };
+  __property int32_t CompoundVersion = { read=GetCompoundVersion };
   const ROProperty<int32_t> CompoundVersion{nb::bind(&TConfiguration::GetCompoundVersion, this)};
   __property UnicodeString ProductVersion = { read=GetProductVersion };
   const ROProperty<UnicodeString> ProductVersion{nb::bind(&TConfiguration::GetProductVersionStr, this)};
@@ -409,11 +427,11 @@ public:
   const ROProperty<bool> LogToFile{nb::bind(&TConfiguration::GetLogToFile, this)};
   __property bool LogFileAppend  = { read=FLogFileAppend, write=SetLogFileAppend };
   __property bool LogSensitive  = { read=FLogSensitive, write=SetLogSensitive };
-  __property __int64 LogMaxSize  = { read=FLogMaxSize, write=SetLogMaxSize };
-  __property int LogMaxCount  = { read=FLogMaxCount, write=SetLogMaxCount };
-  __property int LogProtocol  = { read=FLogProtocol, write=SetLogProtocol };
+  __property int64_t LogMaxSize  = { read=FLogMaxSize, write=SetLogMaxSize };
+  __property int32_t LogMaxCount  = { read=FLogMaxCount, write=SetLogMaxCount };
+  __property int32_t LogProtocol  = { read=FLogProtocol, write=SetLogProtocol };
   RWProperty<int32_t> LogProtocol{nb::bind(&TConfiguration::GetLogProtocol, this), nb::bind(&TConfiguration::SetLogProtocol, this)};
-  __property int ActualLogProtocol  = { read=FActualLogProtocol };
+  __property int32_t ActualLogProtocol  = { read=FActualLogProtocol };
   const ROProperty<int32_t> ActualLogProtocol{nb::bind(&TConfiguration::GetActualLogProtocol, this)};
   __property bool LogActions  = { read=FLogActions, write=SetLogActions };
   __property bool LogActionsRequired  = { read=FLogActionsRequired, write=FLogActionsRequired };
@@ -423,6 +441,7 @@ public:
   __property bool ConfirmOverwriting = { read = GetConfirmOverwriting, write = SetConfirmOverwriting};
   __property bool ConfirmResume = { read = GetConfirmResume, write = SetConfirmResume};
   __property bool AutoReadDirectoryAfterOp = { read = GetAutoReadDirectoryAfterOp, write = SetAutoReadDirectoryAfterOp};
+  __property bool SilentMode = { read = GetSilentMode, write = SetSilentMode };
   __property bool RememberPassword = { read = GetRememberPassword };
   __property int32_t SessionReopenAuto = { read = FSessionReopenAuto, write = SetSessionReopenAuto };
   __property int32_t SessionReopenBackground = { read = FSessionReopenBackground, write = SetSessionReopenBackground };
@@ -436,30 +455,31 @@ public:
   __property UnicodeString CertificateStorage = { read = FCertificateStorage, write = SetCertificateStorage };
   __property UnicodeString CertificateStorageExpanded = { read = GetCertificateStorageExpanded };
   const ROProperty<UnicodeString> CertificateStorageExpanded{nb::bind(&TConfiguration::GetCertificateStorageExpanded, this)};
-  __property UnicodeString AWSMetadataService = { read = FAWSMetadataService, write = SetAWSMetadataService };
+  __property UnicodeString AWSAPI = { read = FAWSAPI, write = SetAWSAPI };
   __property UnicodeString ChecksumCommands = { read = FChecksumCommands };
   __property int32_t LocalPortNumberMin = { read = FLocalPortNumberMin, write = SetLocalPortNumberMin };
   __property int32_t LocalPortNumberMax = { read = FLocalPortNumberMax, write = SetLocalPortNumberMax };
   __property bool TryFtpWhenSshFails = { read = FTryFtpWhenSshFails, write = SetTryFtpWhenSshFails };
   __property int32_t ParallelDurationThreshold = { read = FParallelDurationThreshold, write = SetParallelDurationThreshold };
   __property UnicodeString MimeTypes = { read = FMimeTypes, write = SetMimeTypes };
-  __property int DontReloadMoreThanSessions = { read = FDontReloadMoreThanSessions, write = FDontReloadMoreThanSessions };
+  __property int32_t DontReloadMoreThanSessions = { read = FDontReloadMoreThanSessions, write = FDontReloadMoreThanSessions };
   int32_t& DontReloadMoreThanSessions{FDontReloadMoreThanSessions};
-  __property int ScriptProgressFileNameLimit = { read = FScriptProgressFileNameLimit, write = FScriptProgressFileNameLimit };
-  __property int QueueTransfersLimit = { read = FQueueTransfersLimit, write = SetQueueTransfersLimit };
+  __property int32_t ScriptProgressFileNameLimit = { read = FScriptProgressFileNameLimit, write = FScriptProgressFileNameLimit };
+  __property int32_t QueueTransfersLimit = { read = FQueueTransfersLimit, write = SetQueueTransfersLimit };
   RWPropertySimple<int32_t> QueueTransfersLimit{&FQueueTransfersLimit, nb::bind(&TConfiguration::SetQueueTransfersLimit, this)};
-  __property int ParallelTransferThreshold = { read = FParallelTransferThreshold, write = FParallelTransferThreshold };
+  __property int32_t ParallelTransferThreshold = { read = FParallelTransferThreshold, write = FParallelTransferThreshold };
   int32_t& ParallelTransferThreshold{FParallelTransferThreshold};
-  __property int KeyVersion = { read = FKeyVersion, write = FKeyVersion };
+  __property int32_t KeyVersion = { read = FKeyVersion, write = FKeyVersion };
   int32_t& KeyVersion{FKeyVersion};
   __property TSshHostCAList * SshHostCAList = { read = GetSshHostCAList, write = SetSshHostCAList };
   __property TSshHostCAList * PuttySshHostCAList = { read = GetPuttySshHostCAList };
-//  const ROProperty<TSshHostCAList *> PuttySshHostCAList{nb::bind(&TConfiguration::GetPuttySshHostCAList, this)};
   __property TSshHostCAList * ActiveSshHostCAList = { read = GetActiveSshHostCAList };
-//  const ROProperty<TSshHostCAList *> ActiveSshHostCAList{nb::bind(&TConfiguration::GetActiveSshHostCAList, this)};
   __property bool SshHostCAsFromPuTTY = { read = FSshHostCAsFromPuTTY, write = FSshHostCAsFromPuTTY };
+  bool& SshHostCAsFromPuTTY{FSshHostCAsFromPuTTY};
   __property int32_t HttpsCertificateValidation = { read = FHttpsCertificateValidation, write = FHttpsCertificateValidation };
   int32_t& HttpsCertificateValidation{FHttpsCertificateValidation};
+  __property bool HttpsSecureChannel = { read = FHttpsSecureChannel, write = FHttpsSecureChannel };
+  bool& HttpsSecureChannel{FHttpsSecureChannel};
   __property UnicodeString SynchronizationChecksumAlgs = { read = FSynchronizationChecksumAlgs, write = FSynchronizationChecksumAlgs };
   UnicodeString& SynchronizationChecksumAlgs{FSynchronizationChecksumAlgs};
 
@@ -504,7 +524,6 @@ public:
   int32_t GetLogProtocol() const { return FLogProtocol; }
   int32_t GetActualLogProtocol() const { return FActualLogProtocol; }
   bool GetLogActionsRequired() const { return FLogActionsRequired; }
-  int32_t GetLogWindowLines() const { return FLogWindowLines; }
   TNotifyEvent & GetOnChange() { return FOnChange; }
   void SetOnChange(TNotifyEvent && Value) { FOnChange = std::move(Value); }
   int32_t GetSessionReopenAuto() const { return FSessionReopenAuto; }
@@ -537,8 +556,8 @@ private:
   nb::vector_t<TShortCut> FShortCuts;
 };
 
-extern "C" { 
-#include <windows/platform.h>
+extern "C" {
+#include <putty.h>
 }
 
 constexpr const char * OriginalPuttyRegistryStorageKey = PUTTY_REG_POS;
@@ -553,7 +572,6 @@ constexpr const char * Sha256ChecksumAlg = "sha-256";
 constexpr const char * Sha384ChecksumAlg = "sha-384";
 constexpr const char * Sha512ChecksumAlg = "sha-512";
 constexpr const char * Md5ChecksumAlg = "md5";
-// Not defined by IANA
 constexpr const char * Crc32ChecksumAlg = "crc32";
 
 constexpr const char * SshFingerprintType = "ssh";

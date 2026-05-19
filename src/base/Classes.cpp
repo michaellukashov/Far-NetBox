@@ -9,6 +9,10 @@
 #include <FileBuffer.h>
 
 static TGlobals * GlobalFunctions = nullptr;
+// Thread-safety note: GlobalFunctions is set once during single-threaded plugin
+// initialization (SetGlobals) before any worker threads are spawned. No
+// additional synchronization is required. If this invariant changes, use
+// std::call_once or InitOnceExecuteOnce.
 
 TGlobals * GetGlobals()
 {
@@ -215,7 +219,7 @@ int32_t TStrings::CompareStrings(const UnicodeString & S1, const UnicodeString &
 
 void TStrings::Assign(const TPersistent * Source)
 {
-  const TStrings * pStrings = rtti::dyn_cast_or_null<TStrings>(Source);
+  const TStrings * pStrings = nb::dyn_cast_or_null<TStrings>(Source);
   if (pStrings != nullptr)
   {
     BeginUpdate();
@@ -1945,7 +1949,7 @@ void TGlobals::SetupDbgHandles(const UnicodeString & DbgFileName)
       perror("freopen stderr");*/
     dbgstream_.open(DbgFileName.c_str(), std::ios_base::out|std::ios_base::trunc);
     if (!dbgstream_.bad())
-      icecream::ic.output(dbgstream_);
+      IC_CONFIG.output(dbgstream_);
   }
 }
 
@@ -1982,3 +1986,15 @@ TTimeSpan TTimeSpan::FromSeconds(double Value)
   return Result;
 }
 
+NB_CORE_EXPORT TShortCut TextToShortCut(const UnicodeString & Str)
+{
+  TShortCut Result;
+  // TODO: implement
+  return Result;
+}
+
+NB_CORE_EXPORT bool IsCustomShortCut(const TShortCut & ShortCut)
+{
+  // TODO: implement
+  return false;
+}

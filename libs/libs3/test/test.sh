@@ -145,8 +145,8 @@ $S3_COMMAND delete $COPY_BUCKET
 failures=$(($failures + (($? == 0) ? 0 : 1)))
 
 # Now create a new zero-length file
-echo "$S3_COMMAND put $TEST_BUCKET/aclkey < /dev/null"
-$S3_COMMAND put $TEST_BUCKET/aclkey < /dev/null
+echo "$S3_COMMAND put $TEST_BUCKET/aclkey < NUL"
+$S3_COMMAND put $TEST_BUCKET/aclkey < NUL
 failures=$(($failures + (($? == 0) ? 0 : 1)))
 
 # Get the bucket acl

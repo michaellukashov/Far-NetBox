@@ -26,17 +26,17 @@ const wchar_t * AutoSwitchNames = L"On;Off;Auto";
 const wchar_t * NotAutoSwitchNames = L"Off;On;Auto";
 
 // See https://www.iana.org/assignments/hash-function-text-names/hash-function-text-names.xhtml
-const UnicodeString Sha1ChecksumAlg("sha-1");
-const UnicodeString Sha224ChecksumAlg("sha-224");
-const UnicodeString Sha256ChecksumAlg("sha-256");
-const UnicodeString Sha384ChecksumAlg("sha-384");
-const UnicodeString Sha512ChecksumAlg("sha-512");
-const UnicodeString Md5ChecksumAlg("md5");
+const UnicodeString Sha1ChecksumAlg(L"sha-1");
+const UnicodeString Sha224ChecksumAlg(L"sha-224");
+const UnicodeString Sha256ChecksumAlg(L"sha-256");
+const UnicodeString Sha384ChecksumAlg(L"sha-384");
+const UnicodeString Sha512ChecksumAlg(L"sha-512");
+const UnicodeString Md5ChecksumAlg(L"md5");
 // Not defined by IANA
-const UnicodeString Crc32ChecksumAlg("crc32");
+const UnicodeString Crc32ChecksumAlg(L"crc32");
 
-const UnicodeString SshFingerprintType("ssh");
-const UnicodeString TlsFingerprintType("tls");
+const UnicodeString SshFingerprintType(L"ssh");
+const UnicodeString TlsFingerprintType(L"tls");
 
 const UnicodeString FtpsCertificateStorageKey(L"FtpsCertificates");
 const UnicodeString HttpsCertificateStorageKey(L"HttpsCertificates");
@@ -240,6 +240,7 @@ void TConfiguration::Default()
   SetPuttyRegistryStorageKey(OriginalPuttyRegistryStorageKey);
   FConfirmOverwriting = true;
   FConfirmResume = true;
+  FSilentMode = false;
   FAutoReadDirectoryAfterOp = true;
   FSessionReopenAuto = 5000;
   FSessionReopenBackground = 2000;
@@ -257,7 +258,7 @@ void TConfiguration::Default()
   SetCollectUsage(FDefaultCollectUsage);
   FMimeTypes = UnicodeString();
   FCertificateStorage = EmptyStr;
-  FAWSMetadataService = EmptyStr;
+  FAWSAPI = EmptyStr;
   FChecksumCommands = EmptyStr;
   FDontReloadMoreThanSessions = 1000;
   FScriptProgressFileNameLimit = 25;
@@ -268,6 +269,7 @@ void TConfiguration::Default()
   RefreshPuttySshHostCAList();
   FSshHostCAsFromPuTTY = false;
   FHttpsCertificateValidation = 0;
+  FHttpsSecureChannel = false;
   FSynchronizationChecksumAlgs = EmptyStr;
   CollectUsage = FDefaultCollectUsage;
 
@@ -395,7 +397,7 @@ UnicodeString TConfiguration::PropertyToKey(const UnicodeString & Property)
   // no longer useful
   const int32_t P = Property.LastDelimiter(L".>");
   UnicodeString Result = Property.SubString(P + 1, Property.Length() - P);
-  if ((Result[1] == L'F') && (towupper(Result[2]) == Result[2]))
+  if ((Result[1] == L'F') && (::UpCase(Result[2]) == Result[2]))
   {
     Result.Delete(1, 1);
   }
@@ -424,6 +426,7 @@ UnicodeString TConfiguration::PropertyToKey(const UnicodeString & Property)
     KEY(String,   PuttyRegistryStorageKey); \
     KEY(Bool,     ConfirmOverwriting); \
     KEY(Bool,     ConfirmResume); \
+    KEY(Bool,     SilentMode); \
     KEY(Bool,     AutoReadDirectoryAfterOp); \
     KEY3(Integer,  SessionReopenAuto); \
     KEY3(Integer,  SessionReopenBackground); \
@@ -446,11 +449,12 @@ UnicodeString TConfiguration::PropertyToKey(const UnicodeString & Property)
     KEY4(Integer,  KeyVersion); \
     KEY4(Bool,     SshHostCAsFromPuTTY); \
     KEY4(Integer,  HttpsCertificateValidation); \
+    KEY4(Bool,     HttpsSecureChannel); \
     KEY5(String,   SynchronizationChecksumAlgs); \
     KEY(Bool,     CollectUsage); \
     KEY3(Integer,  SessionReopenAutoMaximumNumberOfRetries); \
     KEY5(String,   CertificateStorage); \
-    KEY5(String,   AWSMetadataService); \
+    KEY5(String,   AWSAPI); \
   ); \
   BLOCK("Logging", CANCREATE, \
     KEYEX(Bool,  PermanentLogging, Logging); \
@@ -1030,7 +1034,7 @@ void TConfiguration::CleanupRegistry(const UnicodeString & RegistryPath)
 {
   const UnicodeString CompanyKey = GetCompanyRegistryKey();
   const UnicodeString Prefix = IncludeTrailingBackslash(CompanyKey);
-  if (DebugAlwaysTrue(SameStr(LeftStr(RegistryStorageKey, Prefix.Length()), Prefix)))
+  if (DebugAlwaysFalse(SameStr(LeftStr(RegistryStorageKey, Prefix.Length()), Prefix)))
   {
     const UnicodeString CompanyParentKey = ExtractFileDir(CompanyKey);
     std::unique_ptr<TRegistryStorage> Registry(std::make_unique<TRegistryStorage>(CompanyParentKey));
@@ -1209,8 +1213,10 @@ int32_t TConfiguration::GetCompoundVersion() const
 
 UnicodeString TConfiguration::ModuleFileName() const
 {
-  ThrowNotImplemented(204);
-  return "";
+  // NetBox overrides this in TFarConfiguration and TWinConfiguration.
+  // Return empty string rather than throwing to avoid crashes from any
+  // unexpected virtual dispatch path.
+  return UnicodeString();
 }
 
 void * TConfiguration::GetFileApplicationInfo(const UnicodeString & AFileName) const
@@ -2167,23 +2173,63 @@ void TConfiguration::SetCertificateStorage(const UnicodeString & Value)
   SET_CONFIG_PROPERTY2(CertificateStorage);
 }
 
+// Static variable to cache the temporary certificate file path
+static UnicodeString CachedCertFile;
+
 UnicodeString TConfiguration::GetCertificateStorageExpanded() const
 {
-  UnicodeString Result = FCertificateStorage;
-  if (Result.IsEmpty())
+  // If user has configured a custom certificate storage path, use it
+  if (!FCertificateStorage.IsEmpty())
   {
-    const UnicodeString DefaultCertificateStorage = TPath::Combine(ExtractFilePath(ModuleFileName()), L"cacert.pem");
-    if (base::FileExists(DefaultCertificateStorage))
+    return FCertificateStorage;
+  }
+  
+  // If we've already created a temp file from embedded certs, use it
+  if (!CachedCertFile.IsEmpty() && base::FileExists(CachedCertFile))
+  {
+    return CachedCertFile;
+  }
+  
+  // Check for cacert.pem in the application directory (backward compatibility)
+  const UnicodeString DefaultCertificateStorage = TPath::Combine(ExtractFilePath(ModuleFileName()), L"cacert.pem");
+  if (base::FileExists(DefaultCertificateStorage))
+  {
+    return DefaultCertificateStorage;
+  }
+  
+   // Create a temporary file from embedded certificates
+   // This is a one-time operation on first use
+   try
+   {
+     const UnicodeString TempCertFile = IncludeTrailingBackslash(SystemTemporaryDirectory()) + L"netbox_cacert.pem";
+     if (!base::FileExists(TempCertFile))
+     {
+       // Write embedded certificate data to temp file
+       std::unique_ptr<TStream> Stream(std::make_unique<TFileStream>(TempCertFile, fmCreate));
+      if (Stream)
+      {
+        Stream->Write(EmbeddedCacertPem, strlen(EmbeddedCacertPem));
+        CachedCertFile = TempCertFile;
+        return TempCertFile;
+      }
+    }
+    else
     {
-      Result = DefaultCertificateStorage;
+      CachedCertFile = TempCertFile;
+      return TempCertFile;
     }
   }
-  return Result;
+  catch (...)
+  {
+    // If we can't create the temp file, fall back to empty (SSL will use system certs)
+  }
+  
+  return EmptyStr;
 }
 
-void TConfiguration::SetAWSMetadataService(const UnicodeString & Value)
+void TConfiguration::SetAWSAPI(const UnicodeString & Value)
 {
-  SET_CONFIG_PROPERTY2(AWSMetadataService);
+  SET_CONFIG_PROPERTY2(AWSAPI);
 }
 
 void TConfiguration::SetTryFtpWhenSshFails(bool Value)

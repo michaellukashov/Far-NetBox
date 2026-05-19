@@ -39,10 +39,7 @@ using TSynchronizeTooManyDirectoriesEvent = nb::FastDelegate2<void,
   TSynchronizeController * /*Sender*/,
   int32_t & /*MaxDirectories*/>;
 
-namespace Discmon
-{
-class TDiscMonitor;
-}
+class TSyncPoller;
 
 enum TSynchronizeOperation { soUpload, soDelete };
 
@@ -61,13 +58,15 @@ public:
     TSynchronizeAbortEvent OnAbort, TSynchronizeThreadsEvent OnSynchronizeThreads,
     TSynchronizeLogEvent OnSynchronizeLog);
   void LogOperation(TSynchronizeOperation Operation, const UnicodeString & AFileName);
+  void NotifySynchronizeChange(const UnicodeString & Directory);
 
 private:
   TSynchronizeEvent FOnSynchronize;
   TSynchronizeParamType FSynchronizeParams;
   TSynchronizeOptions * FOptions{nullptr};
   TSynchronizeThreadsEvent FOnSynchronizeThreads;
-  Discmon::TDiscMonitor * FSynchronizeMonitor{nullptr};
+  TSyncPoller * FSyncPoller{nullptr};
+  bool FSubdirsChanged{false};
   TSynchronizeAbortEvent FSynchronizeAbort;
   TSynchronizeInvalidEvent FOnSynchronizeInvalid;
   TSynchronizeTooManyDirectoriesEvent FOnTooManyDirectories;
@@ -80,6 +79,9 @@ private:
   void SynchronizeLog(TSynchronizeLogEntry Entry, const UnicodeString & Message);
   void SynchronizeInvalid(TObject * Sender, const UnicodeString & Directory,
     const UnicodeString & ErrorStr);
+  void DoSynchronizeChange();
+  void DoSynchronizeInvalid(TSynchronizeController * Sender,
+    const UnicodeString & Directory, const UnicodeString & ErrorStr);
   void SynchronizeFilter(TObject * Sender, const UnicodeString & DirectoryName,
     bool & Add);
   void SynchronizeTooManyDirectories(TObject * Sender, int32_t & MaxDirectories);

@@ -8,10 +8,12 @@
 #include <GUITools.h>
 #include <ProgParams.h>
 #include <MsgIDs.h>
+#include <TextsWin.h>
 #include "WinSCPPlugin.h"
 #include "WinSCPFileSystem.h"
 #include "FarConfiguration.h"
 #include "XmlStorage.h"
+#include <SessionHistory.h>
 
 TCustomFarPlugin * CreateFarPlugin(HINSTANCE HInst)
 {
@@ -19,12 +21,44 @@ TCustomFarPlugin * CreateFarPlugin(HINSTANCE HInst)
   Result->Initialize();
   return Result;
 }
-
 void DestroyFarPlugin(TCustomFarPlugin *& Plugin)
 {
   DebugAssert(FarPlugin);
   Plugin->Finalize();
-  SAFE_DESTROY(Plugin);
+  delete Plugin;
+  Plugin = nullptr;
+}
+
+static LPTOP_LEVEL_EXCEPTION_FILTER FPrevFilter = nullptr;
+
+static LONG WINAPI NetBoxExceptionFilter(PEXCEPTION_POINTERS ExceptionInfo)
+{
+  __try
+  {
+    (void)ExceptionInfo;
+    OutputDebugStringA("NetBox: Unhandled exception detected, flushing logs...\n");
+
+    // Flush all tinylog instances (session logs, action logs)
+    tinylog::TinyLog::EmergencyFlushAll(200);
+
+    // Flush application log
+    if (ApplicationLog != nullptr)
+    {
+      ApplicationLog->EmergencyFlush();
+    }
+    OutputDebugStringA("NetBox: Log flush complete, chaining to previous filter...\n");
+  }
+  __except (EXCEPTION_EXECUTE_HANDLER)
+  {
+    OutputDebugStringA("NetBox: Exception filter itself crashed, chaining...\n");
+  }
+
+  if (FPrevFilter != nullptr)
+  {
+    return FPrevFilter(ExceptionInfo);
+  }
+
+  return EXCEPTION_CONTINUE_SEARCH;
 }
 
 static UnicodeString GetDbgPath(const char * Env) noexcept
@@ -59,6 +93,9 @@ static UnicodeString GetDbgPath(const char * Env) noexcept
 TWinSCPPlugin::TWinSCPPlugin(HINSTANCE HInst) noexcept :
   TCustomFarPlugin(OBJECT_CLASS_TWinSCPPlugin, HInst)
 {
+  FPrevFilter = SetUnhandledExceptionFilter(&NetBoxExceptionFilter);
+  OutputDebugStringA("NetBox: Exception filter installed\n");
+
 #ifndef NDEBUG
   // setup debug handlers
   const UnicodeString DbgFileName = GetDbgPath("NETBOX_DBG");
@@ -80,15 +117,22 @@ TWinSCPPlugin::~TWinSCPPlugin() noexcept
   // DEBUG_PRINTF("begin");
   if (FInitialized)
   {
-    // GetFarConfiguration()->SetPlugin(nullptr);
+    // Unwire master password prompt handler (mirrors TerminalManager destructor)
+    DebugAssert(WinConfiguration->GetOnMasterPasswordPrompt() == MasterPasswordPrompt);
+    WinConfiguration->SetOnMasterPasswordPrompt(nullptr);
+
     CoreFinalize();
     FInitialized = false;
   }
-#ifndef NDEBUG
-  g_tinylog->Close();
-  { tinylog::TinyLog * PObj = g_tinylog; delete PObj; }
-#endif //ifndef NDEBUG
+  if (g_tinylog)
+  {
+    g_tinylog->Close();
+    { tinylog::TinyLog * PObj = g_tinylog; delete PObj; }
+  }
+
   // DEBUG_PRINTF("begin");
+  SetUnhandledExceptionFilter(FPrevFilter);
+  OutputDebugStringA("NetBox: Exception filter removed\n");
 }
 
 bool TWinSCPPlugin::HandlesFunction(THandlesFunction Function) const
@@ -149,6 +193,9 @@ bool TWinSCPPlugin::ConfigureEx(const GUID * /* Item */)
   const int32_t MTransferEditor = MenuItems->AddString(GetMsg(NB_CONFIG_TRANSFER_EDITOR));
   const int32_t MLogging = MenuItems->AddString(GetMsg(NB_CONFIG_LOGGING));
   const int32_t MIntegration = MenuItems->AddString(GetMsg(NB_CONFIG_INTEGRATION));
+#if defined(FLAG_DEV)
+  const int32_t MSecurity = MenuItems->AddString(GetMsg(NB_CONFIG_SECURITY));
+#endif //#if defined(FLAG_DEV)
   MenuItems->AddSeparator();
   const int32_t MAbout = MenuItems->AddString(GetMsg(NB_CONFIG_ABOUT));
 
@@ -223,6 +270,15 @@ bool TWinSCPPlugin::ConfigureEx(const GUID * /* Item */)
           Change = true;
         }
       }
+#if defined(FLAG_DEV)
+      else if (Result == MSecurity)
+      {
+        if (SecurityConfigurationDialog())
+        {
+          Change = true;
+        }
+      }
+#endif //#if defined(FLAG_DEV)
       else if (Result == MAbout)
       {
         AboutDialog();
@@ -279,15 +335,28 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t I
   CoreInitializeOnce();
   // DEBUG_PRINTF("OpenFrom: %d", (int)OpenFrom);
 
+  // Prevent reconnect loops: abort reentrant calls during panel creation
+  if (FCreatingPanel)
+  {
+    AppLogFmt(L"OpenPluginEx: Reentrant call aborted (panel creation in progress)");
+    Abort();
+    return nullptr;
+  }
+
   if ((OpenFrom == OPEN_PLUGINSMENU) &&
     (!GetFarConfiguration()->GetPluginsMenu() || (Item == 1)))
   {
     CommandsMenu(true);
+    return nullptr;
   }
   else
   {
-    FileSystem = std::make_unique<TWinSCPFileSystem>(this);
-    FileSystem->InitWinSCPFileSystem(nullptr);
+    // Early decode for SHORTCUT/COMMANDLINE to check reuse BEFORE creating FileSystem
+    UnicodeString Directory;
+    UnicodeString CommandLine;
+    FAROPENSHORTCUTFLAGS Flags = FOSF_NONE;
+    nb::TSessionHistoryEntry Entry;
+    Entry.Valid = false;
 
     if (OpenFrom == OPEN_LEFTDISKMENU || OpenFrom == OPEN_RIGHTDISKMENU ||
       OpenFrom == OPEN_PLUGINSMENU ||
@@ -297,9 +366,6 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t I
     }
     else if (OpenFrom == OPEN_SHORTCUT || OpenFrom == OPEN_COMMANDLINE)
     {
-      UnicodeString Directory;
-      UnicodeString CommandLine;
-      FAROPENSHORTCUTFLAGS Flags = FOSF_NONE;
       if (OpenFrom == OPEN_SHORTCUT)
       {
         const OpenShortcutInfo * Info = reinterpret_cast<OpenShortcutInfo *>(Item);
@@ -311,8 +377,16 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t I
         const OpenCommandLineInfo * Info = reinterpret_cast<OpenCommandLineInfo *>(Item);
         CommandLine = Info->CommandLine;
       }
-      // DEBUG_PRINTF("CommandLine: %s", CommandLine);
-      if (OpenFrom == OPEN_SHORTCUT)
+      Entry = nb::DecodeSessionParam(CommandLine);
+      if (Entry.Valid)
+      {
+        UnicodeString SessionName = Entry.SessionName;
+        Directory = Entry.RemoteDirectory;
+        // Use local session name (without folder prefix) for ParseUrl compatibility
+        SessionName = TSessionData::ExtractLocalName(SessionName);
+        CommandLine = FORMAT(L"netbox:%s", SessionName);
+      }
+      else
       {
         const int32_t P = CommandLine.Pos(SHORTCUT_DELIMITER);
         if (P > 0)
@@ -320,38 +394,157 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t I
           Directory = CommandLine.SubString(P + 1, CommandLine.Length() - P);
           CommandLine.SetLength(P - 1);
         }
-        // DEBUG_PRINTF("Directory: %s", Directory);
-        // DEBUG_PRINTF("CommandLine: %s", CommandLine);
+      }
+    }
+    const auto NormalizeSessionName = [](const UnicodeString & Cmd) -> UnicodeString {
+      UnicodeString Result(Cmd);
+      if (Result.SubString(1, 7).LowerCase() == L"netbox:")
+        Result.Delete(1, 7);
+      return TSessionData::ExtractLocalName(Result);
+    };
+    // Check for existing panel reuse BEFORE creating FileSystem
+    // This prevents Far Manager panel lifecycle from destroying the old FileSystem
+    if ((OpenFrom == OPEN_SHORTCUT || OpenFrom == OPEN_COMMANDLINE) &&
+      (Entry.Valid || !Directory.IsEmpty()))
+    {
+      TWinSCPFileSystem * ExistingPanel = nb::dyn_cast_or_null<TWinSCPFileSystem>(GetPanelFileSystem());
+      if (ExistingPanel && ExistingPanel->Connected() && ExistingPanel->GetTerminal())
+      {
 
-        UnicodeString SessionName(CommandLine);
-        if (SessionName.SubString(1, 7).LowerCase() == L"netbox:")
-        {
-          SessionName.Delete(1, 7);
-        }
-        const bool Another = !(Flags & FOSF_ACTIVE);
-        TWinSCPFileSystem * PanelSystem = rtti::dyn_cast_or_null<TWinSCPFileSystem>(GetPanelFileSystem());
+        UnicodeString SessionName = NormalizeSessionName(CommandLine);
+        const UnicodeString PanelLocalName = ExistingPanel->GetTerminal()->GetSessionData()->GetLocalName();
+        AppLogFmt(L"OpenPluginEx: Reuse check — existing=%s, target=%s, Entry.Valid=%d, Dir=%s, OpenFrom=%d",
+          PanelLocalName, SessionName, Entry.Valid ? 1 : 0, Directory, (int)OpenFrom);
 
-        if (PanelSystem && PanelSystem->Connected() &&
-          PanelSystem->GetTerminal()->GetSessionData()->GetSessionName() == SessionName)
+        // For folder history (OPEN_COMMANDLINE with directory), reuse existing panel
+        if (OpenFrom == OPEN_COMMANDLINE && !Directory.IsEmpty() && PanelLocalName == SessionName)
         {
-          PanelSystem->SetDirectoryEx(Directory, OPM_SILENT);
-          if (PanelSystem->UpdatePanel(false, Another))
+          AppLogFmt(L"OpenPluginEx: Reusing existing panel for directory: %s", Directory);
+          ExistingPanel->SetDirectoryEx(Directory, OPM_SILENT);
+          if (ExistingPanel->UpdatePanel(false, false))
           {
-            PanelSystem->RedrawPanel(Another);
+            ExistingPanel->RedrawPanel(false);
           }
           Abort();
+          return nullptr;
         }
-        // directory will be set by FAR itself
-        Directory.Clear();
+
+        // For OPEN_SHORTCUT with valid history, match session names
+        if (OpenFrom == OPEN_SHORTCUT && Entry.Valid && PanelLocalName == SessionName)
+        {
+          AppLogFmt(L"OpenPluginEx: Reusing existing panel for session: %s, dir: %s", SessionName, Directory);
+          ExistingPanel->SetDirectoryEx(Directory, OPM_SILENT);
+          if (ExistingPanel->UpdatePanel(false, !(Flags & FOSF_ACTIVE)))
+          {
+            ExistingPanel->RedrawPanel(!(Flags & FOSF_ACTIVE));
+          }
+          Abort();
+          return nullptr;
+        }
+
+        // Valid history entry but no session match — don't create new session
+        if (Entry.Valid)
+        {
+          AppLogFmt(L"OpenPluginEx: Valid history entry but session mismatch, aborting");
+          Abort();
+          return nullptr;
+        }
       }
-      DebugAssert(GetStoredSessions());
-      bool DefaultsOnly = false;
-      std::unique_ptr<TOptions> Options(std::make_unique<TProgramParams>());
-      ParseCommandLine(CommandLine, Options.get());
-      constexpr int32_t ParseUrlFlags = pufAllowStoredSiteWithProtocol;
-      std::unique_ptr<TSessionData> Session(GetStoredSessions()->ParseUrl(CommandLine, Options.get(), DefaultsOnly, nullptr, nullptr, nullptr, ParseUrlFlags));
-      if (!DefaultsOnly)
+      else
       {
+        AppLogFmt(L"OpenPluginEx: No existing panel found for reuse");
+      }
+    }
+
+    // Create FileSystem for all non-reuse paths (menu, new session, analyse)
+    FCreatingPanel = true;
+    try__finally
+    {
+      FileSystem = std::make_unique<TWinSCPFileSystem>(this);
+      FileSystem->InitWinSCPFileSystem(nullptr);
+
+      if (OpenFrom == OPEN_LEFTDISKMENU || OpenFrom == OPEN_RIGHTDISKMENU ||
+        OpenFrom == OPEN_PLUGINSMENU ||
+        OpenFrom == OPEN_FINDLIST)
+      {
+        // nothing — menu entries return empty panel, Far Manager handles lifecycle
+      }
+      else if (OpenFrom == OPEN_SHORTCUT || OpenFrom == OPEN_COMMANDLINE)
+      {
+        if (OpenFrom == OPEN_SHORTCUT)
+        {
+          // directory will be set by FAR itself
+          Directory.Clear();
+        }
+        // Normal session creation path (ParseUrl → Connect)
+        DebugAssert(GetStoredSessions());
+        bool DefaultsOnly = false;
+        std::unique_ptr<TOptions> Options(std::make_unique<TProgramParams>());
+        ParseCommandLine(CommandLine, Options.get());
+        constexpr int32_t ParseUrlFlags = pufAllowStoredSiteWithProtocol;
+        UnicodeString FileName;
+        std::unique_ptr<TSessionData> Session(GetStoredSessions()->ParseUrl(CommandLine, Options.get(), DefaultsOnly, &FileName, nullptr, nullptr, ParseUrlFlags));
+        if (!DefaultsOnly)
+        {
+          if (!Session->GetCanLogin())
+          {
+            DebugAssert(false);
+            Abort();
+          }
+          FileSystem->SetConnectedDirectly();
+          Success = FileSystem->Connect(Session.get());
+          if (Success)
+          {
+            FileSystem->SetPrevSessionName(Session->GetName());
+            // Set panel directory Param once after connection — NOT on every
+            // directory change, to avoid Far Manager history triggering
+            // OPEN_SHORTCUT → OpenPluginEx → unnecessary reconnect.
+            FileSystem->UpdatePanelDirectoryParam();
+            AppLogFmt(L"OpenPluginEx: Connected to session %s, PrevSessionName set", Session->GetName());
+          }
+          if (Success && !FileName.IsEmpty())
+          {
+            FileSystem->SetFocusFileName(FileName);
+            AppLogFmt(L"OpenPluginEx: Will focus on file %s after panel redraw", FileName);
+          }
+          if (Success && !Directory.IsEmpty())
+          {
+            FileSystem->SetDirectoryEx(Directory, OPM_SILENT);
+          }
+        }
+      }
+      else if (OpenFrom == OPEN_ANALYSE)
+      {
+        const OpenAnalyseInfo * Info = reinterpret_cast<OpenAnalyseInfo *>(Item);
+        const wchar_t * XmlFileName = Info->Info->FileName;
+        std::unique_ptr<THierarchicalStorage> ImportStorage(std::make_unique<TXmlStorage>(XmlFileName, GetConfiguration()->GetStoredSessionsSubKey()));
+
+        ImportStorage->Init();
+        ImportStorage->SetAccessMode(smRead);
+        if (!(ImportStorage->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), false) &&
+            ImportStorage->HasSubKeys()))
+        {
+          DebugAssert(false);
+          Abort();
+        }
+        const UnicodeString SessionName = ::PuttyUnMungeStr(ImportStorage->ReadStringRaw("Session", ""));
+        AppLogFmt(L"[FIX] OpenPluginEx OPEN_ANALYSE: session name='%s' from file %s", SessionName, XmlFileName);
+        if (SessionName.IsEmpty())
+        {
+          AppLogFmt(L"[FIX] OpenPluginEx OPEN_ANALYSE: empty session name in %s, aborting", XmlFileName);
+          Abort();
+        }
+        std::unique_ptr<TSessionData> Session(std::make_unique<TSessionData>(SessionName));
+        try
+        {
+          Session->Load(ImportStorage.get(), false);
+        }
+        catch (Exception & E)
+        {
+          AppLogFmt(L"[FIX] OpenPluginEx OPEN_ANALYSE: failed to load session '%s' from %s: %s", SessionName, XmlFileName, E.Message);
+          throw;
+        }
+        Session->SetModified(true);
         if (!Session->GetCanLogin())
         {
           DebugAssert(false);
@@ -359,48 +552,27 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t I
         }
         FileSystem->SetConnectedDirectly();
         Success = FileSystem->Connect(Session.get());
-        if (Success && !Directory.IsEmpty())
-        {
-          FileSystem->SetDirectoryEx(Directory, OPM_SILENT);
-        }
       }
-    }
-    else if (OpenFrom == OPEN_ANALYSE)
-    {
-      const OpenAnalyseInfo * Info = reinterpret_cast<OpenAnalyseInfo *>(Item);
-      const wchar_t * XmlFileName = Info->Info->FileName;
-      std::unique_ptr<THierarchicalStorage> ImportStorage(std::make_unique<TXmlStorage>(XmlFileName, GetConfiguration()->GetStoredSessionsSubKey()));
+      else
+      {
+        // Unknown OpenFrom type (e.g., folder history, dialog, etc.)
+        // Don't assert — just log and return the empty panel
+        // so Far Manager can handle the navigation natively
+        AppLogFmt(L"OpenPluginEx: Unknown OpenFrom=%d, returning empty panel", (int)OpenFrom);
+        // DebugAssert(false); TODO: Inform Far about Unknown OpenFrom
+      }
 
-      ImportStorage->Init();
-      ImportStorage->SetAccessMode(smRead);
-      if (!(ImportStorage->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), false) &&
-          ImportStorage->HasSubKeys()))
+      if (!Success)
       {
-        DebugAssert(false);
-        Abort();
+        FileSystem.reset(nullptr);
       }
-      const UnicodeString SessionName = ::PuttyUnMungeStr(ImportStorage->ReadStringRaw("Session", ""));
-      std::unique_ptr<TSessionData> Session(std::make_unique<TSessionData>(SessionName));
-      Session->Load(ImportStorage.get(), false);
-      Session->SetModified(true);
-      if (!Session->GetCanLogin())
-      {
-        DebugAssert(false);
-        Abort();
-      }
-      FileSystem->SetConnectedDirectly();
-      Success = FileSystem->Connect(Session.get());
     }
-    else
+    __finally
     {
-      DebugAssert(false);
-    }
-  }
-  if (!Success)
-  {
-    FileSystem.reset(nullptr);
-  }
-  return FileSystem.release();
+      FCreatingPanel = false;
+    } end_try__finally
+    return FileSystem.release();
+}
 }
 
 void TWinSCPPlugin::ParseCommandLine(UnicodeString & CommandLine,
@@ -441,8 +613,8 @@ void TWinSCPPlugin::ParseCommandLine(UnicodeString & CommandLine,
 void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
 {
   std::unique_ptr<TFarMenuItems> MenuItems(std::make_unique<TFarMenuItems>());
-  TWinSCPFileSystem * WinSCPFileSystem = rtti::dyn_cast_or_null<TWinSCPFileSystem>(GetPanelFileSystem());
-  TWinSCPFileSystem * AnotherFileSystem = rtti::dyn_cast_or_null<TWinSCPFileSystem>(GetPanelFileSystem(true));
+  TWinSCPFileSystem * WinSCPFileSystem = nb::dyn_cast_or_null<TWinSCPFileSystem>(GetPanelFileSystem());
+  TWinSCPFileSystem * AnotherFileSystem = nb::dyn_cast_or_null<TWinSCPFileSystem>(GetPanelFileSystem(true));
   const bool FSConnected = (WinSCPFileSystem != nullptr) && WinSCPFileSystem->Connected();
   const bool AnotherFSConnected = (AnotherFileSystem != nullptr) && AnotherFileSystem->Connected();
   const bool FSVisible = FSConnected && FromFileSystem;
@@ -453,6 +625,7 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
   const int32_t MApplyCommand = MenuItems->AddString(GetMsg(NB_MENU_COMMANDS_APPLY_COMMAND), FSVisible);
   const int32_t MFullSynchronize = MenuItems->AddString(GetMsg(NB_MENU_COMMANDS_FULL_SYNCHRONIZE), AnyFSVisible);
   const int32_t MSynchronize = MenuItems->AddString(GetMsg(NB_MENU_COMMANDS_SYNCHRONIZE), AnyFSVisible);
+  const int32_t MCompareDirectories = MenuItems->AddString(GetMsg(NB_MENU_COMMANDS_COMPARE_DIRECTORIES), AnyFSVisible);
   const int32_t MQueue = MenuItems->AddString(GetMsg(NB_MENU_COMMANDS_QUEUE), FSVisible);
   const int32_t MInformation = MenuItems->AddString(GetMsg(NB_MENU_COMMANDS_INFORMATION), FSVisible);
   const int32_t MLog = MenuItems->AddString(GetMsg(NB_MENU_COMMANDS_LOG), FSVisible);
@@ -462,6 +635,7 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
   MenuItems->AddSeparator(FSConnected || FSVisible);
   const int32_t MAddBookmark = MenuItems->AddString(GetMsg(NB_MENU_COMMANDS_ADD_BOOKMARK), FSVisible);
   const int32_t MOpenDirectory = MenuItems->AddString(GetMsg(NB_MENU_COMMANDS_OPEN_DIRECTORY), FSVisible);
+  const int32_t MLocationProfiles = MenuItems->AddString(GetMsg(NB_MENU_COMMANDS_LOCATION_PROFILES), FSVisible);
   const int32_t MHomeDirectory = MenuItems->AddString(GetMsg(NB_MENU_COMMANDS_HOME_DIRECTORY), FSVisible);
   const int32_t MSynchronizeBrowsing = MenuItems->AddString(GetMsg(NB_MENU_COMMANDS_SYNCHRONIZE_BROWSING), FSVisible);
   MenuItems->AddSeparator(FSVisible);
@@ -469,6 +643,8 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
   const int32_t MPuttygen = MenuItems->AddString(GetMsg(NB_MENU_COMMANDS_PUTTYGEN), FromFileSystem);
   MenuItems->AddSeparator(FromFileSystem);
   const int32_t MConfigure = MenuItems->AddString(GetMsg(NB_MENU_COMMANDS_CONFIGURE));
+  const int32_t MGenerateUrl = MenuItems->AddString(GetMsg(NB_MENU_COMMANDS_GENERATE_URL));
+  const int32_t MCleanup = MenuItems->AddString(GetMsg(NB_MENU_COMMANDS_CLEANUP));
   const int32_t MAbout = MenuItems->AddString(GetMsg(NB_CONFIG_ABOUT));
 
   MenuItems->SetDisabled(MLog, !FSVisible || (WinSCPFileSystem && !WinSCPFileSystem->IsLogging()));
@@ -478,6 +654,8 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
   MenuItems->SetChecked(MSynchronizeBrowsing, FSVisible && (WinSCPFileSystem && WinSCPFileSystem->IsSynchronizedBrowsing()));
   MenuItems->SetDisabled(MPageant, !base::FileExists(::ExpandEnvVars(ExtractProgram(GetFarConfiguration()->GetPageantPath()))));
   MenuItems->SetDisabled(MPuttygen, !base::FileExists(::ExpandEnvVars(ExtractProgram(GetFarConfiguration()->GetPuttygenPath()))));
+  MenuItems->SetDisabled(MGenerateUrl, !WinSCPFileSystem);
+  MenuItems->SetDisabled(MCleanup, !WinSCPFileSystem);
 
   const intptr_t Result = Menu(FMENU_WRAPMODE, GetMsg(NB_MENU_COMMANDS), "", MenuItems.get());
 
@@ -529,6 +707,19 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
           AnotherFileSystem->Synchronize();
       }
     }
+    else if (Result == MCompareDirectories)
+    {
+      if (WinSCPFileSystem != nullptr)
+      {
+        WinSCPFileSystem->CompareDirectories();
+      }
+      else
+      {
+        DebugAssert(AnotherFileSystem != nullptr);
+        if (AnotherFileSystem)
+          AnotherFileSystem->CompareDirectories();
+      }
+    }
     else if ((Result == MQueue) && WinSCPFileSystem)
     {
       DebugAssert(WinSCPFileSystem);
@@ -538,6 +729,11 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
     {
       DebugAssert(WinSCPFileSystem);
       WinSCPFileSystem->OpenDirectory(Result == MAddBookmark);
+    }
+    else if ((Result == MLocationProfiles) && WinSCPFileSystem)
+    {
+      DebugAssert(WinSCPFileSystem);
+      LocationProfilesDialog(WinSCPFileSystem);
     }
     else if (Result == MHomeDirectory && WinSCPFileSystem)
     {
@@ -551,15 +747,33 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
     {
       AboutDialog();
     }
-    else if ((Result == MPutty) && WinSCPFileSystem)
+    else if (Result == MCleanup)
     {
-      DebugAssert(WinSCPFileSystem);
-      WinSCPFileSystem->OpenSessionInPutty();
+      CleanupDialog();
     }
-    else if ((Result == MEditHistory) && WinSCPFileSystem)
+    else if (Result == MGenerateUrl)
     {
-      DebugAssert(WinSCPFileSystem);
-      WinSCPFileSystem->EditHistory();
+      if (WinSCPFileSystem)
+      {
+        DebugAssert(WinSCPFileSystem);
+        GenerateUrlDialog(WinSCPFileSystem->GetSessionData());
+      }
+    }
+    else if (Result == MPutty)
+    {
+      if (WinSCPFileSystem)
+      {
+        DebugAssert(WinSCPFileSystem);
+        WinSCPFileSystem->OpenSessionInPutty();
+      }
+    }
+    else if (Result == MEditHistory)
+    {
+      if (WinSCPFileSystem)
+      {
+        DebugAssert(WinSCPFileSystem);
+        WinSCPFileSystem->EditHistory();
+      }
     }
     else if (Result == MPageant || Result == MPuttygen)
     {
@@ -595,12 +809,12 @@ void TWinSCPPlugin::ShowExtendedException(Exception * E)
 {
   if (E && !E->Message.IsEmpty())
   {
-    const TQueryType Type = rtti::isa<ETerminate>(E) ? qtInformation : qtError;
+    const TQueryType Type = nb::isa<ETerminate>(E) ? qtInformation : qtError;
 
     TStrings * MoreMessages = nullptr;
-    if (rtti::isa<ExtException>(E))
+    if (nb::isa<ExtException>(E))
     {
-      MoreMessages = rtti::dyn_cast_or_null<ExtException>(E)->GetMoreMessages();
+      MoreMessages = nb::dyn_cast_or_null<ExtException>(E)->GetMoreMessages();
     }
     const UnicodeString Message = TranslateExceptionMessage(E);
     MoreMessageDialog(Message, MoreMessages, Type, qaOK);
@@ -609,9 +823,16 @@ void TWinSCPPlugin::ShowExtendedException(Exception * E)
 
 void TWinSCPPlugin::HandleException(Exception * E, OPERATION_MODES OpMode)
 {
-  if (((OpMode & OPM_FIND) == 0) || rtti::isa<EFatal>(E))
+  if (((OpMode & OPM_FIND) == 0) || nb::isa<EFatal>(E))
   {
+    DEBUG_PRINTFA("TWinSCPPlugin::HandleException ENTER");
+    // Release the global plugin lock before showing a modal dialog.
+    // Far may dispatch keyboard events to plugin exports while the dialog
+    // message loop runs; holding the lock would cause a deadlock.
+    TUnguard Unguard(GetCriticalSection());
+    DEBUG_PRINTFA("TWinSCPPlugin::HandleException lock released");
     ShowExtendedException(E);
+    DEBUG_PRINTFA("TWinSCPPlugin::HandleException dialog closed");
   }
 }
 
@@ -906,12 +1127,81 @@ void TWinSCPPlugin::CleanupConfiguration()
   }
 }
 
+// Mirrors WinSCP's TerminalManager::MasterPasswordPrompt().
+// Called via WinConfiguration->OnMasterPasswordPrompt callback when
+// the plugin needs to decrypt a master-password-encrypted credential
+// at session connect time. Shows a Far InputBox password prompt,
+// validates against the stored verifier, and retries on failure.
+void TWinSCPPlugin::MasterPasswordPrompt()
+{
+  AppLogFmt(L"MasterPasswordPrompt: handler invoked");
+
+  // Only prompt on the main Far thread (mirrors TerminalManager::MasterPasswordPrompt)
+  if (GetCurrentThreadId() != FarPlugin->GetFarThreadId())
+  {
+    AppLogFmt(L"MasterPasswordPrompt: called from non-main thread, aborting");
+    Abort();
+    return;
+  }
+
+  // Retry loop: keep prompting until correct or cancelled
+  while (true)
+  {
+    UnicodeString Password;
+    const bool Ok = FarPlugin->InputBox(
+      FarPlugin->GetMsg(NB_MASTER_PASSWORD_CAPTION),
+      FarPlugin->GetMsg(NB_MASTER_PASSWORD_CURRENT),
+      Password,
+      FIB_PASSWORD | FIB_NOUSELASTHISTORY,
+      L"",
+      128);
+
+    if (!Ok)
+    {
+      AppLogFmt(L"MasterPasswordPrompt: user cancelled");
+      Abort();
+      return;
+    }
+
+    if (WinConfiguration->ValidateMasterPassword(Password))
+    {
+      AppLogFmt(L"MasterPasswordPrompt: password valid, setting");
+      WinConfiguration->SetMasterPassword(Password);
+      // Secure wipe of local password buffer before it goes out of scope
+      if (!Password.IsEmpty())
+      {
+        wchar_t * Buf = Password.SetLength(Password.Length());
+        if (Buf)
+        {
+          SecureZeroMemory(Buf, Password.GetBytesCount());
+        }
+        Password.Clear();
+      }
+      return;
+    }
+
+    AppLogFmt(L"MasterPasswordPrompt: incorrect password, retrying");
+    MessageDialog(FarPlugin->GetMsg(NB_MASTER_PASSWORD_INCORRECT), qtError, qaOK);
+  }
+}
+
+// CoreInitializeOnce runs during GetPluginInfoW (plugin menu construction).
+// If initialization throws, the exception is caught by GetPluginInfo and
+// HandleException is called. HandleException now uses TUnguard to release
+// the global plugin lock before showing the error dialog, preventing a
+// deadlock when Far dispatches keyboard events while the dialog is open.
+// See docs/far3-plugin-init-deadlock.md for full analysis.
 void TWinSCPPlugin::CoreInitializeOnce()
 {
   if (!FInitialized)
   {
     CoreInitialize();
     CleanupConfiguration();
+
+    // Wire master password prompt handler (mirrors TerminalManager constructor)
+    DebugAssert(WinConfiguration->GetOnMasterPasswordPrompt() == nullptr);
+    WinConfiguration->SetOnMasterPasswordPrompt(MasterPasswordPrompt);
+
     FInitialized = true;
   }
 }

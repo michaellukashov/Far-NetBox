@@ -54,18 +54,19 @@ enum FileAttributesEnum
 #if defined(_MSC_VER)
 #if (_MSC_VER >= 1900)
 #define DEBUG_PRINTF(format, ...) OutputDebugStringW(nb::Sprintf("Plugin: [%s:%d] %s: " format L"\n", Sysutils::ExtractFilename(__FILEW__, Backslash), __LINE__, ::MB2W(__FUNCTION__), __VA_ARGS__).c_str())
-#define DEBUG_PRINTFA(format, ...) OutputDebugStringW(nb::Sprintf("Plugin: [%s:%d] %s: " format "\n", W2MB(Sysutils::ExtractFilename(__FILEW__, Backslash)), __LINE__, __FUNCTION__, __VA_ARGS__).c_str())
+#define DEBUG_PRINTFA(format, ...) OutputDebugStringW(nb::Sprintf("Plugin: [%s:%d] %s: " format "\n", W2MB(Sysutils::ExtractFilename(__FILEW__, Backslash).c_str()).c_str(), __LINE__, __FUNCTION__, __VA_ARGS__).c_str())
 #else
 #define DEBUG_PRINTF(format, ...) OutputDebugStringW(nb::Sprintf("Plugin: [%s:%d] %s: "TEXT(format) L"\n", Sysutils::ExtractFilename(__FILEW__, Backslash), __LINE__, ::MB2W(__FUNCTION__), __VA_ARGS__).c_str())
-#define DEBUG_PRINTFA(format, ...) OutputDebugStringW(nb::Sprintf("Plugin: [%s:%d] %s: "format "\n", W2MB(Sysutils::ExtractFilename(__FILEW__, Backslash)), __LINE__, __FUNCTION__, __VA_ARGS__).c_str())
+#define DEBUG_PRINTFA(format, ...) OutputDebugStringW(nb::Sprintf("Plugin: [%s:%d] %s: "format "\n", W2MB(Sysutils::ExtractFilename(__FILEW__, Backslash).c_str()).c_str(), __LINE__, __FUNCTION__, __VA_ARGS__).c_str())
 #endif
 #else
 #define DEBUG_PRINTF(format, ...) OutputDebugStringW(nb::Sprintf(L"Plugin: [%s:%d] %s: " format L"\n", Sysutils::ExtractFilename(MB2W(__FILE__), Backslash), __LINE__, ::MB2W(__FUNCTION__), __VA_ARGS__).c_str())
-#define DEBUG_PRINTFA(format, ...) OutputDebugStringW(nb::Sprintf("Plugin: [%s:%d] %s: " format "\n", W2MB(Sysutils::ExtractFilename(MB2W(__FILE__), Backslash)), __LINE__, __FUNCTION__, __VA_ARGS__).c_str())
+#define DEBUG_PRINTFA(format, ...) OutputDebugStringW(nb::Sprintf("Plugin: [%s:%d] %s: " format "\n", W2MB(Sysutils::ExtractFilename(MB2W(__FILE__), Backslash).c_str()).c_str(), __LINE__, __FUNCTION__, __VA_ARGS__).c_str())
 #endif
 #else
 #define DEBUG_PRINTF(format, ...)
 #define DEBUG_PRINTF2(format, ...)
+#define DEBUG_PRINTFA(format, ...)
 #endif
 
 NB_CORE_EXPORT UnicodeString MB2W(const char * src, const UINT cp = CP_ACP);
@@ -238,7 +239,48 @@ NB_CORE_EXPORT void DecodeDate(const TDateTime & DateTime, uint16_t & Year,
 NB_CORE_EXPORT void DecodeTime(const TDateTime & DateTime, uint16_t & Hour,
   uint16_t & Min, uint16_t & Sec, uint16_t & MSec);
 
+/**
+ * @brief Formats a TDateTime value according to a format string.
+ *
+ * This function parses the format string and replaces format tokens with
+ * corresponding date/time components. Token parsing is case-insensitive.
+ *
+ * Supported format tokens:
+ *   - `y` or `Y` : Year. One or two `y`/`Y` characters yield a two-digit year.
+ *                  Three or four `y`/`Y` characters yield a four-digit year.
+ *   - `m` or `M` : Month (01-12). If immediately preceded by `h` or `H`, it is
+ *                  interpreted as minutes instead (to support formats like "hhmm").
+ *   - `d` or `D` : Day of month (01-31).
+ *   - `h` or `H` : Hour in 24-hour format (00-23).
+ *   - `n` or `N` : Minute (00-59).
+ *   - `s` or `S` : Second (00-59).
+ *   - `z` or `Z` : Milliseconds. One `z`/`Z` outputs the value as is; two digits
+ *                  output hundredths of a second (value/10); three or more digits
+ *                  output the full three-digit millisecond value.
+ * Literal characters: Any character not recognized as a format token is copied
+ *   literally to the output. Common separators like `:`, `/`, `-`, ` `.`, and
+ *   quoted strings (e.g., `'T'`) are also handled.
+ *
+ * @param Fmt The format string containing tokens and literal characters.
+ * @param ADateTime The date/time value to format.
+ * @return A UnicodeString containing the formatted date/time.
+ */
 NB_CORE_EXPORT UnicodeString FormatDateTime(const UnicodeString & Fmt, const TDateTime & ADateTime);
+/**
+ * @brief Converts an ISO 8601 date/time string to a TDateTime value.
+ *
+ * Parses a string in ISO 8601 format. Supported forms:
+ *   - Date only: "YYYY-MM-DD"
+ *   - Date and time: "YYYY-MM-DDTHH:MM:SS" (the 'T' separator is required)
+ *
+ * The time part is optional. Seconds are mandatory if time is present.
+ * Fractional seconds and timezone information (Z, +HH:MM, -HH:MM) are not supported.
+ *
+ * @param S The ISO 8601 date/time string.
+ * @return A TDateTime representing the parsed date and time.
+ * @throw Exception If the string does not conform to the expected format.
+ */
+NB_CORE_EXPORT TDateTime ISO8601ToDate(const UnicodeString & S);
 NB_CORE_EXPORT TDateTime SystemTimeToDateTime(const SYSTEMTIME & SystemTime);
 
 NB_CORE_EXPORT TDateTime EncodeDate(uint16_t Year, uint16_t Month, uint16_t Day);
@@ -248,6 +290,7 @@ NB_CORE_EXPORT UnicodeString Trim(const UnicodeString & Str);
 NB_CORE_EXPORT UnicodeString TrimLeft(const UnicodeString & Str);
 NB_CORE_EXPORT UnicodeString TrimRight(const UnicodeString & Str);
 NB_CORE_EXPORT UnicodeString RightCutToLength(const UnicodeString& Str, int32_t MaxLength, const UnicodeString& Ellipsis = L"\u2026");
+NB_CORE_EXPORT UnicodeString CutToLength(const UnicodeString & Str, int32_t MaxLength, const UnicodeString & Ellipsis = L"\u2026");
 NB_CORE_EXPORT UnicodeString UpperCase(const UnicodeString & Str);
 NB_CORE_EXPORT UnicodeString LowerCase(const UnicodeString & Str);
 NB_CORE_EXPORT UnicodeString AnsiLowerCase(const UnicodeString & Str);
@@ -294,6 +337,7 @@ NB_CORE_EXPORT int64_t StrToInt64(const UnicodeString & Value);
 NB_CORE_EXPORT int64_t StrToInt64Def(const UnicodeString & Value, int64_t DefVal);
 NB_CORE_EXPORT bool TryStrToInt64(const UnicodeString & StrValue, int64_t & Value);
 NB_CORE_EXPORT bool TryStrToInt(const UnicodeString & StrValue, int32_t & Value);
+NB_CORE_EXPORT int32_t StrToInt(const UnicodeString & Value);
 
 NB_CORE_EXPORT double StrToFloat(const UnicodeString & Value);
 NB_CORE_EXPORT double StrToFloatDef(const UnicodeString & Value, double DefVal);
@@ -617,7 +661,26 @@ class TPath
 {
 public:
   static UnicodeString Combine(const UnicodeString & APath, const UnicodeString & AFileName);
-  static bool IsDriveRooted(const UnicodeString & /*APath*/) { return false; } // TODO: implement
+  static bool IsDriveRooted(const UnicodeString & APath)
+  {
+    // Check if path starts with drive letter (C:\, D:, etc.) or UNC path (\\)
+    if (APath.IsEmpty())
+    {
+      return false;
+    }
+    const wchar_t first = APath[1];
+    if (first == L'\\' || first == L'/')
+    {
+      // UNC path or network path
+      return APath.Length() >= 2 && APath[2] == L'\\';
+    }
+    // Check for drive letter (A: to Z:)
+    if ((first >= L'A' && first <= L'Z') || (first >= L'a' && first <= L'z'))
+    {
+      return APath.Length() >= 2 && APath[2] == L':';
+    }
+    return false;
+  }
 };
 
 class TUnixPath

@@ -17,7 +17,7 @@ enum TFSProtocol { fsSCPonly = 0, fsSFTP = 1, fsSFTPonly = 2, fsFTP = 5, fsWebDA
 constexpr const int32_t FSPROTOCOL_COUNT = fsS3 + 1;
 constexpr const wchar_t * ProxyMethodNames = L"None;SOCKS4;SOCKS5;HTTP;Telnet;Cmd";
 enum TProxyMethod { pmNone, pmSocks4, pmSocks5, pmHTTP, pmTelnet, pmCmd };
-enum TKex { kexWarn, kexDHGroup1, kexDHGroup14, kexDHGroup15, kexDHGroup16, kexDHGroup17, kexDHGroup18, kexDHGEx, kexRSA, kexECDH, kexNTRUHybrid, kexCount };
+enum TKex { kexWarn, kexDHGroup1, kexDHGroup14, kexDHGroup15, kexDHGroup16, kexDHGroup17, kexDHGroup18, kexDHGEx, kexRSA, kexECDH, kexNTRUHybrid, kexMLKEM25519Hybrid, kexMLKEMNISTHybrid, kexCount };
 constexpr const int32_t KEX_COUNT = kexCount;
 enum THostKey { hkWarn, hkRSA, hkDSA, hkECDSA, hkED25519, hkED448, hkCount };
 constexpr const int32_t HOSTKEY_COUNT = hkCount;
@@ -31,8 +31,8 @@ enum TSftpBug { sbSymlink, sbSignedTS };
 constexpr const int32_t SFTP_BUG_COUNT = sbSignedTS + 1;
 constexpr const wchar_t * PingTypeNames = L"Off;Null;Dummy";
 enum TPingType { ptOff, ptNullPacket, ptDummyCommand };
-constexpr const wchar_t * FtpPingTypeNames = L"Off;Dummy;Dummy;List";
-enum TFtpPingType { fptOff, fptDummyCommand0, fptDummyCommand, fptDirectoryListing };
+constexpr const wchar_t * FtpPingTypeNames = L"Off;Dummy;Dummy;List;Noop";
+enum TFtpPingType { fptOff, fptDummyCommand0, fptDummyCommand, fptDirectoryListing, fptNoop };
 enum TAddressFamily { afAuto, afIPv4, afIPv6 };
 enum TFtps { ftpsNone, ftpsImplicit, ftpsExplicitSsl, ftpsExplicitTls };
 // ssl2 and ssh3 are equivalent of tls10 now
@@ -75,15 +75,16 @@ enum TLoginType
   ltNormal = 1,
 };
 
+// moved from SessionData.cpp
 constexpr const wchar_t * CipherNames[CIPHER_COUNT] = {L"WARN", L"3des", L"blowfish", L"aes", L"des", L"arcfour", L"chacha20", L"aesgcm"};
-constexpr const wchar_t * KexNames[KEX_COUNT] = {L"WARN", L"dh-group1-sha1", L"dh-group14-sha1", L"dh-group15-sha512", L"dh-group16-sha512", L"dh-group17-sha512", L"dh-group18-sha512", L"dh-gex-sha1", L"rsa", L"ecdh", L"ntru-curve25519"};
+constexpr const wchar_t * KexNames[KEX_COUNT] = {L"WARN", L"dh-group1-sha1", L"dh-group14-sha1", L"dh-group15-sha512", L"dh-group16-sha512", L"dh-group17-sha512", L"dh-group18-sha512", L"dh-gex-sha1", L"rsa", L"ecdh", L"ntru-curve25519", L"mlkem-curve25519", L"mlkem-nist"};
 constexpr const wchar_t * HostKeyNames[HOSTKEY_COUNT] = {L"WARN", L"rsa", L"dsa", L"ecdsa", L"ed25519", L"ed448"};
 constexpr const wchar_t * GssLibNames[GSSLIB_COUNT] = {L"gssapi32", L"sspi", L"custom"};
 constexpr const TCipher DefaultCipherList[CIPHER_COUNT] =
   { cipAES, cipChaCha20, cipAESGCM, cip3DES, cipWarn, cipDES, cipBlowfish, cipArcfour };
 // Update also order in SshKexList()
 constexpr const TKex DefaultKexList[KEX_COUNT] =
-  { kexNTRUHybrid, kexECDH, kexDHGEx, kexDHGroup18, kexDHGroup17, kexDHGroup16, kexDHGroup15, kexDHGroup14, kexRSA, kexWarn, kexDHGroup1 };
+  { kexNTRUHybrid, kexMLKEM25519Hybrid, kexMLKEMNISTHybrid, kexECDH, kexDHGEx, kexDHGroup18, kexDHGroup17, kexDHGroup16, kexDHGroup15, kexDHGroup14, kexRSA, kexWarn, kexDHGroup1 };
 constexpr const THostKey DefaultHostKeyList[HOSTKEY_COUNT] =
   { hkED448, hkED25519, hkECDSA, hkRSA, hkDSA, hkWarn };
 constexpr const TGssLib DefaultGssLibList[GSSLIB_COUNT] =
@@ -211,6 +212,12 @@ private:
   UnicodeString FShell;
   UnicodeString FSftpServer;
   int32_t FTimeout{0};
+  bool FInteractiveTerminal{false};
+  UnicodeString FTerminalType{"xterm"};
+  int32_t FTerminalWidth{80};
+  int32_t FTerminalHeight{24};
+  bool FKittyKeyboardProtocol{false};
+  bool FWin32InputMode{false};
   bool FUnsetNationalVars{false};
   bool FIgnoreLsWarnings{false};
   bool FTcpNoDelay{false};
@@ -285,6 +292,8 @@ private:
   int32_t FInternalEditorEncoding{0};
   UnicodeString FS3DefaultRegion;
   UnicodeString FS3SessionToken;
+  UnicodeString FS3RoleArn;
+  UnicodeString FS3RoleSessionName;
   UnicodeString FS3Profile;
   TS3UrlStyle FS3UrlStyle;
   TAutoSwitch FS3MaxKeys;
@@ -481,6 +490,8 @@ public:
   void SetInternalEditorEncoding(int32_t AValue);
   void SetS3DefaultRegion(const UnicodeString & AValue);
   void SetS3SessionToken(const UnicodeString & AValue);
+  void SetS3RoleArn(const UnicodeString & AValue);
+  void SetS3RoleSessionName(const UnicodeString & AValue);
   void SetS3Profile(const UnicodeString & AValue);
   void SetS3UrlStyle(TS3UrlStyle AValue);
   void SetS3MaxKeys(TAutoSwitch AValue);
@@ -636,6 +647,7 @@ public:
   __property UnicodeString UserName  = { read=FUserName, write=SetUserName };
   RWProperty<UnicodeString> UserName{nb::bind(&TSessionData::GetUserName, this), nb::bind(&TSessionData::SetUserName, this)};
   __property UnicodeString UserNameExpanded  = { read=GetUserNameExpanded };
+  const ROProperty<UnicodeString> UserNameExpanded{nb::bind(&TSessionData::GetUserNameExpanded, this)};
   __property UnicodeString UserNameSource  = { read=GetUserNameSource };
   __property UnicodeString Password  = { read=GetPassword, write=SetPassword };
   RWProperty<UnicodeString> Password{nb::bind(&TSessionData::GetPassword, this), nb::bind(&TSessionData::SetPassword, this)};
@@ -784,6 +796,7 @@ public:
   __property UnicodeString CustomParam1 = { read = FCustomParam1, write = SetCustomParam1 };
   __property UnicodeString CustomParam2 = { read = FCustomParam2, write = SetCustomParam2 };
   __property UnicodeString SessionKey = { read = GetSessionKey };
+  ROProperty<UnicodeString> SessionKey{nb::bind(&TSessionData::GetSessionKey, this)};
   __property bool ResolveSymlinks = { read = FResolveSymlinks, write = SetResolveSymlinks };
   RWPropertySimple<bool> ResolveSymlinks{&FResolveSymlinks, nb::bind(&TSessionData::SetResolveSymlinks, this)};
   __property bool FollowDirectorySymlinks = { read = FFollowDirectorySymlinks, write = SetFollowDirectorySymlinks };
@@ -794,6 +807,7 @@ public:
   __property int32_t SFTPMaxVersion = { read = FSFTPMaxVersion, write = SetSFTPMaxVersion };
   __property uint32_t SFTPMaxPacketSize = { read = FSFTPMaxPacketSize, write = SetSFTPMaxPacketSize };
   __property TAutoSwitch SFTPRealPath = { read = FSFTPRealPath, write = SetSFTPRealPath };
+  RWPropertySimple<TAutoSwitch> SFTPRealPath{&FSFTPRealPath, nb::bind(&TSessionData::SetSFTPRealPath, this)};
   __property bool UsePosixRename = { read = FUsePosixRename, write = SetUsePosixRename };
   RWPropertySimple<bool> UsePosixRename{&FUsePosixRename, nb::bind(&TSessionData::SetUsePosixRename, this)};
 #if defined(__BORLANDC__)
@@ -863,6 +877,10 @@ public:
   RWProperty<UnicodeString> S3DefaultRegion{nb::bind(&TSessionData::GetS3DefaultRegion, this), nb::bind(&TSessionData::SetS3DefaultRegion, this)};
   __property UnicodeString S3SessionToken = { read = FS3SessionToken, write = SetS3SessionToken };
   RWPropertySimple<UnicodeString> S3SessionToken{&FS3SessionToken, nb::bind(&TSessionData::SetS3SessionToken, this)};
+  __property UnicodeString S3RoleArn = { read = FS3RoleArn, write = SetS3RoleArn };
+  RWPropertySimple<UnicodeString> S3RoleArn{&FS3RoleArn, nb::bind(&TSessionData::SetS3RoleArn, this)};
+  __property UnicodeString S3RoleSessionName = { read = FS3RoleSessionName, write = SetS3RoleSessionName };
+  RWPropertySimple<UnicodeString> S3RoleSessionName{&FS3RoleSessionName, nb::bind(&TSessionData::SetS3RoleSessionName, this)};
   __property UnicodeString S3Profile = { read = FS3Profile, write = SetS3Profile };
   RWPropertySimple<UnicodeString> S3Profile{&FS3Profile, nb::bind(&TSessionData::SetS3Profile, this) };
   __property TS3UrlStyle S3UrlStyle = { read = FS3UrlStyle, write = SetS3UrlStyle };
@@ -967,6 +985,18 @@ public:
   UnicodeString GetShell() const { return FShell; }
   UnicodeString GetSftpServer() const { return FSftpServer; }
   int32_t GetTimeout() const { return FTimeout; }
+  bool GetInteractiveTerminal() const { return FInteractiveTerminal; }
+  void SetInteractiveTerminal(bool Value) { FInteractiveTerminal = Value; }
+  UnicodeString GetTerminalType() const { return FTerminalType; }
+  void SetTerminalType(const UnicodeString & Value) { FTerminalType = Value; }
+  int32_t GetTerminalWidth() const { return FTerminalWidth; }
+  void SetTerminalWidth(int32_t Value) { FTerminalWidth = Value; }
+  int32_t GetTerminalHeight() const { return FTerminalHeight; }
+  void SetTerminalHeight(int32_t Value) { FTerminalHeight = Value; }
+  bool GetKittyKeyboardProtocol() const { return FKittyKeyboardProtocol; }
+  void SetKittyKeyboardProtocol(bool Value) { FKittyKeyboardProtocol = Value; }
+  bool GetWin32InputMode() const { return FWin32InputMode; }
+  void SetWin32InputMode(bool Value) { FWin32InputMode = Value; }
   bool GetUnsetNationalVars() const { return FUnsetNationalVars; }
   bool GetIgnoreLsWarnings() const { return FIgnoreLsWarnings; }
   bool GetTcpNoDelay() const { return FTcpNoDelay; }
@@ -1136,8 +1166,8 @@ public:
   static bool OpenHostKeysSubKey(THierarchicalStorage * Storage, bool CanCreate);
   static void SelectKnownHostsForSelectedSessions(TStoredSessionList * KnownHosts, TStoredSessionList * Sessions);
 
-  const TSessionData * GetSession(int32_t Index) const { return rtti::dyn_cast_or_null<TSessionData>(AtObject(Index)); }
-  TSessionData * GetSession(int32_t Index) { return rtti::dyn_cast_or_null<TSessionData>(AtObject(Index)); }
+  const TSessionData * GetSession(int32_t Index) const { return nb::dyn_cast_or_null<TSessionData>(AtObject(Index)); }
+  TSessionData * GetSession(int32_t Index) { return nb::dyn_cast_or_null<TSessionData>(AtObject(Index)); }
   const TSessionData * GetDefaultSettingsConst() const { return FDefaultSettings.get(); }
   TSessionData * GetDefaultSettings() { return FDefaultSettings.get(); }
   void SetDefaultSettings(const TSessionData * Value);

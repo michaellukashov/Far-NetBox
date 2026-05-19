@@ -73,5 +73,6 @@ protected:
   UINT_PTR m_nTimerID{0};
   virtual ~CMainThread();
   bool m_Started{false};
+  HANDLE m_hStartedEvent{nullptr};
 };
 

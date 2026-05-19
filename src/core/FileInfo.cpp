@@ -10,7 +10,9 @@
 #include <Math.hpp>
 #include "FileInfo.h"
 
-// #pragma package(smart_init)
+#if defined(__BORLANDC__)
+#pragma package(smart_init)
+#endif // defined(__BORLANDC__)
 
 #define DWORD_ALIGN( base, ptr ) \
     ( (LPBYTE)(base) + ((((LPBYTE)(ptr) - (LPBYTE)(base)) + 3) & ~3) )
@@ -151,6 +153,7 @@ void * CreateFileInfo(const UnicodeString & AFileName)
 {
   DWORD Handle;
   void * Result = nullptr;
+
   // Get file version info block size
   const uint32_t Size = GetFileVersionInfoSizeFix(AFileName.c_str(), &Handle);
   // If size is valid

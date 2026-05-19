@@ -20,7 +20,7 @@
 //
 //===----------------------------------------------------------------------===//
 
-namespace rtti {
+namespace nb {
 
 //===----------------------------------------------------------------------===//
 // simplify_type
@@ -38,12 +38,12 @@ template <typename From> struct simplify_type
   static SimpleType& getSimplifiedValue(From& Val) { return Val; }
 };
 
-template<typename From> struct simplify_type<const From>
+template <typename From> struct simplify_type<const From>
 {
   using NonConstSimpleType = typename simplify_type<From>::SimpleType;
-  using SimpleType = typename nb::add_const_past_pointer<NonConstSimpleType>::type;
+  using SimpleType = typename add_const_past_pointer<NonConstSimpleType>::type;
   using RetType =
-    typename nb::add_lvalue_reference_if_not_pointer<SimpleType>::type;
+    typename add_lvalue_reference_if_not_pointer<SimpleType>::type;
 
   static RetType getSimplifiedValue(const From& Val)
   {
@@ -59,11 +59,6 @@ template<typename From> struct simplify_type<const From>
 // isa_impl
 //===----------------------------------------------------------------------===//
 
-template <typename To, typename From> struct isa_impl_p
-{
-  static inline bool doit(const From * Val) { return To::classof(Val); }
-};
-
 // The core of the implementation of isa<X> is here; To and From should be
 // the names of classes.  This template can be specialized to customize the
 // implementation of isa<> without rewriting it from scratch.
@@ -74,7 +69,7 @@ template <typename To, typename From, typename Enabler = void> struct isa_impl
 
 // Always allow upcasts, and perform no dynamic check for them.
 template <typename To, typename From>
-struct isa_impl<To, From, std::enable_if_t<std::is_base_of<To, From>::value>>
+struct isa_impl<To, From, std::enable_if_t<std::is_base_of_v<To, From>>>
 {
   static inline bool doit(const From&) { return true; }
 };
@@ -110,7 +105,7 @@ template <typename To, typename From> struct isa_impl_cl<To, From*>
   static inline bool doit(const From* Val)
   {
     assert(Val && "isa<> used on a null pointer");
-    return isa_impl_p<To, From>::doit(Val);
+    return isa_impl<To, From>::doit(*Val);
   }
 };
 
@@ -119,7 +114,7 @@ template <typename To, typename From> struct isa_impl_cl<To, From* const>
   static inline bool doit(const From* Val)
   {
     assert(Val && "isa<> used on a null pointer");
-    return isa_impl_p<To, From>::doit(Val);
+    return isa_impl<To, From>::doit(*Val);
   }
 };
 
@@ -128,8 +123,7 @@ template <typename To, typename From> struct isa_impl_cl<To, const From*>
   static inline bool doit(const From* Val)
   {
     assert(Val && "isa<> used on a null pointer");
-    // return isa_impl<To, From>::doit(*Val);
-    return isa_impl_p<To, From>::doit(Val);
+    return isa_impl<To, From>::doit(*Val);
   }
 };
 
@@ -139,11 +133,11 @@ struct isa_impl_cl<To, const From* const>
   static inline bool doit(const From* Val)
   {
     assert(Val && "isa<> used on a null pointer");
-    return isa_impl_p<To, From>::doit(Val);
+    return isa_impl<To, From>::doit(*Val);
   }
 };
 
-template<typename To, typename From, typename SimpleFrom>
+template <typename To, typename From, typename SimpleFrom>
 struct isa_impl_wrap
 {
   // When From != SimplifiedType, we can simplify the type some more by using
@@ -156,7 +150,7 @@ struct isa_impl_wrap
   }
 };
 
-template<typename To, typename FromTy>
+template <typename To, typename FromTy>
 struct isa_impl_wrap<To, FromTy, FromTy>
 {
   // When From == SimpleType, we are as simple as we are going to get.
@@ -170,30 +164,30 @@ struct isa_impl_wrap<To, FromTy, FromTy>
 // cast_retty + cast_retty_impl
 //===----------------------------------------------------------------------===//
 
-template<class To, class From> struct cast_retty;
+template <class To, class From> struct cast_retty;
 
 // Calculate what type the 'cast' function should return, based on a requested
 // type of To and a source type of From.
-template<class To, class From> struct cast_retty_impl
+template <class To, class From> struct cast_retty_impl
 {
-  using ret_type = To &;       // Normal case, return Ty&
+  using ret_type = To &; // Normal case, return Ty&
 };
-template<class To, class From> struct cast_retty_impl<To, const From>
+template <class To, class From> struct cast_retty_impl<To, const From>
 {
   using ret_type = const To &; // Normal case, return Ty&
 };
 
-template<class To, class From> struct cast_retty_impl<To, From*>
+template <class To, class From> struct cast_retty_impl<To, From*>
 {
-  using ret_type = To *;       // Pointer arg case, return Ty*
+  using ret_type = To *; // Pointer arg case, return Ty*
 };
 
-template<class To, class From> struct cast_retty_impl<To, const From*>
+template <class To, class From> struct cast_retty_impl<To, const From*>
 {
   using ret_type = const To *; // Constant pointer arg case, return const Ty*
 };
 
-template<class To, class From> struct cast_retty_impl<To, const From* const>
+template <class To, class From> struct cast_retty_impl<To, const From* const>
 {
   using ret_type = const To *; // Constant pointer arg case, return const Ty*
 };
@@ -275,8 +269,10 @@ struct cast_convert_val<To, FromTy*, FromTy*>
 template <class X> struct is_simple_type
 {
   static const bool value =
-    std::is_same<X, typename simplify_type<X>::SimpleType>::value;
+    std::is_same_v<X, typename simplify_type<X>::SimpleType>;
 };
+
+// } // namespace detail
 
 //===----------------------------------------------------------------------===//
 // CastIsPossible
@@ -321,8 +317,7 @@ struct CastIsPossible<To, std::optional<From>>
 /// Upcasting (from derived to base) and casting from a type to itself should
 /// always be possible.
 template <typename To, typename From>
-struct CastIsPossible<To, From,
-         std::enable_if_t<std::is_base_of<To, From>::value>>
+struct CastIsPossible<To, From, std::enable_if_t<std::is_base_of_v<To, From>>>
 {
   static inline bool isPossible(const From& f) { return true; }
 };
@@ -369,7 +364,7 @@ namespace detail {
 /// A helper to derive the type to use with `Self` for cast traits, when the
 /// provided CRTP derived type is allowed to be void.
 template <typename OptionalDerived, typename Default>
-using SelfType = std::conditional_t<std::is_same<OptionalDerived, void>::value,
+using SelfType = std::conditional_t<std::is_same_v<OptionalDerived, void>,
       Default, OptionalDerived>;
 } // namespace detail
 
@@ -405,11 +400,11 @@ struct UniquePtrCast : public CastIsPossible<To, From*>
 
   static inline CastResultType castFailed() { return CastResultType(nullptr); }
 
-  static inline CastResultType doCastIfPossible(std::unique_ptr<From>&& f)
+  static inline CastResultType doCastIfPossible(std::unique_ptr<From>& f)
   {
-    if (!Self::isPossible(f))
+    if (!Self::isPossible(f.get()))
       return castFailed();
-    return doCast(f);
+    return doCast(std::move(f));
   }
 };
 
@@ -446,8 +441,8 @@ struct ConstStrippingForwardingCast
   // Remove the pointer if it exists, then we can get rid of consts/volatiles.
   using DecayedFrom = std::remove_cv_t<std::remove_pointer_t<From>>;
   // Now if it's a pointer, add it back. Otherwise, we want a ref.
-  using NonConstFrom = std::conditional_t<std::is_pointer<From>::value,
-        DecayedFrom*, DecayedFrom&>;
+  using NonConstFrom =
+    std::conditional_t<std::is_pointer_v<From>, DecayedFrom*, DecayedFrom&>;
 
   static inline bool isPossible(const From& f)
   {
@@ -610,28 +605,16 @@ template <typename To, typename From>
 struct CastInfo<To, std::optional<From>> : public OptionalValueCast<To, From>
 {
 };
-/*
+
 /// isa<X> - Return true if the parameter to the template is an instance of one
 /// of the template type arguments.  Used like this:
 ///
 ///  if (isa<Type>(myVal)) { ... }
 ///  if (isa<Type0, Type1, Type2>(myVal)) { ... }
-template <typename To, typename From>
+template <typename... To, typename From>
 [[nodiscard]] inline bool isa(const From& Val)
 {
-  return CastInfo<To, const From>::isPossible(Val);
-}
-
-template <typename First, typename Second, typename... Rest, typename From>
-[[nodiscard]] inline bool isa(const From& Val)
-{
-  return isa<First>(Val) || isa<Second, Rest...>(Val);
-}
-*/
-template <typename To, typename From>
-[[nodiscard]] inline bool isa(const From * Val)
-{
-  return isa_impl_p<To, From>::doit(Val);
+  return (CastInfo<To, const From>::isPossible(Val) || ...);
 }
 
 /// cast<X> - Return the argument parameter cast to the specified type.  This
@@ -757,11 +740,10 @@ template <typename To, typename From>
 }
 
 template <typename To, typename From>
-[[nodiscard]] inline decltype(auto) dyn_cast(std::unique_ptr<From>&& Val)
+[[nodiscard]] inline decltype(auto) dyn_cast(std::unique_ptr<From>& Val)
 {
   assert(detail::isPresent(Val) && "dyn_cast on a non-existent value");
-  return CastInfo<To, std::unique_ptr<From>>::doCastIfPossible(
-      std::move(Val));
+  return CastInfo<To, std::unique_ptr<From>>::doCastIfPossible(Val);
 }
 
 /// isa_and_present<X> - Functionally identical to isa, except that a null value
@@ -863,7 +845,7 @@ template <class X, class Y> auto dyn_cast_if_present(Y* Val)
 
 // Forwards to dyn_cast_if_present to avoid breaking current users. This is
 // deprecated and will be removed in a future patch, use
-// cast_if_present instead.
+// dyn_cast_if_present instead.
 template <class X, class Y> auto dyn_cast_or_null(const Y& Val)
 {
   return dyn_cast_if_present<X>(Val);
@@ -886,7 +868,7 @@ template <class X, class Y> auto dyn_cast_or_null(Y* Val)
 /// and From is unchanged.
 template <class X, class Y>
 [[nodiscard]] inline typename CastInfo<X, std::unique_ptr<Y>>::CastResultType
-  unique_dyn_cast(std::unique_ptr<Y>& Val)
+unique_dyn_cast(std::unique_ptr<Y>& Val)
 {
   if (!isa<X>(Val))
     return nullptr;
@@ -903,7 +885,7 @@ template <class X, class Y>
 // except that a null value is accepted.
 template <class X, class Y>
 [[nodiscard]] inline typename CastInfo<X, std::unique_ptr<Y>>::CastResultType
-  unique_dyn_cast_or_null(std::unique_ptr<Y>& Val)
+unique_dyn_cast_or_null(std::unique_ptr<Y>& Val)
 {
   if (!Val)
     return nullptr;
@@ -916,33 +898,57 @@ template <class X, class Y>
   return unique_dyn_cast_or_null<X, Y>(Val);
 }
 
-} // namespace rtti
+//===----------------------------------------------------------------------===//
+// Isa Predicates
+//===----------------------------------------------------------------------===//
 
-/*
-template <class X, class Y>
-inline bool isa(const Y * Val)
-{
-  return rtti::isa<X, Y>(Val);
-}
+/// These are wrappers over isa* function that allow them to be used in generic
+/// algorithms such as `llvm:all_of`, `llvm::none_of`, etc. This is accomplished
+/// by exposing the isa* functions through function objects with a generic
+/// function call operator.
 
-template <class X, class Y>
-inline const X * dyn_cast(const Y * Val)
+namespace detail {
+template <typename... Types> struct IsaCheckPredicate
 {
-  return rtti::dyn_cast_or_null<X>(Val);
-  // if (Val && rtti::isa<X, Y>(Val))
-  //   return static_cast<const X *>(Val);
-  return nullptr;
-}
+  template <typename T> [[nodiscard]] bool operator()(const T& Val) const
+  {
+    return isa<Types...>(Val);
+  }
+};
 
-template <class X, class Y>
-inline X * dyn_cast(Y * Val)
+template <typename... Types> struct IsaAndPresentCheckPredicate
 {
-   return rtti::dyn_cast_or_null<X>(Val);
-  // if (Val && rtti::isa<X, Y>(Val))
-  //   return static_cast<X *>(Val);
-  return nullptr;
-}
-*/
+  template <typename T> [[nodiscard]] bool operator()(const T& Val) const
+  {
+    return isa_and_present<Types...>(Val);
+  }
+};
+} // namespace detail
+
+/// Function object wrapper for the `llvm::isa` type check. The function call
+/// operator returns true when the value can be cast to any type in `Types`.
+/// Example:
+/// ```
+/// SmallVector<Type> myTypes = ...;
+/// if (llvm::all_of(myTypes, llvm::IsaPred<VectorType>))
+///   ...
+/// ```
+template <typename... Types>
+inline constexpr detail::IsaCheckPredicate<Types...> IsaPred{};
+
+/// Function object wrapper for the `llvm::isa_and_present` type check. The
+/// function call operator returns true when the value can be cast to any type
+/// in `Types`, or if the value is not present (e.g., nullptr). Example:
+/// ```
+/// SmallVector<Type> myTypes = ...;
+/// if (llvm::all_of(myTypes, llvm::IsaAndPresentPred<VectorType>))
+///   ...
+/// ```
+template <typename... Types>
+inline constexpr detail::IsaAndPresentCheckPredicate<Types...>
+IsaAndPresentPred{};
+
+} // namespace nb
 
 namespace nb {
 // generate unique IDs at compile-time

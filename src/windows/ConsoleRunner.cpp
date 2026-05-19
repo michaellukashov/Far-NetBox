@@ -429,6 +429,7 @@ int TOwnConsole::Choice(
       if (Result == 0)
       {
         unsigned int TimerSlice = 50;
+        // busy-wait fallback: console input polling with timer-based timeout
         Sleep(TimerSlice);
         if (Timer > 0)
         {
@@ -497,6 +498,7 @@ void TOwnConsole::WaitBeforeExit()
     {
       break;
     }
+    // busy-wait fallback: console input polling with message processing
     Sleep(50);
     ProcessMessages();
   }
@@ -594,7 +596,7 @@ TExternalConsole::TExternalConsole(
     CloseHandle(Job);
   }
 
-  FSection.reset(new TCriticalSection());
+  FSection.reset(std::make_unique<TCriticalSection>());
 
   TConsoleCommStruct * CommStruct = GetCommStruct();
   try
@@ -670,7 +672,7 @@ void TExternalConsole::SendEvent(int Timeout)
   {
     unsigned int End = GetTickCount();
     unsigned int Duration = End - Start;
-    FMaxSend = std::max(Duration, FMaxSend);
+    FMaxSend = nb::Max(Duration, FMaxSend);
   }
   if (Result != WAIT_OBJECT_0)
   {
@@ -976,7 +978,7 @@ void TExternalConsole::TransferOut(const unsigned char * Data, size_t Len)
     try
     {
       CommStruct->Event = TConsoleCommStruct::TRANSFEROUT;
-      unsigned int BlockLen = std::min(Len - Offset, sizeof(CommStruct->TransferEvent.Data));
+      unsigned int BlockLen = nb::Min(Len - Offset, sizeof(CommStruct->TransferEvent.Data));
       memcpy(CommStruct->TransferEvent.Data, Data + Offset, BlockLen);
       CommStruct->TransferEvent.Len = BlockLen;
       Offset += BlockLen;
@@ -998,7 +1000,7 @@ size_t TExternalConsole::TransferIn(unsigned char * Data, size_t Len)
   while ((Result == Offset) && (Offset < Len))
   {
     TConsoleCommStruct * CommStruct;
-    size_t BlockLen = std::min(Len - Offset, sizeof(CommStruct->TransferEvent.Data));
+    size_t BlockLen = nb::Min(Len - Offset, sizeof(CommStruct->TransferEvent.Data));
 
     CommStruct = GetCommStruct();
     try
@@ -1077,6 +1079,7 @@ int TNullConsole::Choice(
   int Result;
   if (Timeouting)
   {
+    // busy-wait fallback: null console implementation always returns timeout
     Sleep(Timer);
     Result = Timeouted;
   }
@@ -1717,6 +1720,7 @@ void TConsoleRunner::ScriptTerminalQueryUser(TObject * /*Sender*/,
         // Not to get preliminary "host is not responding" messages to .NET assembly
         if (FConsole->HasFlag(cfNoInteractiveInput) && (Timer > 0))
         {
+          // busy-wait fallback: non-interactive mode, wait full timer before returning
           Sleep(Timer);
           AnswerIndex = -2;
         }
@@ -2414,7 +2418,7 @@ void Usage(TConsole * Console)
   TSwitchesUsage::const_iterator Index = SwitchesUsage.begin();
   while (Index != SwitchesUsage.end())
   {
-    MaxSwitchLen = std::max(Index->first.Length(), MaxSwitchLen);
+    MaxSwitchLen = nb::Max(Index->first.Length(), MaxSwitchLen);
     ++Index;
   }
 
@@ -2798,6 +2802,7 @@ int DumpCallstack(TConsole * Console, TProgramParams * Params)
     int Timeout = 30;
     while (!FileExists(FileName))
     {
+      // busy-wait fallback: waiting for external process to create dump file
       Sleep(1000);
       Timeout--;
       if (Timeout == 0)

@@ -289,14 +289,13 @@ static int neon_write_func(void * data, const char * buf, size_t len)
 }
 
 
-static S3Status append_amz_header(RequestComputedValues *values,
+static S3Status do_append_amz_header(RequestComputedValues *values,
                                   int addPrefix,
                                   const char *headerName,
                                   const char *headerValue)
 {
     int rawPos = values->amzHeadersRawLength + 1;
-    values->amzHeaders[values->amzHeadersCount++] = &(values->amzHeadersRaw[rawPos]);
-
+    int initPos = rawPos;
     const char *headerStr = headerName;
     
     char headerNameWithPrefix[S3_MAX_METADATA_SIZE - sizeof(": v")];
@@ -331,6 +330,7 @@ static S3Status append_amz_header(RequestComputedValues *values,
     }
     values->amzHeadersRaw[++rawPos] = '\0';
     values->amzHeadersRawLength = rawPos;
+    values->amzHeaders[values->amzHeadersCount++] = &(values->amzHeadersRaw[initPos]);
     return S3StatusOK;
 }
 
@@ -355,6 +355,8 @@ static S3Status compose_amz_headers(const RequestParams *params,
     values->amzHeadersRaw[0] = '\0';
     values->amzHeadersRawLength = 0;
 
+    S3Status status;
+    #define append_amz_header(...) if ((status = do_append_amz_header(__VA_ARGS__)) != S3StatusOK) return status;
     // Check and copy in the x-amz-meta headers
     if (properties) {
         int i;
@@ -831,7 +833,7 @@ static void sort_query_string(const char *queryString, char *result,
 
     // Where did strdup go?!??
     int queryStringLen = (int)strlen(queryString);
-    char *buf = (char *) nb_calloc(queryStringLen + 1, 1);
+    char *buf = (char *) nb_calloc(queryStringLen + 1, sizeof(char));
     char *tok = buf;
     strcpy(tok, queryString);
     const char *token = NULL;
@@ -883,7 +885,7 @@ static void canonicalize_query_string(const char *queryParams,
 
     if (queryParams && queryParams[0]) {
         int sortedLen = (int)strlen(queryParams) * 2;
-        char * sorted = (char *)nb_calloc(strlen(queryParams) * 2, sizeof(char)); // WINSCP (heap allocation)
+        char * sorted = (char *)nb_calloc(sortedLen, sizeof(char)); // WINSCP (heap allocation)
         sorted[0] = '\0';
         sort_query_string(queryParams, sorted, sortedLen);
         append(sorted);
@@ -993,7 +995,7 @@ static S3Status compose_auth_header(const RequestParams *params,
     const unsigned char *rqstData = (const unsigned char*) canonicalRequest;
     SHA256(rqstData, strlen(canonicalRequest), canonicalRequestHash);
 #endif
-    nb_free(canonicalRequest); // WINSCP (heap allocation)
+    nb_free(canonicalRequest); // WINSCP
     char canonicalRequestHashHex[2 * S3_SHA256_DIGEST_LENGTH + 1];
     size = sizeof(canonicalRequestHashHex); // WINSCP
     canonicalRequestHashHex[0] = '\0';
@@ -1008,7 +1010,7 @@ static S3Status compose_auth_header(const RequestParams *params,
     }
     const char * service = (params->bucketContext.service != NULL) ? params->bucketContext.service : S3_SERVICE; // WINSCP
     int scopeSize = 8 + strlen(awsRegion) + strlen(service) + sizeof("///aws4_request"); // WINSCP
-    char * scope = (char *)nb_calloc(scopeSize, 1); // WINSCP
+    char * scope = (char *)nb_calloc(scopeSize, sizeof(char)); // WINSCP
     snprintf(scope, scopeSize, "%.8s/%s/%s/aws4_request",
              values->requestDateISO8601, awsRegion, service); // WINSCP
 
@@ -1068,8 +1070,8 @@ static S3Status compose_auth_header(const RequestParams *params,
          (const unsigned char*) stringToSign, strlen(stringToSign),
          finalSignature, NULL);
 #endif
-    nb_free(stringToSign); // WINSCP (heap allocation)
     nb_free(accessKey); // WINSCP
+    nb_free(stringToSign); // WINSCP
 
     len = 0;
     size = sizeof(values->requestSignatureHex); // WINSCP
@@ -1206,6 +1208,7 @@ static S3Status setup_neon(Request *request,
     }
 
     char method[64];
+    memset(method, 0, sizeof(method));
     strcpy(method, "GET");
     switch (params->httpRequestType) {
     case HttpRequestTypeHEAD:
@@ -1234,7 +1237,6 @@ static S3Status setup_neon(Request *request,
     }
     request->NeonRequest = ne_request_create(request->NeonSession, method, buf->data);
     ne_buffer_destroy(buf);
-    ne_uri_free(&uri);
 
     // Set header callback and data
     // Set read callback, data, and readSize
@@ -1302,17 +1304,31 @@ static S3Status setup_neon(Request *request,
         do_add_header(values-> fieldName);                               \
     }
 
-    // WINSCP (hostHeader is added implicitly by neon based on uri, but for certificate check, we use base hostname
-    // as the bucket name can contain dots, for which the certificate check would fail)
-    char * hostName = strdup(params->bucketContext.hostName ? params->bucketContext.hostName : defaultHostNameG);
-    char * colon = strchr(hostName, ':');
-    if (colon != NULL)
+    // WINSCP (hostHeader is added implicitly by neon based on uri, but for certificate check,
+    // we remove the dots, as they fail it)
+    if ((params->bucketContext.bucketName != NULL) &&
+        (strchr(params->bucketContext.bucketName, '.') != NULL) &&
+        (strncmp(params->bucketContext.bucketName, uri.host, strlen(params->bucketContext.bucketName)) == 0) &&
+        (uri.host[strlen(params->bucketContext.bucketName)] == '.'))
     {
-        *colon = '\0';
+        char * hostName = strdup(uri.host);
+        char * colon = strchr(hostName, ':');
+        if (colon != NULL)
+        {
+            *colon = '\0';
+        }
+        for (size_t i = 0; i < strlen(params->bucketContext.bucketName); i++)
+        {
+            if (hostName[i] == '.')
+            {
+                hostName[i] = '-';
+            }
+        }
+        ne_set_realhost(request->NeonSession, hostName);
+        free(hostName);
     }
-    ne_set_realhost(request->NeonSession, hostName);
-    free(hostName);
 
+    // WINSCP (hostHeader is added implicitly by neon based on uri)
     append_standard_header(cacheControlHeader);
     append_standard_header(contentTypeHeader);
     append_standard_header(md5Header);
@@ -1331,6 +1347,8 @@ static S3Status setup_neon(Request *request,
     for (i = 0; i < values->amzHeadersCount; i++) {
         do_add_header(values->amzHeaders[i]);
     }
+
+    ne_uri_free(&uri); // WINSCP (moved)
 
     return S3StatusOK;
 }

@@ -758,13 +758,11 @@ void TRemoteTokenList::Add(const TRemoteToken & Token)
   FTokens.push_back(Token);
   if (Token.GetIDValid())
   {
-    // std::pair<TIDMap::iterator, bool> Position =
-      FIDMap.insert(TIDMap::value_type(Token.GetID(), FTokens.size() - 1));
+    FIDMap.insert(TIDMap::value_type(Token.GetID(), FTokens.size() - 1));
   }
   if (Token.GetNameValid())
   {
-    // std::pair<TNameMap::iterator, bool> Position =
-      FNameMap.insert(TNameMap::value_type(Token.GetName(), FTokens.size() - 1));
+    FNameMap.insert(TNameMap::value_type(Token.GetName(), FTokens.size() - 1));
   }
 }
 
@@ -926,6 +924,7 @@ TRemoteFile * TRemoteFile::Duplicate(bool Standalone) const
     COPY_FP(IsSymLink);
     COPY_FP(LinkTo);
     COPY_FP(Type);
+    COPY_FP(Tags);
     COPY_FP(CyclicLink);
     COPY_FP(HumanRights);
     COPY_FP(IsEncrypted);
@@ -1056,10 +1055,10 @@ Boolean TRemoteFile::GetIsInaccessibleDirectory() const
     DebugAssert(GetTerminal());
     Result = !
        (base::SameUserName(GetTerminal()->GetUserName(), L"root")) ||
-        (((GetRights()->GetRightUndef(TRights::rrOtherExec) != TRights::rsNo)) ||
-        ((GetRights()->GetRight(TRights::rrGroupExec) != TRights::rsNo) &&
+        (((Rights->GetRightUndef(TRights::rrOtherExec) != TRights::rsNo)) ||
+        ((Rights->GetRight(TRights::rrGroupExec) != TRights::rsNo) &&
           GetTerminal()->GetMembership()->Exists(GetFileGroup().GetName())) ||
-        ((GetRights()->GetRight(TRights::rrUserExec) != TRights::rsNo) &&
+        ((Rights->GetRight(TRights::rrUserExec) != TRights::rsNo) &&
           (base::SameUserName(GetTerminal()->GetUserName(), GetFileOwner().GetName()))));
   }
     // else Result = False;
@@ -1141,7 +1140,7 @@ UnicodeString TRemoteFile::GetExtension() const
   return base::UnixExtractFileExt(FFileName);
 }
 
-void TRemoteFile::SetRights(const TRights * Value)
+void TRemoteFile::SetRights(TRights * Value)
 {
   FRights->Assign(Value);
 }
@@ -1202,10 +1201,10 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
 
     // Rights string may contain special permission attributes (S,t, ...)
     TODO("maybe no longer necessary, once we can handle the special permissions");
-    GetRightsNotConst()->SetAllowUndef(True);
+    Rights->SetAllowUndef(True);
     // On some system there is no space between permissions and node blocks count columns
     // so we get only first 9 characters and trim all following spaces (if any)
-    GetRightsNotConst()->SetText(Line.SubString(1, 9));
+    Rights->Text = Line.SubString(1, 9);
     Line.Delete(1, 9);
     // Rights column maybe followed by '+', '@' or '.' signs, we ignore them
     // (On MacOS, there may be a space in between)
@@ -1607,7 +1606,7 @@ void TRemoteFile::FindLinkedFile()
     }
     catch(Exception & E)
     {
-      if (rtti::isa<EFatal>(&E))
+      if (nb::isa<EFatal>(&E))
       {
         throw;
       }
@@ -1636,7 +1635,7 @@ UnicodeString TRemoteFile::GetListingStr() const
     LinkPart = UnicodeString(SYMLINKSTR) + GetLinkTo();
   }
   return FORMAT("%s%s %3s %-8s %-8s %9s %-12s %s%s",
-    GetType(), GetRights()->GetText(), ::Int64ToStr(FINodeBlocks), GetFileOwner().GetName(), GetFileGroup().GetName(),
+    GetType(), Rights->Text, ::Int64ToStr(FINodeBlocks), GetFileOwner().GetName(), GetFileGroup().GetName(),
     ::Int64ToStr(GetSize()),  // explicitly using size even for directories
     GetModificationStr(), GetFileName(),
     LinkPart);
@@ -1677,7 +1676,7 @@ bool TRemoteFile::GetHaveFullFileName() const
 int32_t TRemoteFile::GetAttr() const
 {
   int32_t Result = 0;
-  if (GetRights()->GetReadOnly())
+  if (Rights->GetReadOnly())
   {
     Result |= faReadOnly;
   }
@@ -1747,6 +1746,15 @@ void TRemoteFileList::AddFile(TRemoteFile * AFile)
   {
     Add(AFile);
     AFile->SetDirectory(this);
+  }
+}
+
+void TRemoteFileList::ExtractFile(TRemoteFile * AFile)
+{
+  if (AFile)
+  {
+    Extract(AFile);
+    AFile->SetDirectory(nullptr);
   }
 }
 
@@ -1929,12 +1937,12 @@ void TRemoteDirectory::SetIncludeParentDirectory(Boolean Value)
     if (Value && GetParentDirectory())
     {
       DebugAssert(IndexOf(GetParentDirectory()) < 0);
-      Add(GetParentDirectory());
+      AddFile(GetParentDirectory());
     }
     else if (!Value && GetParentDirectory())
     {
       DebugAssert(IndexOf(GetParentDirectory()) >= 0);
-      Extract(GetParentDirectory());
+      ExtractFile(GetParentDirectory());
     }
   }
 }
@@ -2932,7 +2940,8 @@ TRemoteProperties::TRemoteProperties(const TRemoteProperties & rhs) : TObject(OB
   Owner(rhs.Owner),
   Modification(rhs.Modification),
   LastAccess(rhs.Modification),
-  Encrypt(rhs.Encrypt)
+  Encrypt(rhs.Encrypt),
+  Tags(rhs.Tags)
 {
 }
 
@@ -2948,6 +2957,7 @@ void TRemoteProperties::Default()
   LastAccess = 0;
   Recursive = false;
   Encrypt = false;
+  Tags = EmptyStr;
 }
 
 bool TRemoteProperties::operator ==(const TRemoteProperties & rhs) const
@@ -2962,7 +2972,8 @@ bool TRemoteProperties::operator ==(const TRemoteProperties & rhs) const
         (Valid.Contains(vpGroup) && (Group != rhs.Group)) ||
         (Valid.Contains(vpModification) && (Modification != rhs.Modification)) ||
         (Valid.Contains(vpLastAccess) && (LastAccess != rhs.LastAccess)) ||
-        (Valid.Contains(vpEncrypt) && (Encrypt != rhs.Encrypt)))
+        (Valid.Contains(vpEncrypt) && (Encrypt != rhs.Encrypt)) ||
+        (Valid.Contains(vpTags) && (Tags != rhs.Tags)))
     {
       Result = false;
     }
@@ -3004,6 +3015,8 @@ TRemoteProperties TRemoteProperties::CommonProperties(TStrings * AFileList)
         CommonProperties.Group = File->GetFileGroup();
         CommonProperties.Valid << vpGroup;
       }
+      CommonProperties.Tags = File->Tags;
+      CommonProperties.Valid << vpTags;
     }
     else
     {
@@ -3018,6 +3031,11 @@ TRemoteProperties TRemoteProperties::CommonProperties(TStrings * AFileList)
       {
         CommonProperties.Group.Clear();
         CommonProperties.Valid >> vpGroup;
+      }
+      if (CommonProperties.Tags != File->Tags)
+      {
+        CommonProperties.Tags = EmptyStr;
+        CommonProperties.Valid >> vpTags;
       }
     }
   }
@@ -3046,6 +3064,11 @@ TRemoteProperties TRemoteProperties::ChangedProperties(
     {
       NewProperties.Valid >> vpOwner;
     }
+
+    if (NewProperties.Tags == OriginalProperties.Tags)
+    {
+      NewProperties.Valid >> vpTags;
+    }
   }
   return NewProperties;
 }
@@ -3062,6 +3085,7 @@ TRemoteProperties & TRemoteProperties::operator =(const TRemoteProperties & othe
   LastAccess = other.LastAccess;
   Recursive = other.Recursive;
   AddXToDirectories = other.AddXToDirectories;
+  Tags = other.Tags;
   return *this;
 }
 
@@ -3168,6 +3192,51 @@ int64_t TChecklistItem::GetBaseSize(TChecklistAction AAction) const
   }
 }
 
+UnicodeString TChecklistItem::GetLocalPath() const
+{
+  return CombinePaths(Local.Directory, Local.FileName);
+}
+
+UnicodeString TChecklistItem::GetRemotePath() const
+{
+  return base::UnixCombinePaths(Remote.Directory, Remote.FileName);
+}
+
+UnicodeString TChecklistItem::GetLocalTarget() const
+{
+  return IncludeTrailingBackslash(Local.Directory);
+}
+
+UnicodeString TChecklistItem::GetRemoteTarget() const
+{
+  return base::UnixIncludeTrailingBackslash(Remote.Directory);
+};
+
+TStrings * TChecklistItem::GetFileList() const
+{
+  std::unique_ptr<TStrings> FileList(std::make_unique<TStringList>());
+  switch (Action)
+  {
+    case TChecklistAction::saDownloadNew:
+    case TChecklistAction::saDownloadUpdate:
+    case TChecklistAction::saDeleteRemote:
+      FileList->AddObject(GetRemotePath(), RemoteFile);
+      break;
+
+    case TChecklistAction::saUploadNew:
+    case TChecklistAction::saUploadUpdate:
+    case TChecklistAction::saDeleteLocal:
+      FileList->Add(GetLocalPath());
+      break;
+
+    default:
+      DebugFail();
+      NotImplemented();
+      UNREACHABLE_AFTER_NORETURN(break);
+  }
+  return FileList.release();
+}
+
 
 TSynchronizeChecklist::TSynchronizeChecklist() noexcept :
   FList(std::make_unique<TItemList>())
@@ -3239,6 +3308,22 @@ int32_t TSynchronizeChecklist::GetCheckedCount() const
     }
   }
   return Result;
+}
+
+bool TSynchronizeChecklist::GetNextChecked(int32_t & Index, const TChecklistItem *& AItem) const
+{
+  while (Index < Count)
+  {
+    const TChecklistItem * TheItem = Item[Index];
+    Index++;
+    if (TheItem->Checked)
+    {
+      AItem = TheItem;
+      return true;
+    }
+  }
+  AItem = nullptr;
+  return false;
 }
 
 const TChecklistItem * TSynchronizeChecklist::GetItem(int32_t Index) const

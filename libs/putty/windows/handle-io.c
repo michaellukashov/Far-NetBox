@@ -44,6 +44,7 @@ struct handle_list_node {
     handle_list_node *next, *prev;
 };
 #endif
+struct handle_generic; // WINSCP
 static void add_to_ready_list(struct handle_generic *ctx); // WINSCP
 
 /*

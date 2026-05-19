@@ -34,7 +34,9 @@
 #define LIBS3_H
 
 #include <stdint.h>
-#ifdef WINSCP
+#ifndef WINSCP
+#include <sys/select.h>
+#else
 #ifndef _WINSOCKAPI_
 #define _WINSOCKAPI_
 #endif
@@ -42,8 +44,6 @@
 #include <WS2tcpip.h>
 
 #include <nbglobals.h>
-#else
-#include <sys/select.h>
 #endif
 
 #ifdef WINSCP
@@ -1645,7 +1645,7 @@ S3Status S3_create_request_context(S3RequestContext **requestContextReturn);
  * for curl_multi_socket_action CURLM handles that will be managed by libs3 user.
  * This type of handles offer better performance for applications with large
  * number of simultaneous connections. For details, see MULTI_SOCKET chapter here:
- * https://curl.haxx.se/libcurl/c/libcurl-multi.html
+ * https://curl.se/libcurl/c/libcurl-multi.html
  *
  * In this mode libs3 user will
  *  - create its own CURLM using curl_multi_init()
@@ -1698,13 +1698,13 @@ void S3_destroy_request_context(S3RequestContext *requestContext);
 
 #ifdef WINSCP
 struct ne_session_s;
-typedef void (*S3SessionCallback)(struct ne_session_s *session, void *callbackData);
+typedef void (S3SessionCallback)(struct ne_session_s *session, void *callbackData);
 void S3_set_request_context_session_callback(S3RequestContext *requestContext,
                                              S3SessionCallback sessionCallback,
                                              void * sessionCallbackData);
 
 struct ne_ssl_certificate_s;
-typedef int (*S3SslCallback)(int failures, const struct ne_ssl_certificate_s *certificate, void *callbackData);
+typedef int (S3SslCallback)(int failures, const struct ne_ssl_certificate_s *certificate, void *callbackData);
 void S3_set_request_context_ssl_callback(S3RequestContext *requestContext,
                                          S3SslCallback sslCallback,
                                          void * sslCallbackData);

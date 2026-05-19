@@ -12,7 +12,8 @@ template <typename T>
 class ROProperty
 {
 CUSTOM_MEM_ALLOCATION_IMPL
-using ValueType = std::conditional_t<std::is_trivially_copyable_v<T>, T, const T&>;
+using ValueType = std::conditional_t<sizeof(T) <= 2*sizeof(void*) && std::is_trivially_copyable_v<T>,
+  T, const T&>;
 using TGetter = fastdelegate::FastDelegate0<T>;
 private:
   TGetter _getter;
@@ -24,10 +25,10 @@ public:
     DebugCheck(!_getter.empty());
   }
   ROProperty(const ROProperty &) = delete;
-  ROProperty(ROProperty &&) noexcept = delete;
+  constexpr ROProperty(ROProperty &&) noexcept = default;
   ~ROProperty() = default;
   ROProperty & operator =(const ROProperty &) = delete;
-  ROProperty & operator =(ROProperty &&) noexcept = delete;
+  constexpr ROProperty & operator =(ROProperty &&) noexcept = default;
 
   constexpr T operator()() const
   {
@@ -41,6 +42,8 @@ public:
     return _getter();
   }
 
+  // Note: operator->() requires T to be a pointer type (or provide its own operator->()).
+  // For non-pointer T (e.g., UnicodeString), using -> on the property is a compile error.
   constexpr T operator ->() const
   {
     return _getter();
@@ -76,10 +79,10 @@ public:
     DebugCheck(!_getter.empty());
   }
   ROIndexedProperty(const ROIndexedProperty &) = delete;
-  ROIndexedProperty(ROIndexedProperty &&) noexcept = delete;
+  constexpr ROIndexedProperty(ROIndexedProperty &&) noexcept = default;
   ~ROIndexedProperty() = default;
   ROIndexedProperty & operator =(const ROIndexedProperty &) = delete;
-  ROIndexedProperty & operator =(ROIndexedProperty &&) noexcept = delete;
+  constexpr ROIndexedProperty & operator =(ROIndexedProperty &&) noexcept = default;
   constexpr T operator [](int32_t Index) const
   {
     DebugCheck(_getter);
@@ -101,10 +104,10 @@ public:
     DebugCheck(_value != nullptr);
   }
   ROProperty2(const ROProperty2 &) = delete;
-  ROProperty2(ROProperty2 &&) noexcept = delete;
+  constexpr ROProperty2(ROProperty2 &&) noexcept = default;
   ~ROProperty2() = default;
   ROProperty2 & operator =(const ROProperty2 &) = delete;
-  ROProperty2 & operator =(ROProperty2 &&) noexcept = delete;
+  constexpr ROProperty2 & operator =(ROProperty2 &&) noexcept = default;
 
   constexpr T operator ()() const
   {
@@ -118,10 +121,12 @@ public:
     return *_value;
   }
 
+  // Note: operator->() requires T to be a pointer type (or provide its own operator->()).
+  // For non-pointer T (e.g., UnicodeString), using -> on the property is a compile error.
   constexpr T operator ->() const
   {
     DebugCheck(_value);
-    return _value();
+    return *_value;
   }
 
   constexpr T operator ->()
@@ -153,7 +158,7 @@ template <typename T>
 class RWProperty : public ROProperty<T>
 {
 CUSTOM_MEM_ALLOCATION_IMPL
-using ValueType = ROProperty<T>::ValueType;
+using ValueType = typename ROProperty<T>::ValueType;
 using TSetter = fastdelegate::FastDelegate1<void, ValueType>;
 private:
   TSetter _setter;
@@ -166,7 +171,7 @@ public:
     DebugCheck(!_setter.empty());
   }
   RWProperty(const RWProperty &) = delete;
-  RWProperty(RWProperty &&) noexcept = delete;
+  constexpr RWProperty(RWProperty &&) noexcept = default;
   ~RWProperty() = default;
   RWProperty & operator =(const RWProperty & Value)
   {
@@ -174,7 +179,7 @@ public:
     _setter(Value());
     return *this;
   }
-  RWProperty & operator =(RWProperty &&) noexcept = delete;
+  constexpr RWProperty & operator =(RWProperty &&) noexcept = default;
 
   using ROProperty<T>::operator();
   void operator()(ValueType Value)
@@ -195,7 +200,8 @@ template <typename T>
 class RWProperty2
 {
 CUSTOM_MEM_ALLOCATION_IMPL
-using ValueType = std::conditional_t<std::is_trivially_copyable_v<T>, T, const T&>;
+using ValueType = std::conditional_t<sizeof(T) <= 2*sizeof(void*) && std::is_trivially_copyable_v<T>,
+  T, const T&>;
 private:
   T * _value{nullptr};
 public:
@@ -206,7 +212,7 @@ public:
     DebugCheck(_value != nullptr);
   }
   RWProperty2(const RWProperty2 &) = delete;
-  RWProperty2(RWProperty2 &&) noexcept = delete;
+  constexpr RWProperty2(RWProperty2 &&) noexcept = default;
   ~RWProperty2() = default;
   RWProperty2 & operator =(const RWProperty2 & Value)
   {
@@ -214,7 +220,7 @@ public:
     *_value = Value();
     return *this;
   }
-  RWProperty2 & operator =(RWProperty2 &&) noexcept = delete;
+  constexpr RWProperty2 & operator =(RWProperty2 &&) noexcept = default;
 
   constexpr T operator ()() const
   {
@@ -228,6 +234,8 @@ public:
     return *_value;
   }
 
+  // Note: operator->() requires T to be a pointer type (or provide its own operator->()).
+  // For non-pointer T (e.g., UnicodeString), using -> on the property is a compile error.
   constexpr T operator ->() const
   {
     DebugCheck(_value);
@@ -272,7 +280,8 @@ template <typename T>
 class RWPropertySimple
 {
 CUSTOM_MEM_ALLOCATION_IMPL
-using ValueType = std::conditional_t<std::is_trivially_copyable_v<T>, T, const T&>;
+using ValueType = std::conditional_t<sizeof(T) <= 2*sizeof(void*) && std::is_trivially_copyable_v<T>,
+  T, const T&>;
 using TSetter = fastdelegate::FastDelegate1<void, ValueType>;
 private:
   T * _value{nullptr};
@@ -287,7 +296,7 @@ public:
     DebugCheck(!_setter.empty());
   }
   RWPropertySimple(const RWPropertySimple &) = delete;
-  RWPropertySimple(RWPropertySimple &&) noexcept = delete;
+  constexpr RWPropertySimple(RWPropertySimple &&) noexcept = default;
   ~RWPropertySimple() = default;
   RWPropertySimple & operator =(const RWPropertySimple & Value)
   {
@@ -295,7 +304,7 @@ public:
     _setter(Value());
     return *this;
   }
-  RWPropertySimple & operator =(RWPropertySimple &&) noexcept = delete;
+  constexpr RWPropertySimple & operator =(RWPropertySimple &&) noexcept = default;
   constexpr T operator ()() const
   {
     DebugCheck(_value);
@@ -306,6 +315,8 @@ public:
     DebugCheck(_value);
     return *_value;
   }
+  // Note: operator->() requires T to be a pointer type (or provide its own operator->()).
+  // For non-pointer T (e.g., UnicodeString), using -> on the property is a compile error.
   constexpr T operator ->() const
   {
     DebugCheck(_value);
@@ -350,3 +361,26 @@ public:
 //CheckSizeT<sizeof(ROProperty<int>)> checkSize;
 //template<int s> struct CheckSizeT;
 //CheckSizeT<sizeof(ROPropertySimple<double>)> checkSize;
+
+// Macros for dual-declaration (Borland __property + modern wrapper)
+// Usage inside class body: NB_RW_PROPERTY(bool, CollectUsage, GetCollectUsage, SetCollectUsage)
+
+#define NB_RW_PROPERTY(Type, Name, Getter, Setter) \
+  __property Type Name = { read = Getter, write = Setter }; \
+  RWProperty<Type> Name{nb::bind(&Getter, this), nb::bind(&Setter, this)}
+
+#define NB_RO_PROPERTY(Type, Name, Getter) \
+  __property Type Name = { read = Getter }; \
+  const ROProperty<Type> Name{nb::bind(&Getter, this)}
+
+#define NB_RW_PROPERTY_SIMPLE(Type, Name, Field, Setter) \
+  __property Type Name = { read = Field, write = Setter }; \
+  RWPropertySimple<Type> Name{&Field, nb::bind(&Setter, this)}
+
+#define NB_RW_PROPERTY2(Type, Name, Field) \
+  __property Type Name = { read = Field, write = Field }; \
+  RWProperty2<Type> Name{&Field}
+
+#define NB_REF_PROPERTY(Type, Name, Field) \
+  __property Type Name = { read = Field, write = Field }; \
+  Type& Name{Field}

@@ -9,6 +9,7 @@ const TObjectClassId OBJECT_CLASS_TListBase = static_cast<TObjectClassId>(nb::co
 const TObjectClassId OBJECT_CLASS_TList = static_cast<TObjectClassId>(nb::counter_id());
 const TObjectClassId OBJECT_CLASS_TObjectList = static_cast<TObjectClassId>(nb::counter_id());
 const TObjectClassId OBJECT_CLASS_TStrings = static_cast<TObjectClassId>(nb::counter_id());
+const TObjectClassId OBJECT_CLASS_THistoryStrings = static_cast<TObjectClassId>(nb::counter_id());
 const TObjectClassId OBJECT_CLASS_TStringList = static_cast<TObjectClassId>(nb::counter_id());
 
 const TObjectClassId OBJECT_CLASS_Exception = static_cast<TObjectClassId>(nb::counter_id());
@@ -39,8 +40,11 @@ const TObjectClassId OBJECT_CLASS_EConnectionFatal = static_cast<TObjectClassId>
 const TObjectClassId OBJECT_CLASS_TPuttyCleanupThread = static_cast<TObjectClassId>(nb::counter_id());
 const TObjectClassId OBJECT_CLASS_TGUICopyParamType = static_cast<TObjectClassId>(nb::counter_id());
 const TObjectClassId OBJECT_CLASS_TCopyParamRule = static_cast<TObjectClassId>(nb::counter_id());
+const TObjectClassId OBJECT_CLASS_TCopyParamPreset = static_cast<TObjectClassId>(nb::counter_id());
+const TObjectClassId OBJECT_CLASS_TCopyParamPresetList = static_cast<TObjectClassId>(nb::counter_id());
 const TObjectClassId OBJECT_CLASS_TPuttyPasswordThread = static_cast<TObjectClassId>(nb::counter_id());
 const TObjectClassId OBJECT_CLASS_TGUIConfiguration = static_cast<TObjectClassId>(nb::counter_id());
+const TObjectClassId OBJECT_CLASS_TCustomWinConfiguration = static_cast<TObjectClassId>(nb::counter_id());
 
 const TObjectClassId OBJECT_CLASS_TSimpleThread = static_cast<TObjectClassId>(nb::counter_id());
 const TObjectClassId OBJECT_CLASS_TSignalThread = static_cast<TObjectClassId>(nb::counter_id());
@@ -52,7 +56,8 @@ const TObjectClassId OBJECT_CLASS_TLocatedQueueItem = static_cast<TObjectClassId
 const TObjectClassId OBJECT_CLASS_TTransferQueueItem = static_cast<TObjectClassId>(nb::counter_id());
 const TObjectClassId OBJECT_CLASS_TUploadQueueItem = static_cast<TObjectClassId>(nb::counter_id());
 const TObjectClassId OBJECT_CLASS_TDownloadQueueItem = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TDeleteQueueItem = static_cast<TObjectClassId>(nb::counter_id());
+const TObjectClassId OBJECT_CLASS_TRemoteDeleteQueueItem = static_cast<TObjectClassId>(nb::counter_id());
+const TObjectClassId OBJECT_CLASS_TLocalDeleteQueueItem = static_cast<TObjectClassId>(nb::counter_id());
 const TObjectClassId OBJECT_CLASS_TTerminalThread = static_cast<TObjectClassId>(nb::counter_id());
 const TObjectClassId OBJECT_CLASS_TWebDAVFileSystem = static_cast<TObjectClassId>(nb::counter_id());
 const TObjectClassId OBJECT_CLASS_TSCPFileSystem = static_cast<TObjectClassId>(nb::counter_id());
@@ -156,5 +161,6 @@ const TObjectClassId OBJECT_CLASS_TBackgroundTerminal = static_cast<TObjectClass
 const TObjectClassId OBJECT_CLASS_TDialogIdleThread = static_cast<TObjectClassId>(nb::counter_id());
 const TObjectClassId OBJECT_CLASS_TConsoleTitleParam = static_cast<TObjectClassId>(nb::counter_id());
 const TObjectClassId OBJECT_CLASS_TKeepAliveThread = static_cast<TObjectClassId>(nb::counter_id());
+const TObjectClassId OBJECT_CLASS_TSyncPoller = static_cast<TObjectClassId>(nb::counter_id());
 
 } // extern "C"

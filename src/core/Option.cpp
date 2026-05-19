@@ -7,7 +7,9 @@
 #include "TextsCore.h"
 #include "System.StrUtils.hpp"
 
-// #pragma package(smart_init)
+#if defined(__BORLANDC__)
+#pragma package(smart_init)
+#endif // defined(__BORLANDC__)
 
 constexpr const wchar_t ArrayValueDelimiter = L'[';
 constexpr const wchar_t ArrayValueEnd = L']';

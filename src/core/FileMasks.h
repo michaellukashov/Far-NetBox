@@ -5,6 +5,7 @@
 #include <vector>
 #endif // defined(__BORLANDC__)
 #include <Masks.hpp>
+#include <Global.h>
 #include "SessionData.h"
 
 class NB_CORE_EXPORT EFileMasksException final : public Exception
@@ -109,6 +110,9 @@ private:
     UnicodeString UserStr;
   };
 
+#if defined(__BORLANDC__)
+  typedef std::vector<TMask> TMasks;
+#endif // defined(__BORLANDC__)
   using TMasks = nb::vector_t<TMask>;
   TMasks FMasks[4];
   mutable TStrings * FMasksStr[4]{};
@@ -133,7 +137,7 @@ private:
     const UnicodeString & APath, const TParams * Params, const TMasks & Masks, bool Recurse);
   static bool MatchesMaskMask(TMask::TKind MaskKind, const Masks::TMask * MaskMask, const UnicodeString & Str);
   static Masks::TMask * DoCreateMaskMask(const UnicodeString & Str);
-  void ThrowError(int32_t Start, int32_t End) const;
+  NORETURN void ThrowError(int32_t Start, int32_t End) const;
   bool DoMatches(
     const UnicodeString & FileName, bool Local, bool Directory, const UnicodeString & Path, const TParams * Params,
     bool RecurseInclude, bool & ImplicitMatch) const;
@@ -144,6 +148,11 @@ bool IsFileNameMask(const UnicodeString & AMask);
 bool IsEffectiveFileNameMask(const UnicodeString & AMask);
 UnicodeString DelimitFileNameMask(const UnicodeString & AMask);
 
+#if defined(__BORLANDC__)
+typedef void (__closure * TCustomCommandPatternEvent)
+  (int32_t Index, const UnicodeString Pattern, void * Arg, UnicodeString & Replacement,
+   bool & LastPass);
+#endif // defined(__BORLANDC__)
 using TCustomCommandPatternEvent = nb::FastDelegate5<void,
   int32_t /*Index*/, const UnicodeString & /*Pattern*/, void * /*Arg*/, UnicodeString & /*Replacement*/,
   bool & /*LastPass*/>;

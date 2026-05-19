@@ -2,6 +2,7 @@
 
 #include <plugin.hpp>
 #include "GUIConfiguration.h"
+#include "CopyParam.h"
 
 class TCustomFarPlugin;
 class TBookmarks;
@@ -45,6 +46,10 @@ public:
   void SetPluginsMenuCommands(bool Value) { FPluginsMenuCommands = Value; }
   UnicodeString GetCommandPrefixes() const { return FCommandPrefixes; }
   void SetCommandPrefixes(const UnicodeString & Value) { FCommandPrefixes = Value; }
+  bool GetCompareByTime() const { return FCompareByTime; }
+  void SetCompareByTime(bool Value) { FCompareByTime = Value; }
+  bool GetCompareBySize() const { return FCompareBySize; }
+  void SetCompareBySize(bool Value) { FCompareBySize = Value; }
   bool GetSessionNameInTitle() const { return FSessionNameInTitle; }
   void SetSessionNameInTitle(bool Value) { FSessionNameInTitle = Value; }
 
@@ -80,8 +85,12 @@ public:
   void SetPageantPath(const UnicodeString & Value) { FPageantPath = Value; }
   UnicodeString GetPuttygenPath() const { return FPuttygenPath; }
   void SetPuttygenPath(const UnicodeString & Value) { FPuttygenPath = Value; }
+  bool GetSilentMode() const { return TConfiguration::GetSilentMode(); }
+  void SetSilentMode(bool Value) { TConfiguration::SetSilentMode(Value); }
   TBookmarkList * GetBookmarks(const UnicodeString & Key);
   void SetBookmarks(const UnicodeString & Key, const TBookmarkList * Value);
+
+  TCopyParamPresetList * GetCopyParamPresets() const { return FCopyParamPresets.get(); }
 
 public:
   virtual UnicodeString TemporaryDir(bool Mask = false) const override { return ""; }
@@ -105,6 +114,8 @@ private:
 private:
   gsl::not_null<TCustomFarPlugin *> FFarPlugin;
   std::unique_ptr<TBookmarks> FBookmarks{std::make_unique<TBookmarks>()};
+
+  std::unique_ptr<TCopyParamPresetList> FCopyParamPresets{std::make_unique<TCopyParamPresetList>()};
   int32_t FFarConfirmations{-1};
   bool FConfirmOverwritingOverride{false};
   bool FConfirmSynchronizedBrowsing{false};
@@ -115,6 +126,8 @@ private:
   bool FPluginsMenuCommands{false};
   UnicodeString FCommandPrefixes;
   bool FSessionNameInTitle{false};
+  bool FCompareByTime{true};
+  bool FCompareBySize{false};
   bool FEditorDownloadDefaultMode{false};
   bool FEditorUploadSameOptions{false};
   bool FEditorUploadOnSave{false};

@@ -7,7 +7,9 @@
 #include "Configuration.h"
 #include "CopyParam.h"
 #include "Exceptions.h"
-//#include <vector>
+#include "Exceptions.h"
+
+#include <mutex>
 
 class TFileOperationProgressType;
 enum TFileOperation { foNone, foCopy, foMove, foDelete, foSetProperties,
@@ -16,11 +18,67 @@ enum TFileOperation { foNone, foCopy, foMove, foDelete, foSetProperties,
 // csCancelTransfer and csRemoteAbort are used with SCP only
 enum TCancelStatus { csContinue = 0, csCancelFile, csCancel, csCancelTransfer, csRemoteAbort };
 enum TBatchOverwrite { boNo, boAll, boNone, boOlder, boAlternateResume, boAppend, boResume };
+#if defined(__BORLANDC__)
+typedef void (__closure *TFileOperationProgressEvent)
+  (TFileOperationProgressType & ProgressData);
+typedef void (__closure *TFileOperationFinished)
+  (TFileOperation Operation, TOperationSide Side, bool Temp,
+   const UnicodeString & FileName, bool Success, bool NotCancelled, TOnceDoneOperation & OnceDoneOperation);
+#endif // defined(__BORLANDC__)
 using TFileOperationProgressEvent = nb::FastDelegate1<void,
   TFileOperationProgressType & /*ProgressData*/>;
-using TFileOperationFinishedEvent = nb::FastDelegate6<void,
+using TFileOperationFinishedEvent = nb::FastDelegate7<void,
   TFileOperation /*Operation*/, TOperationSide /*Side*/, bool /*Temp*/,
-  const UnicodeString & /*FileName*/, bool /*Success*/, TOnceDoneOperation & /*OnceDoneOperation*/>;
+  const UnicodeString & /*FileName*/, bool /*Success*/, bool /*NotCancelled*/, TOnceDoneOperation & /*OnceDoneOperation*/>;
+
+
+enum class TFileOperationErrorCategory
+{
+  NetworkError,
+  PermissionDenied,
+  ResourceError,
+  FileNotFound,
+  Other
+};
+
+struct TFileOperationError
+{
+  UnicodeString FileName;
+  UnicodeString ErrorMessage;
+  TDateTime Timestamp;
+  TOperationSide Side;
+  TFileOperationErrorCategory Category;
+
+  TFileOperationError() = default;
+  TFileOperationError(
+    const UnicodeString & AFileName,
+    const UnicodeString & AErrorMessage,
+    TOperationSide ASide,
+    TFileOperationErrorCategory ACategory = TFileOperationErrorCategory::Other);
+};
+
+class TFileOperationErrorLog
+{
+public:
+  TFileOperationErrorLog() = default;
+  ~TFileOperationErrorLog() = default;
+
+  void AddError(
+    const UnicodeString & FileName,
+    const UnicodeString & ErrorMessage,
+    TOperationSide Side,
+    TFileOperationErrorCategory Category = TFileOperationErrorCategory::Other);
+
+  void Clear();
+  bool HasErrors() const;
+  size_t GetErrorCount() const;
+
+  UnicodeString GenerateReport() const;
+
+private:
+  nb::vector_t<TFileOperationError> FErrors;
+  mutable std::mutex FMutex;
+};
 
 class TFileOperationStatistics final : public TObject
 {
@@ -113,6 +171,12 @@ private:
   TPersistence FPersistence{};
   TCriticalSection FSection;
   TCriticalSection FUserSelectionsSection;
+  TFileOperationErrorLog FErrorLog;
+  // Lock ordering: Assign() acquires FSection and Other.FSection in address
+  // order (lower address first) to prevent deadlock under concurrent
+  // bidirectional assignment. TCriticalSection is recursive, so the same
+  // thread may re-enter its own lock during AssignButKeepSuspendState().
+  bool FInCallback{false};
 
   bool FCounterSet{false};
   bool FSkipToAll{false};
@@ -165,15 +229,15 @@ public:
   const bool& Temp{FTemp};
 
   // file size to read/write
-  __property __int64 LocalSize = { read = FLocalSize };
+  __property int64_t LocalSize = { read = FLocalSize };
   const int64_t& LocalSize{FLocalSize};
-  __property __int64 LocallyUsed = { read = FLocallyUsed };
+  __property int64_t LocallyUsed = { read = FLocallyUsed };
   const int64_t& LocallyUsed{FLocallyUsed};
-  __property __int64 TransferSize = { read = FTransferSize };
+  __property int64_t TransferSize = { read = FTransferSize };
     const int64_t& TransferSize{FTransferSize};
-  __property __int64 TransferredSize = { read = FTransferredSize };
+  __property int64_t TransferredSize = { read = FTransferredSize };
   const int64_t& TransferredSize{FTransferredSize};
-  __property __int64 SkippedSize = { read = FSkippedSize };
+  __property int64_t SkippedSize = { read = FSkippedSize };
   const int64_t& SkippedSize{FSkippedSize};
   __property bool InProgress = { read = FInProgress };
   const bool& InProgress{FInProgress};
@@ -189,18 +253,18 @@ public:
   // bytes transferred
   __property int64_t TotalTransferred = { read = GetTotalTransferred };
   const ROProperty<int64_t> TotalTransferred{nb::bind(&TFileOperationProgressType::GetTotalTransferred, this)};
-  __property __int64 OperationTransferred = { read = GetOperationTransferred };
+  __property int64_t OperationTransferred = { read = GetOperationTransferred };
   const ROProperty<int64_t> OperationTransferred{nb::bind(&TFileOperationProgressType::GetOperationTransferred, this)};
-  __property __int64 TotalSize = { read = GetTotalSize };
+  __property int64_t TotalSize = { read = GetTotalSize };
   const ROProperty<int64_t> TotalSize{nb::bind(&TFileOperationProgressType::GetTotalSize, this)};
-  __property int FilesFinishedSuccessfully = { read = FFilesFinishedSuccessfully };
+  __property int32_t FilesFinishedSuccessfully = { read = FFilesFinishedSuccessfully };
   __property TOnceDoneOperation InitialOnceDoneOperation = { read = FInitialOnceDoneOperation };
 
   __property TBatchOverwrite BatchOverwrite = { read = GetBatchOverwrite };
   const ROProperty<TBatchOverwrite> BatchOverwrite{nb::bind(&TFileOperationProgressType::GetBatchOverwrite, this)};
   __property bool SkipToAll = { read = GetSkipToAll };
   const ROProperty<bool> SkipToAll{nb::bind(&TFileOperationProgressType::GetSkipToAll, this)};
-  __property unsigned long CPSLimit = { read = GetCPSLimit };
+  __property uint32_t CPSLimit = { read = GetCPSLimit };
   const ROProperty<uint64_t> CPSLimit{nb::bind(&TFileOperationProgressType::GetCPSLimit, this)};
 
   __property bool TotalSizeSet = { read = FTotalSizeSet };
@@ -276,6 +340,16 @@ public:
   bool IsIndeterminate() const;
   bool IsTransfer() const;
 
+  TFileOperationErrorLog & GetErrorLog() { return FErrorLog; }
+  void AddOperationError(
+    const UnicodeString & FileName,
+    const UnicodeString & ErrorMessage,
+    TOperationSide Side,
+    TFileOperationErrorCategory Category = TFileOperationErrorCategory::Other)
+  {
+    FErrorLog.AddError(FileName, ErrorMessage, Side, Category);
+  }
+
   static bool IsIndeterminateOperation(TFileOperation Operation);
   static bool IsTransferOperation(TFileOperation Operation);
   TFileOperationProgressType(const TFileOperationProgressType & rhs) : TObject() { operator =(rhs); }
@@ -314,7 +388,9 @@ public:
   explicit TSuspendFileOperationProgress(TFileOperationProgressType * AOperationProgress) noexcept :
     FOperationProgress(AOperationProgress)
   {
-    // FOperationProgress = OperationProgress;
+#if defined(__BORLANDC__)
+    FOperationProgress = OperationProgress;
+#endif // defined(__BORLANDC__)
     if (FOperationProgress != nullptr)
     {
       FOperationProgress->Suspend();

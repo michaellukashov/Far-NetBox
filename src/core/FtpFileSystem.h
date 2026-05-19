@@ -80,7 +80,7 @@ public:
   virtual bool IsCapable(int32_t Capability) const override;
   virtual void LookupUsersGroups() override;
   virtual void ReadCurrentDirectory() override;
-  virtual void ReadDirectory(TRemoteFileList * FileList) override;
+  virtual void ReadDirectory(TRemoteFileList * AFileList) override;
   virtual void ReadFile(const UnicodeString & AFileName,
     TRemoteFile *& AFile) override;
   virtual void ReadSymlink(TRemoteFile * SymlinkFile,
@@ -105,7 +105,10 @@ public:
 
   virtual UnicodeString AbsolutePath(const UnicodeString & APath, bool Local) const override;
 protected:
-  // enum TOverwriteMode { omOverwrite, omResume, omComplete }; // moved to FileSystems.h
+#if defined(__BORLANDC__)
+  // moved to FileSystems.h
+  enum TOverwriteMode { omOverwrite, omResume, omComplete };
+#endif // defined(__BORLANDC__)
 
   virtual UnicodeString GetCurrentDirectory() const override;
 
@@ -181,7 +184,7 @@ protected:
   virtual void FileTransferProgress(int64_t TransferSize, int64_t Bytes) override;
   void ResetCaches();
 #if defined(__BORLANDC__)
-  void CaptureOutput(const UnicodeString & AStr);
+  void CaptureOutput(const UnicodeString & Str);
 #endif // defined(__BORLANDC__)
   void DoReadDirectory(TRemoteFileList * AFileList);
   void DoReadFile(const UnicodeString & AFileName, TRemoteFile *& AFile);

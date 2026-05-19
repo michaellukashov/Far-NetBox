@@ -8,7 +8,11 @@
 
 #include "Queue.h"
 
-// #pragma package(smart_init)
+#include <LogContext.h>
+
+#if defined(__BORLANDC__)
+#pragma package(smart_init)
+#endif // defined(__BORLANDC__)
 
 class TBackgroundTerminal;
 
@@ -47,7 +51,7 @@ public:
   {
   }
 
-  virtual void Execute(void * /*Arg*/) override
+  virtual void Execute(void *) override
   {
     if (!OnNotify.empty())
     {
@@ -68,11 +72,11 @@ public:
   {
   }
 
-  virtual void Execute(void * /*Arg*/) override
+  virtual void Execute(void *) override
   {
     if (!OnInformation.empty())
     {
-      OnInformation(Terminal, Str, Status, Phase, Additional);
+      OnInformation(Terminal, Str, Phase, Additional);
     }
   }
 
@@ -185,7 +189,7 @@ public:
   {
   }
 
-  virtual void Execute(void * /*Arg*/) override
+  virtual void Execute(void *) override
   {
     if (!OnDisplayBanner.empty())
     {
@@ -211,7 +215,7 @@ public:
   {
   }
 
-  virtual void Execute(void * /*Arg*/) override
+  virtual void Execute(void *) override
   {
     if (!OnReadDirectory.empty())
     {
@@ -233,7 +237,7 @@ public:
   {
   }
 
-  virtual void Execute(void * /*Arg*/) override
+  virtual void Execute(void *) override
   {
     if (!OnReadDirectoryProgress.empty())
     {
@@ -246,6 +250,62 @@ public:
   int32_t Progress{0};
   int32_t ResolvedLinks{0};
   bool Cancel{false};
+};
+
+class TProgressUserAction final : public TUserAction
+{
+  NB_DISABLE_COPY(TProgressUserAction)
+public:
+  explicit TProgressUserAction(TFileOperationProgressEvent && AOnProgress,
+    TFileOperationProgressType & AProgressData) noexcept :
+    OnProgress(std::move(AOnProgress)),
+    ProgressData(AProgressData)
+  {
+  }
+
+  virtual void Execute(void *) override
+  {
+    if (!OnProgress.empty())
+    {
+      OnProgress(ProgressData);
+    }
+  }
+
+  TFileOperationProgressEvent OnProgress;
+  TFileOperationProgressType & ProgressData;
+};
+
+class TFinishedUserAction final : public TUserAction
+{
+  NB_DISABLE_COPY(TFinishedUserAction)
+public:
+  explicit TFinishedUserAction(TFileOperationFinishedEvent && AOnFinished,
+    TFileOperation AOperation, TOperationSide ASide, bool ATemp,
+    const UnicodeString & AFileName, bool ASuccess, bool ANotCancelled,
+    TOnceDoneOperation & AOnceDoneOperation) noexcept :
+    OnFinished(std::move(AOnFinished)),
+    Operation(AOperation), Side(ASide), Temp(ATemp),
+    FileName(AFileName), Success(ASuccess), NotCancelled(ANotCancelled),
+    OnceDoneOperation(AOnceDoneOperation)
+  {
+  }
+
+  virtual void Execute(void *) override
+  {
+    if (!OnFinished.empty())
+    {
+      OnFinished(Operation, Side, Temp, FileName, Success, NotCancelled, OnceDoneOperation);
+    }
+  }
+
+  TFileOperationFinishedEvent OnFinished;
+  TFileOperation Operation;
+  TOperationSide Side;
+  bool Temp;
+  UnicodeString FileName;
+  bool Success;
+  bool NotCancelled;
+  TOnceDoneOperation & OnceDoneOperation;
 };
 
 class TTerminalItem final : public TSignalThread
@@ -266,6 +326,7 @@ public:
   bool ProcessUserAction(void * Arg);
   void Cancel();
   void Idle();
+  void DoIdle();
   bool Pause();
   bool Resume();
   bool IsCancelled() const;
@@ -293,7 +354,7 @@ protected:
   void TerminalShowExtendedException(TTerminal * ATerminal,
     Exception * E, void * Arg);
   void OperationFinished(TFileOperation Operation, TOperationSide Side,
-    bool Temp, const UnicodeString & AFileName, bool Success,
+    bool Temp, const UnicodeString & AFileName, bool Success, bool NotCancelled,
     TOnceDoneOperation & OnceDoneOperation);
   void OperationProgress(TFileOperationProgressType & ProgressData);
 };
@@ -306,6 +367,12 @@ int32_t TSimpleThread::ThreadProc(void * Thread)
   DebugAssert(SimpleThread != nullptr);
   if (!SimpleThread)
     return 0;
+
+  UnicodeString threadIdStr = std::to_string(::GetCurrentThreadId()).c_str();
+  TLogContext ctx_thread(L"thread_id", threadIdStr);
+  TLogContext ctx_class(L"class", "TSimpleThread");
+  LOG_THREAD_START("TSimpleThread");
+
   try
   {
     SimpleThread->Execute();
@@ -320,6 +387,8 @@ int32_t TSimpleThread::ThreadProc(void * Thread)
     SimpleThread->Close();
     SAFE_DESTROY(SimpleThread);
   }
+
+  LOG_THREAD_STOP(threadIdStr);
   return 0;
 }
 
@@ -340,8 +409,11 @@ void TSimpleThread::InitSimpleThread(const UnicodeString & Name)
 
 TSimpleThread::~TSimpleThread() noexcept
 {
-  // This is turn calls pure virtual Terminate, what does not work as intended, do not rely on it and remove the call eventually
-  TSimpleThread::Close();
+  if (!FFinished)
+  {
+    SignalStop();
+    WaitFor();
+  }
 
   if (CheckHandle(FThread))
   {
@@ -371,21 +443,33 @@ void TSimpleThread::Close()
 {
   if (!FFinished)
   {
+    SignalStop();
+    WaitFor();
+  }
+}
+
+void TSimpleThread::SignalStop()
+{
+  if (!FFinished)
+  {
     FFinished = true;
     Terminate();
-    WaitFor();
   }
 }
 
 void TSimpleThread::WaitFor(DWORD Milliseconds) const
 {
-  ::WaitForSingleObject(FThread, Milliseconds);
+  if (CheckHandle(FThread))
+  {
+    ::WaitForSingleObject(FThread, Milliseconds);
+  }
 }
 
 // TSignalThread
 
 TSignalThread::TSignalThread(TObjectClassId Kind) noexcept :
-  TSimpleThread(Kind)
+  TSimpleThread(Kind),
+  FEvent(nullptr), FTerminated(true)
 {
 }
 
@@ -818,7 +902,7 @@ bool TTerminalQueue::ItemProcessUserAction(TQueueItem * Item, void * Arg)
   bool Result = !FFinished;
   if (Result)
   {
-    TTerminalItem * TerminalItem = nullptr;
+    TTerminalItem * TerminalItem = nullptr; // shut up
 
     {
       const TGuard Guard(FItemsSection);
@@ -968,7 +1052,7 @@ bool TTerminalQueue::ItemPause(TQueueItem * Item, bool Pause)
   bool Result = !FFinished;
   if (Result)
   {
-    TTerminalItem * TerminalItem = nullptr;
+    TTerminalItem * TerminalItem = nullptr; // shut up
 
     {
       const TGuard Guard(FItemsSection);
@@ -1073,6 +1157,9 @@ bool TTerminalQueue::WaitForEvent()
 
 void TTerminalQueue::ProcessEvent()
 {
+  TLogContext ctx_queue(L"queue", "terminal");
+  TINYLOG_DEBUG(g_tinylog) << TLogContext::Format() << " ProcessEvent called";
+
   TTerminalItem * TerminalItem;
 #if defined(__BORLANDC__)
   TQueueItem * Item;
@@ -1138,6 +1225,8 @@ void TTerminalQueue::ProcessEvent()
               FForcedItems->Delete(ForcedIndex);
             }
             FItemsInProcess++;
+            TLogContext ctx_item(L"item", Item1->GetInfo()->Source);
+            LOG_QUEUE_EVENT("processing");
           }
         }
       }
@@ -1149,6 +1238,7 @@ void TTerminalQueue::ProcessEvent()
     }
   }
   while (!FTerminated && (TerminalItem != nullptr));
+
 }
 
 void TTerminalQueue::DoQueueItemUpdate(TQueueItem * Item)
@@ -1452,6 +1542,21 @@ void TTerminalItem::ProcessEvent()
 
 void TTerminalItem::Idle()
 {
+  // Idle() triggers callbacks that may reach Far Manager UI.
+  // If a marshal callback is configured and we're not on the main thread,
+  // post FE_IDLE synchro to marshal to the main thread
+  // (same pattern as TKeepAliveThread::Execute()).
+  if ((::GetCurrentThreadId() != FQueue->GetMainThreadId()) &&
+      !FQueue->GetOnIdleMarshal().empty())
+  {
+    FQueue->GetOnIdleMarshal()();
+    return;
+  }
+  DoIdle();
+}
+
+void TTerminalItem::DoIdle()
+{
   const TGuard Guard(FCriticalSection);
 
   DebugAssert(FTerminal->GetActive());
@@ -1647,7 +1752,7 @@ void TTerminalItem::TerminalShowExtendedException(
 
 void TTerminalItem::OperationFinished(TFileOperation /*Operation*/,
   TOperationSide /*Side*/, bool /*Temp*/, const UnicodeString & /*AFileName*/,
-  bool /*Success*/, TOnceDoneOperation & /*OnceDoneOperation*/)
+  bool /*Success*/, bool /*NotCancelled*/, TOnceDoneOperation & /*OnceDoneOperation*/)
 {
   // nothing
 }
@@ -1766,6 +1871,13 @@ TQueueItem::TStatus TQueueItem::GetStatus() const
 
 void TQueueItem::SetStatus(TStatus Status)
 {
+  if (FQueue != nullptr && FStatus != Status)
+  {
+    TINYLOG_DEBUG(g_tinylog) << TLogContext::Format()
+      << " Status: " << to_str(static_cast<int32_t>(FStatus))
+      << " -> " << to_str(static_cast<int32_t>(Status));
+  }
+
   {
     const TGuard Guard(FSection);
 
@@ -1844,12 +1956,19 @@ bool TQueueItem::IsExecutionCancelled() const
 
 void TQueueItem::Execute()
 {
+  UnicodeString opName = std::to_string(static_cast<int32_t>(FInfo ? FInfo->Operation : foNone)).c_str();
+  UnicodeString srcPath = UTF8String(FInfo ? FInfo->Source : UnicodeString()).c_str();
+  TLogContext ctx_op(L"op", opName);
+  TLogContext ctx_src(L"src", srcPath);
+  TINYLOG_INFO(g_tinylog) << TLogContext::Format() << " QueueItem execute start";
+
   {
     DebugAssert(FProgressData == nullptr);
     const TGuard Guard(FSection);
     FProgressData = new TFileOperationProgressType();
   }
   DoExecute(FTerminalItem->FTerminal.get());
+  TINYLOG_INFO(g_tinylog) << TLogContext::Format() << " QueueItem execute complete";
 }
 
 void TQueueItem::SetCPSLimit(int32_t CPSLimit)
@@ -1883,6 +2002,11 @@ int32_t TQueueItem::GetCPSLimit() const
 TQueueItem * TQueueItem::CreateParallelOperation()
 {
   return nullptr;
+}
+
+UnicodeString TQueueItem::GetStartupDirectory() const
+{
+  return EmptyStr;
 }
 
 // TQueueItemProxy
@@ -2258,11 +2382,11 @@ UnicodeString TLocatedQueueItem::GetStartupDirectory() const
   return FCurrentDir;
 }
 
-void TLocatedQueueItem::DoExecute(gsl::not_null<TTerminal *> Terminal)
+void TLocatedQueueItem::DoExecute(gsl::not_null<TTerminal *> ATerminal)
 {
-  DebugAssert(Terminal != nullptr);
-  if (Terminal)
-    Terminal->SetCurrentDirectory(FCurrentDir);
+  DebugAssert(ATerminal != nullptr);
+  if (ATerminal)
+    ATerminal->SetCurrentDirectory(FCurrentDir);
 }
 
 // TTransferQueueItem
@@ -2417,10 +2541,25 @@ bool TTransferQueueItem::UpdateFileList(TQueueFileList * FileList)
 
 // TUploadQueueItem
 
+static void ExtractLocalSourcePath(const TStrings * Files, UnicodeString & APath)
+{
+  base::ExtractCommonPath(Files, APath);
+  // this way the trailing backslash is preserved for root directories like "D:\"
+  APath = ::ExtractFileDir(::IncludeTrailingBackslash(APath));
+}
+
+static bool IsSingleFileUpload(const TStrings * AFilesToCopy)
+{
+  return
+    (AFilesToCopy->Count == 1) &&
+    FileExists(ApiPath(AFilesToCopy->Strings[0]));
+}
+
 TUploadQueueItem::TUploadQueueItem(TTerminal * ATerminal,
   const TStrings * AFilesToCopy, const UnicodeString & TargetDir,
-  const TCopyParamType * CopyParam, int32_t Params, bool SingleFile, bool Parallel) noexcept :
-  TTransferQueueItem(OBJECT_CLASS_TUploadQueueItem, ATerminal, AFilesToCopy, TargetDir, CopyParam, Params, osLocal, SingleFile, Parallel)
+  const TCopyParamType * CopyParam, int32_t Params, bool Parallel) noexcept :
+  TTransferQueueItem(OBJECT_CLASS_TUploadQueueItem,
+    ATerminal, AFilesToCopy, TargetDir, CopyParam, Params, osLocal, IsSingleFileUpload(AFilesToCopy), Parallel)
 {
   if (AFilesToCopy->GetCount() > 1)
   {
@@ -2431,9 +2570,7 @@ TUploadQueueItem::TUploadQueueItem(TTerminal * ATerminal,
     }
     else
     {
-      base::ExtractCommonPath(AFilesToCopy, FInfo->Source);
-      // this way the trailing backslash is preserved for root directories like "D:\\"
-      FInfo->Source = ::ExtractFileDir(::IncludeTrailingBackslash(FInfo->Source));
+      ExtractLocalSourcePath(AFilesToCopy, FInfo->Source);
       FInfo->ModifiedLocal = FLAGCLEAR(Params, cpDelete) ? UnicodeString() :
         ::IncludeTrailingBackslash(FInfo->Source);
     }
@@ -2494,10 +2631,18 @@ void TParallelTransferQueueItem::DoExecute(gsl::not_null<TTerminal *> Terminal)
   const TFileOperation Operation = (FLAGSET(FParallelOperation->GetParams(), cpDelete) ? foMove : foCopy);
   const bool Temp = FLAGSET(FParallelOperation->GetParams(), cpTemporary);
 
+  // CPS limit explicitly propagated from parent (not truly "inherited" via FCPSLimit).
+  // Count not known and won't be needed as we will always have TotalSize as we always transfer a single file at a time.
+  DebugAssert(FParallelOperation->GetMainOperationProgress() != nullptr);
+  if (FParallelOperation->GetMainOperationProgress() == nullptr)
+  {
+    throw Exception("Main operation progress is null in parallel transfer");
+  }
+  Terminal->LogEvent(FORMAT("Parallel transfer CPS limit: %u",
+    FParallelOperation->GetMainOperationProgress()->GetCPSLimit()));
   OperationProgress.Start(
-    // CPS limit inherited from parent OperationProgress.
-    // Count not known and won't be needed as we will always have TotalSize as  we always transfer a single file at a time.
-    Operation, FParallelOperation->GetSide(), -1, Temp, FParallelOperation->GetTargetDir(), 0, odoIdle);
+    Operation, FParallelOperation->GetSide(), -1, Temp, FParallelOperation->GetTargetDir(),
+    FParallelOperation->GetMainOperationProgress()->GetCPSLimit(), odoIdle);
 
   try__finally
   {
@@ -2525,19 +2670,27 @@ void TParallelTransferQueueItem::DoExecute(gsl::not_null<TTerminal *> Terminal)
 
 // TDownloadQueueItem
 
-static void ExtractRemoteSourcePath(const TTerminal * ATerminal, const TStrings * Files, UnicodeString & Path)
+static void ExtractRemoteSourcePath(const TTerminal * ATerminal, const TStrings * AFiles, UnicodeString & APath)
 {
-  if (ATerminal && !base::UnixExtractCommonPath(Files, Path))
+  if (ATerminal && !base::UnixExtractCommonPath(AFiles, APath))
   {
-    Path = ATerminal->CurrentDirectory;
+    APath = ATerminal->CurrentDirectory;
   }
-  Path = base::UnixExcludeTrailingBackslash(Path);
+  APath = base::UnixExcludeTrailingBackslash(APath);
+}
+
+static bool IsSingleFileDownload(const TStrings * AFilesToCopy)
+{
+  return
+    (AFilesToCopy->Count == 1) &&
+    !AFilesToCopy->As<TRemoteFile>(0)->IsDirectory;
 }
 
 TDownloadQueueItem::TDownloadQueueItem(TTerminal * ATerminal,
   const TStrings * AFilesToCopy, const UnicodeString & TargetDir,
-  const TCopyParamType * CopyParam, int32_t Params, bool SingleFile, bool Parallel) noexcept :
-  TTransferQueueItem(OBJECT_CLASS_TDownloadQueueItem, ATerminal, AFilesToCopy, TargetDir, CopyParam, Params, osRemote, SingleFile, Parallel)
+  const TCopyParamType * CopyParam, int32_t Params, bool Parallel) noexcept :
+  TTransferQueueItem(OBJECT_CLASS_TDownloadQueueItem,
+    ATerminal, AFilesToCopy, TargetDir, CopyParam, Params, osRemote, IsSingleFileUpload(AFilesToCopy), Parallel)
 {
   if (AFilesToCopy->Count > 1)
   {
@@ -2575,34 +2728,56 @@ TDownloadQueueItem::TDownloadQueueItem(TTerminal * ATerminal,
   FInfo->ModifiedLocal = ::IncludeTrailingBackslash(TargetDir);
 }
 
-void TDownloadQueueItem::DoTransferExecute(gsl::not_null<TTerminal *> ATerminal, TParallelOperation * ParallelOperation)
+void TDownloadQueueItem::DoTransferExecute(gsl::not_null<TTerminal *> ATerminal, TParallelOperation * AParallelOperation)
 {
   DebugAssert(ATerminal != nullptr);
-  ATerminal->CopyToLocal(FFilesToCopy.get(), FTargetDir, FCopyParam.get(), FParams, ParallelOperation);
+  ATerminal->CopyToLocal(FFilesToCopy.get(), FTargetDir, FCopyParam.get(), FParams, AParallelOperation);
 }
 
 
-TDeleteQueueItem::TDeleteQueueItem(TObjectClassId Kind, TTerminal * Terminal, TStrings * FilesToDelete, int32_t Params) noexcept :
-  TLocatedQueueItem(Kind, Terminal)
+TRemoteDeleteQueueItem::TRemoteDeleteQueueItem(TTerminal * ATerminal, TStrings * AFilesToDelete, int32_t AParams) :
+  TLocatedQueueItem(OBJECT_CLASS_TRemoteDeleteQueueItem, ATerminal)
 {
   FInfo->Operation = foDelete;
   FInfo->Side = osRemote;
 
-  DebugAssert(FilesToDelete != nullptr);
-  FFilesToDelete.reset(TRemoteFileList::CloneStrings(FilesToDelete));
-  ExtractRemoteSourcePath(Terminal, FilesToDelete, FInfo->Source);
+  DebugAssert(AFilesToDelete != nullptr);
+  FFilesToDelete.reset(TRemoteFileList::CloneStrings(AFilesToDelete));
+  ExtractRemoteSourcePath(ATerminal, AFilesToDelete, FInfo->Source);
 
   FInfo->ModifiedRemote = FInfo->Source;
 
-  FParams = Params;
+  FParams = AParams;
 }
 
-void TDeleteQueueItem::DoExecute(TTerminal * Terminal)
+void TRemoteDeleteQueueItem::DoExecute(gsl::not_null<TTerminal *> ATerminal)
 {
-  TLocatedQueueItem::DoExecute(Terminal);
+  TLocatedQueueItem::DoExecute(ATerminal);
 
-  DebugAssert(Terminal != nullptr);
-  Terminal->DeleteFiles(FFilesToDelete.get(), FParams);
+  DebugAssert(ATerminal != nullptr);
+  ATerminal->DeleteFiles(FFilesToDelete.get(), FParams);
+}
+
+
+TLocalDeleteQueueItem::TLocalDeleteQueueItem(TStrings * AFilesToDelete, int32_t AParams) noexcept :
+  TQueueItem(OBJECT_CLASS_TLocalDeleteQueueItem)
+{
+  FInfo->Operation = foDelete;
+  FInfo->Side = osLocal;
+
+  DebugAssert(AFilesToDelete != nullptr);
+  FFilesToDelete.reset(TRemoteFileList::CloneStrings(AFilesToDelete));
+  ExtractLocalSourcePath(AFilesToDelete, FInfo->Source);
+
+  FInfo->ModifiedLocal = FInfo->Source;
+
+  FParams = AParams;
+}
+
+void TLocalDeleteQueueItem::DoExecute(gsl::not_null<TTerminal *> ATerminal)
+{
+  DebugAssert(ATerminal != nullptr);
+  ATerminal->DeleteLocalFiles(FFilesToDelete.get(), FParams);
 }
 
 // TTerminalThread
@@ -2619,7 +2794,6 @@ TTerminalThread::TTerminalThread(gsl::not_null<TTerminal *> Terminal) noexcept :
   FUserAction = nullptr;
   FCancel = false;
   FCancelled = false;
-  FPendingIdle = false;
   FAbandoned = false;
   FAllowAbandon = false;
   FMainThread = GetCurrentThreadId();
@@ -2642,6 +2816,8 @@ void TTerminalThread::InitTerminalThread()
   FOnStartReadDirectory = FTerminal->GetOnStartReadDirectory();
   FOnReadDirectoryProgress = FTerminal->GetOnReadDirectoryProgress();
   FOnInitializeLog = FTerminal->GetOnInitializeLog();
+  FOnProgress = FTerminal->GetOnProgress();
+  FOnFinished = FTerminal->GetOnFinished();
 
   FTerminal->SetOnInformation(nb::bind(&TTerminalThread::TerminalInformation, this));
   FTerminal->SetOnQueryUser(nb::bind(&TTerminalThread::TerminalQueryUser, this));
@@ -2652,8 +2828,11 @@ void TTerminalThread::InitTerminalThread()
   FTerminal->SetOnReadDirectory(nb::bind(&TTerminalThread::TerminalReadDirectory, this));
   FTerminal->SetOnStartReadDirectory(nb::bind(&TTerminalThread::TerminalStartReadDirectory, this));
   FTerminal->SetOnReadDirectoryProgress(nb::bind(&TTerminalThread::TerminalReadDirectoryProgress, this));
+
   FTerminal->SetOnInitializeLog(nb::bind(&TTerminalThread::TerminalInitializeLog, this));
 
+  FTerminal->SetOnProgress(nb::bind(&TTerminalThread::TerminalProgress, this));
+  FTerminal->SetOnFinished(nb::bind(&TTerminalThread::TerminalFinished, this));
   Start();
 }
 
@@ -2673,6 +2852,8 @@ TTerminalThread::~TTerminalThread() noexcept
   DebugAssert(FTerminal->GetOnStartReadDirectory() == nb::bind(&TTerminalThread::TerminalStartReadDirectory, this));
   DebugAssert(FTerminal->GetOnReadDirectoryProgress() == nb::bind(&TTerminalThread::TerminalReadDirectoryProgress, this));
   DebugAssert(FTerminal->GetOnInitializeLog() == nb::bind(&TTerminalThread::TerminalInitializeLog, this));
+  DebugAssert(FTerminal->GetOnProgress() == nb::bind(&TTerminalThread::TerminalProgress, this));
+  DebugAssert(FTerminal->GetOnFinished() == nb::bind(&TTerminalThread::TerminalFinished, this));
 
   FTerminal->SetOnInformation(std::forward<TInformationEvent>(FOnInformation));
   FTerminal->SetOnQueryUser(std::forward<TQueryUserEvent>(FOnQueryUser));
@@ -2683,8 +2864,10 @@ TTerminalThread::~TTerminalThread() noexcept
   FTerminal->SetOnReadDirectory(std::forward<TReadDirectoryEvent>(FOnReadDirectory));
   FTerminal->SetOnStartReadDirectory(std::forward<TNotifyEvent>(FOnStartReadDirectory));
   FTerminal->SetOnReadDirectoryProgress(std::forward<TReadDirectoryProgressEvent>(FOnReadDirectoryProgress));
-  FTerminal->SetOnInitializeLog(std::forward<TNotifyEvent>(FOnInitializeLog));
 
+  FTerminal->SetOnInitializeLog(std::forward<TNotifyEvent>(FOnInitializeLog));
+  FTerminal->SetOnProgress(std::forward<TFileOperationProgressEvent>(FOnProgress));
+  FTerminal->SetOnFinished(std::forward<TFileOperationFinishedEvent>(FOnFinished));
 #if defined(__BORLANDC__)
   delete FSection;
 #endif // defined(__BORLANDC__)
@@ -2717,7 +2900,14 @@ void TTerminalThread::Idle()
       {
         Rethrow(FIdleException);
       }
-      FPendingIdle = true;
+      try
+      {
+        FTerminal->Idle();
+      }
+      catch (Exception & E)
+      {
+        SaveException(E, FIdleException);
+      }
     }
     __finally
     {
@@ -2736,7 +2926,14 @@ void TTerminalThread::TerminalReopen()
   RunAction(nb::bind(&TTerminalThread::TerminalReopenEvent, this));
 }
 
+void TTerminalThread::DiscardException()
+{
+  SAFE_DESTROY_EX(Exception, FException);
+}
+
 void TTerminalThread::RunAction(TNotifyEvent && Action)
+  // Main-thread side of the marshal handshake. Waits on FActionEvent while
+  // periodically servicing FUserAction callbacks (which must run on main thread).
 {
   DebugAssert(!FAction.empty());
   DebugAssert(FException == nullptr);
@@ -2769,6 +2966,7 @@ void TTerminalThread::RunAction(TNotifyEvent && Action)
             {
               try
               {
+                DebugAssert(GetCurrentThreadId() == FMainThread);
                 FUserAction->Execute(nullptr);
               }
               catch (Exception & E)
@@ -2786,6 +2984,10 @@ void TTerminalThread::RunAction(TNotifyEvent && Action)
               {
                 FOnIdle(nullptr);
               }
+              // Keep session alive while main thread waits for worker.
+              // Idle() is marshaled here so worker thread never calls
+              // Far-facing callbacks.
+              Idle();
               Wait = nb::Min(Wait + 10, MaxWait);
             }
             break;
@@ -2817,7 +3019,7 @@ void TTerminalThread::RunAction(TNotifyEvent && Action)
     __finally
     {
       FAction = nullptr;
-      SAFE_DESTROY_EX(Exception, FException);
+      DiscardException();
     } end_try__finally
   }
   catch(...)
@@ -2918,6 +3120,8 @@ void TTerminalThread::CheckCancel()
 }
 
 void TTerminalThread::WaitForUserAction(TUserAction * UserAction)
+  // Worker-thread side of the marshal handshake. Stores UserAction and blocks
+  // until RunAction on the main thread executes it and signals FActionEvent.
 {
   const DWORD Thread = GetCurrentThreadId();
   // we can get called from the main thread from within Idle,
@@ -2960,18 +3164,8 @@ void TTerminalThread::WaitForUserAction(TUserAction * UserAction)
           // that we rethrow the idle exception below)
           // Also if idle exception is set, it is probable that terminal
           // is not active anyway.
-          if (FTerminal->GetActive() && FPendingIdle && (FIdleException == nullptr))
-          {
-            FPendingIdle = false;
-            try
-            {
-              FTerminal->Idle();
-            }
-            catch (Exception & E)
-            {
-              SaveException(E, FIdleException);
-            }
-          }
+          // Idle() is marshaled to the main thread via RunAction() idle loop;
+          // worker thread must not call Far-facing callbacks.
         }
 
         const int32_t WaitResult = WaitForEvent(400);
@@ -3000,7 +3194,7 @@ void TTerminalThread::WaitForUserAction(TUserAction * UserAction)
     __finally
     {
       FUserAction = PrevUserAction;
-      SAFE_DESTROY_EX(Exception, FException);
+      DiscardException();
     } end_try__finally
 
     // Contrary to a call before, this is unconditional,
@@ -3014,12 +3208,11 @@ void TTerminalThread::WaitForUserAction(TUserAction * UserAction)
 }
 
 void TTerminalThread::TerminalInformation(
-  TTerminal * Terminal, const UnicodeString & AStr, bool Status, int32_t Phase, const UnicodeString & Additional)
+  TTerminal * ATerminal, const UnicodeString & AStr, int32_t Phase, const UnicodeString & Additional)
 {
   TInformationUserAction Action(std::forward<TInformationEvent>(FOnInformation));
-  Action.Terminal = Terminal;
+  Action.Terminal = ATerminal;
   Action.Str = AStr;
-  Action.Status = Status;
   Action.Phase = Phase;
   Action.Additional = Additional;
 
@@ -3067,6 +3260,21 @@ void TTerminalThread::TerminalInitializeLog(TObject * Sender)
 
     WaitForUserAction(&Action);
   }
+}
+
+void TTerminalThread::TerminalProgress(TFileOperationProgressType & ProgressData)
+{
+  TProgressUserAction Action(std::forward<TFileOperationProgressEvent>(FOnProgress), ProgressData);
+  WaitForUserAction(&Action);
+}
+
+void TTerminalThread::TerminalFinished(TFileOperation Operation, TOperationSide Side,
+  bool Temp, const UnicodeString & FileName, bool Success, bool NotCancelled,
+  TOnceDoneOperation & OnceDoneOperation)
+{
+  TFinishedUserAction Action(std::forward<TFileOperationFinishedEvent>(FOnFinished),
+    Operation, Side, Temp, FileName, Success, NotCancelled, OnceDoneOperation);
+  WaitForUserAction(&Action);
 }
 
 void TTerminalThread::TerminalPromptUser(TTerminal * ATerminal,

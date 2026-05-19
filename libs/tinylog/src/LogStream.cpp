@@ -1,38 +1,58 @@
 #include <io.h>
 #include <fcntl.h>
 
+#include <nbsystem.h>
 #include <tinylog/platform_win32.h>
 
 #include <tinylog/LogStream.h>
 #include <tinylog/Config.h>
-//#include <tinylog/LockFreeQueue.h>
 // #include <Sysutils.hpp> // for DEBUG_PRINTF
 
 
 namespace tinylog {
 
-LogStream::LogStream(FILE * file, pthread_mutex_t & mutex, pthread_cond_t & cond, bool & drain_buffer) :
+// Thread-local storage initialization
+thread_local std::array<char, 4096> LogStream::tls_buffer_{};
+thread_local size_t LogStream::tls_buffer_used_{0};
+
+LogStream::LogStream(FILE * file, pthread_mutex_t & mutex, pthread_cond_t & cond, std::atomic<bool> & drain_buffer) :
   front_buff_(std::make_unique<Buffer>(LOG_BUFFER_SIZE)),
   back_buff_(std::make_unique<Buffer>(LOG_BUFFER_SIZE)),
-//  queue_(std::make_unique<LockFreeQueue>()),
   file_(file),
   mutex_(mutex),
   cond_(cond),
   drain_buffer_(drain_buffer)
 {
-  Utils::CurrentTime(&tv_base_, &tm_base_);
+  // Initialize timestamp
+  struct timeval tv_now;
+  gettimeofday(&tv_now, nullptr);
+  uint64_t us = static_cast<uint64_t>(tv_now.tv_sec) * 1000000ULL + tv_now.tv_usec;
+  timestamp_us_.store(us, std::memory_order_relaxed);
   // DEBUG_PRINTF("begin");
 }
 
 LogStream::~LogStream()
 {
   // DEBUG_PRINTF("end");
+  // Flush any remaining log entries in the TLS buffer before closing the file
+  if (tls_buffer_used_ > 0)
+  {
+    InternalWrite(tls_buffer_.data(), tls_buffer_used_);
+    tls_buffer_used_ = 0;
+    // Immediately flush to file since background thread may be done
+    WriteBuffer();
+  }
   if (file_ != nullptr)
   {
     fclose(file_);
     file_ = nullptr;
   }
   // DEBUG_PRINTF("end");
+}
+
+size_t LogStream::GetDroppedCount() const
+{
+  return dropped_count_.load(std::memory_order_relaxed);
 }
 
 size_t LogStream::Write(const char * data, size_t ToWrite)
@@ -60,7 +80,23 @@ void LogStream::WriteBuffer()
 {
   if (!file_)
     return;
+
+  // Measure mutex hold time during file write
+  auto start = std::chrono::steady_clock::now();
   front_buff_->Flush(file_);
+  auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start);
+  
+  // Log warning if write took too long (indicates mutex contention)
+  auto ms = elapsed.count();
+  if (ms > 10)
+  {
+    // Buffer copy optimization decision: if this warning appears frequently
+    // in stress tests, implement copy-then-write to reduce mutex hold time
+    char tmp[256];
+    sprintf_s(tmp, "tinylog: WriteBuffer flush took %lld ms (threshold: 10ms) - mutex contention\n", ms);
+    OutputDebugStringA(tmp);
+  }
+  
   front_buff_->Clear();
 
   /*std::string data;
@@ -89,6 +125,44 @@ void LogStream::WriteBuffer()
   }*/
 }
 
+bool LogStream::EmergencyFlush()
+{
+  if (!pthread_mutex_tryenter(&mutex_))
+  {
+    OutputDebugStringA("tinylog: EmergencyFlush skipped (mutex busy)\n");
+    return false;
+  }
+
+  size_t bytes_flushed = 0;
+
+  if (file_ && front_buff_)
+  {
+    front_buff_->Flush(file_);
+    bytes_flushed += front_buff_->Size();
+    front_buff_->Clear();
+  }
+
+  if (drain_buffer_.load(std::memory_order_acquire))
+  {
+    SwapBuffer();
+    if (file_ && front_buff_)
+    {
+      front_buff_->Flush(file_);
+      bytes_flushed += front_buff_->Size();
+      front_buff_->Clear();
+    }
+    drain_buffer_.store(false, std::memory_order_release);
+  }
+
+  pthread_mutex_unlock(&mutex_);
+
+  char msg[256];
+  _snprintf_s(msg, sizeof(msg), _TRUNCATE,
+    "tinylog: EmergencyFlush complete (%zu bytes)\n", bytes_flushed);
+  OutputDebugStringA(msg);
+  return true;
+}
+
 void LogStream::SetFile(FILE * file)
 {
   assert(file_ == nullptr);
@@ -106,7 +180,14 @@ size_t LogStream::FormattedWrite(const char * log_data, size_t to_write)
 
   UpdateBaseTime();
 
-#define MAX(STR, DEF) std::max(((STR) ? strlen(STR) : 0ULL), (DEF))
+  // Convert atomic timestamp to time components
+  uint64_t us = timestamp_us_.load(std::memory_order_relaxed);
+  time_t sec = static_cast<time_t>(us / 1000000ULL);
+  int msec = static_cast<int>((us % 1000000ULL) / 1000);
+  struct tm tm_now;
+  localtime_s(&tm_now, &sec);
+
+#define MAX(STR, DEF) nb::Max(((STR) ? strlen(STR) : 0ULL), (DEF))
   const size_t prefix_len = 36 + MAX(file_name_, 10ULL) +
     MAX(func_name_, 16ULL) + MAX(str_log_level_, 10ULL);
   const size_t append_len = prefix_len + to_write;
@@ -122,8 +203,8 @@ size_t LogStream::FormattedWrite(const char * log_data, size_t to_write)
 
       n_append = sprintf_s(buf, append_len,
         "%d-%02d-%02d %02d:%02d:%02d.%.03d %10s:%3d %16s %10s %.*s\n",
-        tm_base_.tm_year + 1900, tm_base_.tm_mon + 1, tm_base_.tm_mday,
-        tm_base_.tm_hour, tm_base_.tm_min, tm_base_.tm_sec, static_cast<int>(tv_base_.tv_usec / 1000),
+        tm_now.tm_year + 1900, tm_now.tm_mon + 1, tm_now.tm_mday,
+        tm_now.tm_hour, tm_now.tm_min, tm_now.tm_sec, msec,
         file_name_ ? file_name_ : "", line_number, func_name_ ? func_name_ : "", str_log_level_,
         static_cast<int>(to_write), log_data);
     }
@@ -131,14 +212,40 @@ size_t LogStream::FormattedWrite(const char * log_data, size_t to_write)
     {
       n_append = sprintf_s(buf, append_len,
         "%d-%02d-%02d %02d:%02d:%02d.%.03d %.*s\n",
-        tm_base_.tm_year + 1900, tm_base_.tm_mon + 1, tm_base_.tm_mday,
-        tm_base_.tm_hour, tm_base_.tm_min, tm_base_.tm_sec, static_cast<int>(tv_base_.tv_usec / 1000),
+        tm_now.tm_year + 1900, tm_now.tm_mon + 1, tm_now.tm_mday,
+        tm_now.tm_hour, tm_now.tm_min, tm_now.tm_sec, msec,
         static_cast<int>(to_write), log_data);
     }
 
     if (n_append > 0)
     {
-      Result = InternalWrite(buf, n_append);
+      // Use thread-local buffer to batch writes and reduce mutex contention
+      if (tls_buffer_used_ + n_append > tls_buffer_.size())
+      {
+        // TLS buffer full, flush existing content to shared buffer first
+        if (tls_buffer_used_ > 0)
+        {
+          InternalWrite(tls_buffer_.data(), tls_buffer_used_);
+          tls_buffer_used_ = 0;
+        }
+
+        // If formatted line exceeds TLS buffer capacity, write it directly
+        if (n_append > tls_buffer_.size())
+        {
+          Result = InternalWrite(buf, n_append);
+        }
+        else
+        {
+          memcpy(tls_buffer_.data(), buf, n_append);
+          tls_buffer_used_ = n_append;
+        }
+      }
+      else
+      {
+        // Append to TLS buffer
+        memcpy(tls_buffer_.data() + tls_buffer_used_, buf, n_append);
+        tls_buffer_used_ += n_append;
+      }
     }
     nb_free(buf);
   }
@@ -154,29 +261,31 @@ size_t LogStream::InternalWrite(const char * log_data, size_t to_write)
   // DEBUG_PRINTF("ToWrite: %d", (int)to_write);
   while (to_write)
   {
-    auto & buff = drain_buffer_ ? back_buff_ : front_buff_;
+    auto & buff = drain_buffer_.load(std::memory_order_acquire) ? back_buff_ : front_buff_;
     // append to the current buffer
     n_append = buff->TryAppend(log_data, to_write);
     if (n_append == 0)
     {
-      if (drain_buffer_)
+      if (drain_buffer_.load(std::memory_order_acquire))
       {
         // we are appending to the back_buff_ and there is no more space there
-        // wait until buffer is drained (very rare situation)
-        pthread_cond_signal(&cond_);
-        pthread_mutex_unlock(&mutex_);
-        while (drain_buffer_)
+        // This is a rare situation - buffer overflow under heavy load
+        // Drop this log entry and increment dropped counter
+        size_t dropped = dropped_count_.fetch_add(1, std::memory_order_relaxed);
+        
+        // Log warning every 100 dropped entries to avoid log spam
+        if (dropped % 100 == 0)
         {
-          // yield execution to another thread
-          // usually it will require only one iteration
-          Sleep(1);
-          // DEBUG_PRINTF("after Sleep");
+          // Signal background thread to flush
+          pthread_cond_signal(&cond_);
         }
-        pthread_mutex_lock(&mutex_);
+        
+        // Skip this log entry
+        to_write = 0;
       }
       else
       {
-        drain_buffer_ = true;
+        drain_buffer_.store(true, std::memory_order_release);
       }
     }
     else
@@ -186,7 +295,7 @@ size_t LogStream::InternalWrite(const char * log_data, size_t to_write)
     }
   }
 
-  if (drain_buffer_)
+  if (drain_buffer_.load(std::memory_order_acquire))
   {
     pthread_cond_signal(&cond_);
   }
@@ -202,6 +311,7 @@ LogStream & LogStream::operator<<(const char * log_data)
   return *this;
 }
 
+#if 0
 LogStream & LogStream::operator<<(const std::string & ref_log)
 {
   FormattedWrite(ref_log.c_str(), ref_log.size());
@@ -221,52 +331,14 @@ LogStream & LogStream::operator<<(const std::string & ref_log)
 */
   return *this;
 }
+#endif 0
 
 void LogStream::UpdateBaseTime()
 {
   struct timeval tv_now;
-  const time_t now = time(nullptr);
-  tv_now.tv_sec = static_cast<long>(now);
-  tv_now.tv_usec = 0;
-  struct tm * tm = localtime(&now);
   gettimeofday(&tv_now, nullptr);
-
-  if (tv_now.tv_sec != tv_base_.tv_sec)
-  {
-    const int new_sec = tm_base_.tm_sec + static_cast<int>(tv_now.tv_sec - tv_base_.tv_sec);
-    if (new_sec >= 60)
-    {
-      tm_base_.tm_sec = new_sec % 60;
-      const int new_min = tm_base_.tm_min + new_sec / 60;
-      if (new_min >= 60)
-      {
-        tm_base_.tm_min = new_min % 60;
-        const int new_hour = tm_base_.tm_hour + new_min / 60;
-        if (new_hour >= 24)
-        {
-          Utils::CurrentTime(&tv_now, &tm_base_);
-        }
-        else
-        {
-          tm_base_.tm_hour = new_hour;
-        }
-      }
-      else
-      {
-        tm_base_.tm_min = new_min;
-      }
-    }
-    else
-    {
-      tm_base_.tm_sec = new_sec;
-    }
-
-    tv_base_ = tv_now;
-  }
-  else
-  {
-    tv_base_.tv_usec = tv_now.tv_usec;
-  }
+  uint64_t us = static_cast<uint64_t>(tv_now.tv_sec) * 1000000ULL + tv_now.tv_usec;
+  timestamp_us_.store(us, std::memory_order_relaxed);
 }
 
 void LogStream::SetPrefix(const char * file_name, int32_t line, const char * func_name, Utils::LogLevel log_level)

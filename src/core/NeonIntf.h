@@ -9,7 +9,8 @@
 #include <SessionData.h>
 
 #define StrToNeon(S) UTF8String((S)).c_str()
-#define StrFromNeon(S) UnicodeString((S), NBChTraitsCRT<char>::GetBaseTypeLength((S)), CP_UTF8)
+// Should be used with character pointer only
+#define StrFromNeon(S) UnicodeString((S), S ? NBChTraitsCRT<char>::GetBaseTypeLength((S)) : 0, CP_UTF8)
 
 constexpr const char * SESSION_FS_KEY = "filesystem";
 
@@ -43,8 +44,9 @@ UnicodeString GetNeonRedirectUrl(ne_session * Session);
 void CheckRedirectLoop(const UnicodeString & RedirectUrl, TStrings * AttemptedUrls);
 #if defined(__BORLANDC__)
 typedef void (__closure* TNeonTlsInit)(struct ssl_st * Ssl, ne_session * Session);
-#endif // defined(__BORLANDC__)
+#else
 using TNeonTlsInit = void(* )(struct ssl_st * Ssl, ne_session * Session);
+#endif // defined(__BORLANDC__)
 void SetNeonTlsInit(ne_session * Session, TNeonTlsInit OnNeonTlsInit, TTerminal * Terminal);
 void InitNeonTls(
   ne_session * Session, TNeonTlsInit OnNeonTlsInit, ne_ssl_verify_fn VerifyCallback, void * VerifyContext,

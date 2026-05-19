@@ -193,7 +193,10 @@ void TXmlStorage::DoGetSubKeyNames(TStrings * Strings)
     Element != nullptr; Element = Element->NextSiblingElement())
   {
     UnicodeString Val = GetValue(Element);
-    Strings->Add(PuttyUnMungeStr(Val));
+    if (!Val.IsEmpty())
+    {
+      Strings->Add(PuttyUnMungeStr(Val));
+    }
   }
 }
 

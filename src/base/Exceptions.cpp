@@ -11,11 +11,11 @@
 #endif // FARPLUGIN
 #include "rtlconsts.h"
 
-// #pragma package(smart_init)
-
 #if defined(__BORLANDC__)
+#pragma package(smart_init)
 
 static std::unique_ptr<TCriticalSection> IgnoredExceptionsCriticalSection(std::make_unique<TCriticalSection>());
+// Thread-safety: IgnoredExceptionsCriticalSection protects IgnoredExceptions.
 using TIgnoredExceptions = nb::set_t<UnicodeString>;
 static TIgnoredExceptions IgnoredExceptions;
 
@@ -38,7 +38,7 @@ static bool WellKnownException(
   const Exception * E, UnicodeString * AMessage, const wchar_t ** ACounterName, Exception ** AClone, bool Rethrow)
 {
   UnicodeString Message;
-  const wchar_t *CounterName = nullptr;
+  const wchar_t * CounterName = nullptr; // shut up
   std::unique_ptr<Exception> Clone;
 
 
@@ -59,7 +59,7 @@ static bool WellKnownException(
     Result = false;
   }
   // EAccessViolation is EExternal
-  else if (rtti::isa<EAccessViolation>(E))
+  else if (nb::isa<EAccessViolation>(E))
   {
     if (Rethrow)
     {
@@ -78,13 +78,13 @@ static bool WellKnownException(
 #if defined(__BORLANDC__)
   // EIntError and EMathError are EExternal
   // EClassNotFound is EFilerError
-  else if ((rtti::dyn_cast_or_null<EListError>(E) != nullptr) ||
-           (rtti::dyn_cast_or_null<EStringListError>(E) != nullptr) ||
-           (rtti::dyn_cast_or_null<EIntError>(E) != nullptr) ||
-           (rtti::dyn_cast_or_null<EMathError>(E) != nullptr) ||
-           (rtti::dyn_cast_or_null<EVariantError>(E) != nullptr) ||
-           (rtti::dyn_cast_or_null<EInvalidOperation>(E) != nullptr))
-           (rtti::dyn_cast_or_null<EFilerError *>(E) != nullptr))
+  else if ((nb::dyn_cast_or_null<EListError>(E) != nullptr) ||
+           (nb::dyn_cast_or_null<EStringListError>(E) != nullptr) ||
+           (nb::dyn_cast_or_null<EIntError>(E) != nullptr) ||
+           (nb::dyn_cast_or_null<EMathError>(E) != nullptr) ||
+           (nb::dyn_cast_or_null<EVariantError>(E) != nullptr) ||
+           (nb::dyn_cast_or_null<EInvalidOperation>(E) != nullptr))
+           (nb::dyn_cast_or_null<EFilerError *>(E) != nullptr))
   {
     if (Rethrow)
     {
@@ -94,7 +94,7 @@ static bool WellKnownException(
     CounterName = L"InternalExceptions";
     Clone.reset(new EIntError(E->Message));
   }
-  else if (rtti::dyn_cast_or_null<EExternal>(E) != nullptr)
+  else if (nb::dyn_cast_or_null<EExternal>(E) != nullptr)
   {
     if (Rethrow)
     {
@@ -104,7 +104,7 @@ static bool WellKnownException(
     CounterName = L"ExternalExceptions";
     Clone.reset(new EExternal(E->Message));
   }
-  else if (rtti::dyn_cast_or_null<EHeapException>(E) != nullptr)
+  else if (nb::dyn_cast_or_null<EHeapException>(E) != nullptr)
   {
     if (Rethrow)
     {
@@ -147,7 +147,7 @@ static bool ExceptionMessage(const Exception * E, bool /*Count*/,
   InternalError = false; // see also IsInternalException
 
   // this list has to be in sync with CloneException
-  if (rtti::isa<EAbort>(E))
+  if (nb::isa<EAbort>(E))
   {
     Result = false;
   }
@@ -217,7 +217,7 @@ TStrings * ExceptionToMoreMessages(Exception * E)
   {
     Result = new TStringList();
     Result->Add(Message);
-    const ExtException * ExtE = rtti::dyn_cast_or_null<ExtException>(E);
+    const ExtException * ExtE = nb::dyn_cast_or_null<ExtException>(E);
     if ((ExtE != nullptr) && (ExtE->GetMoreMessages() != nullptr))
     {
       Result->AddStrings(ExtE->GetMoreMessages());
@@ -232,7 +232,7 @@ bool ExceptionFullMessage(Exception * E, UnicodeString & Message)
   if (Result)
   {
     Message += L"\n";
-    const ExtException * EE = rtti::dyn_cast_or_null<ExtException>(E);
+    const ExtException * EE = nb::dyn_cast_or_null<ExtException>(E);
     if ((EE != nullptr) && (EE->GetMoreMessages() != nullptr))
     {
       Message += EE->GetMoreMessages()->GetText() + L"\n";
@@ -244,7 +244,7 @@ bool ExceptionFullMessage(Exception * E, UnicodeString & Message)
 UnicodeString GetExceptionHelpKeyword(const Exception * E)
 {
   UnicodeString HelpKeyword;
-  const ExtException * ExtE = rtti::dyn_cast_or_null<ExtException>(E);
+  const ExtException * ExtE = nb::dyn_cast_or_null<ExtException>(E);
   UnicodeString Message; // not used
   bool InternalError = false;
   if (ExtE != nullptr)
@@ -378,7 +378,7 @@ void ExtException::AddMoreMessages(const Exception * E)
       FMoreMessages = new TStringList();
     }
 
-    const ExtException * ExtE = rtti::dyn_cast_or_null<ExtException>(E);
+    const ExtException * ExtE = nb::dyn_cast_or_null<ExtException>(E);
     if (ExtE != nullptr)
     {
       if (ExtE->GetMoreMessages() != nullptr)
@@ -471,7 +471,7 @@ EOSExtException::EOSExtException(TObjectClassId Kind, const UnicodeString & Msg,
 EFatal::EFatal(TObjectClassId Kind, const UnicodeString & Msg, const Exception * E) :
   ExtException(Kind, Msg, E)
 {
-  const EFatal * F = rtti::dyn_cast_or_null<EFatal>(E);
+  const EFatal * F = nb::dyn_cast_or_null<EFatal>(E);
   if (F != nullptr)
   {
     FReopenQueried = F->GetReopenQueried();
@@ -511,16 +511,16 @@ Exception * CloneException(Exception * E)
 {
   Exception * Result{nullptr};
   // this list has to be in sync with ExceptionMessage
-  const ExtException * Ext = rtti::dyn_cast_or_null<ExtException>(E);
+  const ExtException * Ext = nb::dyn_cast_or_null<ExtException>(E);
   if (Ext != nullptr)
   {
     Result = Ext->Clone();
   }
-  else if (rtti::isa<ECallbackGuardAbort>(E))
+  else if (nb::isa<ECallbackGuardAbort>(E))
   {
     Result = new ECallbackGuardAbort();
   }
-  else if (rtti::isa<EAbort>(E))
+  else if (nb::isa<EAbort>(E))
   {
     Result = new EAbort(E->Message);
   }
@@ -547,15 +547,15 @@ Exception * CloneException(Exception * E)
 void RethrowException(Exception * E)
 {
   // this list has to be in sync with ExceptionMessage
-  if (rtti::isa<ExtException>(E))
+  if (nb::isa<ExtException>(E))
   {
-    rtti::dyn_cast_or_null<ExtException>(E)->Rethrow();
+    nb::dyn_cast_or_null<ExtException>(E)->Rethrow();
   }
-  else if (rtti::isa<ECallbackGuardAbort>(E))
+  else if (nb::isa<ECallbackGuardAbort>(E))
   {
     throw ECallbackGuardAbort();
   }
-  else if (rtti::isa<EAbort>(E))
+  else if (nb::isa<EAbort>(E))
   {
     throw EAbort(E->Message);
   }

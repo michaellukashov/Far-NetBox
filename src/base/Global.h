@@ -9,6 +9,7 @@
 
 #include <FormatUtils.h>
 #include <tinylog/TinyLog.h>
+#include <LogContext.h>
 
 #define FORMAT(S, ...) nb::Sprintf((S), __VA_ARGS__)
 #define FMTLOAD(Id, ...) nb::FmtLoadStr((Id), __VA_ARGS__)
@@ -22,6 +23,7 @@
 #include <System.SyncObjs.hpp>
 
 UnicodeString NormalizeString(const UnicodeString & S);
+UnicodeString DenormalizeString(const UnicodeString & S);
 
 class NB_CORE_EXPORT TGuard
 {
@@ -42,12 +44,24 @@ class NB_CORE_EXPORT TUnguard
   NB_DISABLE_COPY(TUnguard)
 public:
   TUnguard() = delete;
-  explicit TUnguard(TCriticalSection & ACriticalSection) noexcept;
+  explicit TUnguard(const TCriticalSection & ACriticalSection) noexcept;
   ~TUnguard() noexcept;
 
 private:
-  TCriticalSection & FCriticalSection;
+  const TCriticalSection & FCriticalSection;
 };
+
+#if defined(__clang__) | defined(_MSC_VER)
+#define CLANG_INITIALIZE(V) = (V)
+#define NORETURN [[noreturn]]
+#define UNREACHABLE_AFTER_NORETURN(STATEMENT)
+#define EXCEPT noexcept(false)
+#else
+#define CLANG_INITIALIZE(V)
+#define NORETURN
+#define UNREACHABLE_AFTER_NORETURN(STATEMENT) STATEMENT
+#define EXCEPT
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -88,8 +102,8 @@ NB_CORE_EXPORT extern "C" void DoAssertC(char * Message, char * Filename, int32_
 #define DebugNotNull(p) (p)
 #define TraceInitPtr(p) (p)
 #define TraceInitStr(p) (p)
-#define DebugUsedParam2(p1, p2) ((&p1) == (&p2))
-#define DebugUsedParam(p) DebugUsedParam2(p, p)
+#define DebugUsedParam2(p1, p2) nb::used((p1)); nb::used((p2))
+#define DebugUsedParam(p) nb::used((p))
 #define DebugUsedArg(p)
 
 #if defined(_DEBUG)
@@ -166,8 +180,18 @@ using TBytes = nb::vector_t<uint8_t>;
 
 namespace os::debug {
 
-void SetThreadName(HANDLE ThreadHandle, const UnicodeString & Name);
+void SetThreadName(HANDLE ThreadHandle, const UnicodeString & AName);
 UnicodeString GetThreadName(HANDLE ThreadHandle);
 
 } // namespace os::debug
+
+// Structured logging macros
+#define LOG_THREAD_START(name) \
+  TINYLOG_INFO(g_tinylog) << TLogContext::Format() << " Thread started: " << UnicodeString((name))
+
+#define LOG_THREAD_STOP(name) \
+  TINYLOG_INFO(g_tinylog) << TLogContext::Format() << " Thread stopped: " << UnicodeString((name))
+
+#define LOG_QUEUE_EVENT(event) \
+  TINYLOG_DEBUG(g_tinylog) << TLogContext::Format() << " Queue event: " << (event)
 

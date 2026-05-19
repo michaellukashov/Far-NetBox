@@ -50,8 +50,11 @@ protected:
   bool LoggingConfigurationDialog();
   bool ConfirmationsConfigurationDialog();
   bool IntegrationConfigurationDialog();
+  bool SecurityConfigurationDialog();
   void AboutDialog();
-
+  void CleanupDialog();
+  void GenerateUrlDialog(TSessionData * SessionData);
+  void LocationProfilesDialog(TWinSCPFileSystem * FileSystem);
 protected:
   const NetBoxPrivateInfo * GetSystemFunctions() const { return static_cast<const NetBoxPrivateInfo *>(FStartupInfo.Private); }
   void DeleteLocalFile(const UnicodeString & LocalFileName);
@@ -67,8 +70,10 @@ private:
   void CleanupConfiguration();
   void CoreInitializeOnce();
   void ParseCommandLine(UnicodeString & CommandLine, const TOptions * Options);
+  static void MasterPasswordPrompt();
 
 private:
   bool FInitialized{false};
+  bool FCreatingPanel{false};
 };
 

@@ -17,12 +17,12 @@
 
 #pragma package(smart_init)
 
-const int ccLocal = ccUser;
-const int ccShowResults = ccUser << 1;
-const int ccCopyResults = ccUser << 2;
-const int ccRemoteFiles = ccUser << 3;
-const int ccShowResultsInMsgBox = ccUser << 4;
-const int ccSet = 0x80000000;
+const int32_t ccLocal = ccUser;
+const int32_t ccShowResults = ccUser << 1;
+const int32_t ccCopyResults = ccUser << 2;
+const int32_t ccRemoteFiles = ccUser << 3;
+const int32_t ccShowResultsInMsgBox = ccUser << 4;
+const int32_t ccSet = 0x80000000;
 #endif // defined(__BORLANDC__)
 
 constexpr const uint32_t AdditionalLanguageMask = 0xFFFFFF00;
@@ -54,7 +54,7 @@ void TGUICopyParamType::Assign(const TCopyParamType * Source)
 {
   TCopyParamType::Assign(Source);
 
-  const TGUICopyParamType * GUISource = rtti::dyn_cast_or_null<TGUICopyParamType>(Source);
+  const TGUICopyParamType * GUISource = nb::dyn_cast_or_null<TGUICopyParamType>(Source);
   if (GUISource != nullptr)
   {
     GUIAssign(GUISource);
@@ -1143,10 +1143,10 @@ UnicodeString TGUIConfiguration::AppliedLocaleVersion()
   return Result;
 }
 
-void TGUIConfiguration::SetAppliedLocale(LCID AppliedLocale, const UnicodeString & LocaleModuleName)
+void TGUIConfiguration::SetAppliedLocale(LCID AAppliedLocale, const UnicodeString & ALocaleModuleName)
 {
-  FAppliedLocale = AppliedLocale;
-  FLocaleModuleName = LocaleModuleName;
+  FAppliedLocale = AAppliedLocale;
+  FLocaleModuleName = ALocaleModuleName;
 }
 
 void TGUIConfiguration::FreeResourceModule(HANDLE /*Instance*/)
@@ -1269,61 +1269,71 @@ TObjectList * TGUIConfiguration::GetLocales()
 
 #if defined(__BORLANDC__)
     TLanguages * Langs = Languages();
+    int32_t Count = Langs->Count;
 
-    int Count = Langs->Count;
-    int Index = -1;
-    while (Index < Count)
+    typedef std::map<UnicodeString, std::pair<int32_t, DWORD> > TConflicts;
+    TConflicts DefaultLangConflicts;
+    LCID InvalidLocale = static_cast<LCID>(-1);
+
+    // The two-leter Windows code is not actually unique among languages.
+    // So find any duplicities and resolve them to the language, where ISO code also match.
+    // Notably:
+    // Georgian KAT ka-GE - Kalaallisut KAL kl-GL
+    // Tamil TAI ta-IN - Tajik TAJ tj-TJ
+    for (int32_t Index = 0; Index < Count; Index++)
     {
-      LCID Locale;
-      if (Index >= 0)
+      LCID Locale = Langs->LocaleID[Index];
+      DWORD SubLang = SUBLANGID(Locale);
+      if (SubLang == SUBLANG_DEFAULT)
       {
-        Locale = Langs->LocaleID[Index];
-        DWORD SubLang = SUBLANGID(Locale);
-        int Ext = Exts->IndexOf(Langs->Ext[Index]);
-        if ((Ext >= 0) && (Exts->Objects[Ext] == nullptr))
+        UnicodeString LangExt2 = LeftStr(Langs->Ext[Index].UpperCase(), 2);
+        TConflicts::iterator Conflict = DefaultLangConflicts.find(LangExt2);
+        if (Conflict == DefaultLangConflicts.end())
         {
-          // noop
-        }
-        else if (SubLang == SUBLANG_DEFAULT)
-        {
-          Ext = Exts->IndexOf(Langs->Ext[Index].SubString(1, 2));
-          if ((Ext >= 0) && (Exts->Objects[Ext] == nullptr))
-          {
-            Locale = MAKELANGID(PRIMARYLANGID(Locale), SUBLANG_DEFAULT);
-          }
-        }
-
-        if (Ext >= 0)
-        {
-          Exts->SetObj(Ext, ToObj(Locale));
+          Conflict = DefaultLangConflicts.insert(std::make_pair(LangExt2, std::make_pair(1, InvalidLocale))).first;
         }
         else
         {
-          Locale = 0;
+          Conflict->second.first++;
+        }
+
+        UnicodeString LangName = CopyToChar(Langs->LocaleName[Index], L'-', false);
+        bool Matches = SameText(LangName, LangExt2);
+        if (Matches)
+        {
+          Conflict->second.second = Locale;
         }
       }
-      else
-      {
-        Locale = InternalLocale();
-      }
-
-      if (Locale)
-      {
-        wchar_t LocaleStr[255];
-        GetLocaleInfo(Locale, LOCALE_SENGLANGUAGE,
-          LocaleStr, LENOF(LocaleStr));
-        UnicodeString Name = LocaleStr;
-        Name += TitleSeparator;
-        // LOCALE_SNATIVELANGNAME
-        GetLocaleInfo(Locale, LOCALE_SLANGUAGE,
-          LocaleStr, LENOF(LocaleStr));
-        Name += LocaleStr;
-        AddLocale(Locale, Name);
-      }
-      Index++;
     }
 
-    for (int Index = 0; Index < Exts->Count; Index++)
+    for (int32_t Index = 0; Index < Count; Index++)
+    {
+      LCID Locale = Langs->LocaleID[Index];
+      DWORD SubLang = SUBLANGID(Locale);
+      UnicodeString LangExt3 = Langs->Ext[Index].UpperCase();
+      int32_t Ext = Exts->IndexOf(LangExt3);
+      if ((Ext < 0) && (SubLang == SUBLANG_DEFAULT))
+      {
+        UnicodeString LangExt2 = LeftStr(LangExt3, 2);
+        TConflicts::const_iterator DefaultLangConflict = DefaultLangConflicts.find(LangExt2);
+        // Unless it is a conflicting extension with no resolution or resolved to another locale
+        if ((DefaultLangConflict == DefaultLangConflicts.end()) ||
+            (DefaultLangConflict->second.first == 1) ||
+            ((DefaultLangConflict->second.second != InvalidLocale) &&
+             (DefaultLangConflict->second.second == Locale)))
+        {
+          Ext = Exts->IndexOf(LangExt2);
+        }
+      }
+
+      if ((Ext >= 0) && DebugAlwaysTrue(Exts->Objects[Ext] == nullptr))
+      {
+        Exts->Objects[Ext] = reinterpret_cast<TObject*>(Locale);
+        AddLocale(Locale, EmptyStr);
+      }
+    }
+
+    for (int32_t Index = 0; Index < Exts->Count; Index++)
     {
       if ((Exts->Objects[Index] == nullptr) &&
           (Exts->Strings[Index].Length() == 3) &&
@@ -1490,7 +1500,7 @@ TStoredSessionList * TGUIConfiguration::SelectPuttySessionsForImport(
   }
 
   const TSessionData * PuttySessionData =
-    rtti::dyn_cast_or_null<TSessionData>(ImportSessionList->FindByName(GetPuttySession()));
+    nb::dyn_cast_or_null<TSessionData>(ImportSessionList->FindByName(GetPuttySession()));
   if (PuttySessionData != nullptr)
   {
     ImportSessionList->Remove(PuttySessionData);
@@ -1558,6 +1568,6 @@ void TGUIConfiguration::SetChecksumAlg(const UnicodeString & Value)
 
 TGUIConfiguration * GetGUIConfiguration()
 {
-  return rtti::dyn_cast_or_null<TGUIConfiguration>(GetConfiguration());
+  return nb::dyn_cast_or_null<TGUIConfiguration>(GetConfiguration());
 }
 

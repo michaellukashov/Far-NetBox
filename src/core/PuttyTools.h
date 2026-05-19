@@ -21,6 +21,8 @@ void AddCertificateToKey(TPrivateKey * PrivateKey, const UnicodeString & Certifi
 NB_CORE_EXPORT void SaveKey(TKeyType KeyType, const UnicodeString & FileName,
   const UnicodeString & Passphrase, TPrivateKey * PrivateKey);
 NB_CORE_EXPORT void FreeKey(TPrivateKey * PrivateKey);
+NB_CORE_EXPORT UnicodeString ConvertKeyToTemporaryPPK(const UnicodeString & FileName,
+  const UnicodeString & Passphrase);
 RawByteString LoadPublicKey(
   const UnicodeString & FileName, UnicodeString & Algorithm, UnicodeString & Comment, bool & HasCertificate);
 UnicodeString GetPublicKeyLine(const UnicodeString & FileName, UnicodeString & Comment, bool & HasCertificate);

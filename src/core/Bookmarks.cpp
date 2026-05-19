@@ -8,7 +8,9 @@
 #include "HierarchicalStorage.h"
 #include "TextsCore.h"
 
-// #pragma package(smart_init)
+#if defined(__BORLANDC__)
+#pragma package(smart_init)
+#endif // defined(__BORLANDC__)
 
 TBookmarks::TBookmarks() noexcept : TObject(OBJECT_CLASS_TBookmarks),
   FSharedKey(UnicodeString(CONST_HIDDEN_PREFIX) + "shared")
@@ -16,7 +18,7 @@ TBookmarks::TBookmarks() noexcept : TObject(OBJECT_CLASS_TBookmarks),
 #if defined(__BORLANDC__)
   FSharedKey = TNamedObjectList::HiddenPrefix + L"shared";
 #endif // defined(__BORLANDC__)
-  FBookmarkLists = CreateSortedStringList(false, dupError);
+  FBookmarkLists = CreateSortedStringList(false, TDuplicatesEnum::dupError);
 }
 
 TBookmarks::~TBookmarks() noexcept
@@ -43,7 +45,7 @@ void TBookmarks::Load(THierarchicalStorage * Storage)
 {
   for (int32_t Idx = 0; Idx <= 3; ++Idx)
   {
-    if (Storage->OpenSubKey(Keys[Idx].data(), false))
+    if (Storage->OpenSubKey(Keys[Idx], false))
     {
       std::unique_ptr<TStrings> BookmarkKeys(std::make_unique<TStringList>());
       try__finally
@@ -168,7 +170,7 @@ void TBookmarks::Save(THierarchicalStorage * Storage, bool All)
 {
   for (int32_t Idx = 0; Idx <= 3; Idx++)
   {
-    if (Storage->OpenSubKey(Keys[Idx].data(), true))
+    if (Storage->OpenSubKey(Keys[Idx], true))
     {
       for (int32_t Index = 0; Index < FBookmarkLists->GetCount(); ++Index)
       {
@@ -244,9 +246,9 @@ void TBookmarks::ModifyAll(bool Modify)
   }
 }
 
-TBookmarkList * TBookmarks::GetBookmarks(const UnicodeString & AIndex)
+TBookmarkList * TBookmarks::GetBookmarks(const UnicodeString & AIndex) const
 {
-  int32_t Index = FBookmarkLists->IndexOf(AIndex);
+  const int32_t Index = FBookmarkLists->IndexOf(AIndex);
   if (Index >= 0)
   {
     return FBookmarkLists->GetAs<TBookmarkList>(Index);
@@ -256,7 +258,7 @@ TBookmarkList * TBookmarks::GetBookmarks(const UnicodeString & AIndex)
 
 void TBookmarks::SetBookmarks(const UnicodeString & AIndex, const TBookmarkList * Value)
 {
-  int32_t Index = FBookmarkLists->IndexOf(AIndex);
+  const int32_t Index = FBookmarkLists->IndexOf(AIndex);
   if (Index >= 0)
   {
 #if defined(__BORLANDC__)
@@ -279,7 +281,7 @@ TBookmarkList * TBookmarks::GetSharedBookmarks()
   return GetBookmarks(FSharedKey);
 }
 
-void TBookmarks::SetSharedBookmarks(TBookmarkList * Value)
+void TBookmarks::SetSharedBookmarks(const TBookmarkList * Value)
 {
   SetBookmarks(FSharedKey, Value);
 }
@@ -325,7 +327,7 @@ void TBookmarkList::Assign(const TPersistent * Source)
   TBookmarkList * SourceList;
   SourceList = dynamic_cast<TBookmarkList *>(Source);
 #endif // defined(__BORLANDC__)
-  const TBookmarkList * SourceList = rtti::dyn_cast_or_null<TBookmarkList>(Source);
+  const TBookmarkList * SourceList = nb::dyn_cast_or_null<TBookmarkList>(Source);
   if (SourceList)
   {
     Clear();
@@ -513,7 +515,7 @@ void TBookmark::Assign(const TPersistent * Source)
   TBookmark * SourceBookmark;
   SourceBookmark = dynamic_cast<TBookmark *>(Source);
 #endif // defined(__BORLANDC__)
-  const TBookmark * SourceBookmark = rtti::dyn_cast_or_null<TBookmark>(Source);
+  const TBookmark * SourceBookmark = nb::dyn_cast_or_null<TBookmark>(Source);
   if (SourceBookmark)
   {
     SetName(SourceBookmark->GetName());

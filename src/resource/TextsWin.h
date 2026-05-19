@@ -91,6 +91,9 @@
 #define JUMPLIST_ERROR          6210
 #define TOO_MANY_PARAMS_ERROR   6211
 #define UPDATE_MISSING_ADDRESS3 6212
+#define COPYID_IDETITY_MISSING  6213
+#define TAG_NOT_UNIQUE          6214
+#define TAG_INVALID_CHAR        6215
 
 #define WIN_CONFIRMATION_STRINGS 6300
 #define CONFIRM_OVERWRITE_SESSION 6301
@@ -245,7 +248,7 @@
 #define COPY_PARAM_PRESET_HEADER 6532
 #define QUEUE_DONE              6533
 #define MASTER_PASSWORD_RECRYPT_ERRORS 6534
-#define REGISTERED_APP_DESC4    6535
+#define REGISTERED_APP_DESC5    6535
 #define MESSAGE_LOADING         6536
 #define NEW_VERSION_CLICK       6537
 #define DIRECTORY_READING_AND_RESOLVING_PROGRESS 6538
@@ -312,6 +315,7 @@
 #define UPDATE_CURRENT          6599
 #define PATTERNS_HINT_K         6600
 #define PATTERNS_HINT_BACKSLASH 6601
+#define USAGE_COPYID            6602
 
 // #define WIN_FORMS_STRINGS       6600
 #define COPY_FILE               6605
@@ -674,6 +678,8 @@
 #define KEX_NAME_RSA            7078
 #define KEX_NAME_ECDH           7079
 #define KEX_NAME_NTRU_HYBRID    7080
+#define KEX_NAME_MLKEM_25519_HYBRID 7081
+#define KEX_NAME_MLKEM_NIST_HYBRID 7082
 #define LOGIN_KEY_WITH_CERTIFICATE 7090
 #define CERTIFICATE_ADDED       7091
 #define SSH_HOST_CA_EDIT        7092
@@ -695,6 +701,10 @@
 #define INC_SEARCH_TYPE         7208
 #define SEARCH_EDIT             7209
 #define SEARCH_NO_RESULTS       7210
+#define TAG_EDIT                7211
+#define TAG_ADD                 7212
+#define TAG_KEY                 7213
+#define TAG_VALUE               7214
 
 // 2xxx is reserved for TextsFileZilla.h
 
@@ -721,6 +731,18 @@
 #define STORE_URL               7415
 #define ABOUT_STORE_URL         7416
 #define STORE_GET_IMG_URL       7417
+#define MASTER_PASSWORD_LOCKOUT 7418
+#define CONFIG_SECURITY                        7419
+#define SECURITY_MASTER_PASSWORD_GROUP         7420
+#define SECURITY_USE_MASTER_PASSWORD           7421
+#define SECURITY_CHANGE_MASTER_PASSWORD        7422
+#define SECURITY_SESSION_PASSWORD_GROUP        7423
+#define SECURITY_REMEMBER_PASSWORD             7424
+#define SECURITY_SSH_HOST_CA_GROUP             7425
+#define SECURITY_SSH_HOST_CA_FROM_PUTTY       7426
+#define SECURITY_SSH_HOST_CA_ADD_BTN           7427
+#define SECURITY_SSH_HOST_CA_EDIT_BTN          7428
+#define SECURITY_SSH_HOST_CA_REMOVE_BTN        7429
 
 #define EXTENSION_STRINGS       7500
 

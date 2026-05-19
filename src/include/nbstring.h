@@ -442,19 +442,19 @@ public:
   static int __stdcall GetBaseTypeLength(LPCWSTR pszSource)
   {
     // Returns required buffer length in XCHARs
-    return ::WideCharToMultiByte(Langpack_GetDefaultCodePage(), 0, pszSource, -1, nullptr, 0, nullptr, nullptr) - 1;
+    return pszSource ? ::WideCharToMultiByte(Langpack_GetDefaultCodePage(), 0, pszSource, -1, nullptr, 0, nullptr, nullptr) - 1 : 0;
   }
 
   static int __stdcall GetBaseTypeLength(LPCWSTR pszSource, int nLength)
   {
     // Returns required buffer length in XCHARs
-    return ::WideCharToMultiByte(Langpack_GetDefaultCodePage(), 0, pszSource, nLength, nullptr, 0, nullptr, nullptr);
+    return pszSource ? ::WideCharToMultiByte(Langpack_GetDefaultCodePage(), 0, pszSource, nLength, nullptr, 0, nullptr, nullptr) : 0;
   }
 
   static int __stdcall GetBaseTypeLength(LPCWSTR pszSource, int nLength, int CodePage)
   {
     // Returns required buffer length in XCHARs
-    return ::WideCharToMultiByte(CodePage, 0, pszSource, nLength, nullptr, 0, nullptr, nullptr);
+    return pszSource ? ::WideCharToMultiByte(CodePage, 0, pszSource, nLength, nullptr, 0, nullptr, nullptr) : 0;
   }
 
   static void __stdcall ConvertToBaseType(LPSTR pszDest, int nDestLength, LPCSTR pszSrc, int nSrcLength = -1)

@@ -3,7 +3,6 @@
 
 #include "FileZillaIntf.h"
 #include "FileZillaIntern.h"
-
 #include "FzApiStructures.h"
 #include "FileZillaApi.h"
 #include "structures.h"
@@ -14,7 +13,9 @@ static HMODULE winsock2_module = nullptr;
 static HMODULE wship6_module = nullptr;
 #endif // NO_IPV6
 
-// #pragma package(smart_init)
+#if defined(__BORLANDC__)
+#pragma package(smart_init)
+#endif // defined(__BORLANDC__)
 
 t_getaddrinfo p_getaddrinfo{nullptr};
 t_freeaddrinfo p_freeaddrinfo{nullptr};
