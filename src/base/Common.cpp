@@ -1134,7 +1134,7 @@ UnicodeString RemoveEmptyLines(const UnicodeString & S)
 bool IsNumber(const UnicodeString & Str)
 {
   bool Result = (Str.Length() > 0);
-  for (int32_t Index = 1; (Index < Str.Length()) && Result; Index++)
+  for (int32_t Index = 1; (Index <= Str.Length()) && Result; Index++)
   {
     const wchar_t C = Str[Index];
     if ((C < L'0') || (C > L'9'))
