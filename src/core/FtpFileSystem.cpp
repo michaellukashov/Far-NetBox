@@ -2254,8 +2254,9 @@ void TFTPFileSystem::DoReadDirectory(TRemoteFileList * AFileList)
 
   FBytesAvailable = -1;
   AFileList->Reset();
-  // FZAPI does not list parent directory, add it
   AFileList->AddFile(new TRemoteParentDirectory(FTerminal));
+
+  FLastReadDirectoryProgress = 0;
 
   if (FTerminal->GetConfiguration()->GetActualLogProtocol() >= 2)
   {
@@ -2507,16 +2508,20 @@ void TFTPFileSystem::ReadDirectory(TRemoteFileList * AFileList)
   const int32_t ExtPos = LastComponent.LastDelimiter(L".");
   if (ExtPos > 0 && !Directory.IsEmpty() && (Directory[Directory.Length()] != L'/'))
   {
-    const UnicodeString Ext = LastComponent.SubString(ExtPos + 1);
-    for (const auto & FileExt : s_FileExts)
+    // Ensure extension position is within string bounds (Issue #518)
+    if (ExtPos < LastComponent.Length())
     {
-      if (SameText(Ext, FileExt))
+      const UnicodeString Ext = LastComponent.SubString(ExtPos + 1);
+      for (const auto & FileExt : s_FileExts)
       {
-        if (FTerminal->GetConfiguration()->GetActualLogProtocol() >= 1)
+        if (SameText(Ext, FileExt))
         {
-          FTerminal->LogEvent(FORMAT("FTP guard: ReadDirectory called on path %s that looks like a file, skipping listing", Directory.c_str()));
+          if (FTerminal->GetConfiguration()->GetActualLogProtocol() >= 1)
+          {
+            FTerminal->LogEvent(FORMAT("FTP guard: ReadDirectory called on path %s that looks like a file, skipping listing", Directory.c_str()));
+          }
+          return;
         }
-        return;
       }
     }
   }
@@ -4766,13 +4771,17 @@ bool TFTPFileSystem::HandleListData(const wchar_t * Path,
           const int32_t DotPos = Name.LastDelimiter(L".");
           if (DotPos > 0)
           {
-            const UnicodeString Ext = Name.SubString(DotPos + 1);
-            for (const auto & FileExt : s_FileExts)
+            // Ensure dot position is within string bounds (Issue #518)
+            if (DotPos < Name.Length())
             {
-              if (SameText(Ext, FileExt))
+              const UnicodeString Ext = Name.SubString(DotPos + 1);
+              for (const auto & FileExt : s_FileExts)
               {
-                ForceFile = true;
-                break;
+                if (SameText(Ext, FileExt))
+                {
+                  ForceFile = true;
+                  break;
+                }
               }
             }
           }
