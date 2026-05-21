@@ -3652,6 +3652,18 @@ void TWinSCPFileSystem::Disconnect()
     }
     SaveSession();
   }
+  // Terminate keepalive thread with bounded wait to prevent deadlock.
+  // TKeepAliveThread::Execute() calls PostMainThreadSynchro which invokes
+  // FarAdvControl(ACTL_SYNCHRO) — a synchronous cross-thread call that blocks
+  // until the main thread processes the synchro event. If the main thread is
+  // simultaneously waiting for the keepalive thread in WaitFor(INFINITE), both
+  // threads deadlock. SignalStop + bounded WaitFor breaks the circular wait:
+  // after SignalStop sets FFinished=true, ~TSimpleThread skips its own WaitFor.
+  if (FKeepaliveThread)
+  {
+    FKeepaliveThread->SignalStop();
+    FKeepaliveThread->WaitFor(500);
+  }
   SAFE_DESTROY(FKeepaliveThread);
   TINYLOG_DEBUG(g_tinylog) << TLogContext::Format()
       << " Keepalive thread destroyed";

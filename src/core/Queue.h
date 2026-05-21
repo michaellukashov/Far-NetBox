@@ -18,7 +18,7 @@ public:
   void InitSimpleThread(const UnicodeString & Name);
 
   virtual void Start();
-  void WaitFor(DWORD Milliseconds = INFINITE) const;
+  void WaitFor(DWORD Milliseconds = 500) const;
   virtual void Terminate() {}
   virtual void Close();
   void SignalStop();
