@@ -18,7 +18,7 @@
 #include <WinSock2.h>
 #endif
 #include <ws2ipdef.h>
-#include <ws2tcpip.h>
+#include <WS2tcpip.h>
 #ifndef SIO_IDEAL_SEND_BACKLOG_QUERY
 #define SIO_IDEAL_SEND_BACKLOG_QUERY   _IOR('t', 123, ULONG)
 #define SIO_IDEAL_SEND_BACKLOG_CHANGE   _IO('t', 122)
