@@ -74,7 +74,7 @@ static UnicodeString GetDbgPath(const char * Env) noexcept
         Str = Home;
       else
       {
-        const char * Temp = getenv("TEMP");
+        const char * Temp = getenv("TEMP"); // NOSONAR(S5443) - Debug-only fallback for home directory resolution
         if (Temp)
           Str = Temp;
       }
@@ -102,7 +102,7 @@ TWinSCPPlugin::TWinSCPPlugin(HINSTANCE HInst) noexcept :
   GetGlobals()->SetupDbgHandles(DbgFileName);
   // setup tinylog
   g_tinylog->level(tinylog::Utils::LEVEL_TRACE); // TODO: read from config file
-  FILE * LogFile = base::LocalOpenFileForWriting("%TEMP%/netbox-dbglog.txt"); // TODO: read from config file
+  FILE * LogFile = base::LocalOpenFileForWriting("%TEMP%/netbox-dbglog.txt"); // NOSONAR(S5443) - Debug-only log, never enabled in release builds
   if (LogFile)
   {
     g_tinylog->file(LogFile);

@@ -4607,7 +4607,7 @@ bool TFTPFileSystem::HandleAsyncRequestNeedPass(
     if (FCertificate != nullptr)
     {
       FTerminal->LogEvent("Server asked for password, but we are using certificate, and no password was specified upfront, using fake password");
-      Password = "USINGCERT";
+      Password = "USINGCERT"; // NOSONAR(S2068) - Sentinel value for certificate-based auth, not a real password
       RequestResult = TFileZillaIntf::REPLY_OK;
     }
     else

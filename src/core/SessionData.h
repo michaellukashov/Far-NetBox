@@ -92,7 +92,7 @@ constexpr const TGssLib DefaultGssLibList[GSSLIB_COUNT] =
 constexpr const wchar_t * FSProtocolNames[FSPROTOCOL_COUNT] =
   { L"SCP", L"SFTP (SCP)", L"SFTP", L"", L"", L"FTP", L"WebDAV", L"S3" };
 constexpr const wchar_t * AnonymousUserName = L"anonymous";
-constexpr const wchar_t * AnonymousPassword = L"anonymous@example.com";
+constexpr const wchar_t * AnonymousPassword = L"anonymous@example.com"; // NOSONAR(S2068) - Standard RFC anonymous FTP password
 constexpr const int32_t SshPortNumber = 22;
 constexpr const int32_t FtpPortNumber = 21;
 constexpr const int32_t FtpsImplicitPortNumber = 990;

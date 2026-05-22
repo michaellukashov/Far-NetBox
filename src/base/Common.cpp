@@ -4540,7 +4540,7 @@ void CheckCertificate(const UnicodeString & Path)
 }
 
 #if defined(__BORLANDC__)
-const UnicodeString HttpProtocol(L"http");
+const UnicodeString HttpProtocol(L"http"); // NOSONAR(S5332) - String constant for URL protocol identification only, not for network connections
 const UnicodeString HttpsProtocol(L"https");
 const UnicodeString ProtocolSeparator(L"://");
 #endif // defined(__BORLANDC__)
