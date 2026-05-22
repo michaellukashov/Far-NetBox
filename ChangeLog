@@ -1,6 +1,13 @@
 # for this file format description,
 # see https://github.com/olivierlacan/keep-a-changelog
 
+## [26.05.2.611] - 2026-05-22
+
+### Fixes
+
+* Fix plugin hang when navigating to parent directory with Enter on ".." (#518) https://github.com/michaellukashov/Far-NetBox/issues/518
+
+
 ## [26.05.1.610] - 2026-05-17
 
 ### Fixes
