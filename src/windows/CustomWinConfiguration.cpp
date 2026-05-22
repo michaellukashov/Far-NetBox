@@ -47,9 +47,16 @@ TCustomWinConfiguration::TCustomWinConfiguration():
 
 TCustomWinConfiguration::~TCustomWinConfiguration()
 {
-  ClearHistory();
-  delete FHistory;
-  delete FEmptyHistory;
+  try
+  {
+    ClearHistory();
+    delete FHistory;
+    delete FEmptyHistory;
+  }
+  catch (...)
+  {
+    // suppress exceptions in destructor to prevent std::terminate
+  }
 }
 
 void TCustomWinConfiguration::ClearHistory()

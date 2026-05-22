@@ -431,7 +431,7 @@ protected:
       case laChecksum: return L"checksum";
       case laCwd: return L"cwd";
       case laDifference: return L"difference";
-      DebugFail();
+      default:
       return L"";
     }
   }

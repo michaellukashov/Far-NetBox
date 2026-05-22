@@ -1924,8 +1924,9 @@ void TQueueItem::SetProgress(
 
 void TQueueItem::GetData(TQueueItemProxy * Proxy) const
 {
+  if (!Proxy)
+    return;
   const TGuard Guard(FSection);
-
   DebugAssert(Proxy->FProgressData != nullptr);
   if (FProgressData != nullptr)
   {

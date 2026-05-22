@@ -391,12 +391,10 @@ void TBookmarkList::MoveTo(const TBookmark * ToBookmark,
 
 void TBookmarkList::Insert(int32_t Index, TBookmark * Bookmark)
 {
-  DebugAssert(Bookmark);
-  DebugAssert(!Bookmark->FOwner);
-  DebugAssert(!Bookmark->GetName().IsEmpty());
-
   if (!Bookmark)
     return;
+  DebugAssert(!Bookmark->FOwner);
+  DebugAssert(!Bookmark->GetName().IsEmpty());
   FModified = true;
   Bookmark->FOwner = this;
   if (FBookmarks->IndexOf(Bookmark->GetKey()) >= 0)

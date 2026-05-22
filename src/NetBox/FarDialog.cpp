@@ -2367,6 +2367,8 @@ void TFarList::SetCurPos(int32_t Position, int32_t TopIndex)
   DebugAssert(DialogItem != nullptr);
   const TFarDialog * Dlg = DialogItem->GetDialog();
   DebugAssert(Dlg);
+  if (!Dlg)
+    return;
   DebugAssert(Dlg->GetHandle());
   DebugUsedParam(Dlg);
   FarListPos ListPos{};

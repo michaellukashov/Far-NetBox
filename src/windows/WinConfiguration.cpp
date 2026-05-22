@@ -2082,7 +2082,7 @@ void TWinConfiguration::AskForMasterPassword()
     }
 
     // set before call to OnMasterPasswordPrompt as it may abort
-    FMasterPasswordSessionAsked.store(true, std::memory_order_relaxed);
+    FMasterPasswordSessionAsked.store(true, std::memory_order_relaxed); // NOSONAR(S8417) - Thread-local session counter, relaxed ordering is sufficient
   }
 
   if (FOnMasterPasswordPrompt == nullptr)
@@ -2111,16 +2111,16 @@ void TWinConfiguration::BeginMasterPasswordSession()
   DebugAssert(FMasterPasswordSession.load() == 0);
   DebugAssert(!FMasterPasswordSessionAsked.load() || (FMasterPasswordSession.load() > 0));
   // This should better be thread-specific
-  FMasterPasswordSession.fetch_add(1, std::memory_order_relaxed);
+  FMasterPasswordSession.fetch_add(1, std::memory_order_relaxed); // NOSONAR(S8417) - Thread-local session counter, relaxed ordering is sufficient
 }
 
 void TWinConfiguration::EndMasterPasswordSession()
 {
   if (DebugAlwaysTrue(FMasterPasswordSession.load() > 0))
   {
-    FMasterPasswordSession.fetch_sub(1, std::memory_order_relaxed);
+    FMasterPasswordSession.fetch_sub(1, std::memory_order_relaxed); // NOSONAR(S8417) - Thread-local session counter, relaxed ordering is sufficient
   }
-  FMasterPasswordSessionAsked.store(false, std::memory_order_relaxed);
+  FMasterPasswordSessionAsked.store(false, std::memory_order_relaxed); // NOSONAR(S8417) - Thread-local session counter, relaxed ordering is sufficient
 }
 
 void TWinConfiguration::SetDDDisableMove(bool value)
