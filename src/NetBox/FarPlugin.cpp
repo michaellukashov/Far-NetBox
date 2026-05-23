@@ -262,8 +262,11 @@ void TCustomFarPlugin::GetPluginInfo(struct PluginInfo * Info)
     } } while(0)
 
     COMPOSESTRINGARRAY(DiskMenu);
+    DiskMenu.SetOwnsObjects(false);
     COMPOSESTRINGARRAY(PluginMenu);
+    PluginMenu.SetOwnsObjects(false);
     COMPOSESTRINGARRAY(PluginConfig);
+    PluginConfig.SetOwnsObjects(false);
 
 #undef COMPOSESTRINGARRAY
     UnicodeString CommandPrefix;
