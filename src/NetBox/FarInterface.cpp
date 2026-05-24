@@ -9,6 +9,7 @@
 #include "WinSCPPlugin.h"
 #include "FarDialog.h"
 #include "FarInterface.h"
+#include <process.h>
 
 TConfiguration * CreateConfiguration()
 {
@@ -64,11 +65,13 @@ HANDLE BeginThread(void * SecurityAttributes, DWORD StackSize,
   void * Parameter, DWORD CreationFlags,
   DWORD & ThreadId)
 {
-  const HANDLE Result = ::CreateThread(static_cast<LPSECURITY_ATTRIBUTES>(SecurityAttributes),
-    nb::ToSizeT(StackSize),
-    static_cast<LPTHREAD_START_ROUTINE>(&threadstartroutine),
+  const HANDLE Result = reinterpret_cast<HANDLE>(::_beginthreadex(
+    static_cast<LPSECURITY_ATTRIBUTES>(SecurityAttributes),
+    static_cast<unsigned int>(StackSize),
+    reinterpret_cast<_beginthreadex_proc_type>(&threadstartroutine),
     Parameter,
-    CreationFlags, &ThreadId);
+    CreationFlags,
+    reinterpret_cast<unsigned int *>(&ThreadId)));
   return Result;
 }
 

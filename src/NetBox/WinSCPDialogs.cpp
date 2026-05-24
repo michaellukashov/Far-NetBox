@@ -30,7 +30,6 @@
 #include "plugin_version.hpp"
 #include "resource.h"
 #include <System.IOUtils.hpp>
-#include <commdlg.h>
 #include <S3FileSystem.h>
 #include <Sysutils.hpp>
 
@@ -4978,6 +4977,7 @@ void TSessionDialog::Change()
   if (GetHandle() && !ChangesLocked())
   {
     bool DoChange = false;
+    bool ProtocolChanged = false;
     if (GetProxyMethodCombo()->GetSetChanged(false))
     {
       FProxyComboIndex = GetProxyMethodCombo()->GetItemIndex();
@@ -4987,6 +4987,7 @@ void TSessionDialog::Change()
     {
       FTransferProtocolIndex = NewProtocolIndex;
       DoChange = true;
+      ProtocolChanged = true;
     }
     const int32_t NewEncryptionIndex = FtpEncryptionCombo->GetItemIndex();
     if (FtpEncryptionCombo->GetSetChanged(false) && NewEncryptionIndex != FFtpEncryptionComboIndex)
@@ -4994,7 +4995,7 @@ void TSessionDialog::Change()
       FFtpEncryptionComboIndex = NewEncryptionIndex;
       DoChange = true;
     }
-    if (DoChange)
+    if (ProtocolChanged)
     {
       TransferProtocolComboChange();
     }
@@ -5023,7 +5024,7 @@ static void AdjustRemoteDir(UnicodeString & HostName, TFarEdit * PortNumberEdit,
   if (P > 0)
   {
     Dir = HostName.SubString(P, HostName.Length() - P + 1);
-    const int32_t P2 = Dir.Pos(L':');
+    const int32_t P2 = Dir.RPos(L':');
     if (P2 > 0)
     {
       const UnicodeString Port = Dir.SubString(P2 + 1, Dir.Length() - P2);
@@ -10580,7 +10581,7 @@ protected:
   virtual intptr_t DialogProc(intptr_t Msg, intptr_t Param1, void * Param2) override;
   virtual bool CloseQuery() override;
   virtual bool Key(TFarDialogItem * Item, intptr_t KeyCode) override;
-  virtual void Idle() override;
+  virtual void Idle(TObject * Sender, void * Data) override;
   void UpdateProgressDisplay();
   void OnIdle(TObject * Sender, void * Data);
   TCopyParamType GetCopyParams() const;
@@ -11109,9 +11110,9 @@ void TSynchronizeDialog::UpdateControls()
   if (ProgressEtaText) ProgressEtaText->SetVisible(ShowProgress);
 }
 
-void TSynchronizeDialog::Idle()
+void TSynchronizeDialog::Idle(TObject * Sender, void * Data)
 {
-  TFarDialog::Idle();
+  TFarDialog::Idle(Sender, Data);
 
   if (GetFarPlugin())
   {
@@ -11291,7 +11292,7 @@ public:
 protected:
   virtual const UUID * GetDialogGuid() const override { return &QueueDialogGuid; }
   virtual void Change() override;
-  virtual void Idle() override;
+  virtual void Idle(TObject * Sender, void * Data) override;
   bool UpdateQueue();
   void LoadQueue();
   void RefreshQueue();
@@ -11539,9 +11540,9 @@ void TQueueDialog::UpdateControls()
     (QueueItem->GetIndex() < FStatus->GetCount() - 1));
 }
 
-void TQueueDialog::Idle()
+void TQueueDialog::Idle(TObject * Sender, void * Data)
 {
-  TFarDialog::Idle();
+  TFarDialog::Idle(Sender, Data);
 
   if (GetFarPlugin())
   {

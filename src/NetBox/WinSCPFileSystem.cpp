@@ -342,7 +342,7 @@ void TWinSCPFileSystem::HandleException(Exception * E, OPERATION_MODES OpMode)
       if (BackgroundOp)
       {
         TINYLOG_WARNING(g_tinylog) << TLogContext::Format()
-            << "HandleException: suppressing ClosePanel for background op, EFatal=" << E->Message;
+            << "HandleException: suppressing ClosePanel for background op, EFatal=" << UTF8String(E->Message).c_str();
       }
     }
   }
@@ -449,13 +449,22 @@ void TWinSCPFileSystem::GetOpenPanelInfoEx(OPENPANELINFO_FLAGS & Flags,
       TINYLOG_WARNING(g_tinylog) << TLogContext::Format()
           << "GetOpenPanelInfoEx: FTerminal is null, returning safe defaults";
     }
+    else if (FInGetOpenPanelInfo)
+    {
+      // Re-entrancy guard: error dialog during GetOpenPanelInfo triggers a
+      // panel repaint which calls GetOpenPanelInfo again. Use cached directory
+      // to prevent infinite recursion -> stack overflow.
+      CurDir = FLastPath;
+    }
     else
     {
+      FInGetOpenPanelInfo = true;
+      SCOPE_EXIT { FInGetOpenPanelInfo = false; };
       // When slash is added to the end of path, windows style paths
       // (vandyke: c:/windows/system) are displayed correctly on command-line, but
       // leaved subdirectory is not focused, when entering parent directory.
       HostFile = GetSessionData()->GetHostName(); // GenerateSessionUrl(sufHostKey); // GetSessionData()->GetSessionName();
-      CurDir = FTerminal->GetCurrentDirectory();
+      CurDir = base::ToUnixPath(FTerminal->GetCurrentDirectory());
       const UnicodeString FolderName = GetSessionData()->GetFolderName();
       const UnicodeString SessionName = GetSessionData()->GetLocalName();
       AFormat = FORMAT("netbox:%s", SessionName);
@@ -809,6 +818,24 @@ bool TWinSCPFileSystem::ProcessPanelEventEx(intptr_t Event, void * Param)
     }
     else if (Event == FE_IDLE)
     {
+      // Skip idle processing during file operation cancellation to prevent
+      // re-entrant exception throws during stack unwinding -> stack overflow.
+      // FInCancelDialog covers the dialog phase; MainOperationProgress->Cancel
+      // covers the post-dialog unwinding phase after SetCancel() but before
+      // EAbort propagation completes.
+      if (FInCancelDialog)
+        return false;
+
+      if (FTerminal != nullptr)
+      {
+        const TFileOperationProgressType * MainProg = FTerminal->GetOperationProgress();
+        if ((MainProg != nullptr) && (MainProg->GetCancel() >= csCancel))
+          return false;
+        // FE_IDLE guard: clear idle pause now that the cancellation crisis is over
+        if (GetPlugin()->IsIdlePaused())
+          GetPlugin()->SetIdlePaused(false);
+      }
+
       // FAR WORKAROUND
       // Control(FCTL_CLOSEPLUGIN) does not seem to close plugin when called from
       // ProcessPanelEvent(FE_IDLE). So if TTerminal::Idle() causes session to close
@@ -2484,7 +2511,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const UnicodeString & ADir, OPERATION_MOD
   }
   if ((OpMode & OPM_FIND) && FSavedFindFolder.IsEmpty() && FTerminal)
   {
-    FSavedFindFolder = FTerminal->GetCurrentDirectory();
+    FSavedFindFolder = base::ToUnixPath(FTerminal->GetCurrentDirectory());
   }
 
   if (IsSessionList())
@@ -2503,7 +2530,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const UnicodeString & ADir, OPERATION_MOD
     if (FTerminal == nullptr)
     {
       TINYLOG_WARNING(g_tinylog) << TLogContext::Format()
-          << "SetDirectoryEx: FTerminal is null, rejecting dir=" << ADir;
+          << "SetDirectoryEx: FTerminal is null, rejecting dir=" << UTF8String(ADir).c_str();
       return false;
     }
     const UnicodeString PrevPath = FTerminal->GetCurrentDirectory();
@@ -2826,7 +2853,11 @@ int32_t TWinSCPFileSystem::GetFilesEx(TObjectList * PanelItems, bool Move,
       if (FFileList->GetCount() > 0)
       {
         // Check if destination is local path (not remote)
-        if (!DestPath.IsEmpty() &&
+        const UnicodeString SourcePath = GetCurrentDirectory();
+        const bool IsLocalSource =
+          (SourcePath.Length() >= 2 && SourcePath[2] == L':') ||
+          (SourcePath.Length() >= 2 && SourcePath[1] == L'\\' && SourcePath[2] == L'\\');
+        if (!DestPath.IsEmpty() && IsLocalSource &&
             ((DestPath[1] == L':' && (DestPath[2] == L'\\' || DestPath[2] == L'/')) ||
              (DestPath[1] == L'\\' && DestPath[2] == L'\\')))
         {
@@ -4462,10 +4493,12 @@ void TWinSCPFileSystem::CancelConfiguration(TFileOperationProgressType & Progres
     // Flush console buffer before showing dialog to prevent Esc key races
     GetWinSCPPlugin()->FlushEscBuffer();
     FInCancelDialog = true;
+    GetWinSCPPlugin()->SetIdlePaused(true);
     SCOPE_EXIT
     {
       FInCancelDialog = false;
       ProgressData.Resume();
+      GetWinSCPPlugin()->SetIdlePaused(false);
     };
     TCancelStatus ACancel;
     uintptr_t Result;
@@ -4490,12 +4523,14 @@ void TWinSCPFileSystem::CancelConfiguration(TFileOperationProgressType & Progres
       break;
     case qaNo:
       ACancel = csContinue;
+
       break;
     case qaCancel:
       ACancel = csCancel;
       break;
     default:
       ACancel = csContinue;
+
       break;
     }
 

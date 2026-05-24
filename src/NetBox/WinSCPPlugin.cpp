@@ -35,8 +35,13 @@ static LONG WINAPI NetBoxExceptionFilter(PEXCEPTION_POINTERS ExceptionInfo)
 {
   __try
   {
-    (void)ExceptionInfo;
-    OutputDebugStringA("NetBox: Unhandled exception detected, flushing logs...\n");
+    const DWORD Code = ExceptionInfo->ExceptionRecord->ExceptionCode;
+    const ULONG_PTR Addr = (ULONG_PTR)ExceptionInfo->ExceptionRecord->ExceptionAddress;
+    char Buf[256];
+    _snprintf_s(Buf, _TRUNCATE,
+      "NetBox: Unhandled exception 0x%08X at %p, flushing logs...\n",
+      Code, reinterpret_cast<void*>(Addr));
+    OutputDebugStringA(Buf);
 
     // Flush all tinylog instances (session logs, action logs)
     tinylog::TinyLog::EmergencyFlushAll(200);
@@ -90,11 +95,33 @@ static UnicodeString GetDbgPath(const char * Env) noexcept
   return UnicodeString();
 }
 
+#include <crtdbg.h>
+
+static int __cdecl NetBoxCrtReportHook(int reportType, char *message, int *returnValue)
+{
+  (void)returnValue;
+  char buf[1024];
+  const char *prefix = (reportType == _CRT_ASSERT) ? "CRT ASSERT" :
+                       (reportType == _CRT_ERROR) ? "CRT ERROR" : "CRT WARN";
+  _snprintf_s(buf, _TRUNCATE, "NetBox: %s: %s", prefix, message ? message : "(null)");
+  OutputDebugStringA(buf);
+  // Break into debugger if attached; otherwise the process will likely abort
+  if (IsDebuggerPresent())
+  {
+    DebugBreak();
+  }
+  // Return true to indicate we handled the report (prevents dialog in some modes)
+  return TRUE;
+}
+
 TWinSCPPlugin::TWinSCPPlugin(HINSTANCE HInst) noexcept :
   TCustomFarPlugin(OBJECT_CLASS_TWinSCPPlugin, HInst)
 {
   FPrevFilter = SetUnhandledExceptionFilter(&NetBoxExceptionFilter);
   OutputDebugStringA("NetBox: Exception filter installed\n");
+
+  // Install CRT report hook so debug assertions are logged and break into debugger
+  _CrtSetReportHook2(_CRT_RPTHOOK_INSTALL, NetBoxCrtReportHook);
 
 #ifndef NDEBUG
   // setup debug handlers
@@ -127,7 +154,7 @@ TWinSCPPlugin::~TWinSCPPlugin() noexcept
   if (g_tinylog)
   {
     g_tinylog->Close();
-    { tinylog::TinyLog * PObj = g_tinylog; delete PObj; }
+    tinylog::TinyLog::DestroyInstance();
   }
 
   // DEBUG_PRINTF("begin");
