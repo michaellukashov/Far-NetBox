@@ -7,7 +7,6 @@ Far-NetBox is a file transfer plugin for [Far Manager](https://www.farmanager.co
 | Workflow | Build status |
 |----------|-------------|
 | GitHub Actions | [![build](https://github.com/michaellukashov/Far-NetBox/actions/workflows/release.yml/badge.svg)](https://github.com/michaellukashov/Far-NetBox/actions/workflows/release.yml) |
-| AppVeyor | [![Build status](https://ci.appveyor.com/api/projects/status/91lhdjygkenumcmv?svg=true)](https://ci.appveyor.com/project/michaellukashov/far-netbox) |
 
 ## Quick Start
 

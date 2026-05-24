@@ -1,41 +1,51 @@
 # for this file format description,
 # see https://github.com/olivierlacan/keep-a-changelog
 
+## [26.05.3.612] - 2026-05-23
+
+### Fixes
+
+* Complete symlink cycle detection for SFTP directory size calculation (F3) — track resolved real directory path to properly detect cycles like `self -> .` https://github.com/michaellukashov/Far-NetBox/issues/497
+* Normalize path separators in panel items for Windows compatibility — remote file paths with forward slashes prevented opening files from Far Manager search results (Alt+F7) https://github.com/michaellukashov/Far-NetBox/issues/250
+* Restore Windows XP compatibility by adding CRT fixes and updating target to Windows XP SP2/Server 2003 https://github.com/michaellukashov/Far-NetBox/pull/500
+* Properly compile vc_crt_fix.asm with MASM for complete Windows XP CRT compatibility https://github.com/michaellukashov/Far-NetBox/pull/500
+
+
 ## [26.05.2.611] - 2026-05-22
 
 ### Fixes
 
-* Fix plugin hang when navigating to parent directory with Enter on ".." (#518) https://github.com/michaellukashov/Far-NetBox/issues/518
+* Fix plugin hang when navigating to parent directory with Enter on ".." https://github.com/michaellukashov/Far-NetBox/issues/518
 
 
 ## [26.05.1.610] - 2026-05-17
 
 ### Fixes
 
- * Fix version string mismatch in NetBox.rc resource file (#502) https://github.com/michaellukashov/Far-NetBox/pull/502
+ * Fix version string mismatch in NetBox.rc resource file https://github.com/michaellukashov/Far-NetBox/pull/502
  * Fix Alt-F12 folder history not restoring session when no panel was open
  * Fix log file error when opening same session on two panels concurrently
- * Fix crash after SSH chmod 444 on remote directory (#393) https://github.com/michaellukashov/Far-NetBox/issues/393
- * Fix SCP/SFTP/S3 parallel transfer speed limit not applied (#511) https://github.com/michaellukashov/Far-NetBox/issues/511
- * Fix Esc key hang and panel close during SCP transfer cancellation (#511)
- * Fix FTP silent crash on directory listing parse failure (#506) https://github.com/michaellukashov/Far-NetBox/issues/506
- * Fix FTP infinite loop / hang on BusyBox servers with unparsable listings (#513) https://github.com/michaellukashov/Far-NetBox/issues/513
- * Fix FTP directory misidentification and recursive read hang on vsftpd servers (#507) https://github.com/michaellukashov/Far-NetBox/issues/507
- * Fix crash on second file open without directory refresh (#508) https://github.com/michaellukashov/Far-NetBox/issues/508
- * Fix stack overflow when calculating SFTP directory size with cyclic symlinks (#497) https://github.com/michaellukashov/Far-NetBox/issues/497
- * Fix RSA-SHA2 host key cache lookup failures against legacy ssh-rsa cached keys (#388) https://github.com/michaellukashov/Far-NetBox/issues/388
- * Fix idle thread startup crash during Far Manager plugin load (#512) https://github.com/michaellukashov/Far-NetBox/issues/512
- * Fix URL with file path fails to open parent directory and focus file (#505) https://github.com/michaellukashov/Far-NetBox/issues/505
- * Fix S3 bucket access failures: cannot enter bucket, empty directory listings, and upload errors (#514) https://github.com/michaellukashov/Far-NetBox/issues/514, (#510) https://github.com/michaellukashov/Far-NetBox/issues/510
- * Fix F7 directory creation ignoring autocomplete text and creating partial name (#515) https://github.com/michaellukashov/Far-NetBox/issues/515
- * Fix SFTP cannot create remote folder / "Cannot get real path" error (#485) https://github.com/michaellukashov/Far-NetBox/issues/485
- * Fix key exchange dialog size overflow with proxy+tunnel settings (#486) https://github.com/michaellukashov/Far-NetBox/issues/486
- * Fix dialog text labels truncated by off-by-one in bounds calculation (#387) https://github.com/michaellukashov/Far-NetBox/issues/387
- * Fix slow SSH/SCP copy and corrupted files on certain servers (#501) https://github.com/michaellukashov/Far-NetBox/issues/501
- * Fix timestamp milliseconds overflow in DateTimeToTimeStamp causing certificate validation failures (#390) https://github.com/michaellukashov/Far-NetBox/issues/390, PR [#504](https://github.com/michaellukashov/Far-NetBox/pull/504)
- * Fix Daylight Saving Time bug in `ConvertTimestampToUnix()` causing remote timestamps to be 1 hour behind during DST (#391) https://github.com/michaellukashov/Far-NetBox/issues/391
- * Fix SSH private key authentication failure on publickey-only servers (#392) https://github.com/michaellukashov/Far-NetBox/issues/392
- * Session import prompts (#472) https://github.com/michaellukashov/Far-NetBox/issues/472
+ * Fix crash after SSH chmod 444 on remote directory https://github.com/michaellukashov/Far-NetBox/issues/393
+ * Fix SCP/SFTP/S3 parallel transfer speed limit not applied https://github.com/michaellukashov/Far-NetBox/issues/511
+ * Fix Esc key hang and panel close during SCP transfer cancellation
+ * Fix FTP silent crash on directory listing parse failure https://github.com/michaellukashov/Far-NetBox/issues/506
+ * Fix FTP infinite loop / hang on BusyBox servers with unparsable listings https://github.com/michaellukashov/Far-NetBox/issues/513
+ * Fix FTP directory misidentification and recursive read hang on vsftpd servers https://github.com/michaellukashov/Far-NetBox/issues/507
+ * Fix crash on second file open without directory refresh https://github.com/michaellukashov/Far-NetBox/issues/508
+ * Fix stack overflow when calculating SFTP directory size with cyclic symlinks https://github.com/michaellukashov/Far-NetBox/issues/497
+ * Fix RSA-SHA2 host key cache lookup failures against legacy ssh-rsa cached keys https://github.com/michaellukashov/Far-NetBox/issues/388
+ * Fix idle thread startup crash during Far Manager plugin load https://github.com/michaellukashov/Far-NetBox/issues/512
+ * Fix URL with file path fails to open parent directory and focus file https://github.com/michaellukashov/Far-NetBox/issues/505
+ * Fix S3 bucket access failures: cannot enter bucket, empty directory listings, and upload errors https://github.com/michaellukashov/Far-NetBox/issues/514, (#510) https://github.com/michaellukashov/Far-NetBox/issues/510
+ * Fix F7 directory creation ignoring autocomplete text and creating partial name https://github.com/michaellukashov/Far-NetBox/issues/515
+ * Fix SFTP cannot create remote folder / "Cannot get real path" error https://github.com/michaellukashov/Far-NetBox/issues/485
+ * Fix key exchange dialog size overflow with proxy+tunnel settings https://github.com/michaellukashov/Far-NetBox/issues/486
+ * Fix dialog text labels truncated by off-by-one in bounds calculation https://github.com/michaellukashov/Far-NetBox/issues/387
+ * Fix slow SSH/SCP copy and corrupted files on certain servers https://github.com/michaellukashov/Far-NetBox/issues/501
+ * Fix timestamp milliseconds overflow in DateTimeToTimeStamp causing certificate validation failures https://github.com/michaellukashov/Far-NetBox/issues/390, PR [#504](https://github.com/michaellukashov/Far-NetBox/pull/504)
+ * Fix Daylight Saving Time bug in `ConvertTimestampToUnix()` causing remote timestamps to be 1 hour behind during DST https://github.com/michaellukashov/Far-NetBox/issues/391
+ * Fix SSH private key authentication failure on publickey-only servers https://github.com/michaellukashov/Far-NetBox/issues/392
+ * Session import prompts https://github.com/michaellukashov/Far-NetBox/issues/472
 
 ### Dependencies
 
