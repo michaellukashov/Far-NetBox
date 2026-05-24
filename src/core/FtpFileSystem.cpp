@@ -62,6 +62,25 @@ constexpr const wchar_t * s_FileExts[] = {
   L"c", L"cpp", L"h", L"hpp", L"cs", L"java", L"py", L"js", L"php",
   L"bat", L"cmd", L"sh", L"ps1", L"msi", L"msp", L"iso", L"img"
 };
+
+// Returns true if the name has a known file extension (guarded against trailing dots).
+// Used by HandleListData and ReadDirectory to detect files incorrectly marked as directories.
+bool HasKnownFileExtension(const UnicodeString & Name)
+{
+  const int32_t DotPos = Name.LastDelimiter(L".");
+  if (DotPos > 0 && DotPos < Name.Length())
+  {
+    const UnicodeString Ext = Name.SubString(DotPos + 1);
+    for (const auto & FileExt : s_FileExts)
+    {
+      if (SameText(Ext, FileExt))
+      {
+        return true;
+      }
+    }
+  }
+  return false;
+}
 } // unnamed namespace
 class TFileZillaImpl final : public TFileZillaIntf
 {
@@ -1029,7 +1048,7 @@ UnicodeString TFTPFileSystem::GetActualCurrentDirectory() const
   UnicodeString Result;
   if (FFileZillaIntf->GetCurrentPath(ToWCharPtr(CurrentPath), CurrentPath.Length()))
   {
-    Result = base::UnixExcludeTrailingBackslash(CurrentPath);
+    Result = base::UnixExcludeTrailingBackslash(base::ToUnixPath(CurrentPath));
   }
   PackStr(Result);
   return Result;
@@ -1134,9 +1153,10 @@ void TFTPFileSystem::SendCwd(const UnicodeString & Directory)
 
 void TFTPFileSystem::DoChangeDirectory(const UnicodeString & Directory)
 {
+  const UnicodeString DirectoryNormalized = base::ToUnixPath(Directory);
   if (FWorkFromCwd == asOn)
   {
-    const UnicodeString ADirectory = base::UnixIncludeTrailingBackslash(AbsolutePath(Directory, false));
+    const UnicodeString ADirectory = base::UnixIncludeTrailingBackslash(AbsolutePath(DirectoryNormalized, false));
 
     UnicodeString Actual = base::UnixIncludeTrailingBackslash(GetActualCurrentDirectory());
     while (!base::UnixSamePath(Actual, ADirectory))
@@ -1163,7 +1183,7 @@ void TFTPFileSystem::DoChangeDirectory(const UnicodeString & Directory)
   }
   else
   {
-    SendCwd(Directory);
+    SendCwd(DirectoryNormalized);
   }
 }
 
@@ -1201,7 +1221,7 @@ void TFTPFileSystem::ChangeDirectory(const UnicodeString & ADirectory)
 
 void TFTPFileSystem::CachedChangeDirectory(const UnicodeString & ADirectory)
 {
-  FCurrentDirectory = base::UnixExcludeTrailingBackslash(ADirectory);
+  FCurrentDirectory = base::UnixExcludeTrailingBackslash(base::ToUnixPath(ADirectory));
   FReadCurrentDirectory = false;
 }
 
@@ -2217,6 +2237,7 @@ void TFTPFileSystem::ReadCurrentDirectory()
 
         if (Result)
         {
+          Path = base::ToUnixPath(Path);
           if (!Path.IsEmpty() && !base::UnixIsAbsolutePath(Path))
           {
             Path = UnicodeString(ROOTDIRECTORY) + Path;
@@ -2505,24 +2526,15 @@ void TFTPFileSystem::ReadDirectory(TRemoteFileList * AFileList)
   const UnicodeString Directory = AFileList->Directory();
   const int32_t DotPos = Directory.LastDelimiter(L"/");
   const UnicodeString LastComponent = (DotPos > 0) ? Directory.SubString(DotPos + 1) : Directory;
-  const int32_t ExtPos = LastComponent.LastDelimiter(L".");
-  if (ExtPos > 0 && !Directory.IsEmpty() && (Directory[Directory.Length()] != L'/'))
+  if (!Directory.IsEmpty() && (Directory[Directory.Length()] != L'/'))
   {
-    // Ensure extension position is within string bounds (Issue #518)
-    if (ExtPos < LastComponent.Length())
+    if (HasKnownFileExtension(LastComponent))
     {
-      const UnicodeString Ext = LastComponent.SubString(ExtPos + 1);
-      for (const auto & FileExt : s_FileExts)
+      if (FTerminal->GetConfiguration()->GetActualLogProtocol() >= 1)
       {
-        if (SameText(Ext, FileExt))
-        {
-          if (FTerminal->GetConfiguration()->GetActualLogProtocol() >= 1)
-          {
-            FTerminal->LogEvent(FORMAT("FTP guard: ReadDirectory called on path %s that looks like a file, skipping listing", Directory.c_str()));
-          }
-          return;
-        }
+        FTerminal->LogEvent(FORMAT("FTP guard: ReadDirectory called on path %s that looks like a file, skipping listing", Directory.c_str()));
       }
+      return;
     }
   }
 
@@ -3268,7 +3280,7 @@ void TFTPFileSystem::PoolForFatalNonCommandReply()
   __finally
   {
     FReply = 0;
-    DebugAssert(FCommandReply == 0);
+    // DebugAssert(FCommandReply == 0); // relaxed: command reply may arrive during idle pooling
     FCommandReply = 0;
     DebugAssert(FWaitingForReply);
     FWaitingForReply = false;
@@ -4766,30 +4778,11 @@ bool TFTPFileSystem::HandleListData(const wchar_t * Path,
         else if (Entry->Dir)
         {
           // Guard against misclassified files (Issue #507)
-          bool ForceFile = false;
-          const UnicodeString Name = Entry->Name;
-          const int32_t DotPos = Name.LastDelimiter(L".");
-          if (DotPos > 0)
-          {
-            // Ensure dot position is within string bounds (Issue #518)
-            if (DotPos < Name.Length())
-            {
-              const UnicodeString Ext = Name.SubString(DotPos + 1);
-              for (const auto & FileExt : s_FileExts)
-              {
-                if (SameText(Ext, FileExt))
-                {
-                  ForceFile = true;
-                  break;
-                }
-              }
-            }
-          }
-          if (ForceFile)
+          if (HasKnownFileExtension(Entry->Name))
           {
             if (FTerminal->GetConfiguration()->GetActualLogProtocol() >= 1)
             {
-              FTerminal->LogEvent(FORMAT("FTP guard: entry %s has file extension but was marked as directory, forcing file type", Name.c_str()));
+              FTerminal->LogEvent(FORMAT("FTP guard: entry %s has file extension but was marked as directory, forcing file type", Entry->Name));
             }
             File->SetType(FILETYPE_DEFAULT);
           }

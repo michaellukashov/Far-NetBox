@@ -2730,7 +2730,7 @@ int32_t CFtpControlSocket::OpenTransferFile(CFileTransferData * pData)
     str.Format(IDS_ERRORMSG_FILEOPENFAILED,(LPCTSTR)pData->transferfile.localfile);
     str += L"\n";
     str += Error;
-    nb_free(Error);
+    nbcore_free(Error);
     ShowStatus(str,FZ_LOG_ERROR);
     nReplyError = FZ_REPLY_ERROR;
   }
