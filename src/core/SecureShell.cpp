@@ -651,7 +651,7 @@ bool TSecureShell::TryFtp()
           Address.sin_family = AF_INET;
           const int32_t Port = FtpPortNumber;
           Address.sin_port = htons(static_cast<short>(Port));
-          Address.sin_addr.s_addr = reinterpret_cast<sockaddr_in *>(AddrResult->ai_addr)->sin_addr.s_addr;
+          Address.sin_addr.s_addr = static_cast<sockaddr_in *>(static_cast<void *>(AddrResult->ai_addr))->sin_addr.s_addr;
           freeaddrinfo(AddrResult);
 
           HANDLE Event = ::CreateEvent(nullptr, false, false, nullptr);

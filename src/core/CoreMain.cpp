@@ -266,9 +266,13 @@ void CoreLoad()
 }
 void CoreInitialize()
 {
+  DEBUG_PRINTFA("CoreInitialize: new TCriticalSection");
   CoreMainCriticalSection = new TCriticalSection();
+  DEBUG_PRINTFA("CoreInitialize: WinInitialize");
   WinInitialize();
+  DEBUG_PRINTFA("CoreInitialize: Randomize");
   Randomize();
+  DEBUG_PRINTFA("CoreInitialize: CryptographyInitialize");
   CryptographyInitialize();
 
   // we do not expect configuration re-creation
@@ -279,11 +283,16 @@ void CoreInitialize()
   Configuration = CreateConfiguration();
 #endif // defined(__BORLANDC__)
 
+  DEBUG_PRINTFA("CoreInitialize: PuttyInitialize");
   PuttyInitialize();
+  DEBUG_PRINTFA("CoreInitialize: TFileZillaIntf::Initialize");
   TFileZillaIntf::Initialize();
+  DEBUG_PRINTFA("CoreInitialize: NeonInitialize");
   NeonInitialize();
 
+  DEBUG_PRINTFA("CoreInitialize: CoreLoad");
   CoreLoad();
+  DEBUG_PRINTFA("CoreInitialize: complete");
 }
 
 void CoreFinalize()

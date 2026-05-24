@@ -1184,7 +1184,9 @@ void TSessionData::DoSave(THierarchicalStorage * Storage,
 
   Storage->WriteString("Version", ::VersionNumberToStr(::GetCurrentVersionNumber()));
   WRITE_DATA(String, HostName);
-  WRITE_DATA2(Integer, PortNumber);
+  // Always write PortNumber to avoid cross-protocol default port collisions
+  // (e.g., FTP port 22 being treated as default because factory default is SSH 22)
+  Storage->WriteInteger("PortNumber", GetPortNumber());
   if ((PingType == ptOff) && PuttyExport)
   {
     // Deleting would do too
