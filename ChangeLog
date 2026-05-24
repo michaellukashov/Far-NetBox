@@ -1,21 +1,20 @@
 # for this file format description,
 # see https://github.com/olivierlacan/keep-a-changelog
 
-## [26.05.3.612] - 2026-05-23
+## [26.05.3.612] - 2026-05-24
 
 ### Fixes
 
-* Complete symlink cycle detection for SFTP directory size calculation (F3) — track resolved real directory path to properly detect cycles like `self -> .` https://github.com/michaellukashov/Far-NetBox/issues/497
-* Normalize path separators in panel items for Windows compatibility — remote file paths with forward slashes prevented opening files from Far Manager search results (Alt+F7) https://github.com/michaellukashov/Far-NetBox/issues/250
-* Restore Windows XP compatibility by adding CRT fixes and updating target to Windows XP SP2/Server 2003 https://github.com/michaellukashov/Far-NetBox/pull/500
-* Properly compile vc_crt_fix.asm with MASM for complete Windows XP CRT compatibility https://github.com/michaellukashov/Far-NetBox/pull/500
+ * Complete symlink cycle detection for SFTP directory size calculation (F3) — track resolved real directory path to properly detect cycles like `self -> .` https://github.com/michaellukashov/Far-NetBox/issues/497
+ * Normalize path separators in panel items for Windows compatibility — remote file paths with forward slashes prevented opening files from Far Manager search results (Alt+F7) https://github.com/michaellukashov/Far-NetBox/issues/250
+ * Restore Windows XP compatibility by adding CRT fixes and updating target to Windows XP SP2/Server 2003 https://github.com/michaellukashov/Far-NetBox/pull/500
 
 
 ## [26.05.2.611] - 2026-05-22
 
 ### Fixes
 
-* Fix plugin hang when navigating to parent directory with Enter on ".." https://github.com/michaellukashov/Far-NetBox/issues/518
+ * Fix plugin hang when navigating to parent directory with Enter on ".." https://github.com/michaellukashov/Far-NetBox/issues/518
 
 
 ## [26.05.1.610] - 2026-05-17
