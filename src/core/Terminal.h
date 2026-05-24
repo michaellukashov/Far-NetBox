@@ -298,6 +298,7 @@ private:
   bool FRememberedPasswordTried{false};
   bool FRememberedTunnelPasswordTried{false};
   int32_t FNesting{0};
+  bool FCancelling{false};
   UnicodeString FFingerprintScannedSHA256;
   UnicodeString FFingerprintScannedSHA1;
   UnicodeString FFingerprintScannedMD5;
@@ -613,12 +614,12 @@ protected:
   __property TFileOperationProgressType * OperationProgress = { read=FOperationProgress };
   TFileOperationProgressType *& OperationProgress{FOperationProgress};
 
-  const TFileOperationProgressType * GetOperationProgress() const { return FOperationProgress; }
-  TFileOperationProgressType * GetOperationProgress() { return FOperationProgress; }
   void SetOperationProgress(TFileOperationProgressType * AOperationProgress) { FOperationProgress = AOperationProgress; }
   virtual const TTerminal * GetPasswordSource() const { return this; }
 
 public:
+  const TFileOperationProgressType * GetOperationProgress() const { return FOperationProgress; }
+  TFileOperationProgressType * GetOperationProgress() { return FOperationProgress; }
   explicit TTerminal() noexcept : TTerminal(OBJECT_CLASS_TTerminal) {}
   explicit TTerminal(TObjectClassId Kind) noexcept;
   void Init(gsl::not_null<TSessionData *> ASessionData, gsl::not_null<TConfiguration *> AConfiguration, TActionLog * AActionLog = nullptr);
@@ -1010,6 +1011,7 @@ private:
   int64_t Size{0};
   bool Result{true};
   TStringList * VisitedDirs{nullptr};  // For cycle detection in recursive directory traversal
+  UnicodeString RealDirectory;  // Resolved real directory path for cycle detection
 };
 
 #if defined(__BORLANDC__)

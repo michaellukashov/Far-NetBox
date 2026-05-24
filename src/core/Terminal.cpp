@@ -1406,7 +1406,7 @@ void TTerminal::Idle()
   // "receives the information".
   // Never go idle when called from within ::ProcessGUI() call
   // as we may recurse for good, timeouting eventually.
-  if (GetActive() && (FNesting == 0))
+  if (GetActive() && (FNesting == 0) && !FCancelling)
   {
     const TAutoNestingCounter NestingCounter(FNesting);
 
@@ -1437,6 +1437,9 @@ void TTerminal::Idle()
       }
     }
   }
+  // Once the abort completes and main operation clears, release the guard
+  if (FCancelling && (FOperationProgress == nullptr))
+    FCancelling = false;
 }
 
 RawByteString TTerminal::EncryptPassword(const UnicodeString & APassword) const
@@ -4964,6 +4967,11 @@ void TTerminal::DoCalculateFileSize(const UnicodeString & AFileName,
     }
   }
 
+  if (AFile->GetIsDirectory())
+  {
+    AParams->RealDirectory = AFileName;
+  }
+
   const int64_t PrevSize = AParams->Size;
   CalculateFileSize(AFileName, AFile, AParam);
 
@@ -5060,6 +5068,7 @@ void TTerminal::CalculateFileSize(const UnicodeString & AFileName,
               Params->VisitedDirs = CreateSortedStringList();
             }
             Params->VisitedDirs->Add(RealDirectory);
+            Params->RealDirectory = RealDirectory;
 
             // pass in full path so we get it back in file list for AllowTransfer() exclusion
             if (!DoCalculateDirectorySize(AFile->FullFileName, Params))
@@ -5098,6 +5107,11 @@ void TTerminal::CalculateFileSize(const UnicodeString & AFileName,
 bool TTerminal::DoCalculateDirectorySize(const UnicodeString & FileName, TCalculateSizeParams * Params)
 {
   bool Result = false;
+  const UnicodeString PrevRealDirectory = Params->RealDirectory;
+  if (Params->RealDirectory.IsEmpty())
+  {
+    Params->RealDirectory = FileName;
+  }
   if (FLAGSET(Params->Params, csStopOnFirstFile) && (Configuration->ActualLogProtocol >= 1))
   {
     LogEvent(FORMAT("Checking if remote directory \"%s\" is empty", FileName));
@@ -5134,6 +5148,7 @@ bool TTerminal::DoCalculateDirectorySize(const UnicodeString & FileName, TCalcul
     }
   }
 
+  Params->RealDirectory = PrevRealDirectory;
   return Result;
 }
 
@@ -8027,6 +8042,7 @@ bool TTerminal::CopyToRemote(
         OperationProgress.GetCancel() == csCancelTransfer)
     {
       OnceDoneOperation = odoIdle;
+      FCancelling = true;
       throw EAbort("");
     }
     CommandError(&E, MainInstructions(LoadStr(TOREMOTE_COPY_ERROR)));
@@ -8662,6 +8678,7 @@ bool TTerminal::CopyToLocal(
             OperationProgress.GetCancel() == csCancelTransfer)
         {
           OnceDoneOperation = odoIdle;
+          FCancelling = true;
           throw EAbort("");
         }
         CommandError(&E, MainInstructions(LoadStr(TOLOCAL_COPY_ERROR)));
