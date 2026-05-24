@@ -55,7 +55,7 @@ TCustomWinConfiguration::~TCustomWinConfiguration()
   }
   catch (...)
   {
-    // suppress exceptions in destructor to prevent std::terminate
+    DEBUG_PRINTF("TCustomWinConfiguration::~TCustomWinConfiguration: error");
   }
 }
 
