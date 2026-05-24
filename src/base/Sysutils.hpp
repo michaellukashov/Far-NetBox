@@ -65,7 +65,6 @@ enum FileAttributesEnum
 #endif
 #else
 #define DEBUG_PRINTF(format, ...)
-#define DEBUG_PRINTF2(format, ...)
 #define DEBUG_PRINTFA(format, ...)
 #endif
 

@@ -3,6 +3,7 @@
 #include <nbsystem.h>
 
 #include <stdexcept>
+#include <memory>
 #include <limits>
 // #include <stdarg.h>
 #include <cmath>
@@ -855,7 +856,7 @@ public:
   explicit TSafeHandleStream(THandle AHandle) noexcept;
   TSafeHandleStream(gsl::not_null<THandleStream *> Source, bool Own);
   virtual ~TSafeHandleStream() noexcept override;
-  static TSafeHandleStream * CreateFromFile(const UnicodeString & FileName, uint16_t Mode);
+  static std::unique_ptr<TSafeHandleStream> CreateFromFile(const UnicodeString & FileName, uint16_t Mode);
   virtual int64_t Read(void * Buffer, int64_t Count) override;
   virtual int64_t Write(const void * Buffer, int64_t Count) override;
 private:
@@ -1129,6 +1130,7 @@ public:
 
 private:
   void InitPlatformId();
+  static std::ostream & NullStream();
 private:
   std::ofstream dbgstream_;
 };

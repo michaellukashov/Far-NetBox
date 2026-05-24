@@ -1225,10 +1225,12 @@ TSafeHandleStream::TSafeHandleStream(gsl::not_null<THandleStream *> Source, bool
   FSource = Own ? Source.get() : nullptr;
 }
 
-TSafeHandleStream * TSafeHandleStream::CreateFromFile(const UnicodeString & FileName, uint16_t Mode)
+std::unique_ptr<TSafeHandleStream> TSafeHandleStream::CreateFromFile(const UnicodeString & FileName, uint16_t Mode)
 {
-  TFileStream * FileStream = new TFileStream(ApiPath(FileName), Mode);
-  return new TSafeHandleStream(FileStream, true);
+  auto FileStream = std::make_unique<TFileStream>(ApiPath(FileName), Mode);
+  auto Result = std::make_unique<TSafeHandleStream>(gsl::not_null<THandleStream *>(FileStream.get()), true);
+  FileStream.release();
+  return Result;
 }
 
 TSafeHandleStream::~TSafeHandleStream() noexcept
@@ -1943,15 +1945,28 @@ void TGlobals::SetupDbgHandles(const UnicodeString & DbgFileName)
 {
   if (!DbgFileName.IsEmpty() && DbgFileName != "-")
   {
-    /*if (freopen(err.c_str(), "a", stderr))
-    {
-      setvbuf(stderr, NULL, _IONBF, 0);
-    } else
-      perror("freopen stderr");*/
-    dbgstream_.open(DbgFileName.c_str(), std::ios_base::out|std::ios_base::trunc);
-    if (!dbgstream_.bad())
+    dbgstream_.open(DbgFileName.c_str(), std::ios_base::out | std::ios_base::trunc);
+    if (dbgstream_.good())
       IC_CONFIG.output(dbgstream_);
+    else
+      IC_CONFIG.output(NullStream());
   }
+  else
+  {
+    IC_CONFIG.output(NullStream());
+  }
+}
+
+std::ostream & TGlobals::NullStream()
+{
+  struct NullBuf : std::streambuf
+  {
+    int_type overflow(int_type c) override { return c; }
+  };
+  static NullBuf null_buf;
+  static std::ostream null_stream(&null_buf);
+  return null_stream;
+
 }
 
 void TGlobals::InitPlatformId()

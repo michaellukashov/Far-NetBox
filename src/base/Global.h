@@ -187,10 +187,10 @@ UnicodeString GetThreadName(HANDLE ThreadHandle);
 
 // Structured logging macros
 #define LOG_THREAD_START(name) \
-  TINYLOG_INFO(g_tinylog) << TLogContext::Format() << " Thread started: " << UnicodeString((name))
+  TINYLOG_INFO(g_tinylog) << TLogContext::Format() << " Thread started: " << UTF8String(UnicodeString((name))).c_str()
 
 #define LOG_THREAD_STOP(name) \
-  TINYLOG_INFO(g_tinylog) << TLogContext::Format() << " Thread stopped: " << UnicodeString((name))
+  TINYLOG_INFO(g_tinylog) << TLogContext::Format() << " Thread stopped: " << UTF8String(UnicodeString((name))).c_str()
 
 #define LOG_QUEUE_EVENT(event) \
   TINYLOG_DEBUG(g_tinylog) << TLogContext::Format() << " Queue event: " << (event)

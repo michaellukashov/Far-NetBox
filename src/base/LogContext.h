@@ -2,8 +2,8 @@
 
 #include <nbcore.h>
 #include <tinylog/TinyLog.h>
+#include <string>
 #include <UnicodeString.hpp>
-// #include <string>
 // #include <vector>
 
 // Thread-local structured logging context
@@ -22,7 +22,7 @@ public:
   ~TLogContext();
 
   // Format all current context values as "[key1=val1][key2=val2]..."
-  static UnicodeString Format();
+  static std::string Format();
 
 private:
   struct ContextEntry
@@ -31,7 +31,9 @@ private:
     UnicodeString Value;
   };
 
-  thread_local static nb::vector_t<ContextEntry> ContextStack_;
+  // Windows TLS APIs avoid thread_local DLL initialization issues.
+  static DWORD TlsIndex_;
+  static nb::vector_t<ContextEntry> & EnsureStack();
   const wchar_t * Key_{nullptr};
 };
 

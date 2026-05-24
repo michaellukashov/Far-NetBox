@@ -31,6 +31,11 @@ public:
   int32_t Length() const { return static_cast<int32_t>(Data.length()); }
   int32_t GetLength() const { return Length(); }
   bool IsEmpty() const { return Length() == 0; }
+  // Iterator support for range-based for loops
+  const char * begin() const { return Data.c_str(); }
+  const char * end() const { return Data.c_str() + Data.length(); }
+  char * begin() { return const_cast<char *>(Data.c_str()); }
+  char * end() { return const_cast<char *>(Data.c_str()) + Data.length(); }
   char * SetLength(int32_t nLength);
   UTF8String & Delete(int32_t Index, int32_t Count);
   UTF8String & Insert(wchar_t Ch, int32_t Pos);
@@ -105,6 +110,11 @@ public:
   int32_t GetLength() const { return Length(); }
   int32_t GetBytesCount() const { return (Length() + 1) * sizeof(wchar_t); }
   bool IsEmpty() const { return Length() == 0; }
+  // Iterator support for range-based for loops
+  const wchar_t * begin() const { return Data.c_str(); }
+  const wchar_t * end() const { return Data.c_str() + Data.length(); }
+  wchar_t * begin() { return const_cast<wchar_t *>(Data.c_str()); }
+  wchar_t * end() { return const_cast<wchar_t *>(Data.c_str()) + Data.length(); }
   wchar_t * SetLength(int32_t nLength);
   UnicodeString & Delete(int32_t Index, int32_t Count);
   UnicodeString & Clear() { Data.clear(); return *this; }
@@ -246,6 +256,11 @@ public:
   int32_t Length() const { return static_cast<int32_t>(Data.length()); }
   int32_t GetLength() const { return Length(); }
   bool IsEmpty() const { return Length() == 0; }
+  // Iterator support for range-based for loops
+  const char * begin() const { return Data.c_str(); }
+  const char * end() const { return Data.c_str() + Data.length(); }
+  char * begin() { return const_cast<char *>(Data.c_str()); }
+  char * end() { return const_cast<char *>(Data.c_str()) + Data.length(); }
   char * SetLength(int32_t nLength);
   inline AnsiString & Delete(int32_t Index, int32_t Count);
   AnsiString & Clear();
@@ -331,6 +346,11 @@ public:
   int32_t Length() const { return static_cast<int32_t>(Data.length()); }
   int32_t GetLength() const { return Length(); }
   bool IsEmpty() const { return Length() == 0; }
+  // Iterator support for range-based for loops
+  const unsigned char * begin() const { return reinterpret_cast<const unsigned char *>(Data.c_str()); }
+  const unsigned char * end() const { return reinterpret_cast<const unsigned char *>(Data.c_str()) + Data.length(); }
+  unsigned char * begin() { return const_cast<unsigned char *>(reinterpret_cast<const unsigned char *>(Data.c_str())); }
+  unsigned char * end() { return const_cast<unsigned char *>(reinterpret_cast<const unsigned char *>(Data.c_str())) + Data.length(); }
   char * SetLength(int32_t nLength);
   RawByteString & Clear() { SetLength(0); return *this; }
   RawByteString & Delete(int32_t Index, int32_t Count);
