@@ -42,9 +42,13 @@ public:
       {
         if (!IsFinished() && FDialog && FDialog->GetHandle())
         {
-          // Marshal Idle() to the main thread; Far Manager APIs must not be
-          // called from worker threads.
-          FDialog->Synchronize(nb::bind(&TFarDialog::Idle, FDialog.get()));
+          TCustomFarPlugin * Plugin = FDialog->GetFarPlugin();
+          if (Plugin)
+          {
+            Plugin->FSynchroParams.SynchroEvent = nb::bind(&TFarDialog::Idle, FDialog.get(), nullptr);
+            Plugin->FSynchroParams.Sender = FDialog.get();
+            Plugin->FarAdvControl(ACTL_SYNCHRO, 0, &Plugin->FSynchroParams);
+          }
         }
       }
     }
@@ -627,7 +631,7 @@ intptr_t TFarDialog::FailDialogProc(intptr_t Msg, intptr_t Param1, void * Param2
   return Result;
 }
 
-void TFarDialog::Idle()
+void TFarDialog::Idle(TObject * /*Sender*/, void * /*Data*/)
 {
   // nothing
 }
@@ -880,7 +884,7 @@ FarColor TFarDialog::GetSystemColor(PaletteColors colorId)
 
 void TFarDialog::Redraw()
 {
-  SendDlgMessage(DM_REDRAW, 0, nullptr);
+  SendDlgMessage(DM_REDRAW, -1, nullptr);
 }
 
 void TFarDialog::ShowGroup(int32_t Group, bool Show)
@@ -1198,6 +1202,7 @@ void TFarDialogItem::SetDataInternal(const UnicodeString & Value)
   const UnicodeString FarData = Value.c_str();
   if (GetDialog()->GetHandle())
   {
+    DEBUG_PRINTF("SetDataInternal: item=%d, about to DM_SETTEXTPTR, Value=%s", GetItemIdx(), Value.c_str());
     SendDialogMessage(DM_SETTEXTPTR, nb::ToPtr(ToWCharPtr(FarData)));
   }
   nb_free(GetDialogItem()->Data);

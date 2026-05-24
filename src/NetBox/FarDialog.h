@@ -121,7 +121,7 @@ protected:
   UnicodeString GetMsg(intptr_t MsgId) const;
   void GetNextItemPosition(int32_t & Left, int32_t & Top);
   void RefreshBounds();
-  virtual void Idle();
+  virtual void Idle(TObject * Sender, void * Data);
   void BreakSynchronize();
   void Synchronize(TThreadMethod Method);
   void Close(const TFarButton * Button);

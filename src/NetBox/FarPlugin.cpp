@@ -49,7 +49,7 @@ public:
       {
 
         const int Result = pthread_cond_timedwait(&FCond, &FMutex, Timeout);
-        if ((Result == WAIT_TIMEOUT) && IsActive() && !IsFinished() && FPlugin && FPlugin->GetPluginHandle())
+        if ((Result == WAIT_TIMEOUT) && IsActive() && !IsFinished() && FPlugin && FPlugin->GetPluginHandle() && !FPlugin->IsIdlePaused())
         {
 
           // Marshal idle processing to the main thread via the sanctioned synchro path.
@@ -293,8 +293,11 @@ void TCustomFarPlugin::GetPluginInfo(struct PluginInfo * Info)
     } } while(0)
 
     COMPOSESTRINGARRAY(DiskMenu);
+    DiskMenu.SetOwnsObjects(false);
     COMPOSESTRINGARRAY(PluginMenu);
+    PluginMenu.SetOwnsObjects(false);
     COMPOSESTRINGARRAY(PluginConfig);
+    PluginConfig.SetOwnsObjects(false);
 
 #undef COMPOSESTRINGARRAY
     UnicodeString CommandPrefix;
@@ -949,7 +952,7 @@ public:
 protected:
   virtual const UUID * GetDialogGuid() const override { return &FarMessageDialogGuid; }
   virtual void Change() override;
-  virtual void Idle() override;
+  virtual void Idle(TObject * Sender, void * Data) override;
 
 private:
   void ButtonClick(TFarButton * Sender, bool & Close);
@@ -1133,9 +1136,33 @@ TFarMessageDialog::~TFarMessageDialog()
   }
 }
 
-void TFarMessageDialog::Idle()
+void TFarMessageDialog::Idle(TObject * Sender, void * Data)
 {
-  TFarDialog::Idle();
+  DEBUG_PRINTF("TFarMessageDialog::Idle: ENTER, Timeout=%d", FParams ? FParams->Timeout : -1);
+  TFarDialog::Idle(Sender, Data);
+
+  // Update timeout button caption directly inside DialogProc — DM_SETTEXTPTR
+  // is processed immediately here, unlike from a synchro callback where it
+  // queues until the next input event (arrow key, etc.).
+  if (FParams && (FParams->Timeout > 0))
+  {
+    const uint32_t Running = nb::ToUInt32((Now() - FStartTime).GetValue() * MSecsPerDay);
+    if (Running < FParams->Timeout)
+    {
+      UnicodeString Caption =
+        FORMAT(" %s ", FORMAT(FParams->TimeoutStr,
+            FTimeoutButtonCaption, nb::ToInt32((FParams->Timeout - Running) / 1000)));
+      const int32_t Sz = FTimeoutButton->GetCaption().Length() > Caption.Length() ?
+          FTimeoutButton->GetCaption().Length() - Caption.Length() : 0;
+      Caption += ::StringOfChar(L' ', Sz);
+      DEBUG_PRINTF("Idle: direct SetCaption: %s", Caption.c_str());
+      DEBUG_PRINTF("Idle: about to SetCaption and redraw");
+      FTimeoutButton->SetCaption(Caption);
+      Redraw();
+    }
+  }
+
+  // Timer events and Close() still need ACTL_SYNCHRO to run on Far main thread
   if (GetFarPlugin())
   {
     TSynchroParams & SynchroParams = GetFarPlugin()->FSynchroParams;
@@ -1201,6 +1228,7 @@ void TFarMessageDialog::ButtonClick(TFarButton * Sender, bool & Close)
 
 void TFarMessageDialog::OnUpdateTimeoutButton(TObject * /*Sender*/, void * /*Data*/)
 {
+  DEBUG_PRINTF("OnUpdateTimeoutButton: ENTER");
   // DEBUG_PRINTF("Sender: %p, Data: %p", (void *)Sender, (void *)Data);
   if (FParams && (FParams->Timer > 0))
   {
@@ -1217,23 +1245,19 @@ void TFarMessageDialog::OnUpdateTimeoutButton(TObject * /*Sender*/, void * /*Dat
     }
   }
 
+  // Timeout Close() still handled via synchro for thread safety.
+  // Caption update moved to Idle() — DM_SETTEXTPTR from DialogProc refreshes
+  // immediately; from synchro callback it queues until next input event.
   if (FParams && (FParams->Timeout > 0))
   {
     const uint32_t Running = nb::ToUInt32((Now() - FStartTime).GetValue() * MSecsPerDay);
+    DEBUG_PRINTF("OnUpdateTimeoutButton: Timeout branch, Running=%u, FParams->Timeout=%d", Running, FParams->Timeout);
     if (Running >= FParams->Timeout)
     {
       DebugAssert(FTimeoutButton != nullptr);
       Close(FTimeoutButton);
     }
-    else
-    {
-      UnicodeString Caption =
-        FORMAT(" %s ", FORMAT(FParams->TimeoutStr,
-            FTimeoutButtonCaption, nb::ToInt32((FParams->Timeout - Running) / 1000)));
-      const int32_t Sz = FTimeoutButton->GetCaption().Length() > Caption.Length() ? FTimeoutButton->GetCaption().Length() - Caption.Length() : 0;
-      Caption += ::StringOfChar(L' ', Sz);
-      FTimeoutButton->SetCaption(Caption);
-    }
+    // Caption update removed — done directly in Idle() above
   }
 }
 
@@ -2715,10 +2739,10 @@ void TCustomFarPanelItem::FillPanelItem(struct PluginPanelItem * PanelItem)
   PanelItem->LastWriteTime = FileTime;
   PanelItem->FileSize = Size;
 
-  // PanelItem->FileName = wcscpy(new wchar_t[FileName.Length() + 1], FileName.c_str());
-  // PanelItem->AlternateFileName = wcscpy(new wchar_t[FileName.Length() + 1], FileName.c_str());
-  PanelItem->FileName = TCustomFarPlugin::DuplicateStr(FileName);
-  PanelItem->AlternateFileName = TCustomFarPlugin::DuplicateStr(FileName);
+  // Normalize path separators for Windows Far Manager compatibility
+  const UnicodeString NormalizedFileName = ReplaceChar(FileName, Slash, Backslash);
+  PanelItem->FileName = TCustomFarPlugin::DuplicateStr(NormalizedFileName);
+  PanelItem->AlternateFileName = TCustomFarPlugin::DuplicateStr(NormalizedFileName);
   PanelItem->Description = TCustomFarPlugin::DuplicateStr(Description);
   PanelItem->Owner = TCustomFarPlugin::DuplicateStr(Owner);
   wchar_t ** CustomColumnData = nb::calloc<wchar_t **>(1 + PanelItem->CustomColumnNumber, sizeof(wchar_t *));

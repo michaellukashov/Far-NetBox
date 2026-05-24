@@ -4,6 +4,7 @@
 #include <plugin.hpp>
 #include <Sysutils.hpp>
 #include <nbutils.h>
+#include <tinylog/LogStream.h>
 
 #include "resource.h"
 #include "FarDialog.h"
@@ -348,6 +349,11 @@ BOOL WINAPI DllMain(HINSTANCE HInstDLL, DWORD Reason, LPVOID /*ptr*/ )
     // in ~TWinSCPPlugin() / ~TCustomFarPlugin(), called from ExitFARW before
     // FreeLibrary. Do NOT add cleanup here — DllMain runs under the loader
     // lock and must not touch CRT heap-allocated objects or stop threads.
+    if (!tinylog::LogStream::WasCleanupTlsCalled())
+    {
+      OutputDebugStringA("NetBox: DllMain DETACH — TLS cleanup not called "
+        "before FreeLibrary, resource leak possible\n");
+    }
   }
   else if (Reason == DLL_THREAD_ATTACH)
   {

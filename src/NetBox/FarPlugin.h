@@ -1,4 +1,5 @@
 #pragma once
+#include <atomic>
 
 #pragma warning(push, 1)
 #include <vcl.h>
@@ -122,6 +123,7 @@ class TCustomFarPlugin : public TObject
   friend class TFarMessageDialog;
   friend class TQueueDialog;
   friend class TFarPluginGuard;
+  friend class TFarDialogIdleThread;
   NB_DISABLE_COPY(TCustomFarPlugin)
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TCustomFarPlugin); }
@@ -179,6 +181,8 @@ public:
   void RestoreScreen(HANDLE & Screen);
   bool CheckForEsc() const;
   void FlushEscBuffer() const;
+  void SetIdlePaused(bool Paused) { FIdlePaused.store(Paused, std::memory_order_release); }
+  bool IsIdlePaused() const { return FIdlePaused.load(std::memory_order_acquire); }
   bool Viewer(const UnicodeString & AFileName, const UnicodeString & Title, VIEWER_FLAGS Flags);
   bool Editor(const UnicodeString & AFileName, const UnicodeString & Title, EDITOR_FLAGS Flags);
   intptr_t FarControl(FILE_CONTROL_COMMANDS Command, intptr_t Param1, void * Param2, HANDLE Plugin = INVALID_HANDLE_VALUE);
@@ -271,6 +275,7 @@ private:
   std::unique_ptr<TStringList> FSavedTitles;
   UnicodeString FCurrentTitle;
   int16_t FCurrentProgress{0};
+  std::atomic<bool> FIdlePaused{false};
 
   void ClearPluginInfo(PluginInfo & Info) const;
   void UpdateCurrentConsoleTitle();
