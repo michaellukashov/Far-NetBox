@@ -17,8 +17,8 @@
 # Version and Platform Settings
 #-------------------------------------------------------------------------------
 
-# Windows version target (0x0501 = Windows XP)
-set(NETBOX_WIN32_WINNT "0x0501")
+# Windows version target (0x0503 = Windows XP SP2 / Server 2003)
+set(NETBOX_WIN32_WINNT "0x0503")
 
 #-------------------------------------------------------------------------------
 # Library-Specific Defines

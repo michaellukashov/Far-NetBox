@@ -22,6 +22,15 @@ function(netbox_configure_source_groups)
       NetBox/UnityBuildMain.cpp
       NetBox/NetBox.cpp
     PARENT_SCOPE)
+    if(MSVC)
+      if(DEFINED CMAKE_ULINK)
+        set(FIX_XP_CPP NetBox/vc_crt_fix_ulink.cpp)
+      else()
+        set(FIX_XP_CPP NetBox/vc_crt_fix_impl.cpp)
+      endif()
+      list(APPEND NETBOX_SOURCES ${FIX_XP_CPP})
+      set(NETBOX_SOURCES "${NETBOX_SOURCES}" PARENT_SCOPE)
+    endif()
   else()
     # Initialize empty sources lis
     set(NETBOX_SOURCES "")
@@ -41,6 +50,18 @@ function(netbox_configure_source_groups)
 
     netbox_define_netbox_sources()
     list(APPEND NETBOX_SOURCES ${NetBox_SOURCES})
+    if(MSVC)
+      if(DEFINED CMAKE_ULINK)
+        set(FIX_XP_CPP NetBox/vc_crt_fix_ulink.cpp)
+      else()
+        set(FIX_XP_CPP NetBox/vc_crt_fix_impl.cpp)
+        if(PROJECT_PLATFORM STREQUAL "x64")
+          set_source_files_properties(${FIX_XP_ASM} PROPERTIES COMPILE_DEFINITIONS "-DX64 /Zc:threadSafeInit-")
+        endif()
+      endif()
+      list(APPEND NETBOX_SOURCES
+        ${FIX_XP_CPP})
+    endif(MSVC)
 
     netbox_define_resource_sources()
     list(APPEND NETBOX_SOURCES ${Resource_SOURCES})
@@ -60,6 +81,18 @@ function(netbox_configure_unity_build)
     NetBox/UnityBuildFilezilla.cpp
     NetBox/UnityBuildMain.cpp
   PARENT_SCOPE)
+  if(MSVC)
+    if(DEFINED CMAKE_ULINK)
+      set(FIX_XP_CPP NetBox/vc_crt_fix_ulink.cpp)
+    else()
+      set(FIX_XP_CPP NetBox/vc_crt_fix_impl.cpp)
+      if(PROJECT_PLATFORM STREQUAL "x64")
+        set_source_files_properties(${FIX_XP_ASM} PROPERTIES COMPILE_DEFINITIONS "-DX64 /Zc:threadSafeInit-")
+      endif()
+    endif()
+    list(APPEND NETBOX_SOURCES
+      ${FIX_XP_CPP})
+  endif(MSVC)
 endfunction()
 
 #===============================================================================

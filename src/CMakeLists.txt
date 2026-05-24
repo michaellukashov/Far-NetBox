@@ -47,8 +47,6 @@ add_custom_target(NetBoxResources SOURCES
   resource/TextsWin1.rc
   ${CMAKE_SOURCE_DIR}/cmake/copy_file.cmake
   ${CMAKE_SOURCE_DIR}/.github/workflows/release.yml
-  ${CMAKE_SOURCE_DIR}/appveyor.yml
-  ${CMAKE_SOURCE_DIR}/appveyor.bat
   ${CMAKE_SOURCE_DIR}/ChangeLog
   ${CMAKE_SOURCE_DIR}/README.md
 )
@@ -63,6 +61,31 @@ add_library(NetBox SHARED ${NETBOX_SOURCES})
 # Configure the target with includes, libraries, and compiler options
 netbox_configure_target(NetBox)
 
+# Custom build rule for vc_crt_fix.asm (MASM) on MSVC x64/x86
+if(MSVC AND NOT DEFINED CMAKE_ULINK)
+  set(VC_CRT_FIX_ASM "${CMAKE_CURRENT_SOURCE_DIR}/NetBox/vc_crt_fix.asm")
+  if(PROJECT_PLATFORM STREQUAL "x64")
+    set(ASM_COMPILER ml64.exe)
+    set(ASM_FLAGS /c /Cx /DX64)
+  elseif(PROJECT_PLATFORM STREQUAL "x86")
+    set(ASM_COMPILER ml.exe)
+    set(ASM_FLAGS /c /Cx /coff)
+  endif()
+  if(DEFINED ASM_COMPILER)
+    get_filename_component(MSVC_BIN_DIR "${CMAKE_CXX_COMPILER}" DIRECTORY)
+    set(ASM_EXE "${MSVC_BIN_DIR}/${ASM_COMPILER}")
+    set(ASM_OBJ "${CMAKE_CURRENT_BINARY_DIR}/vc_crt_fix.obj")
+    add_custom_command(
+      OUTPUT ${ASM_OBJ}
+      COMMAND "${ASM_EXE}" ${ASM_FLAGS} "${VC_CRT_FIX_ASM}"
+      DEPENDS ${VC_CRT_FIX_ASM}
+      COMMENT "Assembling vc_crt_fix.asm with ${ASM_COMPILER}"
+    )
+    set_source_files_properties(${ASM_OBJ} PROPERTIES GENERATED TRUE)
+    target_sources(NetBox PRIVATE ${ASM_OBJ})
+  endif()
+endif()
+
 #===============================================================================
 # Plugin Directory Installation (Optional)
 #===============================================================================
@@ -76,7 +99,6 @@ netbox_setup_plugin_installation(NetBox)
 if(OPT_CREATE_TESTS)
   add_executable(test_tinylog
     ${CMAKE_SOURCE_DIR}/libs/tinylog/tests/test_tinylog.cpp
-    ${CMAKE_SOURCE_DIR}/libs/tinylog/tests/unicode_stub.cpp
     ${CMAKE_SOURCE_DIR}/src/nbcore/nbmemory.cpp
     ${CMAKE_SOURCE_DIR}/src/nbcore/nbstring.cpp
     ${CMAKE_SOURCE_DIR}/libs/tinylog/src/TinyLog.cpp
