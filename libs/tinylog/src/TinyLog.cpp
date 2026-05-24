@@ -1,4 +1,5 @@
 #include <Global.h>
+#include <cassert>
 #include <tinylog/platform_win32.h>
 
 #include <mutex>
@@ -36,7 +37,7 @@ private:
   static DWORD WINAPI ThreadFunc(void *pt_arg);
   int32_t MainLoop();
 
-  std::unique_ptr<LogStream> logstream_;
+  LogStream * logstream_{nullptr};
   Utils::LogLevel log_level_{Utils::LEVEL_INFO};
 
   pthread_t thrd_{INVALID_HANDLE_VALUE};
@@ -56,7 +57,13 @@ TinyLogImpl::TinyLogImpl(FILE * file) noexcept :
 {
   pthread_mutex_init(&mutex_, nullptr);
   pthread_cond_init(&cond_, nullptr);
-  logstream_ = std::make_unique<LogStream>(file, mutex_, cond_, drain_buffer_);
+  void * ls_mem = nb::chcalloc(sizeof(LogStream));
+  if (!ls_mem)
+  {
+    OutputDebugStringA("tinylog: FATAL: nb::chcalloc failed for LogStream\n");
+    std::abort();
+  }
+  logstream_ = new(ls_mem) LogStream(file, mutex_, cond_, drain_buffer_);
   void * Parameter = this;
 
   thrd_ = ::CreateThread(nullptr,
@@ -64,7 +71,6 @@ TinyLogImpl::TinyLogImpl(FILE * file) noexcept :
     static_cast<LPTHREAD_START_ROUTINE>(&TinyLogImpl::ThreadFunc),
     Parameter,
     0, &ThreadId_);
-  os::debug::SetThreadName(thrd_, L"Log processor");
 }
 
 TinyLogImpl::~TinyLogImpl() noexcept
@@ -116,7 +122,12 @@ void TinyLogImpl::Close()
     pthread_cond_signal(&cond_);
     pthread_mutex_unlock(&mutex_);
     pthread_join(thrd_, nullptr);
-    logstream_.reset();
+    if (logstream_)
+    {
+      logstream_->~LogStream();
+      nb_free(logstream_);
+      logstream_ = nullptr;
+    }
   }
 }
 
@@ -254,15 +265,27 @@ bool TinyLog::EmergencyFlushAll(uint32_t TimeoutMs)
   return all_ok;
 }
 
-TinyLog::TinyLog() noexcept :
-  impl_(std::make_unique<TinyLogImpl>(nullptr))
+TinyLog::TinyLog() noexcept
 {
+  void * impl_mem = nb::chcalloc(sizeof(TinyLogImpl));
+  if (!impl_mem)
+  {
+    OutputDebugStringA("tinylog: FATAL: nb::chcalloc failed for TinyLogImpl\n");
+    std::abort();
+  }
+  impl_ = new(impl_mem) TinyLogImpl(nullptr);
   Register(this);
 }
 
 TinyLog::~TinyLog() noexcept
 {
   Unregister(this);
+  if (impl_)
+  {
+    impl_->~TinyLogImpl();
+    nb_free(impl_);
+    impl_ = nullptr;
+  }
   destroyed_ = true;
 }
 
@@ -276,10 +299,28 @@ auto TinyLog::instance() -> TinyLog * &
     return s_null;
 
   std::call_once(s_once, [&]() {
-    s_instance = new TinyLog();
+    void * mem = nb::chcalloc(sizeof(TinyLog));
+    if (!mem)
+    {
+      OutputDebugStringA("tinylog: FATAL: nb::chcalloc failed for TinyLog singleton\n");
+      std::abort();
+    }
+    s_instance = new(mem) TinyLog();
   });
 
   return s_instance;
+}
+
+void TinyLog::DestroyInstance() noexcept
+{
+  TinyLog * & inst = TinyLog::instance();
+  if (inst)
+  {
+    inst->~TinyLog();
+    nb_free(inst);
+    inst = nullptr;
+    LogStream::CleanupTls();
+  }
 }
 
 void TinyLog::level(Utils::LogLevel log_level)

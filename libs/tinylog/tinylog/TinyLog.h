@@ -43,12 +43,13 @@ public:
   static void Register(TinyLog * logger);
   static void Unregister(TinyLog * logger);
   static bool EmergencyFlushAll(uint32_t TimeoutMs);
+  static void DestroyInstance() noexcept;
 
   // TODO: group / groupEnd
 
 private:
   static bool destroyed_; // prevents lazy re-creation after shutdown
-  std::unique_ptr<TinyLogImpl> impl_;
+  TinyLogImpl * impl_{nullptr};
 private:
   TinyLog(TinyLog const &) = delete;
   void operator =(TinyLog const &) = delete;
