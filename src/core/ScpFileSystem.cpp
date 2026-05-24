@@ -253,6 +253,19 @@ UnicodeString TCommandSet::Command(TFSCommand Cmd, fmt::ArgList args)
   return Result;
 }
 
+static UnicodeString EscapeShellSingleQuotes(const UnicodeString & S)
+{
+  UnicodeString Result;
+  for (const wchar_t C : S)
+  {
+    if (C == L'\'')
+      Result += L"'\"'\"'";
+    else
+      Result += C;
+  }
+  return Result;
+}
+
 UnicodeString TCommandSet::FullCommand(TFSCommand Cmd, fmt::ArgList args)
 {
   UnicodeString Separator;
@@ -282,6 +295,22 @@ UnicodeString TCommandSet::FullCommand(TFSCommand Cmd, fmt::ArgList args)
   {
     Result = FORMAT("%s%s", FirstLineCmd, LastLineCmd);
   }
+
+  if (FSessionData != nullptr)
+  {
+    const UnicodeString Shell = FSessionData->GetShell();
+    if (!Shell.IsEmpty() &&
+        ((Shell.Pos(L" -i") > 0) || (Shell.Pos(L" -l") > 0) || (Shell.Pos(L" -login") > 0)))
+    {
+      const int32_t P = Shell.Pos(L' ');
+      const UnicodeString ShellExe = (P > 0) ? Shell.SubString(1, P - 1) : Shell;
+      if (!ShellExe.IsEmpty())
+      {
+        Result = ShellExe + L" -c '" + EscapeShellSingleQuotes(Result) + L"'";
+      }
+    }
+  }
+
   return Result;
 }
 
