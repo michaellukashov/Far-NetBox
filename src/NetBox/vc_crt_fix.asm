@@ -34,15 +34,22 @@ endif
 .const
 
 HOOK MACRO name, size, args:VARARG
-	ifndef X64
-		@CatStr(name, Wrapper) proto stdcall args
-		@CatStr(__imp__, name, @, size) dd @CatStr(name, Wrapper)
-		public @CatStr(__imp__, name, @, size)
-	else
-		@CatStr(name, Wrapper) proto stdcall
-		@CatStr(__imp_, name) dq @CatStr(name, Wrapper)
-		public @CatStr(__imp_, name)
-	endif
+	WRAPPER EQU @CatStr(Wrapper_, name)
+ifdef X64
+	DARGS   EQU
+	IMP     EQU @CatStr(__imp_, name)
+else
+	DARGS   EQU args
+	IMP     EQU @CatStr(__imp__, name, @, size)
+endif
+
+	WRAPPER proto stdcall DARGS
+ifdef X64
+	IMP dq WRAPPER
+else
+	IMP dd WRAPPER
+endif
+	public IMP
 ENDM
 
 ifndef X64
@@ -51,17 +58,58 @@ HOOK DecodePointer                          ,  4, :dword
 HOOK GetModuleHandleExW                     , 12, :dword, :dword, :dword
 HOOK InitializeSListHead                    ,  4, :dword
 HOOK InterlockedFlushSList                  ,  4, :dword
-HOOK InterlockedPopEntrySList               ,  4, :dword
 HOOK InterlockedPushEntrySList              ,  8, :dword, :dword
-HOOK InterlockedPushListSListEx             , 16, :dword, :dword, :dword, :dword
-HOOK RtlFirstEntrySList                     ,  4, :dword
-HOOK QueryDepthSList                        ,  4, :dword
 HOOK GetNumaHighestNodeNumber               ,  4, :dword
 HOOK GetLogicalProcessorInformation         ,  8, :dword, :dword
 HOOK SetThreadStackGuarantee                ,  4, :dword
+HOOK FlsAlloc                               ,  4, :dword
+HOOK FlsGetValue                            ,  4, :dword
+HOOK FlsSetValue                            ,  8, :dword, :dword
+HOOK FlsFree                                ,  4, :dword
 endif
 HOOK InitializeCriticalSectionEx            , 12, :dword, :dword, :dword
 HOOK CompareStringEx                        , 36, :dword, :dword, :dword, :dword, :dword, :dword, :dword, :dword, :dword
 HOOK LCMapStringEx                          , 36, :dword, :dword, :dword, :dword, :dword, :dword, :dword, :dword, :dword
+HOOK AcquireSRWLockExclusive                ,  4, :dword
+HOOK ReleaseSRWLockExclusive                ,  4, :dword
+HOOK AcquireSRWLockShared                   ,  4, :dword
+HOOK ReleaseSRWLockShared                   ,  4, :dword
+HOOK TryAcquireSRWLockShared                ,  4, :dword
+HOOK SleepConditionVariableSRW              , 16, :dword, :dword, :dword, :dword
+HOOK WakeAllConditionVariable               ,  4, :dword
+HOOK WakeConditionVariable                   ,  4, :dword
+HOOK SleepConditionVariableCS                , 12, :dword, :dword, :dword
+HOOK InitializeConditionVariable             ,  4, :dword
+HOOK TryAcquireSRWLockExclusive             ,  4, :dword
+HOOK InitializeSRWLock                      ,  4, :dword
+
+; Thread pool functions (Vista+)
+HOOK CreateThreadpoolTimer                    , 12, :dword, :dword, :dword
+HOOK SetThreadpoolTimer                       , 16, :dword, :dword, :dword, :dword
+HOOK WaitForThreadpoolTimerCallbacks          ,  8, :dword, :dword
+HOOK CloseThreadpoolTimer                     ,  4, :dword
+HOOK CreateThreadpoolWait                     , 12, :dword, :dword, :dword
+HOOK SetThreadpoolWait                        , 12, :dword, :dword, :dword
+HOOK CloseThreadpoolWait                      ,  4, :dword
+HOOK FreeLibraryWhenCallbackReturns           ,  8, :dword, :dword
+; Sync primitives (Vista+)
+HOOK CreateEventExW                           , 16, :dword, :dword, :dword, :dword
+HOOK CreateSemaphoreExW                       , 24, :dword, :dword, :dword, :dword, :dword, :dword
+HOOK InitOnceBeginInitialize                  , 16, :dword, :dword, :dword, :dword
+HOOK InitOnceComplete                         , 12, :dword, :dword, :dword
+HOOK InitOnceExecuteOnce                      , 16, :dword, :dword, :dword, :dword
+; File functions (Vista+)
+HOOK CreateSymbolicLinkW                      , 12, :dword, :dword, :dword
+HOOK GetFileInformationByHandleEx             , 16, :dword, :dword, :dword, :dword
+HOOK SetFileInformationByHandle               , 16, :dword, :dword, :dword, :dword
+; System info (Vista+)
+HOOK GetTickCount64                           ,  0
+HOOK GetCurrentProcessorNumber                ,  0
+HOOK FlushProcessWriteBuffers                 ,  0
+HOOK GetSystemTimePreciseAsFileTime           ,  4, :dword
+; Locale (Vista+)
+HOOK GetLocaleInfoEx                          , 16, :dword, :dword, :dword, :dword
+; Locale (legacy)
+HOOK GetLocaleInfoA                           , 16, :dword, :dword, :dword, :dword
 
 end
