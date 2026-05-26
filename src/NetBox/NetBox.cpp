@@ -136,6 +136,9 @@ void WINAPI ExitFARW(const struct ExitInfo * Info)
   }
   // Now Guard is released
   DestroyPlugin();
+  // Brief pause to let any pending ACTL_SYNCHRO / condition-variable
+  // callbacks from worker threads drain before Far begins unloading DLLs.
+  ::Sleep(200);
 }
 
 void WINAPI GetPluginInfoW(PluginInfo * Info)
