@@ -2729,7 +2729,10 @@ bool TTerminal::FileOperationLoopQuery(Exception & E,
     if (Answer == qaAll)
     {
       DebugAssert(AOperationProgress != nullptr);
-      AOperationProgress->SetSkipToAll();
+      if (AOperationProgress != nullptr)
+      {
+        AOperationProgress->SetSkipToAll();
+      }
       Answer = qaSkip;
     }
     if (Answer == qaYes)
