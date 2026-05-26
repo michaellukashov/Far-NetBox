@@ -3683,19 +3683,49 @@ void TWinSCPFileSystem::Disconnect()
     }
     SaveSession();
   }
-  // Terminate keepalive thread with bounded wait to prevent deadlock.
-  // TKeepAliveThread::Execute() calls PostMainThreadSynchro which invokes
-  // FarAdvControl(ACTL_SYNCHRO) — a synchronous cross-thread call that blocks
-  // until the main thread processes the synchro event. If the main thread is
-  // simultaneously waiting for the keepalive thread in WaitFor(INFINITE), both
-  // threads deadlock. SignalStop + bounded WaitFor breaks the circular wait:
-  // after SignalStop sets FFinished=true, ~TSimpleThread skips its own WaitFor.
+  // Terminate keepalive thread safely. TKeepAliveThread::Execute() calls
+  // PostMainThreadSynchro which invokes FarAdvControl(ACTL_SYNCHRO) — a
+  // synchronous cross-thread call that blocks until the main thread processes
+  // the synchro event. If the main thread waits INFINITE for the keepalive
+  // thread while the keepalive thread waits for the main thread → deadlock.
+  // We use short waits and pump the Windows message queue between them so Far
+  // can process pending ACTL_SYNCHRO events and unblock the keepalive thread.
   if (FKeepaliveThread)
   {
     FKeepaliveThread->SignalStop();
-    FKeepaliveThread->WaitFor(500);
+    for (int32_t Retry = 0; Retry < 30; ++Retry)
+    {
+      FKeepaliveThread->WaitFor(100);
+      if (FKeepaliveThread->IsFinished())
+        break;
+      // Pump Windows messages to allow Far Manager to process pending
+      // ACTL_SYNCHRO events posted by the keepalive thread.
+      MSG Msg;
+      while (::PeekMessage(&Msg, nullptr, 0, 0, PM_REMOVE))
+      {
+        ::TranslateMessage(&Msg);
+        ::DispatchMessage(&Msg);
+      }
+    }
+    // If the thread still hasn't exited, it is stuck in PostMainThreadSynchro.
+    // Destroying the TKeepAliveThread object would close the thread handle
+    // and orphan the OS thread, leading to use-after-unload crashes when the
+    // process exits. Leak the thread instead — the OS will clean it up on exit.
+    if (!FKeepaliveThread->IsFinished())
+    {
+      TINYLOG_WARNING(g_tinylog) << TLogContext::Format()
+          << " Keepalive thread did not terminate, leaking to prevent crash";
+      FKeepaliveThread = nullptr;
+    }
+    else
+    {
+      SAFE_DESTROY(FKeepaliveThread);
+    }
   }
-  SAFE_DESTROY(FKeepaliveThread);
+  else
+  {
+    SAFE_DESTROY(FKeepaliveThread);
+  }
   TINYLOG_DEBUG(g_tinylog) << TLogContext::Format()
       << " Keepalive thread destroyed";
   DebugAssert(FSynchronizeController == nullptr);
