@@ -50,14 +50,15 @@ public:
     {
       if (::WaitForSingleObject(FEvent, FMillisecs) != WAIT_FAILED)
       {
-        if (!IsFinished() && FDialog && FDialog->GetHandle())
+        if (!IsFinished() && FDialog && FDialog->GetHandle() && !FDialog->FIdlePending && !FDialog->FClosing)
         {
           TCustomFarPlugin * Plugin = FDialog->GetFarPlugin();
           if (Plugin)
           {
-            Plugin->FSynchroParams.SynchroEvent = nb::bind(&TFarDialog::Idle, FDialog.get(), nullptr);
-            Plugin->FSynchroParams.Sender = FDialog.get();
-            Plugin->FarAdvControl(ACTL_SYNCHRO, 0, &Plugin->FSynchroParams);
+            FDialog->FIdlePending = true;
+            FDialog->FSynchroParams.SynchroEvent = nb::bind(&TFarDialog::Idle, FDialog.get(), nullptr);
+            FDialog->FSynchroParams.Sender = FDialog.get();
+            Plugin->FarAdvControl(ACTL_SYNCHRO, 0, &FDialog->FSynchroParams);
           }
         }
       }
@@ -100,6 +101,7 @@ TFarDialog::TFarDialog(gsl::not_null<TCustomFarPlugin *> AFarPlugin) noexcept :
 
 TFarDialog::~TFarDialog() noexcept
 {
+  FClosing = true;
   FTIdleThread->Close();
   for (int32_t Index = 0; Index < GetItemCount(); ++Index)
   {
@@ -114,6 +116,7 @@ TFarDialog::~TFarDialog() noexcept
   SAFE_CLOSE_HANDLE(FSynchronizeObjects[0]);
   SAFE_CLOSE_HANDLE(FSynchronizeObjects[1]);
   FHandle = nullptr;
+}
 
 void TFarDialog::SetIdleInterval(DWORD Millisecs)
 {
@@ -121,8 +124,6 @@ void TFarDialog::SetIdleInterval(DWORD Millisecs)
   {
     FTIdleThread->SetInterval(Millisecs);
   }
-}
-
 }
 
 void TFarDialog::InitDialog()
@@ -652,7 +653,7 @@ intptr_t TFarDialog::FailDialogProc(intptr_t Msg, intptr_t Param1, void * Param2
 
 void TFarDialog::Idle(TObject * /*Sender*/, void * /*Data*/)
 {
-  // nothing
+  FIdlePending = false;
 }
 
 bool TFarDialog::MouseEvent(MOUSE_EVENT_RECORD * Event)
@@ -851,6 +852,7 @@ void TFarDialog::Synchronize(TThreadMethod Method)
 void TFarDialog::Close(const TFarButton * Button)
 {
   DebugAssert(Button != nullptr);
+  FClosing = true;
   SendDlgMessage(DM_CLOSE, Button->GetItemIdx(), nullptr);
 }
 

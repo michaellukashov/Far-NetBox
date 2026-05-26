@@ -134,7 +134,11 @@ protected:
   static intptr_t WINAPI DialogProcGeneral(HANDLE Handle, intptr_t Msg, intptr_t Param1, void * Param2);
 
   void SetBounds(const TRect & Value);
+
   void SetIdleInterval(DWORD Millisecs);
+  bool FIdlePending{false};
+  TSynchroParams FSynchroParams{};
+  bool FClosing{false};
 
 private:
   mutable gsl::not_null<TCustomFarPlugin *> FFarPlugin;
@@ -162,6 +166,7 @@ private:
   HANDLE FSynchronizeObjects[2]{};
   TThreadMethod FSynchronizeMethod;
   const UUID * FGuid{&DialogGuid};
+
 };
 
 class TFarDialogContainer : public TObject

@@ -1133,17 +1133,15 @@ void TFarMessageDialog::InitFarMessageDialog(uint32_t AFlags,
 
 TFarMessageDialog::~TFarMessageDialog()
 {
-  if (GetFarPlugin())
-  {
-    TSynchroParams & SynchroParams = GetFarPlugin()->FSynchroParams;
-    SynchroParams.Sender = nullptr;
-  }
+  // Synchro params are now owned by the dialog itself.
+
 }
 
 void TFarMessageDialog::Idle(TObject * Sender, void * Data)
 {
   DEBUG_PRINTF("TFarMessageDialog::Idle: ENTER, Timeout=%d", FParams ? FParams->Timeout : -1);
   TFarDialog::Idle(Sender, Data);
+
 
   // Update timeout button caption directly inside DialogProc — DM_SETTEXTPTR
   // is processed immediately here, unlike from a synchro callback where it
@@ -1167,12 +1165,11 @@ void TFarMessageDialog::Idle(TObject * Sender, void * Data)
   }
 
   // Timer events and Close() still need ACTL_SYNCHRO to run on Far main thread
-  if (GetFarPlugin())
+  if (GetFarPlugin() && !FClosing)
   {
-    TSynchroParams & SynchroParams = GetFarPlugin()->FSynchroParams;
-    SynchroParams.SynchroEvent = nb::bind(&TFarMessageDialog::OnUpdateTimeoutButton, this);
-    SynchroParams.Sender = this;
-    GetFarPlugin()->FarAdvControl(ACTL_SYNCHRO, 0, &SynchroParams);
+    FSynchroParams.SynchroEvent = nb::bind(&TFarMessageDialog::OnUpdateTimeoutButton, this);
+    FSynchroParams.Sender = this;
+    GetFarPlugin()->FarAdvControl(ACTL_SYNCHRO, 0, &FSynchroParams);
   }
 }
 

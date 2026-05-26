@@ -10794,10 +10794,8 @@ TSynchronizeDialog::~TSynchronizeDialog() noexcept
 {
   if (GetFarPlugin())
   {
-    TSynchroParams & SynchroParams = GetFarPlugin()->GetSynchroParams();
-    SynchroParams.Sender = nullptr;
+    // Synchro params are now owned by the dialog itself.
   }
-  SAFE_DESTROY(FSynchronizeOptions);
 }
 
 void TSynchronizeDialog::TransferSettingsButtonClick(
@@ -11114,12 +11112,11 @@ void TSynchronizeDialog::Idle(TObject * Sender, void * Data)
 {
   TFarDialog::Idle(Sender, Data);
 
-  if (GetFarPlugin())
+  if (GetFarPlugin() && !FClosing)
   {
-    TSynchroParams & SynchroParams = GetFarPlugin()->GetSynchroParams();
-    SynchroParams.SynchroEvent = nb::bind(&TSynchronizeDialog::OnIdle, this);
-    SynchroParams.Sender = this;
-    GetFarPlugin()->PostMainThreadSynchro(&SynchroParams);
+    FSynchroParams.SynchroEvent = nb::bind(&TSynchronizeDialog::OnIdle, this);
+    FSynchroParams.Sender = this;
+    GetFarPlugin()->PostMainThreadSynchro(&FSynchroParams);
   }
 }
 
@@ -11388,11 +11385,7 @@ TQueueDialog::TQueueDialog(gsl::not_null<TCustomFarPlugin *> AFarPlugin,
 
 TQueueDialog::~TQueueDialog()
 {
-  if (GetFarPlugin())
-  {
-    TSynchroParams & SynchroParams = GetFarPlugin()->FSynchroParams;
-    SynchroParams.Sender = nullptr;
-  }
+  // Synchro params are now owned by the dialog itself.
 }
 
 void TQueueDialog::OperationButtonClick(TFarButton * Sender,
@@ -11546,12 +11539,12 @@ void TQueueDialog::Idle(TObject * Sender, void * Data)
 {
   TFarDialog::Idle(Sender, Data);
 
-  if (GetFarPlugin())
+
+  if (GetFarPlugin() && !FClosing)
   {
-    TSynchroParams & SynchroParams = GetFarPlugin()->FSynchroParams;
-    SynchroParams.SynchroEvent = nb::bind(&TQueueDialog::OnIdle, this);
-    SynchroParams.Sender = this;
-    GetFarPlugin()->PostMainThreadSynchro(&SynchroParams);
+    FSynchroParams.SynchroEvent = nb::bind(&TQueueDialog::OnIdle, this);
+    FSynchroParams.Sender = this;
+    GetFarPlugin()->PostMainThreadSynchro(&FSynchroParams);
   }
 }
 

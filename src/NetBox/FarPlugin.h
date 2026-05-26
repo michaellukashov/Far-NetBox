@@ -202,7 +202,6 @@ public:
   UnicodeString GetTemporaryDir() const;
   intptr_t InputRecordToKey(const INPUT_RECORD * Rec);
   TFarEditorInfo * EditorInfo();
-  TSynchroParams & GetSynchroParams() { return FSynchroParams; }
 
   void ShowConsoleTitle(const UnicodeString & Title);
   void ClearConsoleTitle();
@@ -241,7 +240,6 @@ protected:
   mutable bool FValidFarSystemSettings{false};
   mutable int32_t FFarSystemSettings{0};
   TPoint FNormalConsoleSize;
-  TSynchroParams FSynchroParams{};
 
   virtual bool HandlesFunction(THandlesFunction Function) const;
   virtual void GetPluginInfoEx(PLUGIN_FLAGS & Flags,
