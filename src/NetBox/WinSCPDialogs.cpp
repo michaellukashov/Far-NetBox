@@ -11443,10 +11443,12 @@ void TQueueDialog::OnIdle(TObject *, void *)
   {
     LoadQueue();
     UpdateControls();
+    SetIdleInterval(FStatus->GetCount() > 0 ? 100 : 1000);
   }
   else
   {
     RefreshQueue();
+    SetIdleInterval(1000);
   }
 }
 

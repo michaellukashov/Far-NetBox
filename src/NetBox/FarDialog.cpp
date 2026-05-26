@@ -25,6 +25,16 @@ public:
     FMillisecs(Millisecs)
   {}
 
+  void SetInterval(DWORD Millisecs)
+  {
+    if (FMillisecs != Millisecs)
+    {
+      FMillisecs = Millisecs;
+      TriggerEvent();
+    }
+  }
+
+
   virtual ~TFarDialogIdleThread() noexcept override = default;
 
   void InitIdleThread()
@@ -104,6 +114,15 @@ TFarDialog::~TFarDialog() noexcept
   SAFE_CLOSE_HANDLE(FSynchronizeObjects[0]);
   SAFE_CLOSE_HANDLE(FSynchronizeObjects[1]);
   FHandle = nullptr;
+
+void TFarDialog::SetIdleInterval(DWORD Millisecs)
+{
+  if (FTIdleThread)
+  {
+    FTIdleThread->SetInterval(Millisecs);
+  }
+}
+
 }
 
 void TFarDialog::InitDialog()

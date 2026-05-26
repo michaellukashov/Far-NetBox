@@ -134,6 +134,7 @@ protected:
   static intptr_t WINAPI DialogProcGeneral(HANDLE Handle, intptr_t Msg, intptr_t Param1, void * Param2);
 
   void SetBounds(const TRect & Value);
+  void SetIdleInterval(DWORD Millisecs);
 
 private:
   mutable gsl::not_null<TCustomFarPlugin *> FFarPlugin;

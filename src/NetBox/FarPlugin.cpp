@@ -980,6 +980,10 @@ void TFarMessageDialog::InitFarMessageDialog(uint32_t AFlags,
   const UnicodeString & Title, const UnicodeString & Message, TStrings * Buttons)
 {
   TFarDialog::InitDialog();
+  if (FParams->Timeout > 0)
+  {
+    SetIdleInterval(100);
+  }
   DebugAssert(FLAGCLEAR(AFlags, FMSG_ERRORTYPE));
   DebugAssert(FLAGCLEAR(AFlags, FMSG_KEEPBACKGROUND));
   // FIXME DebugAssert(FLAGCLEAR(AFlags, FMSG_DOWN));
