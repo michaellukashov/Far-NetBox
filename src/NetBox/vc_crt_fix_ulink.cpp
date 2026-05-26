@@ -124,7 +124,7 @@ extern "C" void WINAPI Wrapper_InitializeConditionVariable(PCONDITION_VARIABLE);
 static FARPROC WINAPI delayFailureHook(/*dliNotification*/unsigned dliNotify,
                                        PDelayLoadInfo pdli)
 {
-    if(   dliNotify == dliFailGetProcAddress
+    if(dliNotify == dliFailGetProcAddress
        && pdli && pdli->cb == sizeof(*pdli)
        && pdli->dlp.fImportByName && pdli->dlp.szProcName)
     {
