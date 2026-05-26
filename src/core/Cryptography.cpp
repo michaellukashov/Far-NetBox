@@ -68,7 +68,7 @@
 
 constexpr const int32_t IN_BLOCK_LENGTH     = 64;
 constexpr const int32_t OUT_BLOCK_LENGTH    = 20;
-constexpr const int32_t HMAC_IN_DATA        = 0xffffffff;
+constexpr const uint32_t HMAC_IN_DATA       = 0xffffffff;
 
 struct hmac_ctx
 {
