@@ -146,7 +146,7 @@ protected:
   int32_t TranslateErrorMessage(UnicodeString & Message, UnicodeString * HelpKeyword = nullptr);
   void AddStdErrorLine(const UnicodeString & AStr);
   void LogEvent(const UnicodeString & AStr);
-  void FatalError(const UnicodeString & Error, const UnicodeString & HelpKeyword = "");
+  NORETURN void FatalError(const UnicodeString & Error, const UnicodeString & HelpKeyword = "");
   UnicodeString FormatKeyStr(const UnicodeString & AKeyStr) const;
   void ParseFingerprint(const UnicodeString & Fingerprint, UnicodeString & SignKeyType, UnicodeString & Hash);
   Conf * StoreToConfig(TSessionData * Data, bool Simple);

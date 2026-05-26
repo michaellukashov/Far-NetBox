@@ -1853,7 +1853,7 @@ void TSecureShell::PuttyFatalError(const UnicodeString & AError)
   }
 }
 
-void TSecureShell::FatalError(const UnicodeString & Error, const UnicodeString & HelpKeyword)
+NORETURN void TSecureShell::FatalError(const UnicodeString & Error, const UnicodeString & HelpKeyword)
 {
   FUI->FatalError(nullptr, Error, HelpKeyword);
 }
