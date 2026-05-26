@@ -4137,10 +4137,10 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   SFTPRealPathCombo->GetItems()->Add(GetMsg(NB_LOGIN_BUGS_OFF));
   SFTPRealPathCombo->GetItems()->Add(GetMsg(NB_LOGIN_BUGS_ON));
   Text->SetEnabledFollow(SFTPRealPathCombo);
+  SetNextItemPosition(ipNewLine);
 
   UsePosixRenameCheck = MakeOwnedObject<TFarCheckBox>(this);
   UsePosixRenameCheck->SetCaption(GetMsg(NB_LOGIN_SFTP_POSIX_RENAME));
-  SetNextItemPosition(ipNewLine);
 
   Separator = MakeOwnedObject<TFarSeparator>(this);
   Separator->SetCaption(GetMsg(NB_LOGIN_SFTP_BUGS_GROUP));
