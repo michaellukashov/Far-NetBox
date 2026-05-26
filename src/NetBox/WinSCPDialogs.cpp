@@ -4126,6 +4126,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
     SFTPMaxVersionCombo->GetItems()->Add(::IntToStr(Index2));
   }
   Text->SetEnabledFollow(SFTPMaxVersionCombo);
+  SetNextItemPosition(ipNewLine);
 
   // SFTP RealPath and POSIX rename
   Text = MakeOwnedObject<TFarText>(this);
