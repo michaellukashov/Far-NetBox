@@ -2545,19 +2545,22 @@ bool TWinSCPFileSystem::SetDirectoryEx(const UnicodeString & ADir, OPERATION_MOD
     }
     try__finally
     {
-      if (ADir == BACKSLASH)
+      if (FTerminal)
       {
-        FTerminal->ChangeDirectory(ROOTDIRECTORY);
-      }
-      else if ((ADir == PARENTDIRECTORY) && (FTerminal->GetCurrentDirectory() == ROOTDIRECTORY))
-      {
-        // ClosePanel();
-        Disconnect();
-      }
-      else
-      {
-        FTerminal->ChangeDirectory(ADir);
-        FCurrentDirectoryWasChanged = true;
+        if (ADir == BACKSLASH)
+        {
+          FTerminal->ChangeDirectory(ROOTDIRECTORY);
+        }
+        else if ((ADir == PARENTDIRECTORY) && (FTerminal->GetCurrentDirectory() == ROOTDIRECTORY))
+        {
+          // ClosePanel();
+          Disconnect();
+        }
+        else
+        {
+          FTerminal->ChangeDirectory(ADir);
+          FCurrentDirectoryWasChanged = true;
+        }
       }
     }
     __finally
