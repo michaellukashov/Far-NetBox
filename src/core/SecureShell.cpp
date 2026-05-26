@@ -1189,7 +1189,7 @@ void TSecureShell::FromBackend(const uint8_t * Data, size_t Length)
 
   if (Len > 0)
   {
-    if (PendSize < PendLen + Len)
+    if (PendSize < PendLen + Len || !Pending)
     {
       PendSize = PendLen + Len + 4096;
       Pending = nb::ToUInt8Ptr(
