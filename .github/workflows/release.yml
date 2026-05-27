@@ -169,7 +169,7 @@ jobs:
 
           # Main archive (exclude PDB files)
           echo "Creating main archive: ${{ env.netbox_name }}"
-          7z a -m0=LZMA -mf=BCJ2 -mx9 "${{ env.netbox_name }}" "${PLUGIN_DIR}/" -xr!*.pdb
+          7z a -m0=LZMA -mf=BCJ2 -mx9 "${{ env.netbox_name }}" "${PLUGIN_DIR}/*" -xr!*.pdb
 
           # PDB archive (only if exists)
           PDB_FILE="${PLUGIN_DIR}/NetBox/NetBox.pdb"
