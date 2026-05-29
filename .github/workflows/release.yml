@@ -237,7 +237,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          RELEASE_TAG="v${{ env.version_short }}"
+          RELEASE_TAG="v${{ env.version }}"
           RELEASE_TITLE="NetBox ${{ env.version_short }}"
 
           echo "Creating release: $RELEASE_TAG"
