@@ -108,15 +108,18 @@ static void WINAPI sim_ReleaseSRWLock(PSRWLOCK SRWLock)
 //----------------------------------------------------------------------------
 static BOOLEAN WINAPI sim_TryAcquireSRWLock(PSRWLOCK SRWLock)
 {
-    return InterlockedCompareExchangePointer(&SRWLock->Ptr, (PVOID)1, nullptr) == NULL;
+    return !InterlockedCompareExchangePointer(&SRWLock->Ptr, (PVOID)1, nullptr);
 }
 
 //----------------------------------------------------------------------------
 static VOID WINAPI sim_AcquireSRWLock(PSRWLOCK SRWLock)
 {
-    for(unsigned sc = 0; !sim_TryAcquireSRWLock(SRWLock); sc++)
+    unsigned sc = 0;
+    while(!sim_TryAcquireSRWLock(SRWLock)) {
       if(sc < 10) YieldProcessor();
       else Sleep(sc >= 20);
+      ++sc;
+    }
 }
 
 //----------------------------------------------------------------------------
