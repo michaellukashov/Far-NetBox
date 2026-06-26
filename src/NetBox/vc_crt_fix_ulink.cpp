@@ -96,19 +96,19 @@ static DWORD WINAPI sim_FlsAlloc(PFLS_CALLBACK_FUNCTION)
 //----------------------------------------------------------------------------
 static void WINAPI sim_InitializeSRWLock(PSRWLOCK SRWLock)
 {
-    SRWLock->Ptr = NULL;
+    SRWLock->Ptr = nullptr;
 }
 
 //----------------------------------------------------------------------------
 static void WINAPI sim_ReleaseSRWLock(PSRWLOCK SRWLock)
 {
-    InterlockedExchangePointer(&SRWLock->Ptr, NULL);
+    InterlockedExchangePointer(&SRWLock->Ptr, nullptr);
 }
 
 //----------------------------------------------------------------------------
 static BOOLEAN WINAPI sim_TryAcquireSRWLock(PSRWLOCK SRWLock)
 {
-    return InterlockedCompareExchangePointer(&SRWLock->Ptr, (PVOID)1, NULL) == NULL;
+    return InterlockedCompareExchangePointer(&SRWLock->Ptr, (PVOID)1, nullptr) == NULL;
 }
 
 //----------------------------------------------------------------------------
@@ -122,7 +122,7 @@ static VOID WINAPI sim_AcquireSRWLock(PSRWLOCK SRWLock)
 //----------------------------------------------------------------------------
 static VOID WINAPI sim_InitializeConditionVariable(PCONDITION_VARIABLE CondVar)
 {
-    CondVar->Ptr = NULL;
+    CondVar->Ptr = nullptr;
 }
 
 //----------------------------------------------------------------------------
@@ -148,7 +148,7 @@ static BOOLEAN WINAPI sim_WakeConditionVariable(PCONDITION_VARIABLE)
 
 //----------------------------------------------------------------------------
 static FARPROC WINAPI delayFailureHook(/*dliNotification*/unsigned dliNotify,
-                                       PDelayLoadInfo pdli)
+                                       const DelayLoadInfo* pdli)
 {
     if(   dliNotify == dliFailGetProc
        && pdli && pdli->cb == sizeof(*pdli)
@@ -225,7 +225,8 @@ static FARPROC WINAPI delayFailureHook(/*dliNotification*/unsigned dliNotify,
 #pragma comment(linker, "/delayload:kernel32.InitializeConditionVariable")
 
 //----------------------------------------------------------------------------
-#if _MSC_FULL_VER >= 190024215 // VS2015sp3
+// VS2015sp3
+#if (_MSC_FULL_VER >= 190024215) && !defined(DELAYIMP_INSECURE_WRITABLE_HOOKS)
 const
 #endif
 PfnDliHook __pfnDliFailureHook2 = (PfnDliHook)delayFailureHook;
