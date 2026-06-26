@@ -7340,7 +7340,7 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
     MsgText->SetRight(-6);
     MsgText->SetFlag(DIF_CENTERTEXT, true);
     const TRemoteFile * File = AFileList->GetAs<TRemoteFile>(0);
-    if (!File->GetLinkTo().IsEmpty())
+    if ((File != nullptr) && !File->GetLinkTo().IsEmpty())
     {
       SetHeight(GetHeight() + 1);
       Text = MakeOwnedObject<TFarText>(this);
