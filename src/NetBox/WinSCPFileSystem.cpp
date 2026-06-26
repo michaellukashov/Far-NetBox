@@ -100,6 +100,23 @@ void TRemoteFilePanelItem::GetData(
   uintptr_t & /*NumberOfLinks*/, UnicodeString & /*Description*/,
   UnicodeString &Owner, void *& UserData, size_t & CustomColumnNumber)
 {
+  // Defensive guard: FRemoteFile may be null if the directory was rebuilt
+  // (e.g. after shell command) but the panel was not yet refreshed via
+  // UpdatePanel(). Return safe defaults to prevent null-deref crash (issue #523).
+  if (FRemoteFile == nullptr)
+  {
+    TINYLOG_WARNING(g_tinylog) << TLogContext::Format()
+      << "TRemoteFilePanelItem::GetData: FRemoteFile is null, returning stale defaults";
+    AFileName.Clear();
+    Size = 0;
+    FileAttributes = 0;
+    LastWriteTime = TDateTime();
+    LastAccess = TDateTime();
+    Owner.Clear();
+    UserData = nullptr;
+    CustomColumnNumber = 0;
+    return;
+  }
   AFileName = FRemoteFile->GetFileName();
   Size = FRemoteFile->GetSize();
   if (Size < 0)
@@ -120,6 +137,14 @@ void TRemoteFilePanelItem::GetData(
 
 UnicodeString TRemoteFilePanelItem::GetCustomColumnData(size_t Column)
 {
+  // Defensive guard: FRemoteFile may be null if directory was rebuilt but
+  // panel not yet refreshed (issue #523).
+  if (FRemoteFile == nullptr)
+  {
+    TINYLOG_WARNING(g_tinylog) << TLogContext::Format()
+      << "TRemoteFilePanelItem::GetCustomColumnData: FRemoteFile is null, returning empty";
+    return UnicodeString();
+  }
   switch (Column)
   {
   case 0: return FRemoteFile->GetFileGroup().GetName();
@@ -1004,10 +1029,13 @@ bool TWinSCPFileSystem::ExecuteCommand(const UnicodeString & Command)
         FTerminal->EndTransaction();
       if (FTerminal->GetActive())
       {
-        if (WinConfiguration && WinConfiguration->GetRefreshRemotePanel())
-        {
-          UpdatePanel();
-        }
+        // Always refresh the panel after a shell command — the command may have
+        // created/deleted/modified files, and stale panel entries cause null-deref
+        // crashes on F3/F4 (issue #523). RefreshRemotePanel controls periodic
+        // background refresh, not post-command refresh.
+        FTerminal->LogEvent(L"ExecuteCommand: forcing panel refresh after shell command");
+        UpdatePanel();
+        FTerminal->LogEvent(L"ExecuteCommand: panel refresh complete");
         RedrawPanel();
       }
       else
@@ -2069,6 +2097,12 @@ void TWinSCPFileSystem::RenameFile()
     RequireCapability(fcRename);
 
     TRemoteFile * File = static_cast<TRemoteFile *>(Focused->GetUserData());
+    if (File == nullptr)
+    {
+      TINYLOG_WARNING(g_tinylog) << TLogContext::Format()
+        << "RenameFile: stale panel entry (UserData null), skipping rename";
+      return;
+    }
     UnicodeString NewName = File->GetFileName();
     if (RenameFileDialog(File, NewName))
     try__finally
@@ -3504,7 +3538,16 @@ TStrings * TWinSCPFileSystem::CreateFileList(TObjectList * PanelItems,
           UTF8String fileNameUtf8(FileName);
           TINYLOG_TRACE(g_tinylog) << TLogContext::Format()
               << " CreateFileList: duplicating remote file: " << fileNameUtf8.c_str();
-          Data = RemoteFile->Duplicate(true);
+          try
+          {
+            Data = RemoteFile->Duplicate(true);
+          }
+          catch (Exception & E)
+          {
+            TINYLOG_WARNING(g_tinylog) << TLogContext::Format()
+              << " CreateFileList: exception during Duplicate, skipping stale file entry: " << fileNameUtf8.c_str();
+            Data = nullptr;
+          }
         }
         else
         {
