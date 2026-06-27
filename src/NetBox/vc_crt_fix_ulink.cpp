@@ -94,6 +94,42 @@ static DWORD WINAPI sim_FlsAlloc(PFLS_CALLBACK_FUNCTION)
 #endif
 
 //----------------------------------------------------------------------------
+static void WINAPI sim_InitializeSRWLock(PSRWLOCK SRWLock)
+{
+    SRWLock->Ptr = nullptr;
+}
+
+//----------------------------------------------------------------------------
+static void WINAPI sim_ReleaseSRWLock(PSRWLOCK SRWLock)
+{
+    InterlockedExchangePointer(&SRWLock->Ptr, nullptr);
+}
+
+//----------------------------------------------------------------------------
+static BOOLEAN WINAPI sim_TryAcquireSRWLock(PSRWLOCK SRWLock)
+{
+    return InterlockedCompareExchangePointer(&SRWLock->Ptr, (PVOID)1, nullptr) == nullptr;
+}
+
+//----------------------------------------------------------------------------
+static VOID WINAPI sim_AcquireSRWLock(PSRWLOCK SRWLock)
+{
+    unsigned sc = 0;
+    while(!sim_TryAcquireSRWLock(SRWLock)) {
+      // backoff: [0,10) yield, [10,20) Sleep(0), [20,inf) Sleep(1)
+      if(sc < 10) YieldProcessor();
+      else Sleep(sc < 20 ? 0 : 1);
+      ++sc;
+    }
+}
+
+//----------------------------------------------------------------------------
+static VOID WINAPI sim_InitializeConditionVariable(PCONDITION_VARIABLE CondVar)
+{
+    CondVar->Ptr = nullptr;
+}
+
+//----------------------------------------------------------------------------
 static BOOL WINAPI sim_SleepConditionVariableSRW(PCONDITION_VARIABLE, PSRWLOCK, DWORD, ULONG)
 {
     SetLastError(ERROR_CALL_NOT_IMPLEMENTED);
@@ -101,36 +137,26 @@ static BOOL WINAPI sim_SleepConditionVariableSRW(PCONDITION_VARIABLE, PSRWLOCK, 
 }
 
 //----------------------------------------------------------------------------
-static BOOLEAN WINAPI sim__unimpl_1arg(PVOID)
+static BOOL WINAPI sim_SleepConditionVariableCS(PCONDITION_VARIABLE, PCRITICAL_SECTION, DWORD)
 {
     SetLastError(ERROR_CALL_NOT_IMPLEMENTED);
     return FALSE;
 }
 
 //----------------------------------------------------------------------------
-// Forward declarations for HOOK wrapper fallbacks (kernel32 syncapi)
-extern "C" void WINAPI Wrapper_AcquireSRWLockExclusive(PSRWLOCK);
-extern "C" void WINAPI Wrapper_ReleaseSRWLockExclusive(PSRWLOCK);
-extern "C" BOOLEAN WINAPI Wrapper_TryAcquireSRWLockExclusive(PSRWLOCK);
-extern "C" void WINAPI Wrapper_InitializeSRWLock(PSRWLOCK);
-extern "C" void WINAPI Wrapper_AcquireSRWLockShared(PSRWLOCK);
-extern "C" void WINAPI Wrapper_ReleaseSRWLockShared(PSRWLOCK);
-extern "C" BOOLEAN WINAPI Wrapper_TryAcquireSRWLockShared(PSRWLOCK);
-extern "C" void WINAPI Wrapper_WakeConditionVariable(PCONDITION_VARIABLE);
-extern "C" BOOL WINAPI Wrapper_SleepConditionVariableCS(PCONDITION_VARIABLE, PCRITICAL_SECTION, DWORD);
-extern "C" void WINAPI Wrapper_InitializeConditionVariable(PCONDITION_VARIABLE);
+static void WINAPI sim_WakeConditionVariable(PCONDITION_VARIABLE)
+{
+    SetLastError(ERROR_CALL_NOT_IMPLEMENTED);
+}
 
 //----------------------------------------------------------------------------
 static FARPROC WINAPI delayFailureHook(/*dliNotification*/unsigned dliNotify,
                                        PDelayLoadInfo pdli)
 {
-    if(dliNotify == dliFailGetProcAddress
+    if(   dliNotify == dliFailGetProc
        && pdli && pdli->cb == sizeof(*pdli)
        && pdli->dlp.fImportByName && pdli->dlp.szProcName)
     {
-#if _MSC_FULL_VER >= 191326128  // VS2017.6
-#pragma warning(disable: 4191)  // unsafe conversion from...to
-#endif
 #ifndef _WIN64
       if(!lstrcmpA(pdli->dlp.szProcName, "GetModuleHandleExW"))
         return (FARPROC)sim_GetModuleHandleExW;
@@ -152,27 +178,29 @@ static FARPROC WINAPI delayFailureHook(/*dliNotification*/unsigned dliNotify,
       if(!lstrcmpA(pdli->dlp.szProcName, "SleepConditionVariableSRW"))
         return (FARPROC)sim_SleepConditionVariableSRW;
       if(!lstrcmpA(pdli->dlp.szProcName, "WakeAllConditionVariable"))
-        return (FARPROC)sim__unimpl_1arg;
+        return (FARPROC)sim_WakeConditionVariable;
       if(!lstrcmpA(pdli->dlp.szProcName, "ReleaseSRWLockExclusive"))
-        return (FARPROC)Wrapper_ReleaseSRWLockExclusive;
+        return (FARPROC)sim_ReleaseSRWLock;
       if(!lstrcmpA(pdli->dlp.szProcName, "AcquireSRWLockExclusive"))
-        return (FARPROC)Wrapper_AcquireSRWLockExclusive;
+        return (FARPROC)sim_AcquireSRWLock;
       if(!lstrcmpA(pdli->dlp.szProcName, "TryAcquireSRWLockExclusive"))
-        return (FARPROC)Wrapper_TryAcquireSRWLockExclusive;
+        return (FARPROC)sim_TryAcquireSRWLock;
       if(!lstrcmpA(pdli->dlp.szProcName, "InitializeSRWLock"))
-        return (FARPROC)Wrapper_InitializeSRWLock;
+        return (FARPROC)sim_InitializeSRWLock;
+      // Shared SRW locks are simulated as exclusive (matches vc_crt_fix_impl.cpp);
+      // on Vista+ the real kernel32 shared semantics are resolved via delayload.
       if(!lstrcmpA(pdli->dlp.szProcName, "AcquireSRWLockShared"))
-        return (FARPROC)Wrapper_AcquireSRWLockShared;
+        return (FARPROC)sim_AcquireSRWLock;
       if(!lstrcmpA(pdli->dlp.szProcName, "ReleaseSRWLockShared"))
-        return (FARPROC)Wrapper_ReleaseSRWLockShared;
+        return (FARPROC)sim_ReleaseSRWLock;
       if(!lstrcmpA(pdli->dlp.szProcName, "TryAcquireSRWLockShared"))
-        return (FARPROC)Wrapper_TryAcquireSRWLockShared;
+        return (FARPROC)sim_TryAcquireSRWLock;
       if(!lstrcmpA(pdli->dlp.szProcName, "WakeConditionVariable"))
-        return (FARPROC)Wrapper_WakeConditionVariable;
+        return (FARPROC)sim_WakeConditionVariable;
       if(!lstrcmpA(pdli->dlp.szProcName, "SleepConditionVariableCS"))
-        return (FARPROC)Wrapper_SleepConditionVariableCS;
+        return (FARPROC)sim_SleepConditionVariableCS;
       if(!lstrcmpA(pdli->dlp.szProcName, "InitializeConditionVariable"))
-        return (FARPROC)Wrapper_InitializeConditionVariable;
+        return (FARPROC)sim_InitializeConditionVariable;
     }
     return nullptr;
 }
@@ -202,7 +230,8 @@ static FARPROC WINAPI delayFailureHook(/*dliNotification*/unsigned dliNotify,
 #pragma comment(linker, "/delayload:kernel32.InitializeConditionVariable")
 
 //----------------------------------------------------------------------------
-#if _MSC_FULL_VER >= 190024215 // VS2015sp3
+// VS2015sp3
+#if (_MSC_FULL_VER >= 190024215) && !defined(DELAYIMP_INSECURE_WRITABLE_HOOKS)
 const
 #endif
 PfnDliHook __pfnDliFailureHook2 = (PfnDliHook)delayFailureHook;

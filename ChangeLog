@@ -1,6 +1,14 @@
 # for this file format description,
 # see https://github.com/olivierlacan/keep-a-changelog
 
+## [Unreleased]
+
+### Fixes
+
+ * Fix link with ulink after v2.6.5.3.612 — replace extern `Wrapper_*` fallback declarations with local `sim_*` SRW lock / condition-variable helpers in `vc_crt_fix_ulink.cpp`, and correct the delay-load failure hook to use `dliFailGetProc` https://github.com/michaellukashov/Far-NetBox/pull/519
+ * Fix panel not auto-refreshing after shell command and null-deref crash on stale panel item pointers https://github.com/michaellukashov/Far-NetBox/issues/523
+
+
 ## [26.05.3.613] - 2026-05-29
 
 ### Fixes
