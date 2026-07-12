@@ -160,6 +160,7 @@
 "Ajustes de i&ntegración"
 "&Security"
 "Ajustes de &panel"
+
 "Añadir a menú de &Discos"
 "Añadir a menú de Com&plementos"
 "Añadir &comandos a menú de Complementos (Alt-Shift-W)"
@@ -1291,7 +1292,7 @@
 
 "CORE_VARIABLE"
 "SSH and SCP code based on PuTTY %s"
-"0.81"
+"0.84"
 "Copyright © 1997-2024 Simon Tatham"
 "http://www.chiark.greenend.org.uk/~sgtatham/putty/"
 "FTP code based on FileZilla"
@@ -1458,3 +1459,4 @@
 "Comparar directorios"
 "Comparar directorios"
 "No se encontraron diferencias."
+"The remote file has been changed while you were editing it. Do you want to overwrite it anyway?"

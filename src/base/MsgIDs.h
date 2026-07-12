@@ -1,5 +1,6 @@
 #pragma once
 enum MsgIDs {
+
     NB_PLUGIN_NAME,  // "NetBox"
     NB_PLUGIN_TITLE,  // "NetBox"
 
@@ -391,10 +392,10 @@ enum MsgIDs {
     NB_SSH_HOST_CA_HOSTS_INVALID,  // "Error in validity expression."
     NB_LOGIN_NOT_SHOWING_AGAIN,  // "**Stop showing Login dialog automatically?** Please confirm if you really want to WinSCP stop showing Login dialog automatically on startup and when the last session is closed.\n\nIf you change your mind later, you can revert this in Preferences on Environment > Window page.\n\nTo open the Login dialog manually, go to Tabs > New Tab [> Remote Tab] or use corresponding toolbar button."
 
-    // Security dialog
     NB_SECURITY_MASTER_PASSWORD_GROUP,  // " Master password "
     NB_SECURITY_USE_MASTER_PASSWORD,  // "&Use master password"
     NB_SECURITY_CHANGE_MASTER_PASSWORD,  // "Chan&ge master password..."
+
     NB_SECURITY_SESSION_PASSWORD_GROUP,  // " Session password "
     NB_SECURITY_REMEMBER_PASSWORD,  // "Remember password for &duration of session"
     NB_SECURITY_SSH_HOST_CA_GROUP,  // "Trusted host certification authorities "
@@ -561,7 +562,6 @@ enum MsgIDs {
     NB_TRANSFER_AUTO_POPUP,  // "&Automatically popup prompts when idle"
     NB_TRANSFER_QUEUE_BEEP,  // "&Beep when queue empties or transfer requires attention"
     NB_TRANSFER_REMEMBER_PASSWORD,  // "Reuse &password of the main session"
-
     NB_TRANSFER_PRESET_LABEL,  // "Preset"
     NB_TRANSFER_PRESET_DEFAULT,  // "Default"
     NB_TRANSFER_PRESET_TEXT_ASCII,  // "Text files (ASCII)"
@@ -590,6 +590,7 @@ enum MsgIDs {
     NB_MENU_COMMANDS_CLEANUP,  // "&Cleanup Configuration"
     NB_MENU_COMMANDS_GENERATE_URL,  // "Generate &URL"
     NB_MENU_COMMANDS_LOCATION_PROFILES,  // "Location &Profiles"
+
     NB_SERVER_PROTOCOL_INFORMATION,  // "Server and protocol information"
     NB_SERVER_INFORMATION_GROUP,  // " Server information "
     NB_SERVER_SSH_IMPLEMENTATION,  // "SSH implementation:"
@@ -1319,12 +1320,12 @@ enum MsgIDs {
     MSG_WINSCPFAR_BASED_VERSION,  // " Version %s"
     MSG_WINSCPFAR_BASED_COPYRIGHT,  // "Copyright © 2000-2025 Martin Přikryl"
 
-    // TextsCore2.rc
+
     MSG_UNKNOWN_KEY4,  // "**Continue connecting to an unknown server and \nadd its host key to a cache?**\n\nThe server's host key was not found in the cache. You have no guarantee that the server is the computer you think it is.\n\nThe server's %s key details are:\n\n%s\n\nIf you trust this host, press Yes. To connect without adding host key to the cache, press No. To abandon the connection press Cancel."
     MSG_DIFFERENT_KEY5,  // "**WARNING - POTENTIAL SECURITY BREACH!**\n\nThe server's host key does not match the one WinSCP has in cache. This means that either the server administrator has changed the host key, the server presents different key under certain circumstance, or you have actually connected to another computer pretending to be the server.\n\nThe new %s key details are:\n\n%s\n\nIf you were expecting this change, trust the new key and want to continue connecting to the server, either press Update to update cache, or press Add to add the new key to the cache while keeping the old one(s). If you want to carry on connecting but without updating the cache, press Skip. If you want to abandon the connection completely, press Cancel. Pressing Cancel is the ONLY guaranteed safe choice."
     MSG_OLD_KEY,  // "You are loading an SSH-2 private key which has an old version of the file format. This means your key file is not fully tamperproof. We recommend you convert your key to the new format.\n\nYou can perform this conversion by loading the key into PuTTYgen and then saving it again."
 
-    // rtlconsts.rc
+
     MSG_SDuplicateString,  // "String list does not allow duplicates"
 
     MSG_SListCountError,  // "List count out of bounds (%d)"
@@ -1365,7 +1366,7 @@ enum MsgIDs {
     NB_S3_SESSIONTOKEN,  // "&Session token:"
 
     MSG_FTP_LISTING_PARSE_FAILED,  // "Cannot read directory listing from this FTP server.\nTry connecting to a subdirectory instead."
-    // Master Password configuration
+
     NB_MASTER_PASSWORD_CAPTION,  // "Master password"
     NB_MASTER_PASSWORD_CURRENT,  // "&Current master password:"
     NB_MASTER_PASSWORD_NEW,  // "&New master password:"
@@ -1394,6 +1395,7 @@ enum MsgIDs {
     NB_LOGIN_AUTH_DETACHED_CERTIFICATE_LABEL,  // "Certificate to &use with the private key:"
     NB_LOGIN_DISPLAY_PUBLIC_KEY,  // "&Display Public Key"
     NB_LOGIN_KEX_GSSAPI,  // "Attempt GSSAPI key exchange"
+
     NB_S3_ROLE_ARN,  // "&Role ARN:"
     NB_S3_ROLE_SESSION_NAME,  // "Role &session name:"
     NB_S3_CREDENTIALS_ENV,  // "Credentials from A&WS environment"
@@ -1419,8 +1421,6 @@ enum MsgIDs {
     NB_CLEANUP_TEMP_FOLDERS,  // "&Temporary folders"
     NB_CLEANUP_CHECK_ALL,  // "Select &all"
     NB_CLEANUP_DESELECT_ALL,  // "&Deselect all"
-
-    // Generate URL Dialog
     NB_GENERATE_URL_TITLE,  // "Generate &URL"
     NB_GENERATE_URL_URL_TAB,  // "&URL"
     NB_GENERATE_URL_SCRIPT_TAB,  // "S&cript"
@@ -1442,8 +1442,6 @@ enum MsgIDs {
     NB_GENERATE_URL_SCRIPT_GET_FILES,  // "Download files"
     NB_GENERATE_URL_SCRIPT_SESSION_MODE,  // "Session mode"
     NB_GENERATE_URL_SCRIPT_TRANSFER_MODE,  // "Transfer mode"
-
-    // Location Profiles Dialog
     NB_LOCATION_PROFILES_TITLE,  // "Location &Profiles"
     NB_LOCATION_PROFILES_SESSION_TAB,  // "&Session profiles"
     NB_LOCATION_PROFILES_SHARED_TAB,  // "&Shared profiles"
@@ -1453,19 +1451,14 @@ enum MsgIDs {
     NB_LOCATION_PROFILES_REMOVE,  // "&Remove"
     NB_LOCATION_PROFILES_RENAME,  // "&Rename"
     NB_LOCATION_PROFILES_OPEN,  // "&Open"
-
-    // CopyParamCustom
     NB_COPY_PRESET_CUSTOM,  // "Custom"
     NB_CONFIRMATIONS_SILENT_MODE,  // "Silent mode (suppress all confirmations)"
 
-    // Location Profiles InputBox prompts
     NB_LOCATION_BOOKMARK_NAME_PROMPT,  // "Bookmark name:"
     NB_LOCATION_BOOKMARK_RENAME_PROMPT,  // "New name:"
-
-    // Location Profiles remove confirmation
     NB_LOCATION_PROFILES_REMOVE_CONFIRM,  // "Do you wish to remove bookmark '%s'"
-    // Compare Directories
     NB_MENU_COMMANDS_COMPARE_DIRECTORIES,  // "Compare directories"
     NB_COMPARE_DIRECTORIES_TITLE,  // "Compare Directories"
     NB_COMPARE_DIRECTORIES_NO_DIFFERENCES,  // "No differences found."
+    NB_EDIT_CHANGED_EXTERNALLY,  // "The remote file has been changed while you were editing it. Do you want to overwrite it anyway?"
 };

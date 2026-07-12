@@ -160,6 +160,7 @@
 "I&ntegration settings"
 "&Security"
 "&Panel settings"
+
 "Add to &Disks menu"
 "Add to &Plugins menu"
 "Add &commands to Plugins menu (Alt-Shift-W)"
@@ -1458,3 +1459,4 @@
 "Compare directories"
 "Compare Directories"
 "No differences found."
+"The remote file has been changed while you were editing it. Do you want to overwrite it anyway?"

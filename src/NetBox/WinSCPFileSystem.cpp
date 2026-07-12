@@ -4677,7 +4677,7 @@ void TWinSCPFileSystem::UploadFromEditor(bool NoReload,
         {
           FTerminal->LogEvent(FORMAT("DEBUG: Remote file was modified externally - showing confirmation dialog"));
           uint32_t Flags = FMSG_WARNING | FMSG_MB_OKCANCEL;
-          UnicodeString MessageText = GetMsg(EDIT_CHANGED_EXTERNALLY);
+          UnicodeString MessageText = GetMsg(NB_EDIT_CHANGED_EXTERNALLY);
           int32_t Result = GetWinSCPPlugin()->Message(Flags, L"", MessageText);
           if (Result == -1)
           {
