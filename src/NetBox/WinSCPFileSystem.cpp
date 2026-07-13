@@ -4734,6 +4734,39 @@ void TWinSCPFileSystem::UploadFromEditor(bool NoReload,
     FTerminal->SetAutoReadDirectory(PrevAutoReadDirectory);
     FFileList.reset();
   } end_try__finally
+  // Update stored timestamp to match the newly uploaded remote file.
+  // This prevents false-positive EDIT_CHANGED_EXTERNALLY on subsequent saves
+  // because PreserveTime is disabled and the remote gets a fresh server timestamp.
+  try
+  {
+    UnicodeString RemoteFilePath = base::UnixCombinePaths(DestPath, RealFileName);
+    std::unique_ptr<TRemoteFile> RemoteFile(FTerminal->TryReadFile(RemoteFilePath));
+    if (RemoteFile != nullptr)
+    {
+      FLastEditFileTimestamp = RemoteFile->GetModification();
+      FTerminal->LogEvent(FORMAT("DEBUG: Updated FLastEditFileTimestamp after upload: %s",
+        nb::DateTimeToStr(FLastEditFileTimestamp).c_str()));
+      // Also update multiple-edit source timestamp if applicable
+      if (FLastEditorID >= 0)
+      {
+        auto it = FMultipleEdits.find(FLastEditorID);
+        if (it != FMultipleEdits.end())
+        {
+          it->second.SourceTimestamp = FLastEditFileTimestamp;
+        }
+      }
+    }
+    else
+    {
+      FLastEditFileTimestamp = TDateTime();
+      FTerminal->LogEvent(FORMAT("DEBUG: Could not re-read remote file after upload - timestamp cleared"));
+    }
+  }
+  catch (Exception & E)
+  {
+    FLastEditFileTimestamp = TDateTime();
+    FTerminal->LogEvent(FORMAT("DEBUG: Failed to update timestamp after upload: %s - cleared", E.Message.c_str()));
+  }
 }
 
 void TWinSCPFileSystem::UploadOnSave(bool NoReload)
