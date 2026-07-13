@@ -3,13 +3,13 @@
 
 ## [Unreleased]
 
+## [26.07.2.615] - 2026-07-13
+
 ### Fixes
 
- * Fix link with ulink after v2.6.5.3.612 — replace extern `Wrapper_*` fallback declarations with local `sim_*` SRW lock / condition-variable helpers in `vc_crt_fix_ulink.cpp`, and correct the delay-load failure hook to use `dliFailGetProc` https://github.com/michaellukashov/Far-NetBox/pull/519
- * Fix panel not auto-refreshing after shell command and null-deref crash on stale panel item pointers https://github.com/michaellukashov/Far-NetBox/issues/523
- * Polish translation updates: fix accelerator keys (Protocol, SFTP), update session start text, fix Edit history shortcut, capitalize NULL in SSH keepalive, translate remaining English strings in certificate/S3/TLS sections https://github.com/michaellukashov/Far-NetBox/pull/526
-
-
+ * Fix reentrancy guard on `ProcessEditorEvent` to prevent stack overflow from recursive calls https://github.com/michaellukashov/Far-NetBox/commit/5ee0e526d
+ * Fix false-positive "remote file has been changed" warning when saving an edited remote file a second time (F2) — update stored timestamp after each upload to prevent stale-timestamp mismatch
+ 
 ## [26.07.1.614] - 2026-07-12
 
 ### Fixes
