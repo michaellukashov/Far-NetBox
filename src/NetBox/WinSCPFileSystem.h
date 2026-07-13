@@ -367,6 +367,7 @@ private:
   bool FNoProgress{false};
   bool FSynchronizationCompare{false};
   bool FEditorPendingSave{false};
+  bool FProcessingEditorEvent{false};
   bool FNoProgressFinish{false};
   bool FSynchronisingBrowse{false};
   bool FOutputLog{false};

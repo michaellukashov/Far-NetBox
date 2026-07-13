@@ -4810,6 +4810,12 @@ void TWinSCPFileSystem::UploadOnSave(bool NoReload)
 
 void TWinSCPFileSystem::ProcessEditorEvent(intptr_t Event, void * /* Param */)
 {
+  if (FProcessingEditorEvent)
+  {
+    AppLogFmt(L"ProcessEditorEvent: Reentrant call skipped (Event=%d)", static_cast<intptr_t>(Event));
+    return;
+  }
+  FProcessingEditorEvent = true;
   // EE_REDRAW is the first for optimization
   if (Event == EE_REDRAW)
   {
@@ -4970,6 +4976,7 @@ void TWinSCPFileSystem::ProcessEditorEvent(intptr_t Event, void * /* Param */)
       }
     }
   }
+  FProcessingEditorEvent = false;
 }
 
 void TWinSCPFileSystem::EditViewCopyParam(TCopyParamType & CopyParam)
