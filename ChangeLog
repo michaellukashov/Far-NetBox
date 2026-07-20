@@ -3,6 +3,13 @@
 
 ## [Unreleased]
 
+## [26.07.3.616] - 2026-07-20
+
+### Fixes
+
+ * Fix FAR crash when using netBox FTP/SFTP https://bugs.farmanager.com/view.php?id=4104
+ 0004104: FAR crashes when I use netBox FTP/SFTP
+
 ## [26.07.2.615] - 2026-07-13
 
 ### Fixes

@@ -6,5 +6,5 @@
 
 #define NETBOX_VERSION_MAJOR         26
 #define NETBOX_VERSION_MINOR         7
-#define NETBOX_VERSION_PATCH         2
-#define NETBOX_VERSION_BUILD         615
+#define NETBOX_VERSION_PATCH         3
+#define NETBOX_VERSION_BUILD         616
