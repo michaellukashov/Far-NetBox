@@ -851,6 +851,14 @@ bool TWinSCPFileSystem::ProcessPanelEventEx(intptr_t Event, void * Param)
       if (FInCancelDialog)
         return false;
 
+      // Show deferred exception from worker thread (FTP CMainThread timeout)
+      if (FDeferredExceptionPending)
+      {
+        ProcessDeferredException();
+        return false;
+      }
+
+
       if (FTerminal != nullptr)
       {
         const TFileOperationProgressType * MainProg = FTerminal->GetOperationProgress();
@@ -4169,9 +4177,55 @@ void TWinSCPFileSystem::TerminalDisplayBanner(
 }
 
 void TWinSCPFileSystem::TerminalShowExtendedException(
-  TTerminal * /*Terminal*/, Exception * E, void * /*Arg*/)
+  TTerminal * Terminal, Exception * E, void * /*Arg*/)
 {
-  GetWinSCPPlugin()->ShowExtendedException(E);
+  if (::GetCurrentThreadId() == FMainThreadId.load())
+  {
+    // Main thread — show dialog directly (normal path for SFTP/SCP)
+    GetWinSCPPlugin()->ShowExtendedException(E);
+  }
+  else
+  {
+    // Worker thread (FTP CMainThread) — defer to main thread
+    DeferExceptionToMainThread(Terminal, E);
+  }
+}
+
+void TWinSCPFileSystem::DeferExceptionToMainThread(
+  TTerminal * Terminal, Exception * E)
+{
+  const TGuard Guard(FDeferredExceptionSection);
+  if (!FDeferredExceptionPending)
+  {
+    FDeferredExceptionPending = true;
+    FDeferredExceptionMessage = E->Message;
+    FDeferredExceptionTerminal = Terminal;
+    // Marshal to main thread — FE_IDLE handler will show the dialog
+    GetPlugin()->PostMainThreadSynchro(nullptr);
+  }
+  // If already pending, discard — only one error dialog at a time
+}
+
+void TWinSCPFileSystem::ProcessDeferredException()
+{
+  UnicodeString Message;
+  TTerminal * Terminal = nullptr;
+  {
+    const TGuard Guard(FDeferredExceptionSection);
+    if (FDeferredExceptionPending)
+    {
+      FDeferredExceptionPending = false;
+      Message = std::move(FDeferredExceptionMessage);
+      Terminal = FDeferredExceptionTerminal;
+      FDeferredExceptionTerminal = nullptr;
+    }
+  } // Guard destructor releases lock before showing dialog
+
+  if (!Message.IsEmpty())
+  {
+    Exception E(Message);
+    GetWinSCPPlugin()->ShowExtendedException(&E);
+  }
 }
 
 void TWinSCPFileSystem::OperationProgress(

@@ -261,6 +261,8 @@ private:
     int32_t Options, uint32_t & AParams);
   void TerminalShowExtendedException(TTerminal * Terminal,
     Exception * E, void * Arg);
+  void DeferExceptionToMainThread(TTerminal * Terminal, Exception * E);
+  void ProcessDeferredException();
   void TerminalDeleteLocalFile(const UnicodeString & AFileName, bool Alternative, int32_t & Deleted);
   HANDLE TerminalCreateLocalFile(const UnicodeString & ALocalFileName,
     DWORD DesiredAccess, DWORD ShareMode, DWORD CreationDisposition, DWORD FlagsAndAttributes);
@@ -375,6 +377,12 @@ private:
   bool FCurrentDirectoryWasChanged{false};
   bool FUpdatingPanelParam{false};
   DWORD FMainThreadId{0};
+  // Deferred exception from worker thread (FTP CMainThread timeout)
+  TCriticalSection FDeferredExceptionSection;
+  std::atomic<bool> FDeferredExceptionPending{false};
+  UnicodeString FDeferredExceptionMessage;
+  TTerminal * FDeferredExceptionTerminal{nullptr};
+
 };
 
 class TSessionPanelItem final : public TCustomFarPanelItem
