@@ -2,6 +2,7 @@
 # see https://github.com/olivierlacan/keep-a-changelog
 
 ## [Unreleased]
+* Fix session dialog and Interface Config dialog layout issues https://forum.farmanager.com/viewtopic.php?p=182981#p182981
 
 ## [26.07.3.616] - 2026-07-20
 

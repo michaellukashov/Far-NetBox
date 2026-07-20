@@ -318,7 +318,7 @@ bool TWinSCPPlugin::ConfigurationDialog()
   std::unique_ptr<TWinSCPDialog> DialogPtr(std::make_unique<TWinSCPDialog>(this));
   TWinSCPDialog * Dialog = DialogPtr.get();
 
-  Dialog->SetSize(TPoint(67, 22));
+  Dialog->SetSize(TPoint(67, 26));
   Dialog->SetCaption(FORMAT("%s - %s",
     GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_INTERFACE))));
   Dialog->SetDialogGuid(&ConfigurationDialogGuid);
@@ -423,6 +423,14 @@ bool TWinSCPPlugin::ConfigurationDialog()
   Text->SetCaption(GetMsg(NB_CONFIG_PANEL_MODE_HINT2));
 
   Dialog->AddStandardButtons();
+  // Adjust button positions to bottom of dialog
+  const TRect CRect = Dialog->GetClientRect();
+  Dialog->ButtonSeparator->SetTop(CRect.Bottom - 1);
+  Dialog->OkButton->SetTop(CRect.Bottom);
+  Dialog->CancelButton->SetTop(CRect.Bottom);
+  Dialog->OkButton->SetCenterGroup(true);
+  Dialog->CancelButton->SetCenterGroup(true);
+  Dialog->OkButton->SetDefault(true);
 
   TFarConfiguration * FarConfiguration = GetFarConfiguration();
   DisksMenuCheck->SetChecked(FarConfiguration->GetDisksMenu());
@@ -3722,6 +3730,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   TFarText * Text = MakeOwnedObject<TFarText>(this);
   Text->SetCaption(GetMsg(NB_LOGIN_TRANSFER_PROTOCOL));
+  Text->SetWidth(15);
 
   SetNextItemPosition(ipRight);
 
