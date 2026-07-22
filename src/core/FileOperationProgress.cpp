@@ -899,6 +899,10 @@ void TFileOperationProgressType::AddTotalSize(int64_t ASize)
   if (ASize != 0)
   {
     const TGuard Guard(FSection);
+    if (FTotalSize == 0)
+    {
+      FOriginalTotalSize = ASize;
+    }
     FTotalSize += ASize;
 
     if (FParent != nullptr)
@@ -1062,12 +1066,14 @@ TDateTime TFileOperationProgressType::TotalTimeLeft() const
   uint64_t CurCps = GetCPS();
   // sanity check
   const int64_t Processed = FTotalSkipped + FPersistence.TotalTransferred - FTotalTransferBase;
-  if ((CurCps > 0) && (FTotalSize > Processed))
+  // Use original expected size for ETA (stable); fall back to live FTotalSize
+  // if snapshot not yet taken (transfer not started).
+  const int64_t EffectiveTotal = (FOriginalTotalSize > 0) ? FOriginalTotalSize : FTotalSize;
+  if ((CurCps > 0) && (EffectiveTotal > Processed))
   {
-    return TDateTime(nb::ToDouble(FTotalSize - Processed) / CurCps / SecsPerDay);
+    return TDateTime(nb::ToDouble(EffectiveTotal - Processed) / CurCps / SecsPerDay);
   }
   return TDateTime(0.0);
-}
 
 int64_t TFileOperationProgressType::GetTotalTransferred() const
 {

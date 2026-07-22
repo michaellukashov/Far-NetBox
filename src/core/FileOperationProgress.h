@@ -151,6 +151,7 @@ private:
   int64_t FTotalTransferBase{0};
   int64_t FTotalSkipped{0};
   int64_t FTotalSize{0};
+  int64_t FOriginalTotalSize{0}; // snapshot of FTotalSize at first set; used for ETA when file grows
   bool FTotalSizeSet{false};
   bool FSuspended{false};
   bool FRestored{false};
