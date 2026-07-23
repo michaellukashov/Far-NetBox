@@ -2,7 +2,15 @@
 # see https://github.com/olivierlacan/keep-a-changelog
 
 ## [Unreleased]
-* Fix session dialog and Interface Config dialog layout issues https://forum.farmanager.com/viewtopic.php?p=182981#p182981
+
+### Fixes
+
+* Fix crash on SFTP file attribute change after editing (stale TRemoteFile pointers) https://github.com/michaellukashov/Far-NetBox/issues/318
+* Fix crash on exit after FTP upload attempt (bounded queue thread join on disconnect) https://github.com/michaellukashov/Far-NetBox/issues/328
+* Fix FTP directory listing crash from recursive ResetOperation re-entry
+* Harden ReadDirectory catch block with SavedDirectory fallback for corrupted FFiles state
+* Add null guards for TRemoteFile in DoAllowRemoteFileTransfer, DoSynchronizeCollectFile, and Sink
+* Add confirmation dialog before disconnecting when navigating up from root directory
 
 ## [26.07.3.616] - 2026-07-20
 

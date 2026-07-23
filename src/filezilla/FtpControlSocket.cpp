@@ -4685,6 +4685,11 @@ BOOL CFtpControlSocket::Create()
 
 void CFtpControlSocket::ResetOperation(int nSuccessful /*=FALSE*/)
 {
+  // During List, ResetOperation can be triggered by transfer-socket destruction
+  // callbacks; blocking prevents state destruction under an active List.
+  if (m_bInList)
+    return;
+
   if (nSuccessful & FZ_REPLY_CRITICALERROR)
     nSuccessful |= FZ_REPLY_ERROR;
 

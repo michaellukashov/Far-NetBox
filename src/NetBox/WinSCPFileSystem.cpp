@@ -553,6 +553,21 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, OPERATION_MODES 
       if (FReloadDirectory && FTerminal->GetActive())
       {
         FReloadDirectory = false;
+        // Invalidate stale TRemoteFile pointers in Far's panel items before
+        // ReloadDirectory() frees old TRemoteFile objects (issue #318).
+        TFarPanelInfo ** PanelInfo = GetPanelInfo();
+        if (PanelInfo && *PanelInfo)
+        {
+          TObjectList * FarItems = (*PanelInfo)->GetItems();
+          for (int32_t I = 0; I < FarItems->GetCount(); ++I)
+          {
+            TRemoteFilePanelItem * Item = FarItems->GetAs<TRemoteFilePanelItem>(I);
+            if (Item)
+            {
+              Item->InvalidateFile();
+            }
+          }
+        }
         FTerminal->ReloadDirectory();
       }
 
@@ -2595,8 +2610,10 @@ bool TWinSCPFileSystem::SetDirectoryEx(const UnicodeString & ADir, OPERATION_MOD
         }
         else if ((ADir == PARENTDIRECTORY) && (FTerminal->GetCurrentDirectory() == ROOTDIRECTORY))
         {
-          // ClosePanel();
-          Disconnect();
+          if (MoreMessageDialog(GetMsg(NB_CONFIRM_DISCONNECT_FROM_ROOT), nullptr, qtConfirmation, qaYes | qaNo) == qaYes)
+          {
+            Disconnect();
+          }
         }
         else
         {
@@ -3807,7 +3824,31 @@ void TWinSCPFileSystem::Disconnect()
   DebugAssert(!FFileList);
   DebugAssert(!FPanelItems);
   if (FQueue)
-    FQueue->Close();
+  {
+    // Mirror the keepalive thread pattern: bounded wait with message pump.
+    // FQueue->Close() calls TSimpleThread::Close() which waits INFINITE
+    // if the queue thread is stuck on network I/O, Far hangs on exit.
+    FQueue->SignalStop();
+    for (int32_t Retry = 0; Retry < 30; ++Retry)
+    {
+      FQueue->WaitFor(100);
+      if (FQueue->IsFinished())
+        break;
+      MSG Msg;
+      while (::PeekMessage(&Msg, nullptr, 0, 0, PM_REMOVE))
+      {
+        ::TranslateMessage(&Msg);
+        ::DispatchMessage(&Msg);
+      }
+    }
+    if (!FQueue->IsFinished())
+    {
+      TINYLOG_WARNING(g_tinylog) << TLogContext::Format()
+          << " Queue thread did not terminate, leaking to prevent crash";
+      // Leak the queue to avoid use-after-unload; OS reclaims on exit.
+      FQueue = nullptr;
+    }
+  }
   SAFE_DESTROY(FQueue);
   SAFE_DESTROY(FQueueStatus);
   if (FTerminal != nullptr)

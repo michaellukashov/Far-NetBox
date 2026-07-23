@@ -426,6 +426,7 @@ class TRemoteFilePanelItem final : public TCustomFarPanelItem
   NB_DISABLE_COPY(TRemoteFilePanelItem)
 public:
   explicit TRemoteFilePanelItem(TRemoteFile * ARemoteFile);
+  void InvalidateFile() { FRemoteFile = nullptr; }
   static void SetPanelModes(TFarPanelModes * PanelModes);
   static void SetKeyBarTitles(TFarKeyBarTitles * KeyBarTitles);
 

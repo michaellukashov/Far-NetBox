@@ -3859,6 +3859,10 @@ void TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
     bool Cancel = false; // dummy
     DoReadDirectoryProgress(0, 0, Cancel);
 
+    // Capture directory before ReadDirectory mutates FFiles.
+    // Used as fallback in the catch block if FFiles is corrupted.
+    const UnicodeString SavedDirectory = GetCurrentDirectory();
+
     try
     {
       std::unique_ptr<TRemoteDirectory> Files = std::make_unique<TRemoteDirectory>(this, FFiles.get());
@@ -3883,7 +3887,7 @@ void TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
     }
     catch (Exception & E)
     {
-      const UnicodeString Directory = (FFiles != nullptr) ? FFiles->GetDirectory() : GetCurrentDirectory();
+      const UnicodeString Directory = !FFiles ? SavedDirectory : FFiles->GetDirectory();
       try
       {
         LogEvent(FORMAT(L"ReadDirectory catch: FFiles=%p, using directory=%s", static_cast<const void*>(FFiles.get()), Directory));
@@ -6195,6 +6199,10 @@ bool TTerminal::DoAllowLocalFileTransfer(
 bool TTerminal::DoAllowRemoteFileTransfer(
   const TRemoteFile * File, const TCopyParamType * CopyParam, bool DisallowTemporaryTransferFiles)
 {
+  if (File == nullptr)
+  {
+    return true;
+  }
   TFileMasks::TParams MaskParams;
   MaskParams.Size = File->Resolve()->Size;
   MaskParams.Modification = File->Modification;
@@ -6893,6 +6901,10 @@ void TTerminal::DoSynchronizeCollectFile(const UnicodeString & AFileName,
   if (Data->Options != nullptr)
   {
     Data->Options->Files++;
+  }
+  if (AFile == nullptr)
+  {
+    return;
   }
 
   const UnicodeString LocalFileName = ChangeFileName(Data->CopyParam, AFile->FileName, osRemote, false);
@@ -8896,7 +8908,10 @@ void TTerminal::Sink(
 {
   Action.SetFileName(AFileName);
   DebugAssert(AFile);
-
+  if (AFile == nullptr)
+  {
+    throw ESkipFile();
+  }
   if (!DoAllowRemoteFileTransfer(AFile, CopyParam, false))
   {
     LogEvent(FORMAT("File \"%s\" excluded from transfer", AFileName));
