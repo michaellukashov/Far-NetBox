@@ -1,5 +1,6 @@
 #include "afxdll.h"
 #include <vcl.h>
+#include <atomic>
 
 #include <plugin.hpp>
 #include <Sysutils.hpp>
@@ -227,15 +228,25 @@ intptr_t WINAPI ProcessPanelInputW(const struct ProcessPanelInputInfo * Info)
   return Result;
 }
 
+static std::atomic<bool> g_inProcessPanelEvent{false};
+
 intptr_t WINAPI ProcessPanelEventW(const struct ProcessPanelEventInfo * Info)
 {
+  // Prevent reentrant calls and calls during plugin teardown (issue #313).
+  // Far Manager can fire panel events after ~TWinSCPPlugin has started destroying
+  // tinylog/fmt state, causing use-after-free in fmt::BasicData.
+  if (g_inProcessPanelEvent.exchange(true))
+    return FALSE;
   LogConsoleMode("BEFORE-ProcessPanelEventW");
   const TExportTracer Tracer("ProcessPanelEventW");
-  if (!Info || (Info->StructSize < sizeof(ProcessPanelEventInfo)))
-    return FALSE;
-  const TFarPluginGuard Guard;
-  const intptr_t Result = FarPlugin->ProcessPanelEvent(Info);
+  intptr_t Result = FALSE;
+  if (Info && (Info->StructSize >= sizeof(ProcessPanelEventInfo)))
+  {
+    const TFarPluginGuard Guard;
+    Result = FarPlugin->ProcessPanelEvent(Info);
+  }
   LogConsoleMode("AFTER-ProcessPanelEventW");
+  g_inProcessPanelEvent = false;
   return Result;
 }
 

@@ -5,6 +5,7 @@
 #include <mutex>
 #include <vector>
 #include <algorithm>
+#include <type_traits>
 
 #include <tinylog/TinyLog.h>
 #include <tinylog/LogStream.h>
@@ -36,6 +37,14 @@ private:
   void SetPrefix(const char * file_name, int32_t line, const char * func_name, Utils::LogLevel log_level);
   static DWORD WINAPI ThreadFunc(void *pt_arg);
   int32_t MainLoop();
+  // Document the pthread_t→HANDLE contract. winpthreads defines pthread_t as HANDLE;
+  // if the threading backend changes, this static_assert catches it at compile time.
+  static HANDLE GetNativeHandle(pthread_t th)
+  {
+    static_assert(std::is_same_v<pthread_t, HANDLE>,
+      "pthread_t must be HANDLE for WaitForSingleObject in crash handler");
+    return th;
+  }
 
   LogStream * logstream_{nullptr};
   Utils::LogLevel log_level_{Utils::LEVEL_INFO};
@@ -146,7 +155,7 @@ bool TinyLogImpl::EmergencyFlush(uint32_t TimeoutMs)
     pthread_cond_signal(&cond_);
     pthread_mutex_unlock(&mutex_);
 
-    DWORD wait_result = WaitForSingleObject(thrd_, TimeoutMs);
+    DWORD wait_result = WaitForSingleObject(GetNativeHandle(thrd_), TimeoutMs);
     if (wait_result == WAIT_TIMEOUT)
     {
       OutputDebugStringA("tinylog: EmergencyFlush worker thread timeout\n");
@@ -346,6 +355,8 @@ LogStream & TinyLog::GetLogStream(const char * file_name, int32_t line_num, cons
 
 size_t TinyLog::Write(const char * data, size_t ToWrite)
 {
+  if (s_shutting_down.load())
+    return 0;
   return impl_->Write(data, ToWrite);
 }
 

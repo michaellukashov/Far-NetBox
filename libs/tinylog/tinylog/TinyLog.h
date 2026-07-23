@@ -44,8 +44,12 @@ public:
   static void Unregister(TinyLog * logger);
   static bool EmergencyFlushAll(uint32_t TimeoutMs);
   static void DestroyInstance() noexcept;
+  static void SetShuttingDown() noexcept { s_shutting_down = true; }
+  static bool IsShuttingDown() noexcept { return s_shutting_down.load(); }
 
   // TODO: group / groupEnd
+
+  static inline std::atomic<bool> s_shutting_down{false};
 
 private:
   static bool destroyed_; // prevents lazy re-creation after shutdown
