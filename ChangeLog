@@ -11,6 +11,7 @@
 * Harden ReadDirectory catch block with SavedDirectory fallback for corrupted FFiles state
 * Add null guards for TRemoteFile in DoAllowRemoteFileTransfer, DoSynchronizeCollectFile, and Sink
 * Add confirmation dialog before disconnecting when navigating up from root directory
+* Strip hotkey ampersand from master password prompt InputBox
 
 ## [26.07.3.616] - 2026-07-20
 

@@ -1177,7 +1177,7 @@ void TWinSCPPlugin::MasterPasswordPrompt()
     UnicodeString Password;
     const bool Ok = FarPlugin->InputBox(
       FarPlugin->GetMsg(NB_MASTER_PASSWORD_CAPTION),
-      FarPlugin->GetMsg(NB_MASTER_PASSWORD_CURRENT),
+      ::StripHotkey(FarPlugin->GetMsg(NB_MASTER_PASSWORD_CURRENT)),
       Password,
       FIB_PASSWORD | FIB_NOUSELASTHISTORY,
       L"",
