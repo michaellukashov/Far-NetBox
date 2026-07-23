@@ -1113,6 +1113,11 @@ void seat_dialog_text_free(SeatDialogText *sdt);
 PRINTF_LIKE(3, 4) void seat_dialog_text_append(
     SeatDialogText *sdt, SeatDialogTextType type, const char *fmt, ...);
 
+/* Parameter to seat_get_display */
+typedef enum SeatDisplayType {
+    SDISP_X11, SDISP_ANY
+} SeatDisplayType;
+
 /*
  * Data type 'Seat', which is an API intended to contain essentially
  * everything that a back end might need to talk to its client for:
@@ -1344,10 +1349,13 @@ struct SeatVtable {
     void (*echoedit_update)(Seat *seat, bool echoing, bool editing);
 
     /*
-     * Return the local X display string relevant to a seat, or NULL
-     * if there isn't one or if the concept is meaningless.
+     * Return a string describing the GUI display (e.g. X11 or
+     * Wayland) relevant to a seat, or NULL if there isn't one or if
+     * the concept is meaningless. If dtype is not SDISP_ANY then only
+     * a display string of the requested type will be returned, or
+     * NULL if the available display is of a different type.
      */
-    const char *(*get_x_display)(Seat *seat);
+    const char *(*get_display)(Seat *seat, SeatDisplayType dtype);
 
     /*
      * Return the X11 id of the X terminal window relevant to a seat,
@@ -1475,8 +1483,8 @@ static inline bool seat_is_utf8(Seat *seat)
 { return seat->vt->is_utf8(seat); }
 static inline void seat_echoedit_update(Seat *seat, bool ec, bool ed)
 { seat->vt->echoedit_update(seat, ec, ed); }
-static inline const char *seat_get_x_display(Seat *seat)
-{ return seat->vt->get_x_display(seat); }
+static inline const char *seat_get_display(Seat *seat, SeatDisplayType dtype)
+{ return seat->vt->get_display(seat, dtype); }
 static inline bool seat_get_windowid(Seat *seat, long *id_out)
 { return seat->vt->get_windowid(seat, id_out); }
 static inline bool seat_get_window_pixel_size(Seat *seat, int *w, int *h)
@@ -1566,7 +1574,7 @@ const SeatDialogPromptDescriptions *nullseat_prompt_descriptions(Seat *seat);
 bool nullseat_is_never_utf8(Seat *seat);
 bool nullseat_is_always_utf8(Seat *seat);
 void nullseat_echoedit_update(Seat *seat, bool echoing, bool editing);
-const char *nullseat_get_x_display(Seat *seat);
+const char *nullseat_get_display(Seat *seat, SeatDisplayType dtype);
 bool nullseat_get_windowid(Seat *seat, long *id_out);
 bool nullseat_get_window_pixel_size(Seat *seat, int *width, int *height);
 StripCtrlChars *nullseat_stripctrl_new(
@@ -2782,6 +2790,9 @@ bool toplevel_callback_pending(CALLBACK_SET_ONLY);
 bool is_idempotent_callback_pending(CALLBACK_SET struct IdempotentCallback *ic); // WINSCP
 struct callback_set * get_callback_set(Plug * plug);
 struct callback_set * get_seat_callback_set(Seat * seat);
+void delete_callbacks(CALLBACK_SET
+    bool (*delete_this_one)(void *predicate_ctx, toplevel_callback_fn_t fn,
+                            void *callback_ctx), void *predicate_ctx);
 void delete_callbacks_for_context(CALLBACK_SET void *ctx);
 LogPolicy *log_get_logpolicy(LogContext *ctx); // WINSCP
 Seat * get_log_seat(LogContext * lp); // WINSCP
@@ -2814,11 +2825,31 @@ void request_callback_notifications(toplevel_callback_notify_fn_t notify,
  * Facility provided by the platform to spawn a parallel subprocess
  * and present its stdio via a Socket.
  *
- * 'prefix' indicates the prefix that should appear on messages passed
- * to plug_log to provide stderr output from the process.
+ * 'pfx' indicates the prefix that should appear on messages passed to
+ * plug_log to provide stderr output from the process.
+ *
+ * SubprocessWaiter is an opaque type that can be made to notify you
+ * with the exit status of the subprocess, once it has one. If you set
+ * 'waiter' to be non-NULL, one for this subprocess will be returned
+ * to you.
  */
-Socket *platform_start_subprocess(const char *cmd, Plug *plug,
-                                  const char *prefix);
+Socket *platform_start_subprocess(
+    const char *cmd, Plug *plug, const char *pfx, SubprocessWaiter **waiter);
+
+/* API for SubprocessWaiter. On Windows, everything is
+ * EXITTYPE_NORMAL, because exits and signal terminations aren't
+ * distinguished in the API. So don't depend on this enumeration for
+ * anything semantic: only use it to write sensible (ish) user-facing
+ * messages.
+ *
+ * EXITTYPE_WEIRD is never returned from this callback, but is
+ * available for callers to use as an extra value of their own. */
+enum { EXITTYPE_NORMAL, EXITTYPE_SIGNAL, EXITTYPE_WEIRD };
+typedef void (*SubprocessWaiterCallback)(
+    void *ctx, int exittype, uint32_t exitdata);
+void subproc_waiter_set_callback(
+    SubprocessWaiter *waiter, SubprocessWaiterCallback cb, void *cbctx);
+void subproc_waiter_free(SubprocessWaiter *waiter);
 
 /*
  * Define no-op macros for the jump list functions, on platforms that

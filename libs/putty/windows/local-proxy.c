@@ -103,14 +103,14 @@ Socket *platform_new_connection(SockAddr *addr, const char *hostname,
     } // WINSCP
 }
 
-Socket *platform_start_subprocess(const char *cmd, Plug *plug,
-                                  const char *prefix)
+Socket *platform_start_subprocess(
+    const char *cmd, Plug *plug, const char *pfx, SubprocessWaiter **waiter)
 {
     Socket *socket = make_deferred_handle_socket(
         null_deferred_socket_opener(),
         sk_nonamelookup("<local command>"), 0, plug);
     char *err = platform_setup_local_proxy(socket, cmd);
-    handle_socket_set_psb_prefix(socket, prefix);
+    handle_socket_set_psb_prefix(socket, pfx);
 
     if (err) {
         sk_close(socket);

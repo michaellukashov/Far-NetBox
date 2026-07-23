@@ -1,6 +1,7 @@
 /*
  * Master list of configuration options living in the Conf data
  * structure.
+ * Should be updated when conf.h updates.
  *
  * Each CONF_OPTION directive defines a single CONF_foo primary key in
  * Conf, and can be equipped with the following properties:
@@ -55,7 +56,7 @@ CONF_OPTION(tcp_keepalives, NONE, BOOL, (int)false, false, false, false, "TCPKee
 /* logical host being contacted, for host key check */
 CONF_OPTION(loghost, NONE, STR, (int)"", false, false, false, "LogHost", NULL)
 
-/* Proxy options */
+CONF_OPTION(pre_connect_command, NONE, STR, (int)"", false, false, false, "PreConnectCommand", NULL)
 CONF_OPTION(proxy_exclude_list, NONE, STR, (int)"", false, false, false, "ProxyExcludeList", NULL)
 CONF_OPTION(proxy_dns, NONE, INT, AUTO, false, false, false, "ProxyDNS", &conf_enum_off_auto_on)
 CONF_OPTION(even_proxy_localhost, NONE, BOOL, (int)false, false, false, false, "ProxyLocalhost", NULL)

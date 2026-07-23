@@ -237,6 +237,8 @@ typedef struct StripCtrlChars StripCtrlChars;
 
 typedef struct BidiContext BidiContext;
 
+typedef struct SubprocessWaiter SubprocessWaiter;
+
 /*
  * A small structure wrapping up a (pointer, length) pair so that it
  * can be conveniently passed to or from a function.

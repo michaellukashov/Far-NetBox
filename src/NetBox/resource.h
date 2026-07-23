@@ -23,7 +23,7 @@
 #define PLUGIN_FILENAME     L"NetBox.dll"
 
 #define WINSCP_PLUGIN_VERSION_WTXT  L"1.6.2.151"
-#define PUTTY_VERSION_WTXT          L"0.81"
+#define PUTTY_VERSION_WTXT          L"0.84"
 #define FILEZILLA_VERSION_WTXT      L"2.2.32"
 #define ZLIB_VERSION_WTXT           L"zlib-ng 2.2.2"
 #define OPENSSL_VERSION_WTXT        L"3.3.7"
