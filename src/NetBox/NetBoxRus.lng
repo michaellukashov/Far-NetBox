@@ -485,7 +485,8 @@
 "Игнорироват&ь ошибки прав"
 "В&ычислять общий объем"
 "Ск&орость (Кб/с):"
-
+"Использовать временный каталог для загрузок"
+"Временный каталог:"
 "Править линк"
 "Создать линк"
 "&Файл линка:"
@@ -1292,7 +1293,7 @@
 
 "CORE_VARIABLE"
 "SSH and SCP code based on PuTTY %s"
-"0.81"
+"0.84"
 "Copyright © 1997-2024 Simon Tatham"
 "http://www.chiark.greenend.org.uk/~sgtatham/putty/"
 "FTP code based on FileZilla"
@@ -1460,4 +1461,6 @@
 "Сравнение директорий"
 "Различий не найдено."
 "The remote file has been changed while you were editing it. Do you want to overwrite it anyway?"
+"Редактирование удалённого файла"
+"Введите имя удалённого &файла:"
 "You are at the root remote directory. Disconnect from the server?"

@@ -485,7 +485,8 @@
 "&Ignorar errores de permisos"
 "&Calcular tamaño total"
 "&Velocidad (KiB/s):"
-
+"Usar directorio temporal para descargas"
+"Directorio temporal:"
 "Editar enlace"
 "Añadir enlace"
 "Archivo en&lace:"
@@ -1460,4 +1461,6 @@
 "Comparar directorios"
 "No se encontraron diferencias."
 "The remote file has been changed while you were editing it. Do you want to overwrite it anyway?"
+"Edición de archivo remoto"
+"Ingrese el nombre del archivo &remoto:"
 "You are at the root remote directory. Disconnect from the server?"

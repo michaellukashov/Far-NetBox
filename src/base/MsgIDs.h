@@ -486,6 +486,8 @@ enum MsgIDs {
     NB_TRANSFER_PRESERVE_PERM_ERRORS,  // "&Ignore permission errors"
     NB_TRANSFER_CALCULATE_SIZE,  // "&Calculate total size"
     NB_TRANSFER_SPEED,  // "Sp&eed (KB/s):"
+    NB_TRANSFER_USE_TEMP_DIR,  // "Use te&mporary directory for downloads"
+    NB_TRANSFER_TEMP_DIR,  // "&Temporary directory:"
 
     NB_STRING_LINK_EDIT_CAPTION,  // "Edit link"
     NB_STRING_LINK_ADD_CAPTION,  // "Add link"
@@ -1293,7 +1295,7 @@ enum MsgIDs {
 
     MSG_CORE_VARIABLE_STRINGS,  // "CORE_VARIABLE"
     MSG_PUTTY_BASED_ON,  // "SSH and SCP code based on PuTTY %s"
-    MSG_PUTTY_VERSION,  // "0.81"
+    MSG_PUTTY_VERSION,  // "0.84"
     MSG_PUTTY_COPYRIGHT,  // "Copyright © 1997-2024 Simon Tatham"
     MSG_PUTTY_URL,  // "http://www.chiark.greenend.org.uk/~sgtatham/putty/"
     MSG_FILEZILLA_BASED_ON2,  // "FTP code based on FileZilla"
@@ -1461,5 +1463,7 @@ enum MsgIDs {
     NB_COMPARE_DIRECTORIES_TITLE,  // "Compare Directories"
     NB_COMPARE_DIRECTORIES_NO_DIFFERENCES,  // "No differences found."
     NB_EDIT_CHANGED_EXTERNALLY,  // "The remote file has been changed while you were editing it. Do you want to overwrite it anyway?"
+    NB_EDIT_NEW_FILE_TITLE,  // "Edit Remote File"
+    NB_EDIT_NEW_FILE_PROMPT,  // "Enter remote &file name:"
     NB_CONFIRM_DISCONNECT_FROM_ROOT,  // "You are at the root remote directory. Disconnect from the server?"
 };

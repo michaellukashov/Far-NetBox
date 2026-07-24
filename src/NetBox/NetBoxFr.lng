@@ -485,7 +485,8 @@
 "&Ignore permission errors"
 "&Calculate total size"
 "Sp&eed (KB/s):"
-
+"Use temporary directory for downloads"
+"Temporary directory:"
 "Edit link"
 "Add link"
 "&Link file:"
@@ -1460,4 +1461,6 @@
 "Comparer les répertoires"
 "Aucune différence trouvée."
 "The remote file has been changed while you were editing it. Do you want to overwrite it anyway?"
+"Édition du fichier distant"
+"Entrez le nom du &fichier distant :"
 "You are at the root remote directory. Disconnect from the server?"

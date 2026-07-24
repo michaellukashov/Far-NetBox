@@ -485,7 +485,8 @@
 "&Ignore permission errors"
 "&Calculate total size"
 "Sp&eed (KB/s):"
-
+"Use te&mporary directory for downloads"
+"&Temporary directory:"
 "Edit link"
 "Add link"
 "&Link file:"
@@ -1292,7 +1293,7 @@
 
 "CORE_VARIABLE"
 "SSH and SCP code based on PuTTY %s"
-"0.81"
+"0.84"
 "Copyright © 1997-2024 Simon Tatham"
 "http://www.chiark.greenend.org.uk/~sgtatham/putty/"
 "FTP code based on FileZilla"
@@ -1460,4 +1461,6 @@
 "Compare Directories"
 "No differences found."
 "The remote file has been changed while you were editing it. Do you want to overwrite it anyway?"
+"Edit Remote File"
+"Enter remote &file name:"
 "You are at the root remote directory. Disconnect from the server?"

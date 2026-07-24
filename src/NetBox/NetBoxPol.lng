@@ -485,7 +485,8 @@
 "Ignoru&j błędy dostępu"
 "Ob&licz całkowitą wielkość"
 "&Prędkość (KB/s):"
-
+"Użyj katalogu tymczasowego dla pobierania"
+"Katalog tymczasowy:"
 "Edytuj link"
 "Dodaj link"
 "Plik &linku:"
@@ -1460,4 +1461,6 @@
 "Porównanie katalogów"
 "Nie znaleziono różnic."
 "The remote file has been changed while you were editing it. Do you want to overwrite it anyway?"
+"Edycja zdalnego pliku"
+"Wprowadź nazwę zdalnego &pliku:"
 "You are at the root remote directory. Disconnect from the server?"
