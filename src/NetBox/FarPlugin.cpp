@@ -1086,6 +1086,18 @@ void TFarMessageDialog::InitFarMessageDialog(uint32_t AFlags,
 
     SetNextItemPosition(ipRight);
   }
+  // Ensure dialog width accounts for the widest button row (not just the
+  // overflow row). When buttons overflow to a new line, buttons remaining
+  // on the original line may be wider than MaxLen which only tracked the
+  // overflow button. Scan all buttons to find the true maximum.
+  for (int32_t Index = 0; Index < GetItemCount(); ++Index)
+  {
+    const TFarButton * Btn = nb::dyn_cast_or_null<TFarButton>(GetItem(Index));
+    if ((Btn != nullptr) && (MaxLen < Btn->GetRight() - GetBorderBox()->GetLeft() + 4))
+    {
+      MaxLen = Btn->GetRight() - GetBorderBox()->GetLeft() + 4;
+    }
+  }
 
   if (!FParams->CheckBoxLabel.IsEmpty())
   {
