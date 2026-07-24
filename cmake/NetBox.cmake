@@ -226,6 +226,8 @@ if(MSVC)
     /DELAYLOAD:shlwapi.dll
     /DELAYLOAD:crypt32.dll
     /MANIFEST:NO
+    /DEBUG
+    /MAP
     ${_NETBOX_SUBSYSTEM}
     /NOLOGO
     /ignore:4099
@@ -296,7 +298,6 @@ if(MSVC)
 
   ucm_add_linker_flags(MODULE SHARED ${NETBOX_DLL_LINK_FLAGS_RELEASE} CONFIG Release RelWithDebInfo MinSizeRel)
   ucm_add_linker_flags(MODULE SHARED ${NETBOX_DLL_LINK_FLAGS_DEBUG} CONFIG Debug)
-  ucm_add_linker_flags(MODULE SHARED /DEBUG /MAP CONFIG RelWithDebInfo)
 
 endif()
 

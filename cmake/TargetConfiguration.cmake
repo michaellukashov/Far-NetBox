@@ -24,6 +24,8 @@ function(netbox_configure_target TARGET)
 
   # Set up platform-specific settings
   netbox_configure_platform_settings(${TARGET})
+  # Apply linker options (includes /DEBUG, /MAP, /NODEFAULTLIB, etc.)
+  netbox_apply_link_options(${TARGET})
 endfunction()
 
 #===============================================================================

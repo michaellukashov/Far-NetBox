@@ -187,10 +187,10 @@ function(netbox_define_core_sources)
     core/Queue.cpp
     core/SecureShell.cpp
     core/SessionInfo.cpp
-    core/Script.cpp
     core/CoreMain.cpp
-    core/FileMasks.cpp
     core/CopyParam.cpp
+    core/Script.cpp
+    core/FileMasks.cpp
     core/SessionData.cpp
     core/Usage.cpp
     core/Configuration.cpp
