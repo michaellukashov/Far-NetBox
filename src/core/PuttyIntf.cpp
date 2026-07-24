@@ -529,7 +529,7 @@ static const SeatVtable ScpSeatVtable =
     prompt_descriptions,
     nullseat_is_always_utf8,
     scp_echoedit_update,
-    nullseat_get_x_display,
+    nullseat_get_display,
     nullseat_get_windowid,
     scp_get_window_pixel_size,
     nullseat_stripctrl_new,
