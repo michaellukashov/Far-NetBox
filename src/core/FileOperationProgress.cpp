@@ -1074,6 +1074,7 @@ TDateTime TFileOperationProgressType::TotalTimeLeft() const
     return TDateTime(nb::ToDouble(EffectiveTotal - Processed) / CurCps / SecsPerDay);
   }
   return TDateTime(0.0);
+}
 
 int64_t TFileOperationProgressType::GetTotalTransferred() const
 {
