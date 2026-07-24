@@ -376,7 +376,7 @@ private:
   bool FLoadingSessionList{false};
   bool FCurrentDirectoryWasChanged{false};
   bool FUpdatingPanelParam{false};
-  DWORD FMainThreadId{0};
+  std::atomic<DWORD> FMainThreadId{0};
   // Deferred exception from worker thread (FTP CMainThread timeout)
   TCriticalSection FDeferredExceptionSection;
   std::atomic<bool> FDeferredExceptionPending{false};

@@ -17,6 +17,7 @@
 #include <GUITools.h>
 #include <Sysutils.hpp>
 #include <FormatUtils.h>
+#include <algorithm>
 #include "guid.h"
 #include <SessionHistory.h>
 
@@ -99,6 +100,23 @@ void TRemoteFilePanelItem::GetData(
   uintptr_t & /*NumberOfLinks*/, UnicodeString & /*Description*/,
   UnicodeString &Owner, void *& UserData, size_t & CustomColumnNumber)
 {
+  // Defensive guard: FRemoteFile may be null if the directory was rebuilt
+  // (e.g. after shell command) but the panel was not yet refreshed via
+  // UpdatePanel(). Return safe defaults to prevent null-deref crash (issue #523).
+  if (FRemoteFile == nullptr)
+  {
+    TINYLOG_WARNING(g_tinylog) << TLogContext::Format()
+      << "TRemoteFilePanelItem::GetData: FRemoteFile is null, returning stale defaults";
+    AFileName.Clear();
+    Size = 0;
+    FileAttributes = 0;
+    LastWriteTime = TDateTime();
+    LastAccess = TDateTime();
+    Owner.Clear();
+    UserData = nullptr;
+    CustomColumnNumber = 0;
+    return;
+  }
   AFileName = FRemoteFile->GetFileName();
   Size = FRemoteFile->GetSize();
   if (Size < 0)
@@ -119,6 +137,14 @@ void TRemoteFilePanelItem::GetData(
 
 UnicodeString TRemoteFilePanelItem::GetCustomColumnData(size_t Column)
 {
+  // Defensive guard: FRemoteFile may be null if directory was rebuilt but
+  // panel not yet refreshed (issue #523).
+  if (FRemoteFile == nullptr)
+  {
+    TINYLOG_WARNING(g_tinylog) << TLogContext::Format()
+      << "TRemoteFilePanelItem::GetCustomColumnData: FRemoteFile is null, returning empty";
+    return UnicodeString();
+  }
   switch (Column)
   {
   case 0: return FRemoteFile->GetFileGroup().GetName();
@@ -289,7 +315,9 @@ void TKeepAliveThread::Execute()
     if ((::WaitForSingleObject(FEvent, nb::ToDWord(FInterval.GetValue() * MSecsPerDay)) != WAIT_FAILED) &&
       !IsFinished())
     {
-      FFileSystem->KeepaliveThreadCallback();
+      // Marshal keepalive processing to the main thread via the sanctioned synchro path.
+      // Far Manager 3 requires all plugin-side idle work to happen on the main thread.
+      FFileSystem->GetPlugin()->PostMainThreadSynchro(nullptr);
     }
   }
   SAFE_CLOSE_HANDLE(FEvent);
@@ -299,6 +327,7 @@ TWinSCPFileSystem::TWinSCPFileSystem(gsl::not_null<TCustomFarPlugin *> APlugin) 
   TCustomFarFileSystem(OBJECT_CLASS_TWinSCPFileSystem, APlugin),
   FPathHistory(std::make_unique<TStringList>())
 {
+  FMainThreadId = ::GetCurrentThreadId();
 }
 
 void TWinSCPFileSystem::InitWinSCPFileSystem(const TSecureShell * /*SecureShell*/)
@@ -318,6 +347,12 @@ void TWinSCPFileSystem::HandleException(Exception * E, OPERATION_MODES OpMode)
 {
   bool DoClose = false;
 
+  // Defensive: never destroy the panel during background operations
+  // (directory size calculation, find file, quick view). Far Manager
+  // holds the panel handle across the entire scan and will crash if the
+  // FileSystem object is deleted mid-operation.
+  const bool BackgroundOp = FLAGSET(OpMode, OPM_FIND | OPM_SILENT);
+
   if ((GetTerminal() != nullptr) && nb::isa<EFatal>(E))
   {
     const bool Reopen = GetTerminal()->QueryReopen(E, 0, nullptr);
@@ -328,12 +363,30 @@ void TWinSCPFileSystem::HandleException(Exception * E, OPERATION_MODES OpMode)
     else
     {
       GetTerminal()->ShowExtendedException(E);
-      DoClose = true;
+      DoClose = !BackgroundOp;
+      if (BackgroundOp)
+      {
+        TINYLOG_WARNING(g_tinylog) << TLogContext::Format()
+            << "HandleException: suppressing ClosePanel for background op, EFatal=" << UTF8String(E->Message).c_str();
+      }
     }
   }
-  else if ((GetTerminal() != nullptr) && nb::isa<EAbort>(E) && E->Message == EXCEPTION_MSG_REPLACED)
+  else if ((GetTerminal() != nullptr) && nb::isa<EAbort>(E))
   {
-    DoClose = true;
+    if (E->Message == EXCEPTION_MSG_REPLACED)
+    {
+      DoClose = !BackgroundOp;
+      if (BackgroundOp)
+      {
+        TINYLOG_WARNING(g_tinylog) << TLogContext::Format()
+            << "HandleException: suppressing ClosePanel for background op, EAbort(REPLACED)";
+      }
+    }
+    else
+    {
+      // Silently ignore user-initiated abort/cancel
+      return;
+    }
   }
   else
   {
@@ -344,24 +397,6 @@ void TWinSCPFileSystem::HandleException(Exception * E, OPERATION_MODES OpMode)
   if (DoClose && !GetClosed())
   {
     ClosePanel();
-  }
-}
-
-void TWinSCPFileSystem::KeepaliveThreadCallback()
-{
-  const TGuard Guard(GetCriticalSection());
-
-  if (Connected())
-  {
-    try
-    {
-      FTerminal->Idle();
-    }
-    catch (Exception & E)
-    {
-      TINYLOG_WARNING(g_tinylog) << TLogContext::Format()
-          << " Keepalive thread caught exception: " << UTF8String(E.Message).c_str();
-    }
   }
 }
 
@@ -427,31 +462,55 @@ void TWinSCPFileSystem::GetOpenPanelInfoEx(OPENPANELINFO_FLAGS & Flags,
     Flags = !OPIF_DISABLEFILTER | !OPIF_DISABLESORTGROUPS | !OPIF_DISABLEHIGHLIGHTING |
       OPIF_SHOWPRESERVECASE | OPIF_COMPAREFATTIME | OPIF_SHORTCUT;
 
-    // When slash is added to the end of path, windows style paths
-    // (vandyke: c:/windows/system) are displayed correctly on command-line, but
-    // leaved subdirectory is not focused, when entering parent directory.
-    HostFile = GetSessionData()->GetHostName(); // GenerateSessionUrl(sufHostKey); // GetSessionData()->GetSessionName();
-    CurDir = FTerminal->GetCurrentDirectory();
-    const UnicodeString FolderName = GetSessionData()->GetFolderName();
-    const UnicodeString SessionName = GetSessionData()->GetLocalName();
-    AFormat = FORMAT("netbox:%s", SessionName);
-    const UnicodeString HostName = GetSessionData()->GetHostNameExpanded();
-    // const UnicodeString Url = GetSessionData()->GenerateSessionUrl(sufComplete);
-    if (GetFarConfiguration()->GetSessionNameInTitle())
+    // Defensive: if terminal was destroyed (e.g. by Disconnect during SetDirectory),
+    // return safe defaults so Far Manager does not crash on dangling panel state.
+    if (FTerminal == nullptr)
     {
-      PanelTitle = FORMAT(" %s:%s ", SessionName, CurDir);
+      HostFile.Clear();
+      CurDir = FLastPath;
+      AFormat = L"netbox";
+      PanelTitle = L" netbox ";
+      ShortcutData.Clear();
+      TINYLOG_WARNING(g_tinylog) << TLogContext::Format()
+          << "GetOpenPanelInfoEx: FTerminal is null, returning safe defaults";
+    }
+    else if (FInGetOpenPanelInfo)
+    {
+      // Re-entrancy guard: error dialog during GetOpenPanelInfo triggers a
+      // panel repaint which calls GetOpenPanelInfo again. Use cached directory
+      // to prevent infinite recursion -> stack overflow.
+      CurDir = FLastPath;
     }
     else
     {
-      PanelTitle = FORMAT(" %s:%s ", HostName, CurDir);
+      FInGetOpenPanelInfo = true;
+      SCOPE_EXIT { FInGetOpenPanelInfo = false; };
+      // When slash is added to the end of path, windows style paths
+      // (vandyke: c:/windows/system) are displayed correctly on command-line, but
+      // leaved subdirectory is not focused, when entering parent directory.
+      HostFile = GetSessionData()->GetHostName(); // GenerateSessionUrl(sufHostKey); // GetSessionData()->GetSessionName();
+      CurDir = base::ToUnixPath(FTerminal->GetCurrentDirectory());
+      const UnicodeString FolderName = GetSessionData()->GetFolderName();
+      const UnicodeString SessionName = GetSessionData()->GetLocalName();
+      AFormat = FORMAT("netbox:%s", SessionName);
+      const UnicodeString HostName = GetSessionData()->GetHostNameExpanded();
+      // const UnicodeString Url = GetSessionData()->GenerateSessionUrl(sufComplete);
+      if (GetFarConfiguration()->GetSessionNameInTitle())
+      {
+        PanelTitle = FORMAT(" %s:%s ", SessionName, CurDir);
+      }
+      else
+      {
+        PanelTitle = FORMAT(" %s:%s ", HostName, CurDir);
+      }
+      UnicodeString FolderAndSessionName;
+      if (!FolderName.IsEmpty())
+        FolderAndSessionName = FORMAT("%s/%s", FolderName, SessionName);
+      else
+        FolderAndSessionName = FORMAT("%s", SessionName);
+      ShortcutData = nb::EncodeSessionParam(FolderAndSessionName, CurDir);
+      FTerminal->LogEvent(FORMAT(L"GetOpenPanelInfoEx: ShortcutData=%s", ShortcutData));
     }
-    UnicodeString FolderAndSessionName;
-    if (!FolderName.IsEmpty())
-      FolderAndSessionName = FORMAT("%s/%s", FolderName, SessionName);
-    else
-      FolderAndSessionName = FORMAT("%s", SessionName);
-    ShortcutData = nb::EncodeSessionParam(FolderAndSessionName, CurDir);
-    FTerminal->LogEvent(FORMAT(L"GetOpenPanelInfoEx: ShortcutData=%s", ShortcutData));
 
     /*DEBUG_PRINTF("FolderName: %s", FolderName);
     DEBUG_PRINTF("SessionName: %s", SessionName);
@@ -494,6 +553,21 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, OPERATION_MODES 
       if (FReloadDirectory && FTerminal->GetActive())
       {
         FReloadDirectory = false;
+        // Invalidate stale TRemoteFile pointers in Far's panel items before
+        // ReloadDirectory() frees old TRemoteFile objects (issue #318).
+        TFarPanelInfo ** PanelInfo = GetPanelInfo();
+        if (PanelInfo && *PanelInfo)
+        {
+          TObjectList * FarItems = (*PanelInfo)->GetItems();
+          for (int32_t I = 0; I < FarItems->GetCount(); ++I)
+          {
+            TRemoteFilePanelItem * Item = FarItems->GetAs<TRemoteFilePanelItem>(I);
+            if (Item)
+            {
+              Item->InvalidateFile();
+            }
+          }
+        }
         FTerminal->ReloadDirectory();
       }
 
@@ -784,6 +858,32 @@ bool TWinSCPFileSystem::ProcessPanelEventEx(intptr_t Event, void * Param)
     }
     else if (Event == FE_IDLE)
     {
+      // Skip idle processing during file operation cancellation to prevent
+      // re-entrant exception throws during stack unwinding -> stack overflow.
+      // FInCancelDialog covers the dialog phase; MainOperationProgress->Cancel
+      // covers the post-dialog unwinding phase after SetCancel() but before
+      // EAbort propagation completes.
+      if (FInCancelDialog)
+        return false;
+
+      // Show deferred exception from worker thread (FTP CMainThread timeout)
+      if (FDeferredExceptionPending)
+      {
+        ProcessDeferredException();
+        return false;
+      }
+
+
+      if (FTerminal != nullptr)
+      {
+        const TFileOperationProgressType * MainProg = FTerminal->GetOperationProgress();
+        if ((MainProg != nullptr) && (MainProg->GetCancel() >= csCancel))
+          return false;
+        // FE_IDLE guard: clear idle pause now that the cancellation crisis is over
+        if (GetPlugin()->IsIdlePaused())
+          GetPlugin()->SetIdlePaused(false);
+      }
+
       // FAR WORKAROUND
       // Control(FCTL_CLOSEPLUGIN) does not seem to close plugin when called from
       // ProcessPanelEvent(FE_IDLE). So if TTerminal::Idle() causes session to close
@@ -822,6 +922,24 @@ bool TWinSCPFileSystem::ProcessPanelEventEx(intptr_t Event, void * Param)
       {
         UpdatePanel();
         FCurrentDirectoryWasChanged = false;
+      }
+      if (!FFocusFileName.IsEmpty() && Connected())
+      {
+        TFarPanelInfo ** PanelInfo = GetPanelInfo();
+        if (PanelInfo && *PanelInfo)
+        {
+          const TFarPanelItem * Item = (*PanelInfo)->FindFileName(FFocusFileName);
+          if (Item)
+          {
+            (*PanelInfo)->SetFocusedItem(Item);
+            AppLogFmt(L"FE_REDRAW: Focused on file %s", FFocusFileName);
+          }
+          else
+          {
+            AppLogFmt(L"FE_REDRAW: File %s not found in panel", FFocusFileName);
+          }
+        }
+        FFocusFileName.Clear();
       }
     }
   }
@@ -934,10 +1052,13 @@ bool TWinSCPFileSystem::ExecuteCommand(const UnicodeString & Command)
         FTerminal->EndTransaction();
       if (FTerminal->GetActive())
       {
-        if (WinConfiguration && WinConfiguration->GetRefreshRemotePanel())
-        {
-          UpdatePanel();
-        }
+        // Always refresh the panel after a shell command — the command may have
+        // created/deleted/modified files, and stale panel entries cause null-deref
+        // crashes on F3/F4 (issue #523). RefreshRemotePanel controls periodic
+        // background refresh, not post-command refresh.
+        FTerminal->LogEvent(L"ExecuteCommand: forcing panel refresh after shell command");
+        UpdatePanel();
+        FTerminal->LogEvent(L"ExecuteCommand: panel refresh complete");
         RedrawPanel();
       }
       else
@@ -1099,7 +1220,7 @@ bool TWinSCPFileSystem::ProcessKeyEx(int32_t Key, uint32_t ControlState)
       EditHistory();
       Handled = true;
     }
-  
+
     if ((Key == VK_F12) && CheckControlMaskSet(ControlState, SHIFTMASK, ALTMASK))
     {
       OpenDirectory(false);
@@ -1114,7 +1235,7 @@ bool TWinSCPFileSystem::ProcessKeyEx(int32_t Key, uint32_t ControlState)
     }
 
     // Return to session panel
-    if (Focused && !Handled && !IsConnectedDirectly() && 
+    if (Focused && !Handled && !IsConnectedDirectly() &&
          ((Key == VK_RETURN) && (ControlState == 0) && (Focused->GetFileName() == PARENTDIRECTORY) ||
          (Key == VK_PRIOR) && CheckControlMaskSet(ControlState, CTRLMASK)) && FLastPath == ROOTDIRECTORY)
     {
@@ -1494,10 +1615,19 @@ void TWinSCPFileSystem::Synchronize(const UnicodeString & LocalDirectory,
     FSynchronizationCompare = false;
     try__finally
     {
-      FTerminal->SynchronizeApply(Checklist, &CopyParam,
-        Params | TTerminal::spNoConfirmation,
-        nb::bind(&TWinSCPFileSystem::TerminalSynchronizeDirectory, this),
-        nullptr, nullptr, nullptr, nullptr);
+      TFileOperationStatistics Statistics;
+      FSyncStatistics = &Statistics;
+      try__finally
+      {
+        FTerminal->SynchronizeApply(Checklist, &CopyParam,
+          Params | TTerminal::spNoConfirmation,
+          nb::bind(&TWinSCPFileSystem::TerminalSynchronizeDirectory, this),
+          nullptr, nullptr, nullptr, &Statistics);
+      }
+      __finally
+      {
+        FSyncStatistics = nullptr;
+      } end_try__finally
 //      LocalDirectory, RemoteDirectory,
     }
     __finally
@@ -1658,34 +1788,37 @@ void TWinSCPFileSystem::TerminalSynchronizeDirectory(
   {
     LastTicks = Ticks;
 
-    constexpr const int32_t ProgressWidth = 48;
-    static UnicodeString ProgressTitle;
-    static UnicodeString ProgressTitleCompare;
-    static UnicodeString LocalLabel;
-    static UnicodeString RemoteLabel;
-    static UnicodeString StartTimeLabel;
-    static UnicodeString TimeElapsedLabel;
-
-    if (ProgressTitle.IsEmpty())
+    if (!FInSynchronizeDialog)
     {
-      ProgressTitle = GetMsg(NB_SYNCHRONIZE_PROGRESS_TITLE);
-      ProgressTitleCompare = GetMsg(NB_SYNCHRONIZE_PROGRESS_COMPARE_TITLE);
-      LocalLabel = GetMsg(NB_SYNCHRONIZE_PROGRESS_LOCAL);
-      RemoteLabel = GetMsg(NB_SYNCHRONIZE_PROGRESS_REMOTE);
-      StartTimeLabel = GetMsg(NB_SYNCHRONIZE_PROGRESS_START_TIME);
-      TimeElapsedLabel = GetMsg(NB_SYNCHRONIZE_PROGRESS_ELAPSED);
+      constexpr const int32_t ProgressWidth = 48;
+      static UnicodeString ProgressTitle;
+      static UnicodeString ProgressTitleCompare;
+      static UnicodeString LocalLabel;
+      static UnicodeString RemoteLabel;
+      static UnicodeString StartTimeLabel;
+      static UnicodeString TimeElapsedLabel;
+
+      if (ProgressTitle.IsEmpty())
+      {
+        ProgressTitle = GetMsg(NB_SYNCHRONIZE_PROGRESS_TITLE);
+        ProgressTitleCompare = GetMsg(NB_SYNCHRONIZE_PROGRESS_COMPARE_TITLE);
+        LocalLabel = GetMsg(NB_SYNCHRONIZE_PROGRESS_LOCAL);
+        RemoteLabel = GetMsg(NB_SYNCHRONIZE_PROGRESS_REMOTE);
+        StartTimeLabel = GetMsg(NB_SYNCHRONIZE_PROGRESS_START_TIME);
+        TimeElapsedLabel = GetMsg(NB_SYNCHRONIZE_PROGRESS_ELAPSED);
+      }
+
+      UnicodeString Message = LocalLabel + base::MinimizeName(LocalDirectory,
+          ProgressWidth - LocalLabel.Length(), false);
+      Message += ::StringOfChar(L' ', ProgressWidth - Message.Length()) + L"\n";
+      Message += RemoteLabel + base::MinimizeName(RemoteDirectory,
+          ProgressWidth - RemoteLabel.Length(), true) + L"\n";
+      Message += StartTimeLabel + FSynchronizationStart.GetTimeString(false) + L"\n";
+      Message += TimeElapsedLabel +
+        FormatDateTimeSpan(TDateTime(Now() - FSynchronizationStart)) + L"\n";
+
+      GetWinSCPPlugin()->Message(0, (Collect ? ProgressTitleCompare : ProgressTitle), Message);
     }
-
-    UnicodeString Message = LocalLabel + base::MinimizeName(LocalDirectory,
-        ProgressWidth - LocalLabel.Length(), false);
-    Message += ::StringOfChar(L' ', ProgressWidth - Message.Length()) + L"\n";
-    Message += RemoteLabel + base::MinimizeName(RemoteDirectory,
-        ProgressWidth - RemoteLabel.Length(), true) + L"\n";
-    Message += StartTimeLabel + FSynchronizationStart.GetTimeString(false) + L"\n";
-    Message += TimeElapsedLabel +
-      FormatDateTimeSpan(TDateTime(Now() - FSynchronizationStart)) + L"\n";
-
-    GetWinSCPPlugin()->Message(0, (Collect ? ProgressTitleCompare : ProgressTitle), Message);
 
     if (GetWinSCPPlugin()->CheckForEsc() &&
       (MoreMessageDialog(GetMsg(NB_CANCEL_OPERATION), nullptr,
@@ -1701,7 +1834,7 @@ void TWinSCPFileSystem::Synchronize()
   TFarPanelInfo ** AnotherPanel = GetAnotherPanelInfo();
   RequireLocalPanel(*AnotherPanel, GetMsg(NB_SYNCHRONIZE_LOCAL_PATH_REQUIRED));
 
-  TSynchronizeParamType Params;
+  TSynchronizeParamType Params{};
   Params.LocalDirectory = (*AnotherPanel)->GetCurrentDirectory();
   Params.RemoteDirectory = FTerminal->GetCurrentDirectory();
   const int32_t UnusedParams = (GetGUIConfiguration()->GetSynchronizeParams() &
@@ -1744,6 +1877,99 @@ void TWinSCPFileSystem::Synchronize()
       }
     }
   } end_try__finally
+}
+
+void TWinSCPFileSystem::CompareDirectories()
+{
+  TFarPanelInfo ** AnotherPanel = GetAnotherPanelInfo();
+  RequireLocalPanel(*AnotherPanel, GetMsg(NB_SYNCHRONIZE_LOCAL_PATH_REQUIRED));
+
+  const UnicodeString LocalDir = (*AnotherPanel)->GetCurrentDirectory();
+  const UnicodeString RemoteDir = FTerminal->GetCurrentDirectory();
+
+  // Build criteria params from stored config
+  // CORRECT mapping (see plan Key Design Decisions):
+  //  - Time comparison is DEFAULT (spNotByTime CLEAR)
+  //  - spTimestamp is a special sync mode, NOT a comparison flag
+  int32_t Params = 0;
+  if (!GetFarConfiguration()->GetCompareByTime()) Params |= TTerminal::spNotByTime;
+  if (GetFarConfiguration()->GetCompareBySize()) Params |= TTerminal::spBySize;
+
+  try
+  {
+    const TCopyParamType & CopyParam = static_cast<const TCopyParamType &>(
+      GetGUIConfiguration()->GetDefaultCopyParam());
+    std::unique_ptr<TSynchronizeChecklist> Checklist(FTerminal->SynchronizeCollect(
+      LocalDir, RemoteDir, TTerminal::smBoth, &CopyParam, Params, nullptr, nullptr));
+
+    if (!Checklist || Checklist->GetCount() == 0)
+    {
+      MoreMessageDialog(GetMsg(NB_COMPARE_DIRECTORIES_NO_DIFFERENCES),
+        nullptr, qtInformation, qaOK);
+      return;
+    }
+
+    // Collect differing file names from both sides
+    // Use nb::vector_t + linear search instead of std::set to avoid
+    // allocator complexity with custom allocators
+    nb::vector_t<UnicodeString> LocalDiffs, RemoteDiffs;
+    for (int32_t I = 0; I < Checklist->GetCount(); ++I)
+    {
+      const TChecklistItem * Item = Checklist->GetItem(I);
+      // IsDirectory is a bool field (not a method), skip directories
+      if (Item->IsDirectory) continue;
+      if (!Item->Local.FileName.IsEmpty()) LocalDiffs.push_back(Item->Local.FileName);
+      if (!Item->Remote.FileName.IsEmpty()) RemoteDiffs.push_back(Item->Remote.FileName);
+    }
+
+    // Helper: select panel items whose filenames are in the diff list
+    auto ApplyDiffSelection = [](TFarPanelInfo * PanelInfo,
+      const nb::vector_t<UnicodeString> & Diffs)
+    {
+      if (!PanelInfo) return;
+      TObjectList * Items = PanelInfo->GetItems();
+      for (int32_t I = 0; I < Items->GetCount(); ++I)
+      {
+        TFarPanelItem * Item = Items->GetAs<TFarPanelItem>(I);
+        if (Item->GetIsParentDirectory()) continue;
+        const bool Selected = (std::find(Diffs.begin(), Diffs.end(),
+          Item->GetFileName()) != Diffs.end());
+        Item->SetSelected(Selected);
+      }
+      PanelInfo->ApplySelection();
+    };
+
+    // Select differing files in local panel (another panel)
+    if (AnotherPanel && *AnotherPanel)
+    {
+      ApplyDiffSelection(*AnotherPanel, LocalDiffs);
+    }
+
+    // Select differing files in remote panel (this plugin panel)
+    {
+      TFarPanelInfo ** Panel = GetPanelInfo();
+      if (Panel && *Panel)
+      {
+        ApplyDiffSelection(*Panel, RemoteDiffs);
+      }
+    }
+
+    // Redraw both panels
+    RedrawPanel();
+    RedrawPanel(true); // Another panel
+
+    // Show summary message with counts
+    MoreMessageDialog(
+      FORMAT(GetMsg(NB_COMPARE_DIRECTORIES_RESULT),
+        static_cast<int32_t>(LocalDiffs.size()),
+        static_cast<int32_t>(RemoteDiffs.size())),
+      nullptr, qtInformation, qaOK);
+  }
+  catch (Exception & E)
+  {
+    FTerminal->LogEvent(FORMAT(L"CompareDirectories: error: %s", E.Message));
+    ShowExtendedException(&E);
+  }
 }
 
 void TWinSCPFileSystem::DoSynchronize(
@@ -1894,6 +2120,12 @@ void TWinSCPFileSystem::RenameFile()
     RequireCapability(fcRename);
 
     TRemoteFile * File = static_cast<TRemoteFile *>(Focused->GetUserData());
+    if (File == nullptr)
+    {
+      TINYLOG_WARNING(g_tinylog) << TLogContext::Format()
+        << "RenameFile: stale panel entry (UserData null), skipping rename";
+      return;
+    }
     UnicodeString NewName = File->GetFileName();
     if (RenameFileDialog(File, NewName))
     try__finally
@@ -2211,7 +2443,11 @@ void TWinSCPFileSystem::ToggleSynchronizeBrowsing()
 {
   FSynchronisingBrowse = !FSynchronisingBrowse;
 
-  if (GetFarConfiguration()->GetConfirmSynchronizedBrowsing())
+  if (GetConfiguration()->GetSilentMode())
+  {
+    AppLogFmt(L"Silent mode: bypassing synchronized browsing confirmation");
+  }
+  else if (GetFarConfiguration()->GetConfirmSynchronizedBrowsing())
   {
     const UnicodeString Message = FSynchronisingBrowse ?
       GetMsg(NB_SYNCHRONIZE_BROWSING_ON) : GetMsg(NB_SYNCHRONIZE_BROWSING_OFF);
@@ -2332,7 +2568,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const UnicodeString & ADir, OPERATION_MOD
   }
   if ((OpMode & OPM_FIND) && FSavedFindFolder.IsEmpty() && FTerminal)
   {
-    FSavedFindFolder = FTerminal->GetCurrentDirectory();
+    FSavedFindFolder = base::ToUnixPath(FTerminal->GetCurrentDirectory());
   }
 
   if (IsSessionList())
@@ -2346,7 +2582,15 @@ bool TWinSCPFileSystem::SetDirectoryEx(const UnicodeString & ADir, OPERATION_MOD
   {
     DebugAssert(!FNoProgress);
     const bool Normal = FLAGCLEAR(OpMode, OPM_FIND | OPM_SILENT);
-    const UnicodeString PrevPath = FTerminal ? FTerminal->GetCurrentDirectory() : "";
+    // Defensive: if terminal was destroyed (e.g. Disconnect from root + ".."),
+    // reject further directory changes so Far Manager does not crash.
+    if (FTerminal == nullptr)
+    {
+      TINYLOG_WARNING(g_tinylog) << TLogContext::Format()
+          << "SetDirectoryEx: FTerminal is null, rejecting dir=" << UTF8String(ADir).c_str();
+      return false;
+    }
+    const UnicodeString PrevPath = FTerminal->GetCurrentDirectory();
     FNoProgress = !Normal;
     if (!FNoProgress)
     {
@@ -2358,20 +2602,24 @@ bool TWinSCPFileSystem::SetDirectoryEx(const UnicodeString & ADir, OPERATION_MOD
     }
     try__finally
     {
-      DebugAssert(FTerminal);
-      if (ADir == BACKSLASH)
+      if (FTerminal)
       {
-        FTerminal->ChangeDirectory(ROOTDIRECTORY);
-      }
-      else if ((ADir == PARENTDIRECTORY) && (FTerminal->GetCurrentDirectory() == ROOTDIRECTORY))
-      {
-        // ClosePanel();
-        Disconnect();
-      }
-      else
-      {
-        FTerminal->ChangeDirectory(ADir);
-        FCurrentDirectoryWasChanged = true;
+        if (ADir == BACKSLASH)
+        {
+          FTerminal->ChangeDirectory(ROOTDIRECTORY);
+        }
+        else if ((ADir == PARENTDIRECTORY) && (FTerminal->GetCurrentDirectory() == ROOTDIRECTORY))
+        {
+          if (MoreMessageDialog(GetMsg(NB_CONFIRM_DISCONNECT_FROM_ROOT), nullptr, qtConfirmation, qaYes | qaNo) == qaYes)
+          {
+            Disconnect();
+          }
+        }
+        else
+        {
+          FTerminal->ChangeDirectory(ADir);
+          FCurrentDirectoryWasChanged = true;
+        }
       }
     }
     __finally
@@ -2472,9 +2720,13 @@ int32_t TWinSCPFileSystem::MakeDirectoryEx(UnicodeString & AName, OPERATION_MODE
     TRemoteProperties Properties = GetGUIConfiguration()->GetNewDirectoryProperties();
     bool SaveSettings = false;
 
-    if ((OpMode & OPM_SILENT) ||
+    if (GetConfiguration()->GetSilentMode() || (OpMode & OPM_SILENT) ||
       CreateDirectoryDialog(AName, &Properties, SaveSettings))
     {
+      if (GetConfiguration()->GetSilentMode())
+      {
+        AppLogFmt(L"Silent mode: bypassing create directory confirmation");
+      }
       if (SaveSettings)
       {
         GetGUIConfiguration()->SetNewDirectoryProperties(Properties);
@@ -2501,12 +2753,16 @@ int32_t TWinSCPFileSystem::MakeDirectoryEx(UnicodeString & AName, OPERATION_MODE
   {
     DebugAssert(!(OpMode & OPM_SILENT) || !AName.IsEmpty());
 
-    if (((OpMode & OPM_SILENT) ||
+    if ((GetConfiguration()->GetSilentMode() || (OpMode & OPM_SILENT) ||
         GetWinSCPPlugin()->InputBox(GetMsg(NB_CREATE_FOLDER_TITLE),
           ::StripHotkey(GetMsg(NB_CREATE_FOLDER_PROMPT)),
           AName, 0, MAKE_SESSION_FOLDER_HISTORY)) &&
       !AName.IsEmpty())
     {
+      if (GetConfiguration()->GetSilentMode())
+      {
+        AppLogFmt(L"Silent mode: bypassing create session folder confirmation");
+      }
       TSessionData::ValidateName(AName);
       FNewSessionsFolder = AName;
       return 1;
@@ -2599,18 +2855,26 @@ bool TWinSCPFileSystem::DeleteFilesEx(TObjectList * PanelItems, OPERATION_MODES 
         PanelItems->GetAs<TFarPanelItem>(0)->GetFileName());
     }
 
-    if ((OpMode & OPM_SILENT) || !GetFarConfiguration()->GetConfirmDeleting() ||
+    if (GetConfiguration()->GetSilentMode() || (OpMode & OPM_SILENT) || !GetFarConfiguration()->GetConfirmDeleting() ||
       (MoreMessageDialog(Query, nullptr, qtConfirmation, qaOK | qaCancel) == qaOK))
     {
+      if (GetConfiguration()->GetSilentMode())
+      {
+        AppLogFmt(L"Silent mode: bypassing delete files confirmation");
+      }
       FTerminal->DeleteFiles(FFileList.get());
     }
     return true;
   }
   else if (IsSessionList())
   {
-    if ((OpMode & OPM_SILENT) || !GetFarConfiguration()->GetConfirmDeleting() ||
+    if (GetConfiguration()->GetSilentMode() || (OpMode & OPM_SILENT) || !GetFarConfiguration()->GetConfirmDeleting() ||
       (MoreMessageDialog(GetMsg(NB_DELETE_SESSIONS_CONFIRM), nullptr, qtConfirmation, qaOK | qaCancel) == qaOK))
     {
+      if (GetConfiguration()->GetSilentMode())
+      {
+        AppLogFmt(L"Silent mode: bypassing delete sessions confirmation");
+      }
       ProcessSessions(PanelItems, nb::bind(&TWinSCPFileSystem::DeleteSession, this), nullptr);
     }
     return true;
@@ -2651,7 +2915,11 @@ int32_t TWinSCPFileSystem::GetFilesEx(TObjectList * PanelItems, bool Move,
       if (FFileList->GetCount() > 0)
       {
         // Check if destination is local path (not remote)
-        if (!DestPath.IsEmpty() &&
+        const UnicodeString SourcePath = GetCurrentDirectory();
+        const bool IsLocalSource =
+          (SourcePath.Length() >= 2 && SourcePath[2] == L':') ||
+          (SourcePath.Length() >= 2 && SourcePath[1] == L'\\' && SourcePath[2] == L'\\');
+        if (!DestPath.IsEmpty() && IsLocalSource &&
             ((DestPath[1] == L':' && (DestPath[2] == L'\\' || DestPath[2] == L'/')) ||
              (DestPath[1] == L'\\' && DestPath[2] == L'\\')))
         {
@@ -2755,12 +3023,12 @@ int32_t TWinSCPFileSystem::GetFilesRemote(TObjectList * PanelItems, bool Move,
   int32_t Result = -1;
   const bool EditView = (OpMode & (OPM_EDIT | OPM_VIEW)) != 0;
 
-  std::string remoteOp(EditView ? "edit_view" : "download");
-  TLogContext ctx_op("op", remoteOp);
+  UnicodeString remoteOp(EditView ? "edit_view" : "download");
+  TLogContext ctx_op(L"op", remoteOp);
   UTF8String remoteSrcUtf8(FFileList && FFileList->GetCount() > 0 ?
     FFileList->GetString(0) : UnicodeString(L""));
-  std::string remoteSrc(remoteSrcUtf8.c_str());
-  TLogContext ctx_src("src", remoteSrc);
+  UnicodeString remoteSrc(remoteSrcUtf8.c_str());
+  TLogContext ctx_src(L"src", remoteSrc);
   TINYLOG_DEBUG(g_tinylog) << TLogContext::Format()
     << " GetFilesRemote start, count=" << std::to_string(FFileList ? FFileList->GetCount() : 0)
     << " move=" << (Move ? "1" : "0");
@@ -2876,6 +3144,7 @@ TTerminalQueue * TWinSCPFileSystem::GetQueue()
   {
     FQueue = new TTerminalQueue(FTerminal, GetConfiguration());
     FQueue->InitTerminalQueue();
+    FQueue->SetMainThreadId(FMainThreadId);
     FQueue->SetTransfersLimit(GetGUIConfiguration()->QueueTransfersLimit());
     FQueue->SetOnQueryUser(nb::bind(&TWinSCPFileSystem::TerminalQueryUser, this));
     FQueue->SetOnPromptUser(nb::bind(&TWinSCPFileSystem::TerminalPromptUser, this));
@@ -2883,6 +3152,7 @@ TTerminalQueue * TWinSCPFileSystem::GetQueue()
     FQueue->SetOnListUpdate(nb::bind(&TWinSCPFileSystem::QueueListUpdate, this));
     FQueue->SetOnQueueItemUpdate(nb::bind(&TWinSCPFileSystem::QueueItemUpdate, this));
     FQueue->SetOnEvent(nb::bind(&TWinSCPFileSystem::QueueEvent, this));
+    FQueue->SetOnIdleMarshal(nb::bind(&TWinSCPFileSystem::QueueIdleMarshal, this));
   }
   return FQueue;
 }
@@ -2902,7 +3172,6 @@ void TWinSCPFileSystem::ExportSession(TSessionData * Data, void * AParam)
   const TExportSessionParam & Param = *static_cast<TExportSessionParam *>(AParam);
 
   std::unique_ptr<TSessionData> ExportData(std::make_unique<TSessionData>(Data->GetName()));
-  std::unique_ptr<TSessionData> FactoryDefaults(std::make_unique<TSessionData>(""));
   ExportData->Assign(Data);
   ExportData->SetModified(true);
   const UnicodeString XmlFileName = ::IncludeTrailingBackslash(Param.DestPath) +
@@ -2911,8 +3180,12 @@ void TWinSCPFileSystem::ExportSession(TSessionData * Data, void * AParam)
   // Check if file already exists
   if (FileExists(XmlFileName))
   {
-    UnicodeString ConfirmMsg = FORMAT("File %s already exists. Overwrite?", XmlFileName);
-    if (MoreMessageDialog(ConfirmMsg, nullptr, qtConfirmation, qaYes | qaNo | qaCancel) != qaYes)
+    UnicodeString ConfirmMsg = FORMAT("File %s already exists. Overwrite?", nb::EscapeFmtChars(XmlFileName));
+    if (GetConfiguration()->GetSilentMode())
+    {
+      AppLogFmt(L"Silent mode: bypassing XML export overwrite confirmation");
+    }
+    else if (MoreMessageDialog(ConfirmMsg, nullptr, qtConfirmation, qaYes | qaNo | qaCancel) != qaYes)
     {
       return; // User cancelled
     }
@@ -2923,7 +3196,7 @@ void TWinSCPFileSystem::ExportSession(TSessionData * Data, void * AParam)
   ExportStorage->SetAccessMode(smReadWrite);
   if (ExportStorage->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), true))
   {
-    ExportData->Save(ExportStorage.get(), false, FactoryDefaults.get());
+    ExportData->Save(ExportStorage.get(), false, nullptr);
     ExportStorage->CloseSubKey();
   }
 }
@@ -3079,6 +3352,53 @@ int32_t TWinSCPFileSystem::PutFilesEx(TObjectList * PanelItems, bool Move, OPERA
 bool TWinSCPFileSystem::ImportSessions(TObjectList * PanelItems, bool /*Move*/,
   OPERATION_MODES OpMode)
 {
+  // Pre-validate: scan all PanelItems to see if any file contains valid session data
+  bool HasValidSessionFiles = false;
+  for (int32_t Index = 0; Index < PanelItems->GetCount(); ++Index)
+  {
+    const TFarPanelItem * PanelItem = PanelItems->GetAs<TFarPanelItem>(Index);
+    DebugAssert(PanelItem);
+    const UnicodeString FileName = PanelItem->GetFileName();
+
+    if (!PanelItem->GetIsFile())
+    {
+      AppLogFmt(L"ImportSessions: skipping non-file item %s", FileName);
+      continue;
+    }
+
+    AppLogFmt(L"ImportSessions: checking file %s for session data ...", FileName);
+
+    try
+    {
+      const bool Relative = ::ExtractFilePath(FileName).IsEmpty();
+      const UnicodeString XmlFileName = Relative ? ::IncludeTrailingBackslash(::GetCurrentDir()) + FileName : FileName;
+      std::unique_ptr<THierarchicalStorage> ImportStorage(std::make_unique<TXmlStorage>(XmlFileName, GetConfiguration()->GetStoredSessionsSubKey()));
+      ImportStorage->Init();
+      ImportStorage->SetAccessMode(smRead);
+
+      if (ImportStorage->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), false) &&
+          ImportStorage->HasSubKeys())
+      {
+        HasValidSessionFiles = true;
+        AppLogFmt(L"ImportSessions: file %s contains valid session data", FileName);
+        break; // Found at least one valid file, no need to check further
+      }
+    }
+    catch(...)
+    {
+      AppLogFmt(L"ImportSessions: file %s caused an exception during validation", FileName);
+      // Treat as invalid file, continue checking other files
+    }
+  }
+
+  if (!HasValidSessionFiles)
+  {
+    AppLogFmt(L"ImportSessions: no valid session files found among %d items, skipping", PanelItems->GetCount());
+    return false;
+  }
+
+  AppLog(L"ImportSessions: found valid session file(s), proceeding to import prompt");
+
   const bool Result = (OpMode & OPM_SILENT) ||
     (MoreMessageDialog(GetMsg(NB_IMPORT_SESSIONS_PROMPT), nullptr,
      qtConfirmation, qaYes | qaNo) == qaYes);
@@ -3092,43 +3412,60 @@ bool TWinSCPFileSystem::ImportSessions(TObjectList * PanelItems, bool /*Move*/,
       DebugAssert(PanelItem);
       bool AnyData = false;
       FileName = PanelItem->GetFileName();
-      if (PanelItem->GetIsFile())
+
+      if (!PanelItem->GetIsFile())
       {
-        const bool Relative = ::ExtractFilePath(FileName).IsEmpty();
-        const UnicodeString XmlFileName = Relative ? ::IncludeTrailingBackslash(::GetCurrentDir()) + FileName : FileName;
-        std::unique_ptr<THierarchicalStorage> ImportStorage(std::make_unique<TXmlStorage>(XmlFileName, GetConfiguration()->GetStoredSessionsSubKey()));
-        ImportStorage->Init();
-        ImportStorage->SetAccessMode(smRead);
-        if (ImportStorage->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), false) &&
-          ImportStorage->HasSubKeys())
+        AppLogFmt(L"ImportSessions: skipping non-file item %s", FileName);
+        continue;
+      }
+
+      const bool Relative = ::ExtractFilePath(FileName).IsEmpty();
+      const UnicodeString XmlFileName = Relative ? ::IncludeTrailingBackslash(::GetCurrentDir()) + FileName : FileName;
+      std::unique_ptr<THierarchicalStorage> ImportStorage(std::make_unique<TXmlStorage>(XmlFileName, GetConfiguration()->GetStoredSessionsSubKey()));
+      ImportStorage->Init();
+      ImportStorage->SetAccessMode(smRead);
+      if (ImportStorage->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), false) &&
+        ImportStorage->HasSubKeys())
+      {
+        AnyData = true;
+        // Check if there are existing sessions with the same names
+        std::unique_ptr<TStringList> StoredKeys(std::make_unique<TStringList>());
+        ImportStorage->GetSubKeyNames(StoredKeys.get());
+        if (StoredKeys->GetCount() > 0)
         {
-          AnyData = true;
-          // Check if there are existing sessions with the same names
-          std::unique_ptr<TStringList> StoredKeys(std::make_unique<TStringList>());
-          ImportStorage->GetSubKeyNames(StoredKeys.get());
-          if (StoredKeys->GetCount() > 0)
+          UnicodeString SessionNames;
+          for (int32_t I = 0; I < StoredKeys->GetCount() && I < 5; I++)
           {
-            UnicodeString SessionNames;
-            for (int32_t i = 0; i < StoredKeys->GetCount() && i < 5; i++)
-            {
-              if (i > 0) SessionNames += L", ";
-              SessionNames += StoredKeys->GetString(i);
-            }
-            if (StoredKeys->GetCount() > 5) SessionNames += L"...";
-            UnicodeString ConfirmMsg = FORMAT("%s will import sessions: %s. Continue?", FileName, SessionNames);
-            if (MoreMessageDialog(ConfirmMsg, nullptr, qtConfirmation, qaYes | qaNo) != qaYes)
-            {
-              return false;
-            }
+            if (I > 0) SessionNames += L", ";
+            SessionNames += StoredKeys->GetString(I);
           }
+          if (StoredKeys->GetCount() > 5) SessionNames += L"...";
+          UnicodeString ConfirmMsg = FORMAT("%s will import sessions: %s. Continue?", nb::EscapeFmtChars(FileName), nb::EscapeFmtChars(SessionNames));
+          if (GetConfiguration()->GetSilentMode())
+          {
+            AppLogFmt(L"Silent mode: bypassing import sessions confirmation");
+          }
+          else if (MoreMessageDialog(ConfirmMsg, nullptr, qtConfirmation, qaYes | qaNo) != qaYes)
+          {
+            return false;
+          }
+        }
+        try
+        {
           GetStoredSessions()->Load(ImportStorage.get(), /*AsModified*/ true, /*UseDefaults*/ true);
           // modified only, explicit
           GetStoredSessions()->Save(false, true);
         }
+        catch (Exception & E)
+        {
+          AppLogFmt(L"[FIX] ImportSessions: failed to load sessions from %s: %s", FileName, E.Message);
+          throw;
+        }
       }
+
       if (!AnyData)
       {
-        throw Exception(FORMAT(GetMsg(NB_IMPORT_SESSIONS_EMPTY), FileName));
+        AppLogFmt(L"ImportSessions: skipping invalid file %s (no session data)", FileName);
       }
     }
   }
@@ -3226,7 +3563,16 @@ TStrings * TWinSCPFileSystem::CreateFileList(TObjectList * PanelItems,
           UTF8String fileNameUtf8(FileName);
           TINYLOG_TRACE(g_tinylog) << TLogContext::Format()
               << " CreateFileList: duplicating remote file: " << fileNameUtf8.c_str();
-          Data = RemoteFile->Duplicate(true);
+          try
+          {
+            Data = RemoteFile->Duplicate(true);
+          }
+          catch (Exception & E)
+          {
+            TINYLOG_WARNING(g_tinylog) << TLogContext::Format()
+              << " CreateFileList: exception during Duplicate, skipping stale file entry: " << fileNameUtf8.c_str();
+            Data = nullptr;
+          }
         }
         else
         {
@@ -3358,12 +3704,21 @@ bool TWinSCPFileSystem::Connect(TSessionData * Data)
           << " Keepalive thread skipped, interval=0 or already running";
     }
   }
+
+  catch(EAbort &)
+  {
+    // User cancelled connection — silently abort without QueryReopen prompt
+    Result = false;
+    SAFE_DESTROY(FTerminal);
+    SAFE_DESTROY(FQueue);
+    SAFE_DESTROY(FQueueStatus);
+  }
   catch(Exception & E)
   {
     // HandleException(&E);
     bool Reopen = false;
     const EFatal * Fatal = nb::dyn_cast_or_null<EFatal>(&E);
-    if ((Fatal == nullptr) || !Fatal->GetReopenQueried())
+    if ((Fatal != nullptr) && !Fatal->GetReopenQueried())
     {
       // FTerminal->ShowExtendedException(&E);
       Reopen = FTerminal->QueryReopen(&E, 0, nullptr);
@@ -3399,17 +3754,101 @@ void TWinSCPFileSystem::Disconnect()
     }
     SaveSession();
   }
-  SAFE_DESTROY(FKeepaliveThread);
+  // Terminate keepalive thread safely. TKeepAliveThread::Execute() calls
+  // PostMainThreadSynchro which invokes FarAdvControl(ACTL_SYNCHRO) — a
+  // synchronous cross-thread call that blocks until the main thread processes
+  // the synchro event. If the main thread waits INFINITE for the keepalive
+  // thread while the keepalive thread waits for the main thread → deadlock.
+  // We use short waits and pump the Windows message queue between them so Far
+  // can process pending ACTL_SYNCHRO events and unblock the keepalive thread.
+  if (FKeepaliveThread)
+  {
+    FKeepaliveThread->SignalStop();
+    for (int32_t Retry = 0; Retry < 30; ++Retry)
+    {
+      FKeepaliveThread->WaitFor(100);
+      if (FKeepaliveThread->IsFinished())
+        break;
+      // Pump Windows messages to allow Far Manager to process pending
+      // ACTL_SYNCHRO events posted by the keepalive thread.
+      MSG Msg;
+      while (::PeekMessage(&Msg, nullptr, 0, 0, PM_REMOVE))
+      {
+        ::TranslateMessage(&Msg);
+        ::DispatchMessage(&Msg);
+      }
+    }
+    // If the thread still hasn't exited, it is stuck in PostMainThreadSynchro.
+    // Destroying the TKeepAliveThread object would close the thread handle
+    // and orphan the OS thread, leading to use-after-unload crashes when the
+    // process exits. Leak the thread instead — the OS will clean it up on exit.
+    if (!FKeepaliveThread->IsFinished())
+    {
+      TINYLOG_WARNING(g_tinylog) << TLogContext::Format()
+          << " Keepalive thread did not terminate, leaking to prevent crash";
+      FKeepaliveThread = nullptr;
+    }
+    else
+    {
+      SAFE_DESTROY(FKeepaliveThread);
+    }
+  }
+  else
+  {
+    SAFE_DESTROY(FKeepaliveThread);
+  }
   TINYLOG_DEBUG(g_tinylog) << TLogContext::Format()
       << " Keepalive thread destroyed";
   DebugAssert(FSynchronizeController == nullptr);
+  // Defensive cleanup: if authentication/progress/synchronization screen was saved
+  // but never restored (e.g. connection aborted during auth), restore it now.
+  if (FAuthenticationSaveScreenHandle)
+  {
+    GetWinSCPPlugin()->ClearConsoleTitle();
+    GetWinSCPPlugin()->RestoreScreen(FAuthenticationSaveScreenHandle);
+    FAuthenticationLog.reset();
+  }
+  if (FProgressSaveScreenHandle)
+  {
+    GetWinSCPPlugin()->RestoreScreen(FProgressSaveScreenHandle);
+    GetWinSCPPlugin()->ClearConsoleTitle();
+  }
+  if (FSynchronizationSaveScreenHandle)
+  {
+    GetWinSCPPlugin()->ClearConsoleTitle();
+    GetWinSCPPlugin()->RestoreScreen(FSynchronizationSaveScreenHandle);
+  }
   DebugAssert(!FAuthenticationSaveScreenHandle);
   DebugAssert(!FProgressSaveScreenHandle);
   DebugAssert(!FSynchronizationSaveScreenHandle);
   DebugAssert(!FFileList);
   DebugAssert(!FPanelItems);
   if (FQueue)
-    FQueue->Close();
+  {
+    // Mirror the keepalive thread pattern: bounded wait with message pump.
+    // FQueue->Close() calls TSimpleThread::Close() which waits INFINITE
+    // if the queue thread is stuck on network I/O, Far hangs on exit.
+    FQueue->SignalStop();
+    for (int32_t Retry = 0; Retry < 30; ++Retry)
+    {
+      FQueue->WaitFor(100);
+      if (FQueue->IsFinished())
+        break;
+      MSG Msg;
+      while (::PeekMessage(&Msg, nullptr, 0, 0, PM_REMOVE))
+      {
+        ::TranslateMessage(&Msg);
+        ::DispatchMessage(&Msg);
+      }
+    }
+    if (!FQueue->IsFinished())
+    {
+      TINYLOG_WARNING(g_tinylog) << TLogContext::Format()
+          << " Queue thread did not terminate, leaking to prevent crash";
+      // Leak the queue to avoid use-after-unload; OS reclaims on exit.
+      FQueue = nullptr;
+    }
+  }
   SAFE_DESTROY(FQueue);
   SAFE_DESTROY(FQueueStatus);
   if (FTerminal != nullptr)
@@ -3473,6 +3912,16 @@ void TWinSCPFileSystem::LogAuthentication(
 void TWinSCPFileSystem::TerminalInformation(
   TTerminal * Terminal, const UnicodeString & AStr, int32_t Phase, const UnicodeString & /*Additional*/)
 {
+  if (::GetCurrentThreadId() != FMainThreadId)
+  {
+    DEBUG_PRINTFA("::GetCurrentThreadId() != FMainThreadId");
+    TINYLOG_WARNING(g_tinylog) << TLogContext::Format()
+        << "TerminalInformation skipped: worker thread "
+        << std::to_string(::GetCurrentThreadId()) << " != main "
+        << std::to_string(FMainThreadId);
+    return;
+  }
+
   if (Phase != 0)
   {
     bool mustLog = false;
@@ -3534,13 +3983,31 @@ void TWinSCPFileSystem::TerminalStartReadDirectory(TObject * /*Sender*/)
 {
   if (!FNoProgress)
   {
-    GetWinSCPPlugin()->ShowConsoleTitle(GetMsg(NB_READING_DIRECTORY_TITLE));
+    if (!FLastPath.IsEmpty())
+    {
+      GetWinSCPPlugin()->ShowConsoleTitle(
+        FORMAT("%s %s", GetMsg(NB_READING_DIRECTORY_TITLE), FLastPath));
+    }
+    else
+    {
+      GetWinSCPPlugin()->ShowConsoleTitle(GetMsg(NB_READING_DIRECTORY_TITLE));
+    }
   }
 }
 
 void TWinSCPFileSystem::TerminalReadDirectoryProgress(
   TObject * /*Sender*/, int32_t Progress, int32_t /*ResolvedLinks*/, bool & Cancel)
 {
+  if (::GetCurrentThreadId() != FMainThreadId)
+  {
+    DEBUG_PRINTFA("::GetCurrentThreadId() != FMainThreadId");
+    TINYLOG_WARNING(g_tinylog) << TLogContext::Format()
+        << "TerminalReadDirectoryProgress skipped: worker thread "
+        << std::to_string(::GetCurrentThreadId()) << " != main "
+        << std::to_string(FMainThreadId);
+    return;
+  }
+
   if (Progress < 0)
   {
     if (!FNoProgress && (Progress == -2))
@@ -3558,8 +4025,16 @@ void TWinSCPFileSystem::TerminalReadDirectoryProgress(
 
     if (!FNoProgress)
     {
-      GetWinSCPPlugin()->UpdateConsoleTitle(
-        FORMAT("%s (%d)", GetMsg(NB_READING_DIRECTORY_TITLE), Progress));
+      if (!FLastPath.IsEmpty())
+      {
+        GetWinSCPPlugin()->UpdateConsoleTitle(
+          FORMAT("%s %s (%d)", GetMsg(NB_READING_DIRECTORY_TITLE), FLastPath, Progress));
+      }
+      else
+      {
+        GetWinSCPPlugin()->UpdateConsoleTitle(
+          FORMAT("%s (%d)", GetMsg(NB_READING_DIRECTORY_TITLE), Progress));
+      }
     }
   }
 }
@@ -3743,14 +4218,69 @@ void TWinSCPFileSystem::TerminalDisplayBanner(
 }
 
 void TWinSCPFileSystem::TerminalShowExtendedException(
-  TTerminal * /*Terminal*/, Exception * E, void * /*Arg*/)
+  TTerminal * Terminal, Exception * E, void * /*Arg*/)
 {
-  GetWinSCPPlugin()->ShowExtendedException(E);
+  if (::GetCurrentThreadId() == FMainThreadId.load())
+  {
+    // Main thread — show dialog directly (normal path for SFTP/SCP)
+    GetWinSCPPlugin()->ShowExtendedException(E);
+  }
+  else
+  {
+    // Worker thread (FTP CMainThread) — defer to main thread
+    DeferExceptionToMainThread(Terminal, E);
+  }
+}
+
+void TWinSCPFileSystem::DeferExceptionToMainThread(
+  TTerminal * Terminal, Exception * E)
+{
+  const TGuard Guard(FDeferredExceptionSection);
+  if (!FDeferredExceptionPending)
+  {
+    FDeferredExceptionPending = true;
+    FDeferredExceptionMessage = E->Message;
+    FDeferredExceptionTerminal = Terminal;
+    // Marshal to main thread — FE_IDLE handler will show the dialog
+    GetPlugin()->PostMainThreadSynchro(nullptr);
+  }
+  // If already pending, discard — only one error dialog at a time
+}
+
+void TWinSCPFileSystem::ProcessDeferredException()
+{
+  UnicodeString Message;
+  TTerminal * Terminal = nullptr;
+  {
+    const TGuard Guard(FDeferredExceptionSection);
+    if (FDeferredExceptionPending)
+    {
+      FDeferredExceptionPending = false;
+      Message = std::move(FDeferredExceptionMessage);
+      Terminal = FDeferredExceptionTerminal;
+      FDeferredExceptionTerminal = nullptr;
+    }
+  } // Guard destructor releases lock before showing dialog
+
+  if (!Message.IsEmpty())
+  {
+    Exception E(Message);
+    GetWinSCPPlugin()->ShowExtendedException(&E);
+  }
 }
 
 void TWinSCPFileSystem::OperationProgress(
   TFileOperationProgressType & ProgressData)
 {
+  if (::GetCurrentThreadId() != FMainThreadId)
+  {
+    TINYLOG_WARNING(g_tinylog) << TLogContext::Format()
+        << "OperationProgress skipped: worker thread "
+        << std::to_string(::GetCurrentThreadId()) << " != main "
+        << std::to_string(FMainThreadId);
+    return;
+  }
+
   if (FNoProgress)
   {
     return;
@@ -4115,6 +4645,13 @@ void TWinSCPFileSystem::QueueEvent(TTerminalQueue * Queue,
   }
 }
 
+void TWinSCPFileSystem::QueueIdleMarshal()
+{
+  // Marshal queue idle to the main thread by posting FE_IDLE synchro.
+  // Same pattern as TKeepAliveThread::Execute().
+  GetPlugin()->PostMainThreadSynchro(nullptr);
+}
+
 void TWinSCPFileSystem::CancelConfiguration(TFileOperationProgressType & ProgressData)
 {
   if (ProgressData.GetCancel() > csContinue)
@@ -4127,10 +4664,12 @@ void TWinSCPFileSystem::CancelConfiguration(TFileOperationProgressType & Progres
     // Flush console buffer before showing dialog to prevent Esc key races
     GetWinSCPPlugin()->FlushEscBuffer();
     FInCancelDialog = true;
+    GetWinSCPPlugin()->SetIdlePaused(true);
     SCOPE_EXIT
     {
       FInCancelDialog = false;
       ProgressData.Resume();
+      GetWinSCPPlugin()->SetIdlePaused(false);
     };
     TCancelStatus ACancel;
     uintptr_t Result;
@@ -4155,12 +4694,14 @@ void TWinSCPFileSystem::CancelConfiguration(TFileOperationProgressType & Progres
       break;
     case qaNo:
       ACancel = csContinue;
+
       break;
     case qaCancel:
       ACancel = csCancel;
       break;
     default:
       ACancel = csContinue;
+
       break;
     }
 
@@ -4231,7 +4772,7 @@ void TWinSCPFileSystem::UploadFromEditor(bool NoReload,
         {
           FTerminal->LogEvent(FORMAT("DEBUG: Remote file was modified externally - showing confirmation dialog"));
           uint32_t Flags = FMSG_WARNING | FMSG_MB_OKCANCEL;
-          UnicodeString MessageText = GetMsg(EDIT_CHANGED_EXTERNALLY);
+          UnicodeString MessageText = GetMsg(NB_EDIT_CHANGED_EXTERNALLY);
           int32_t Result = GetWinSCPPlugin()->Message(Flags, L"", MessageText);
           if (Result == -1)
           {
@@ -4288,6 +4829,39 @@ void TWinSCPFileSystem::UploadFromEditor(bool NoReload,
     FTerminal->SetAutoReadDirectory(PrevAutoReadDirectory);
     FFileList.reset();
   } end_try__finally
+  // Update stored timestamp to match the newly uploaded remote file.
+  // This prevents false-positive EDIT_CHANGED_EXTERNALLY on subsequent saves
+  // because PreserveTime is disabled and the remote gets a fresh server timestamp.
+  try
+  {
+    UnicodeString RemoteFilePath = base::UnixCombinePaths(DestPath, RealFileName);
+    std::unique_ptr<TRemoteFile> RemoteFile(FTerminal->TryReadFile(RemoteFilePath));
+    if (RemoteFile != nullptr)
+    {
+      FLastEditFileTimestamp = RemoteFile->GetModification();
+      FTerminal->LogEvent(FORMAT("DEBUG: Updated FLastEditFileTimestamp after upload: %s",
+        nb::DateTimeToStr(FLastEditFileTimestamp).c_str()));
+      // Also update multiple-edit source timestamp if applicable
+      if (FLastEditorID >= 0)
+      {
+        auto it = FMultipleEdits.find(FLastEditorID);
+        if (it != FMultipleEdits.end())
+        {
+          it->second.SourceTimestamp = FLastEditFileTimestamp;
+        }
+      }
+    }
+    else
+    {
+      FLastEditFileTimestamp = TDateTime();
+      FTerminal->LogEvent(FORMAT("DEBUG: Could not re-read remote file after upload - timestamp cleared"));
+    }
+  }
+  catch (Exception & E)
+  {
+    FLastEditFileTimestamp = TDateTime();
+    FTerminal->LogEvent(FORMAT("DEBUG: Failed to update timestamp after upload: %s - cleared", E.Message.c_str()));
+  }
 }
 
 void TWinSCPFileSystem::UploadOnSave(bool NoReload)
@@ -4331,6 +4905,12 @@ void TWinSCPFileSystem::UploadOnSave(bool NoReload)
 
 void TWinSCPFileSystem::ProcessEditorEvent(intptr_t Event, void * /* Param */)
 {
+  if (FProcessingEditorEvent)
+  {
+    AppLogFmt(L"ProcessEditorEvent: Reentrant call skipped (Event=%d)", static_cast<intptr_t>(Event));
+    return;
+  }
+  FProcessingEditorEvent = true;
   // EE_REDRAW is the first for optimization
   if (Event == EE_REDRAW)
   {
@@ -4491,6 +5071,7 @@ void TWinSCPFileSystem::ProcessEditorEvent(intptr_t Event, void * /* Param */)
       }
     }
   }
+  FProcessingEditorEvent = false;
 }
 
 void TWinSCPFileSystem::EditViewCopyParam(TCopyParamType & CopyParam)
