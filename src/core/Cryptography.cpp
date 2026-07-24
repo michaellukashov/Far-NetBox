@@ -68,7 +68,7 @@
 
 constexpr const int32_t IN_BLOCK_LENGTH     = 64;
 constexpr const int32_t OUT_BLOCK_LENGTH    = 20;
-constexpr const int32_t HMAC_IN_DATA        = 0xffffffff;
+constexpr const uint32_t HMAC_IN_DATA       = 0xffffffff;
 
 struct hmac_ctx
 {
@@ -142,7 +142,7 @@ static void hmac_sha1_data(const uint8_t data[], uint32_t data_len, hmac_ctx cx[
 
     if (cx->klen != HMAC_IN_DATA) /* if not yet in data phase */
     {
-        if (cx->klen != IN_BLOCK_LENGTH) /* if key is being hashed   */
+        if (cx->klen > IN_BLOCK_LENGTH) /* if key is being hashed   */
         {
           /* complete the hash and    */
           sha1_end(cx->key, cx->ctx); /* store the result as the  */
@@ -166,17 +166,17 @@ static void hmac_sha1_data(const uint8_t data[], uint32_t data_len, hmac_ctx cx[
 
     /* hash the data (if any)       */
     if(data_len)
-        sha1_hash(const_cast<unsigned char *>(data), data_len, cx->ctx);
+        sha1_hash(const_cast<uint8_t *>(data), data_len, cx->ctx);
 }
 
 /* compute and output the MAC value */
 static void hmac_sha1_end(uint8_t mac[], uint32_t mac_len, hmac_ctx cx[1])
-{   unsigned char dig[OUT_BLOCK_LENGTH];
+{   uint8_t dig[OUT_BLOCK_LENGTH];
     uint32_t i;
 
     /* if no data has been entered perform a null data phase        */
     if(cx->klen != HMAC_IN_DATA)
-        hmac_sha1_data((const unsigned char*)nullptr, 0, cx);
+        hmac_sha1_data((const uint8_t*)nullptr, 0, cx);
 
     sha1_end(dig, cx->ctx);         /* complete the inner hash      */
 
@@ -197,18 +197,18 @@ static void hmac_sha1_end(uint8_t mac[], uint32_t mac_len, hmac_ctx cx[1])
 
 constexpr const int32_t BLOCK_SIZE = 16;
 
-void aes_set_encrypt_key(const unsigned char in_key[], uint32_t klen, void * cx)
+void aes_set_encrypt_key(const uint8_t in_key[], uint32_t klen, void * cx)
 {
-  call_aes_setup(cx, const_cast<unsigned char *>(in_key), klen);
+  call_aes_setup(cx, const_cast<uint8_t *>(in_key), klen);
 }
 
-void aes_encrypt_block(const unsigned char in_blk[], unsigned char out_blk[], void * cx)
+void aes_encrypt_block(const uint8_t in_blk[], uint8_t out_blk[], void * cx)
 {
   int32_t Index;
   memmove(out_blk, in_blk, BLOCK_SIZE);
   for (Index = 0; Index < 4; Index++)
   {
-    unsigned char t;
+    uint8_t t;
     t = out_blk[Index * 4 + 0];
     out_blk[Index * 4 + 0] = out_blk[Index * 4 + 3];
     out_blk[Index * 4 + 3] = t;
@@ -219,7 +219,7 @@ void aes_encrypt_block(const unsigned char in_blk[], unsigned char out_blk[], vo
   call_aesold_encrypt(cx, reinterpret_cast<uint32_t*>(out_blk));
   for (Index = 0; Index < 4; Index++)
   {
-    unsigned char t;
+    uint8_t t;
     t = out_blk[Index * 4 + 0];
     out_blk[Index * 4 + 0] = out_blk[Index * 4 + 3];
     out_blk[Index * 4 + 3] = t;
@@ -230,13 +230,13 @@ void aes_encrypt_block(const unsigned char in_blk[], unsigned char out_blk[], vo
 }
 
 typedef struct
-{   unsigned char   nonce[BLOCK_SIZE];          /* the CTR nonce          */
-    unsigned char   encr_bfr[BLOCK_SIZE];       /* encrypt buffer         */
+{   uint8_t   nonce[BLOCK_SIZE];          /* the CTR nonce          */
+    uint8_t   encr_bfr[BLOCK_SIZE];       /* encrypt buffer         */
     AESContext *    encr_ctx;                   /* encryption context     */
     hmac_ctx        auth_ctx;                   /* authentication context */
-    unsigned int    encr_pos;                   /* block position (enc)   */
-    unsigned int    pwd_len;                    /* password length        */
-    unsigned int    mode;                       /* File encryption mode   */
+    uint32_t    encr_pos;                   /* block position (enc)   */
+    uint32_t    pwd_len;                    /* password length        */
+    uint32_t    mode;                       /* File encryption mode   */
 } fcrypt_ctx;
 
 constexpr const int32_t MAX_KEY_LENGTH    = 32;
@@ -262,16 +262,16 @@ constexpr const int32_t PWD_VER_LENGTH    = 2;
 /* this could be speeded up a lot by aligning   */
 /* buffers and using 32 bit operations          */
 
-static void derive_key(const unsigned char pwd[],  /* the PASSWORD     */
-               unsigned int pwd_len,        /* and its length   */
-               const unsigned char salt[],  /* the SALT and its */
-               unsigned int salt_len,       /* length           */
-               unsigned int iter,   /* the number of iterations */
-               unsigned char key[], /* space for the output key */
-               unsigned int key_len)/* and its required length  */
+static void derive_key(const uint8_t pwd[],  /* the PASSWORD     */
+               uint32_t pwd_len,        /* and its length   */
+               const uint8_t salt[],  /* the SALT and its */
+               uint32_t salt_len,       /* length           */
+               uint32_t iter,   /* the number of iterations */
+               uint8_t key[], /* space for the output key */
+               uint32_t key_len)/* and its required length  */
 {
-    unsigned int    i, j, k, n_blk;
-    unsigned char uu[OUT_BLOCK_LENGTH], ux[OUT_BLOCK_LENGTH];
+    uint32_t    i, j, k, n_blk;
+    uint8_t uu[OUT_BLOCK_LENGTH], ux[OUT_BLOCK_LENGTH];
     hmac_ctx c1[1], c2[1], c3[1];
 
     /* set HMAC context (c1) for password               */
@@ -294,10 +294,10 @@ static void derive_key(const unsigned char pwd[],  /* the PASSWORD     */
         c3->CopyFrom(c2);
 
         /* enter additional data for 1st block into uu  */
-        uu[0] = static_cast<unsigned char>((i + 1) >> 24);
-        uu[1] = static_cast<unsigned char>((i + 1) >> 16);
-        uu[2] = static_cast<unsigned char>((i + 1) >> 8);
-        uu[3] = static_cast<unsigned char>(i + 1);
+        uu[0] = static_cast<uint8_t>((i + 1) >> 24);
+        uu[1] = static_cast<uint8_t>((i + 1) >> 16);
+        uu[2] = static_cast<uint8_t>((i + 1) >> 8);
+        uu[3] = static_cast<uint8_t>(i + 1);
 
         /* this is the key mixing iteration         */
         for(j = 0, k = 4; j < iter; ++j)
@@ -357,7 +357,7 @@ static void fcrypt_init(
   const uint8_t salt[], /* the salt (input)                     */
   fcrypt_ctx cx[1]) /* the file encryption context (output) */
 {
-  uint8_t kbuf[2 * MAX_KEY_LENGTH + PWD_VER_LENGTH];
+  uint8_t kbuf[2 * MAX_KEY_LENGTH + PWD_VER_LENGTH]{};
 
   cx->mode = mode;
   cx->pwd_len = pwd_len;
@@ -631,21 +631,18 @@ bool UnscramblePassword(const RawByteString & Scrambled, UnicodeString & Passwor
 
 static UnicodeString OpensslInitializationErrors;
 
-static std::once_flag OpenSSLInitOnce;
-
 static bool InitOpenssl()
 {
-  bool Result = false;
-  std::call_once(OpenSSLInitOnce, [&Result]() {
-    // RAND_poll already calls OPENSSL_init_crypto with OPENSSL_INIT_LOAD_CONFIG and other flags.
-    // OPENSSL_init_ssl does not do much more, so it is not really big overhead.
-    // And we need to call OPENSSL_init_ssl, as it we need to use OPENSSL_INIT_LOAD_SSL_STRINGS to match what SSL_CTX_new does
-    // OPENSSL_init_ssl passes all flags to OPENSSL_init_crypto (even those it does not understand, like the very  OPENSSL_INIT_LOAD_SSL_STRINGS).
-    // OPENSSL_init_ssl caches the initialization results based on the flags
-    ERR_clear_error();
-    Result = OPENSSL_init_ssl(OPENSSL_INIT_LOAD_SSL_STRINGS, nullptr);
-  });
-  return Result;
+  ERR_clear_error();
+  // RAND_poll already calls OPENSSL_init_crypto with OPENSSL_INIT_LOAD_CONFIG and other flags.
+  // OPENSSL_init_ssl does not do much more, so it is not really big overhead.
+  // And we need to call OPENSSL_init_ssl, as it we need to use OPENSSL_INIT_LOAD_SSL_STRINGS to match what SSL_CTX_new does
+  // OPENSSL_init_ssl passes all flags to OPENSSL_init_crypto (even those it does not understand, like the very  OPENSSL_INIT_LOAD_SSL_STRINGS).
+  // OPENSSL_init_ssl caches the initialization results based on the flags (issue #389).
+  // Note: Do NOT wrap in std::call_once — OPENSSL_init_ssl uses its own RUN_ONCE
+  // internally. An outer std::call_once would cache failure permanently, preventing
+  // retry after transient failures (e.g. bad certificate file cleared).
+  return OPENSSL_init_ssl(OPENSSL_INIT_LOAD_SSL_STRINGS, nullptr);
 }
 
 
@@ -657,7 +654,7 @@ void CryptographyInitialize()
   {
     UnscrambleTable[SScrambleTable[Index]] = static_cast<uint8_t>(Index);
   }
-  srand(nb::ToUInt32(time(nullptr)) ^ nb::ToUInt32(_getpid()));
+  // srand removed: unused in this module; <random> should be used instead of C random facilities
 
   // The results are partly cached. So when later some OpenSSL function is called, which internally
   // calls OPENSSL_init_crypto, it will fail, without doing full initialization. So afterwards
