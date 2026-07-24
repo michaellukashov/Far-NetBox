@@ -689,6 +689,7 @@ bool TWinSCPPlugin::EnduranceConfigurationDialog()
   SessionReopenNumberOfRetriesEdit->SetFixed(true);
   SessionReopenNumberOfRetriesEdit->SetMask(L"999");
   SessionReopenNumberOfRetriesEdit->SetWidth(5);
+  SessionReopenNumberOfRetriesEdit->Move(1, 0);
 
   Text = MakeOwnedObject<TFarText>(Dialog);
   Text->SetCaption(GetMsg(NB_TRANSFER_SESSION_REOPEN_NUMBER_OF_RETRIES_LABEL2));
@@ -3253,7 +3254,7 @@ bool TWinSCPFileSystem::BannerDialog(const UnicodeString & SessionName,
   std::unique_ptr<TWinSCPDialog> DialogPtr(std::make_unique<TWinSCPDialog>(GetPlugin()));
   TWinSCPDialog * Dialog = DialogPtr.get();
 
-  Dialog->SetSize(TPoint(70, 21));
+  Dialog->SetSize(TPoint(70, 22));
   Dialog->SetCaption(FORMAT(GetMsg(NB_BANNER_TITLE), SessionName));
   Dialog->SetDialogGuid(&BannerDialogGuid);
 
@@ -4179,7 +4180,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   SFTPMaxPacketSizeEdit->SetMask(L"99999999");
   SFTPMaxPacketSizeEdit->SetWidth(8);
 
-  // FTP tab
+  // FTP(S) tab
 
   SetNextItemPosition(ipNewLine);
 
@@ -4230,7 +4231,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   SetNextItemPosition(ipRight);
   TlsCertificateFileEdit = MakeOwnedObject<TFarEdit>(this);
-  TlsCertificateFileEdit->SetWidth(30);
+  TlsCertificateFileEdit->SetWidth(28);
 
   SetNextItemPosition(ipRight);
   TlsCertificateFileBrowseBtn = MakeOwnedObject<TFarButton>(this);
@@ -4250,7 +4251,6 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
     PostLoginCommandsEdits[Index3] = Edit;
   }
 
-  MakeOwnedObject<TFarSeparator>(this);
 
   // S3 tab
   SetNextItemPosition(ipNewLine);
@@ -7326,7 +7326,7 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
 
     SetCaption(GetMsg(NB_PROPERTIES_CAPTION));
 
-    SetSize(TPoint(56, 19));
+    SetSize(TPoint(64, 19));
 
     const TRect CRect = GetClientRect();
 
@@ -8110,7 +8110,7 @@ void TCopyParamsContainer::ValidateSpeedComboExit(TObject * /*Sender*/)
 
 int32_t TCopyParamsContainer::GetHeight() const
 {
-  return 16;
+  return 18;
 }
 
 class TCopyDialog final : public TFarDialog
