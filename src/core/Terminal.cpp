@@ -3,7 +3,7 @@
 #pragma hdrstop
 
 #include "Terminal.h"
-
+#include <atomic>
 #include <Common.h>
 #include <Sysutils.hpp>
 #include <System.IOUtils.hpp>
@@ -188,7 +188,7 @@ protected:
 
 private:
   TSecureShell * FSecureShell{nullptr};
-  bool FTerminated{false};
+  std::atomic<bool> FTerminated{false};
 };
 
 TTunnelThread::TTunnelThread(TSecureShell * SecureShell) noexcept :
@@ -219,7 +219,7 @@ void TTunnelThread::Execute()
 {
   try
   {
-    while (!FTerminated)
+    while (!FTerminated.load())
     {
       FSecureShell->Idle(250);
     }

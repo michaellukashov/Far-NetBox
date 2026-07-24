@@ -695,9 +695,9 @@ bool TWebDAVFileSystem::IsCapable(int32_t Capability) const
     case fcRemoveCtrlZUpload:
     case fcRemoveBOMUpload:
     case fcPreservingTimestampDirs:
-    case fcResumeSupport:
-    case fcChangePassword:
     case fcTransferOut:
+      return true;
+
     case fcTransferIn:
     case fcParallelFileTransfers:
     case fcTags:

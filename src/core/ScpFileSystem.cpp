@@ -563,7 +563,7 @@ bool TSCPFileSystem::IsCapable(int32_t Capability) const
     case fcTransferOut:
     case fcTransferIn:
     case fcTags:
-      return false;
+      return true;
 
     case fcChangePassword:
       return FSecureShell->CanChangePassword();

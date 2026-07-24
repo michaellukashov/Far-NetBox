@@ -1392,9 +1392,9 @@ bool TS3FileSystem::IsCapable(int32_t Capability) const
     case fcRemoveBOMUpload:
     case fcPreservingTimestampDirs:
     case fcResumeSupport:
-    case fcChangePassword:
-    case fcLocking:
     case fcTransferOut:
+      return true;
+
     case fcTransferIn:
     case fcParallelFileTransfers:
       return false;
