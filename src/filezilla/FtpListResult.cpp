@@ -2099,10 +2099,7 @@ BOOL CFtpListResult::parseAsOther(const char *line, const int linelen, t_directo
   {
     copyStr(direntry.permissionstr, 0, skipped, skippedtokenlen);
 
-    if (skippedtokenlen >= 2 && skipped[1] == '4')
-      direntry.dir = TRUE;
-    else
-      direntry.dir = FALSE;
+    direntry.dir = FALSE;
 
     //Unused token
     str = GetNextToken(line, linelen, tokenlen, pos, 0);

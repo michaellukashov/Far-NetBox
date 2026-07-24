@@ -224,6 +224,8 @@ protected:
 
   bool m_awaitsReply{false};
   bool m_skipReply{false};
+  bool m_bInResetOperation{false};
+  bool m_bInList{false};
 
   char * m_sendBuffer{nullptr};
   size_t m_sendBufferLen{0};
