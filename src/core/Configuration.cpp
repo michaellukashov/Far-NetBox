@@ -888,6 +888,13 @@ bool TConfiguration::ShowBanner(
 {
   UnicodeString StoredBannerHash;
   GetBannerData(ASessionKey, StoredBannerHash, AParams);
+  // If user opted to suppress all banners for this session, skip display
+  // regardless of banner content changes (Issue: dynamic banner text
+  // causes hash mismatch and banner reappears after "Never show again")
+  if (StoredBannerHash == L"*")
+  {
+    return false;
+  }
   const bool Result = (StoredBannerHash != BannerHash(ABanner));
   return Result;
 }
@@ -910,7 +917,10 @@ void TConfiguration::NeverShowBanner(const UnicodeString & ASessionKey, const Un
   UnicodeString DummyBannerHash;
   uint32_t Params;
   GetBannerData(ASessionKey, DummyBannerHash, Params);
-  SetBannerData(ASessionKey, BannerHash(ABanner), Params);
+  // Store a suppress-all marker ("*") instead of the banner hash.
+  // This ensures the banner stays suppressed even if the server's banner
+  // text changes between sessions (e.g. timestamps, dynamic content).
+  SetBannerData(ASessionKey, L"*", Params);
 }
 
 void TConfiguration::SetBannerParams(const UnicodeString & ASessionKey, uint32_t AParams)
