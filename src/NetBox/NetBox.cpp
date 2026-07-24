@@ -356,6 +356,14 @@ BOOL WINAPI DllMain(HINSTANCE HInstDLL, DWORD Reason, LPVOID /*ptr*/ )
   {
     HInstanceDLL = HInstDLL;
     PrevInvalidParameterHandler = _set_invalid_parameter_handler(InvalidParameterHandler);
+    // Pin the module so it cannot be unloaded.  With /MT (static CRT) the
+    // runtime registers FLS callbacks inside our code section; if the DLL is
+    // unloaded before process exit, RtlProcessFlsData crashes when it tries to
+    // invoke those callbacks.  Keeping the module mapped prevents the AV.
+    HMODULE hPinned = nullptr;
+    ::GetModuleHandleExW(
+      GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_PIN,
+      reinterpret_cast<LPCWSTR>(&DllMain), &hPinned);
   }
   else if (Reason == DLL_PROCESS_DETACH)
   {
