@@ -1461,4 +1461,5 @@ enum MsgIDs {
     NB_COMPARE_DIRECTORIES_TITLE,  // "Compare Directories"
     NB_COMPARE_DIRECTORIES_NO_DIFFERENCES,  // "No differences found."
     NB_EDIT_CHANGED_EXTERNALLY,  // "The remote file has been changed while you were editing it. Do you want to overwrite it anyway?"
+    NB_CONFIRM_DISCONNECT_FROM_ROOT,  // "You are at the root remote directory. Disconnect from the server?"
 };

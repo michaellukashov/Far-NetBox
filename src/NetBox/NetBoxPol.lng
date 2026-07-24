@@ -1460,3 +1460,4 @@
 "Porównanie katalogów"
 "Nie znaleziono różnic."
 "The remote file has been changed while you were editing it. Do you want to overwrite it anyway?"
+"You are at the root remote directory. Disconnect from the server?"
