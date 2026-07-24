@@ -1,6 +1,6 @@
-
 #pragma once
 
+#include <atomic>
 #include "Terminal.h"
 #include "FileOperationProgress.h"
 #include "ObjIDs.h"
@@ -27,7 +27,7 @@ public:
 protected:
   HANDLE FThread{nullptr};
   TThreadID FThreadId{0};
-  bool FFinished{true};
+  std::atomic<bool> FFinished{true};
 
   virtual void Execute() = 0;
   virtual bool Finished();
@@ -49,7 +49,7 @@ public:
 
 protected:
   HANDLE FEvent{nullptr};
-  bool FTerminated{true};
+  std::atomic<bool> FTerminated{true};
 
   TSignalThread() = delete;
   explicit TSignalThread(TObjectClassId Kind) noexcept;
@@ -118,7 +118,7 @@ public:
   __property TQueueEventEvent OnEvent = { read = FOnEvent, write = FOnEvent };
   __property TIdleMarshalEvent OnIdleMarshal = { read = FOnIdleMarshal, write = FOnIdleMarshal };
 
-  DWORD GetMainThreadId() const { return FMainThreadId; }
+  DWORD GetMainThreadId() const { return FMainThreadId.load(); }
   void SetMainThreadId(DWORD Value) { FMainThreadId = Value; }
 protected:
   friend class TTerminalItem;
@@ -129,7 +129,7 @@ protected:
 public:
   int32_t GetTransfersLimit() const { return FTransfersLimit; }
   int32_t GetKeepDoneItemsFor() const { return FKeepDoneItemsFor; }
-  bool GetEnabled() const { return FEnabled; }
+  bool GetEnabled() const { return FEnabled.load(); }
   TQueryUserEvent & GetOnQueryUser() { return FOnQueryUser; }
   void SetOnQueryUser(TQueryUserEvent && Value) { FOnQueryUser = std::move(Value); }
   TPromptUserEvent & GetOnPromptUser() { return FOnPromptUser; }
@@ -152,7 +152,7 @@ protected:
   TQueueListUpdateEvent FOnListUpdate;
   TQueueEvent FOnEvent;
   TIdleMarshalEvent FOnIdleMarshal;
-  DWORD FMainThreadId{0};
+  std::atomic<DWORD> FMainThreadId{0};
   gsl::not_null<TTerminal *> FTerminal;
   gsl::not_null<TConfiguration *> FConfiguration;
   std::unique_ptr<TSessionData> FSessionData;
@@ -173,7 +173,7 @@ protected:
   int32_t FOverallTerminals{0};
   int32_t FTransfersLimit{2};
   int32_t FKeepDoneItemsFor{0};
-  bool FEnabled{true};
+  std::atomic<bool> FEnabled{true};
   TDateTime FIdleInterval;
   TDateTime FLastIdle;
 
@@ -487,10 +487,14 @@ public:
   explicit TDownloadQueueItem(TTerminal * ATerminal,
     const TStrings * AFilesToCopy, const UnicodeString & ATargetDir,
     const TCopyParamType * CopyParam, int32_t Params, bool Parallel) noexcept;
-  virtual ~TDownloadQueueItem() override = default;
+  virtual ~TDownloadQueueItem() noexcept override;
 
 protected:
   virtual void DoTransferExecute(gsl::not_null<TTerminal *> ATerminal, TParallelOperation * ParallelOperation) override;
+
+private:
+  UnicodeString FOriginalTargetDir;
+  UnicodeString FTempDir;
 };
 
 class TRemoteDeleteQueueItem final : public TLocatedQueueItem
@@ -554,7 +558,7 @@ public:
 
   TNotifyEvent & GetOnIdle() { return FOnIdle; }
   void SetOnIdle(TNotifyEvent && Value) { FOnIdle = std::move(Value); }
-  bool GetCancelling() const { return FCancel; }
+  bool GetCancelling() const { return FCancel.load(); }
 
 protected:
   virtual void ProcessEvent() override;
@@ -585,21 +589,22 @@ private:
 
   gsl::owner<Exception *> FException{nullptr};
   gsl::owner<Exception *> FIdleException{nullptr};
-  bool FCancel{false};
+  std::atomic<bool> FCancel{false};
   TDateTime FCancelAfter;
-  bool FAbandoned{false};
-  bool FCancelled{false};
 
-  bool FAllowAbandon{false};
-  bool FNonInteractive{false};
-  bool FNeedsInteraction{false};
+  std::atomic<bool> FAbandoned{false};
+  std::atomic<uint32_t> FIdleTryEnterFailures{0};
+  std::atomic<bool> FCancelled{false};
+  std::atomic<bool> FAllowAbandon{false};
+  std::atomic<bool> FNonInteractive{false};
+  std::atomic<bool> FNeedsInteraction{false};
 #if defined(__BORLANDC__)
   typedef std::list<TInformationUserAction *> TInformationList;
 #endif // defined(__BORLANDC__)
   using TInformationList = nb::list_t<TInformationUserAction *>;
   TInformationList FNonInteractiveInformation;
 
-  DWORD FMainThread{0};
+  std::atomic<DWORD> FMainThread{0};
   TCriticalSection FSection;
 
   void WaitForUserAction(TUserAction * UserAction);

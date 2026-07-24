@@ -1,6 +1,6 @@
 
 #pragma once
-
+#include <atomic>
 #include <Common.h>
 #include <Exceptions.h>
 
@@ -143,9 +143,9 @@ private:
   int64_t FTransferSize{0};
   int64_t FTransferredSize{0};
   int64_t FSkippedSize{0};
-  bool FInProgress{false};
-  bool FDone{false};
-  bool FFileInProgress{false};
+  std::atomic<bool> FInProgress{false};
+  std::atomic<bool> FDone{false};
+  std::atomic<bool> FFileInProgress{false};
   TCancelStatus FCancel{csContinue};
   int32_t FCount{-1};
   int64_t FTotalTransferBase{0};
@@ -153,7 +153,7 @@ private:
   int64_t FTotalSize{0};
   int64_t FOriginalTotalSize{0}; // snapshot of FTotalSize at first set; used for ETA when file grows
   bool FTotalSizeSet{false};
-  bool FSuspended{false};
+  std::atomic<bool> FSuspended{false};
   bool FRestored{false};
   TFileOperationProgressType * FParent{nullptr};
 
@@ -240,12 +240,9 @@ public:
   const int64_t& TransferredSize{FTransferredSize};
   __property int64_t SkippedSize = { read = FSkippedSize };
   const int64_t& SkippedSize{FSkippedSize};
-  __property bool InProgress = { read = FInProgress };
-  const bool& InProgress{FInProgress};
-  __property bool Done = { read = FDone };
-  const bool& Done{FDone};
-  __property bool FileInProgress = { read = FFileInProgress };
-  const bool& FileInProgress{FFileInProgress};
+  __property bool InProgress = { read = GetInProgress };
+  __property bool Done = { read = GetDone };
+  __property bool FileInProgress = { read = GetFileInProgress };
   __property TCancelStatus Cancel = { read = GetCancel };
   const ROProperty<TCancelStatus> Cancel{nb::bind(&TFileOperationProgressType::GetCancel, this)};
   // when operation started
@@ -271,8 +268,7 @@ public:
   __property bool TotalSizeSet = { read = FTotalSizeSet };
   const bool& TotalSizeSet{FTotalSizeSet};
 
-  __property bool Suspended = { read = FSuspended };
-  const bool& Suspended{FSuspended};
+  __property bool Suspended = { read = GetSuspended };
 
   TFileOperationProgressType() noexcept;
   explicit TFileOperationProgressType(
@@ -372,13 +368,13 @@ public:
   int64_t GetTransferredSize() const { return FTransferredSize; }
   int64_t GetSkippedSize() const { return FSkippedSize; }
 
-  bool GetInProgress() const { return FInProgress; }
-  bool GetDone() const { return FDone; }
-  bool GetFileInProgress() const { return FFileInProgress; }
+  bool GetInProgress() const { return FInProgress.load(); }
+  bool GetDone() const { return FDone.load(); }
+  bool GetFileInProgress() const { return FFileInProgress.load(); }
   int64_t GetTotalSkipped() const { return FTotalSkipped; }
   int32_t GetFilesFinishedSuccessfully() const { return FFilesFinishedSuccessfully; }
   bool GetTotalSizeSet() const { return FTotalSizeSet; }
-  bool GetSuspended() const { return FSuspended; }
+  bool GetSuspended() const { return FSuspended.load(); }
 };
 
 class NB_CORE_EXPORT TSuspendFileOperationProgress : public TObject

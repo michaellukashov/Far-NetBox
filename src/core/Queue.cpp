@@ -337,7 +337,7 @@ protected:
   TQueueItem * FItem{nullptr};
   TCriticalSection FCriticalSection;
   TUserAction * FUserAction{nullptr};
-  bool FCancel{false};
+  std::atomic<bool> FCancel{false};
   bool FPause{false};
 
   virtual void ProcessEvent() override;
@@ -409,7 +409,7 @@ void TSimpleThread::InitSimpleThread(const UnicodeString & Name)
 
 TSimpleThread::~TSimpleThread() noexcept
 {
-  if (!FFinished)
+  if (!FFinished.load())
   {
     SignalStop();
     WaitFor();
@@ -423,7 +423,7 @@ TSimpleThread::~TSimpleThread() noexcept
 
 bool TSimpleThread::IsFinished() const
 {
-  return FFinished;
+  return FFinished.load();
 }
 
 void TSimpleThread::Start()
@@ -436,12 +436,12 @@ void TSimpleThread::Start()
 
 bool TSimpleThread::Finished()
 {
-  return FFinished;
+  return FFinished.load();
 }
 
 void TSimpleThread::Close()
 {
-  if (!FFinished)
+  if (!FFinished.load())
   {
     SignalStop();
     WaitFor();
@@ -528,20 +528,20 @@ int32_t TSignalThread::WaitForEvent(DWORD Timeout) const
 {
   const DWORD Res = ::WaitForSingleObject(FEvent, Timeout);
   int32_t Result;
-  if ((Res == WAIT_TIMEOUT) && !FTerminated)
+  if ((Res == WAIT_TIMEOUT) && !FTerminated.load())
   {
     Result = -1;
   }
   else
   {
-    Result = ((Res == WAIT_OBJECT_0) && !FTerminated) ? 1 : 0;
+    Result = ((Res == WAIT_OBJECT_0) && !FTerminated.load()) ? 1 : 0;
   }
   return Result;
 }
 
 void TSignalThread::Execute()
 {
-  while (!FTerminated)
+  while (!FTerminated.load())
   {
     if (WaitForEvent())
     {
@@ -644,7 +644,7 @@ void TTerminalQueue::FreeItemsList(TList * List) const
 
 void TTerminalQueue::TerminalFinished(TTerminalItem * TerminalItem)
 {
-  if (!FTerminated)
+  if (!FTerminated.load())
   {
     {
       const TGuard Guard(FItemsSection);
@@ -678,7 +678,7 @@ bool TTerminalQueue::TerminalFree(TTerminalItem * TerminalItem)
 {
   bool Result = true;
 
-  if (!FTerminated)
+  if (!FTerminated.load())
   {
     {
       const TGuard Guard(FItemsSection);
@@ -708,7 +708,7 @@ int32_t TTerminalQueue::GetParallelDurationThreshold() const
 
 void TTerminalQueue::AddItem(TQueueItem * Item)
 {
-  DebugAssert(!FTerminated);
+  DebugAssert(!FTerminated.load());
 
   Item->SetStatus(TQueueItem::qsPending);
 
@@ -726,7 +726,7 @@ void TTerminalQueue::AddItem(TQueueItem * Item)
 
 void TTerminalQueue::RetryItem(TQueueItem * Item)
 {
-  if (!FTerminated)
+  if (!FTerminated.load())
   {
     {
       const TGuard Guard(FItemsSection);
@@ -746,7 +746,7 @@ void TTerminalQueue::RetryItem(TQueueItem * Item)
 
 void TTerminalQueue::DeleteItem(TQueueItem * Item, bool CanKeep)
 {
-  if (!FTerminated)
+  if (!FTerminated.load())
   {
     bool Empty;
     bool EmptyButMonitored;
@@ -874,7 +874,7 @@ TTerminalQueueStatus * TTerminalQueue::CreateStatus(TTerminalQueueStatus *& Curr
 bool TTerminalQueue::ItemGetData(TQueueItem * Item, TQueueItemProxy * Proxy, TQueueFileList * FileList)
 {
   // to prevent deadlocks when closing queue from other thread
-  bool Result = !FFinished;
+  bool Result = !FFinished.load();
   if (Result)
   {
     const TGuard Guard(FItemsSection);
@@ -899,7 +899,7 @@ bool TTerminalQueue::ItemGetData(TQueueItem * Item, TQueueItemProxy * Proxy, TQu
 bool TTerminalQueue::ItemProcessUserAction(TQueueItem * Item, void * Arg)
 {
   // to prevent deadlocks when closing queue from other thread
-  bool Result = !FFinished;
+  bool Result = !FFinished.load();
   if (Result)
   {
     TTerminalItem * TerminalItem = nullptr; // shut up
@@ -927,7 +927,7 @@ bool TTerminalQueue::ItemProcessUserAction(TQueueItem * Item, void * Arg)
 bool TTerminalQueue::ItemMove(TQueueItem * Item, TQueueItem * BeforeItem)
 {
   // to prevent deadlocks when closing queue from other thread
-  bool Result = !FFinished;
+  bool Result = !FFinished.load();
   if (Result)
   {
     {
@@ -957,7 +957,7 @@ bool TTerminalQueue::ItemMove(TQueueItem * Item, TQueueItem * BeforeItem)
 bool TTerminalQueue::ItemExecuteNow(TQueueItem * Item)
 {
   // to prevent deadlocks when closing queue from other thread
-  bool Result = !FFinished;
+  bool Result = !FFinished.load();
   if (Result)
   {
     {
@@ -999,7 +999,7 @@ bool TTerminalQueue::ItemExecuteNow(TQueueItem * Item)
 bool TTerminalQueue::ItemDelete(TQueueItem * Item)
 {
   // to prevent deadlocks when closing queue from other thread
-  bool Result = !FFinished;
+  bool Result = !FFinished.load();
   if (Result)
   {
     bool UpdateList = false;
@@ -1049,7 +1049,7 @@ bool TTerminalQueue::ItemDelete(TQueueItem * Item)
 bool TTerminalQueue::ItemPause(TQueueItem * Item, bool Pause)
 {
   // to prevent deadlocks when closing queue from other thread
-  bool Result = !FFinished;
+  bool Result = !FFinished.load();
   if (Result)
   {
     TTerminalItem * TerminalItem = nullptr; // shut up
@@ -1085,7 +1085,7 @@ bool TTerminalQueue::ItemPause(TQueueItem * Item, bool Pause)
 bool TTerminalQueue::ItemSetCPSLimit(TQueueItem * Item, int32_t CPSLimit) const
 {
   // to prevent deadlocks when closing queue from other thread
-  bool Result = !FFinished;
+  bool Result = !FFinished.load();
   if (Result)
   {
     const TGuard Guard(FItemsSection);
@@ -1104,7 +1104,7 @@ bool TTerminalQueue::ItemGetCPSLimit(TQueueItem * Item, int32_t & CPSLimit) cons
 {
   CPSLimit = 0;
   // to prevent deadlocks when closing queue from other thread
-  bool Result = !FFinished;
+  bool Result = !FFinished.load();
   if (Result)
   {
     const TGuard Guard(FItemsSection);
@@ -1237,7 +1237,7 @@ void TTerminalQueue::ProcessEvent()
       TerminalItem->Process(Item1);
     }
   }
-  while (!FTerminated && (TerminalItem != nullptr));
+  while (!FTerminated.load() && (TerminalItem != nullptr));
 
 }
 
@@ -1301,7 +1301,7 @@ void TTerminalQueue::SetKeepDoneItemsFor(int32_t Value)
 
 void TTerminalQueue::SetEnabled(bool Value)
 {
-  if (FEnabled != Value)
+  if (FEnabled.load() != Value)
   {
     {
       const TGuard Guard(FItemsSection);
@@ -1648,7 +1648,7 @@ bool TTerminalItem::WaitForUserAction(
     FItem->SetStatus(ItemStatus);
     FQueue->DoEvent(qePendingUserAction);
 
-    Result = !FTerminated && WaitForEvent() && !FCancel;
+    Result = !FTerminated.load() && WaitForEvent() && !FCancel.load();
   }
   __finally
   {
@@ -1813,7 +1813,7 @@ bool TTerminalItem::OverrideItemStatus(TQueueItem::TStatus & ItemStatus) const
 
 bool TTerminalItem::IsCancelled() const
 {
-  return FTerminated || FCancel;
+  return FTerminated.load() || FCancel.load();
 }
 
 // TQueueItem
@@ -2729,10 +2729,75 @@ TDownloadQueueItem::TDownloadQueueItem(TTerminal * ATerminal,
   FInfo->ModifiedLocal = ::IncludeTrailingBackslash(TargetDir);
 }
 
+TDownloadQueueItem::~TDownloadQueueItem() noexcept
+{
+  // Clean up temp files if any remain (move failed, CopyToLocal threw, or cancel)
+  if (!FTempDir.IsEmpty())
+  {
+    for (int32_t i = 0; i < nb::ToInt32(FFilesToCopy->GetCount()); ++i)
+    {
+      const UnicodeString FileName = base::ExtractFileName(FFilesToCopy->GetString(i), true);
+      const UnicodeString SrcPath = ::IncludeTrailingBackslash(FTempDir) + FileName;
+      if (::FileExists(SrcPath))
+      {
+        ::DeleteFile(SrcPath.c_str());
+      }
+    }
+    FTempDir.Clear();
+  }
+}
+
 void TDownloadQueueItem::DoTransferExecute(gsl::not_null<TTerminal *> ATerminal, TParallelOperation * AParallelOperation)
 {
   DebugAssert(ATerminal != nullptr);
+
+  // If a temp download path is configured, save original target and override to temp
+  const UnicodeString TempPath = FCopyParam->GetTempPath();
+  if (!TempPath.IsEmpty())
+  {
+    FOriginalTargetDir = FTargetDir;
+    FTargetDir = TempPath;
+    FTempDir = TempPath;
+    // Ensure temp directory exists
+    ::ForceDirectories(ApiPath(FTargetDir));
+  }
+
   ATerminal->CopyToLocal(FFilesToCopy.get(), FTargetDir, FCopyParam.get(), FParams, AParallelOperation);
+
+  // If temp path was used, move completed files from temp to original destination
+  if (!FOriginalTargetDir.IsEmpty())
+  {
+    const UnicodeString TempDir = FTargetDir;
+    FTargetDir = FOriginalTargetDir;
+    FOriginalTargetDir.Clear();
+
+    // Iterate over each downloaded file and move it from temp to original
+    try
+    {
+      for (int32_t i = 0; i < nb::ToInt32(FFilesToCopy->GetCount()); ++i)
+      {
+        const UnicodeString FileName = base::ExtractFileName(FFilesToCopy->GetString(i), true);
+        const UnicodeString SrcPath = ::IncludeTrailingBackslash(TempDir) + FileName;
+        const UnicodeString DstPath = ::IncludeTrailingBackslash(FTargetDir) + FileName;
+        // NOTE: Move across volumes (different drives) on Windows is not atomic —
+        // MoveFileEx with MOVEFILE_COPY_ALLOWED performs copy+delete.
+        // Same-volume moves are atomic (metadata-only rename).
+        if (::FileExists(SrcPath))
+        {
+          ::MoveFileEx(SrcPath.c_str(), DstPath.c_str(),
+            MOVEFILE_REPLACE_EXISTING | MOVEFILE_COPY_ALLOWED);
+        }
+      }
+      // All moves succeeded — temp files no longer needed
+      FTempDir.Clear();
+    }
+    catch (Exception & E)
+    {
+      // Move failed — log, show error, don't rethrow. Downloaded data persists in temp.
+      ATerminal->LogEvent(FORMAT("DownloadQueueItem: MoveFileEx failed: %s", E.Message.c_str()));
+      // Don't clear FTempDir — destructor will leave files for user retrieval
+    }
+  }
 }
 
 
@@ -2872,7 +2937,7 @@ TTerminalThread::~TTerminalThread() noexcept
 #if defined(__BORLANDC__)
   delete FSection;
 #endif // defined(__BORLANDC__)
-  if (FAbandoned)
+  if (FAbandoned.load())
   {
     std::destroy_at(FTerminal.get());
   }
@@ -2914,6 +2979,12 @@ void TTerminalThread::Idle()
     {
       FSection.Release();
     } end_try__finally
+  }
+  else
+  {
+    FIdleTryEnterFailures++;
+    DEBUG_PRINTFA("TTerminalThread::Idle() TryEnter(FSection) failed — %s thread holds lock",
+      (GetCurrentThreadId() == FMainThread.load()) ? "main" : "worker");
   }
 }
 
@@ -2967,7 +3038,7 @@ void TTerminalThread::RunAction(TNotifyEvent && Action)
             {
               try
               {
-                DebugAssert(GetCurrentThreadId() == FMainThread);
+                DebugAssert(GetCurrentThreadId() == FMainThread.load());
                 FUserAction->Execute(nullptr);
               }
               catch (Exception & E)
@@ -2998,7 +3069,7 @@ void TTerminalThread::RunAction(TNotifyEvent && Action)
             throw Exception("Error waiting for background session task to complete");
         }
 
-        if (FAllowAbandon && !Done && FCancel && (Now() >= FCancelAfter))
+        if (FAllowAbandon.load() && !Done && FCancel.load() && (Now() >= FCancelAfter))
         {
           const TGuard Guard(FSection);
           if (WaitForSingleObject(FActionEvent, 0) != WAIT_OBJECT_0)
@@ -3025,7 +3096,7 @@ void TTerminalThread::RunAction(TNotifyEvent && Action)
   }
   catch(...)
   {
-    if (FCancelled)
+    if (FCancelled.load())
     {
       // even if the abort thrown as result of Cancel() was wrapped into
       // some higher-level exception, normalize back to message-less fatal
@@ -3068,7 +3139,7 @@ void TTerminalThread::ProcessEvent()
 
   {
     const TGuard Guard(FSection);
-    if (!FAbandoned)
+    if (!FAbandoned.load())
     {
       ::SetEvent(FActionEvent);
     }
@@ -3099,7 +3170,7 @@ void TTerminalThread::SaveException(Exception & E, Exception *& Exception)
 
 void TTerminalThread::FatalAbort()
 {
-  if (FAbandoned)
+  if (FAbandoned.load())
   {
     // We cannot use TTerminal::FatalError as the terminal still runs on a background thread,
     // may have its TCallbackGuard armed right now.
@@ -3113,7 +3184,7 @@ void TTerminalThread::FatalAbort()
 
 void TTerminalThread::CheckCancel()
 {
-  if (FCancel && !FCancelled)
+  if (FCancel.load() && !FCancelled.load())
   {
     FCancelled = true;
     FatalAbort();
@@ -3127,7 +3198,7 @@ void TTerminalThread::WaitForUserAction(TUserAction * UserAction)
   const DWORD Thread = GetCurrentThreadId();
   // we can get called from the main thread from within Idle,
   // should be only to call HandleExtendedException
-  if (Thread == FMainThread)
+  if (Thread == FMainThread.load())
   {
     if (UserAction != nullptr)
     {
@@ -3141,7 +3212,7 @@ void TTerminalThread::WaitForUserAction(TUserAction * UserAction)
     DebugAssert(Thread == FThreadId);
 
     const bool DoCheckCancel =
-      DebugAlwaysFalse(UserAction == nullptr) || !UserAction->Force() || FAbandoned;
+      DebugAlwaysFalse(UserAction == nullptr) || !UserAction->Force() || FAbandoned.load();
     if (DoCheckCancel)
     {
       CheckCancel();
@@ -3372,7 +3443,7 @@ void TTerminalThread::TerminalReadDirectoryProgress(
 
 bool TTerminalThread::Release()
 {
-  const bool Result = !FAbandoned;
+  const bool Result = !FAbandoned.load();
   if (Result)
   {
     std::destroy_at(this);
@@ -3382,7 +3453,7 @@ bool TTerminalThread::Release()
 
 bool TTerminalThread::Finished()
 {
-  return TSimpleThread::Finished() || FAbandoned;
+  return TSimpleThread::Finished() || FAbandoned.load();
 }
 
 

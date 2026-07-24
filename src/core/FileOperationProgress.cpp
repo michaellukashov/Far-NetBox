@@ -194,9 +194,9 @@ void TFileOperationProgressType::AssignButKeepSuspendState(const TFileOperationP
 {
   const TGuard Guard(FSection);
   const TValueRestorer<uint64_t> SuspendTimeRestorer(FSuspendTime);
-  const TValueRestorer<bool> SuspendedRestorer(FSuspended);
-
+  const bool SavedSuspended = FSuspended.load();
   Assign(Other);
+  FSuspended = SavedSuspended;
 }
 
 void TFileOperationProgressType::DoClear(bool Batch, bool Speed)
@@ -1185,11 +1185,11 @@ TFileOperationProgressType & TFileOperationProgressType::operator =(const TFileO
   FCount = rhs.FCount;
   FFilesFinished = rhs.FFilesFinished;
   FFilesFinishedSuccessfully = rhs.FFilesFinishedSuccessfully;
-  FSuspended = rhs.FSuspended;
+  FSuspended.store(rhs.FSuspended.load());
   FSuspendTime = rhs.FSuspendTime;
-  FInProgress = rhs.FInProgress;
-  FDone = rhs.FDone;
-  FFileInProgress = rhs.FFileInProgress;
+  FInProgress.store(rhs.FInProgress.load());
+  FDone.store(rhs.FDone.load());
+  FFileInProgress.store(rhs.FFileInProgress.load());
   FTotalSkipped = rhs.FTotalSkipped;
   FTotalSize = rhs.FTotalSize;
   FSkippedSize = rhs.FSkippedSize;
@@ -1214,7 +1214,7 @@ TFileOperationProgressType & TFileOperationProgressType::operator =(const TFileO
   FCount = rhs.FCount;
 
   FCPSLimit = rhs.FCPSLimit;
-  FSuspended = rhs.FSuspended;
+  FSuspended.store(rhs.FSuspended.load());
 
   FTransferringFile = rhs.FTransferringFile;
 
