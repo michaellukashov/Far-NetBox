@@ -2446,6 +2446,12 @@ void TFTPFileSystem::AutoDetectTimeDifference(const TRemoteFileList * FileList)
           break;
         }
 
+        if (UtcFilePtr == nullptr)
+        {
+          FDetectTimeDifference = false;
+          FTerminal->LogEvent(FORMAT("Failed to retrieve file %s attributes to detect timezone difference", File->GetFullFileName()));
+          break;
+        }
         TDateTime UtcModification = UtcFilePtr->GetModification();
         UtcFilePtr.reset();
 

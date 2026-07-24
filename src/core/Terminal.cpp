@@ -3860,7 +3860,7 @@ void TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
     DoReadDirectoryProgress(0, 0, Cancel);
 
     // Capture directory before ReadDirectory mutates FFiles.
-    // Used as fallback in the catch block if FFiles is corrupted.
+    // Used as fallback in the catch block if FFiles is null or corrupted.
     const UnicodeString SavedDirectory = GetCurrentDirectory();
 
     try
@@ -4283,6 +4283,7 @@ TRemoteFile * TTerminal::ReadFile(const UnicodeString & AFileName)
     LogEvent(FORMAT("Listing file \"%s\".", AFileName));
     TRemoteFile * AFile = nullptr;
     FFileSystem->ReadFile(AFileName, AFile);
+    DebugAssert(AFile != nullptr);
     File.reset(AFile);
     ReactOnCommand(fsListFile);
     LogRemoteFile(File.get());
@@ -4416,6 +4417,11 @@ bool TTerminal::ProcessFiles(TStrings * AFileList,
           const UnicodeString FileName = AFileList->GetString(Index);
           // DEBUG_PRINTF("FileName: %s", FileName);
           TRemoteFile * File = AFileList->GetAs<TRemoteFile>(Index);
+          if (File == nullptr)
+          {
+            ++Index;
+            continue;
+          }
           // DEBUG_PRINTF("GetFullFileName: %s", File->GetFullFileName());
           try
           {
@@ -4816,6 +4822,10 @@ void TTerminal::CustomCommandOnFiles(const UnicodeString & ACommand,
     for (int32_t Index = 0; Index < AFiles->GetCount(); ++Index)
     {
       const TRemoteFile * File = AFiles->GetAs<TRemoteFile>(Index);
+      if (File == nullptr)
+      {
+        continue;
+      }
       const bool Dir = File->GetIsDirectory() && CanRecurseToDirectory(File);
 
       if (!Dir || FLAGSET(AParams, ccApplyToDirectories))
@@ -4947,10 +4957,13 @@ bool TTerminal::LoadFilesProperties(TStrings * AFileList)
     GetIsCapable(fcLoadingAdditionalProperties) &&
     FFileSystem->LoadFilesProperties(AFileList);
   if (Result && GetSessionData()->GetCacheDirectories() &&
-      (AFileList->GetCount() > 0) &&
-      (AFileList->GetAs<TRemoteFile>(0)->GetDirectory() == FFiles.get()))
+      (AFileList->GetCount() > 0))
   {
-    AddCachedFileList(FFiles.get());
+    const TRemoteFile * FirstFile = AFileList->GetAs<TRemoteFile>(0);
+    if (FirstFile && (FirstFile->GetDirectory() == FFiles.get()))
+    {
+      AddCachedFileList(FFiles.get());
+    }
   }
   return Result;
 }
@@ -5210,8 +5223,11 @@ void TTerminal::CalculateSubFoldersChecksum(
     while ((Index < FileList->Count) && !AOperationProgress->Cancel)
     {
       UnicodeString FileName = FileList->Strings[Index];
-      TRemoteFile * File = DebugNotNull(FileList->GetAs<TRemoteFile>(Index));
-
+      TRemoteFile * File = FileList->GetAs<TRemoteFile>(Index);
+      if (File == nullptr)
+      {
+        continue;
+      }
       if (File->IsDirectory &&
           CanRecurseToDirectory(File) &&
           IsRealFile(File->FileName))
@@ -5274,6 +5290,10 @@ void TTerminal::CalculateFilesChecksum(
 
 void TTerminal::RenameFile(const TRemoteFile * AFile, const UnicodeString & ANewName)
 {
+  if (AFile == nullptr)
+  {
+    return;
+  }
   // Already checked in TUnixDirView::InternalEdit
   if (DebugAlwaysTrue(AFile->FileName() != ANewName))
   {
@@ -5290,6 +5310,10 @@ bool TTerminal::DoRenameOrCopyFile(
   bool Rename, const UnicodeString & FileName, const TRemoteFile * File, const UnicodeString & NewName,
   bool Move, bool DontOverwrite, bool IsBatchOperation)
 {
+  if (File == nullptr)
+  {
+    return false;
+  }
   const TBatchOverwrite BatchOverwrite = (IsBatchOperation ? OperationProgress->BatchOverwrite : boNo);
   const UnicodeString AbsoluteFileName = AbsolutePath(FileName, true);
   const UnicodeString AbsoluteNewName = AbsolutePath(NewName, true);
@@ -6902,11 +6926,11 @@ void TTerminal::DoSynchronizeCollectFile(const UnicodeString & AFileName,
   {
     Data->Options->Files++;
   }
+
   if (AFile == nullptr)
   {
     return;
   }
-
   const UnicodeString LocalFileName = ChangeFileName(Data->CopyParam, AFile->FileName, osRemote, false);
   const UnicodeString FullRemoteFileName = base::UnixExcludeTrailingBackslash(AFile->FullFileName);
   if (DoAllowRemoteFileTransfer(AFile, Data->CopyParam, true) &&
@@ -8504,6 +8528,10 @@ void TTerminal::CheckParallelFileTransfer(
     if (TParallelOperation::GetOnlyFile(Files, ParallelFileName, ParallelObject))
     {
       const TRemoteFile * File = cast_to<const TRemoteFile>(ParallelObject);
+      if (File == nullptr)
+      {
+        return;
+      }
       const TRemoteFile * UltimateFile = File->Resolve();
       if ((UltimateFile == File) && // not tested with symlinks
           (UltimateFile->Size >= nb::ToInt64(Configuration->ParallelTransferThreshold) * 1024))
@@ -9490,6 +9518,10 @@ UnicodeString TTerminal::ChangeFileName(const TCopyParamType * CopyParam,
 
 bool TTerminal::CanRecurseToDirectory(const TRemoteFile * AFile) const
 {
+  if (AFile == nullptr)
+  {
+    return false;
+  }
   return !AFile->GetIsSymLink() || FSessionData->GetFollowDirectorySymlinks();
 }
 
@@ -9609,15 +9641,22 @@ TRemoteFile * TTerminal::CheckRights(const UnicodeString & EntryType, const Unic
   {
     LogEvent(FORMAT(L"Checking %s \"%s\"...", LowerCase(EntryType), FileName));
     File.reset(ReadFile(FileName));
-    constexpr int32_t ForbiddenRights = TRights::rfGroupWrite | TRights::rfOtherWrite;
-    if ((File->Rights->Number & ForbiddenRights) != 0)
+    if (File == nullptr)
     {
-      LogEvent(FORMAT(L"%s \"%s\" exists, but has incorrect permissions %s.", EntryType, FileName, File->Rights->Octal));
-      WrongRights = true;
+      WrongRights = false;
     }
     else
     {
-      LogEvent(FORMAT(L"%s \"%s\" exists and has correct permissions %s.", EntryType, FileName, File->Rights->Octal));
+      constexpr int32_t ForbiddenRights = TRights::rfGroupWrite | TRights::rfOtherWrite;
+      if ((File->Rights->Number & ForbiddenRights) != 0)
+      {
+        LogEvent(FORMAT(L"%s \"%s\" exists, but has incorrect permissions %s.", EntryType, FileName, File->Rights->Octal));
+        WrongRights = true;
+      }
+      else
+      {
+        LogEvent(FORMAT(L"%s \"%s\" exists and has correct permissions %s.", EntryType, FileName, File->Rights->Octal));
+      }
     }
   }
   catch (Exception & DebugUsedArg(E))
@@ -9634,7 +9673,7 @@ void TTerminal::LogAndInformation(const UnicodeString & S)
 
 UnicodeString TTerminal::UploadPublicKey(const UnicodeString & FileName)
 {
-  if (FFSProtocol != cfsSFTP)
+  if (!GetIsCapable(fcTransferOut) || !GetIsCapable(fcModeChangingUpload))
   {
     NotSupported();
   }

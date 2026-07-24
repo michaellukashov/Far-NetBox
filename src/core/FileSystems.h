@@ -101,6 +101,9 @@ public:
   virtual void LookupUsersGroups() = 0;
   virtual void ReadCurrentDirectory() = 0;
   virtual void ReadDirectory(TRemoteFileList * FileList) = 0;
+  // Contract: implementations must set File to a valid pointer on success,
+  // or throw an exception on failure. File must never be left as nullptr
+  // on return when the call succeeds. Callers rely on this guarantee.
   virtual void ReadFile(const UnicodeString & AFileName,
     TRemoteFile *& File) = 0;
   virtual void ReadSymlink(TRemoteFile * SymLinkFile,

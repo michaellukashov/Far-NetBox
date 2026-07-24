@@ -1765,7 +1765,10 @@ TStrings * TRemoteFileList::CloneStrings(TStrings * List)
   for (int32_t Index = 0; Index < List->Count; Index++)
   {
     const TRemoteFile * File = List->GetAs<TRemoteFile>(Index);
-    Result->AddObject(List->Strings[Index], File->Duplicate(true));
+    if (File != nullptr)
+    {
+      Result->AddObject(List->Strings[Index], File->Duplicate(true));
+    }
   }
   return Result.release();
 }
@@ -1775,7 +1778,8 @@ bool TRemoteFileList::AnyDirectory(TStrings * List)
   bool Result = false;
   for (int32_t Index = 0; !Result && (Index < List->Count); Index++)
   {
-    Result = List->GetAs<TRemoteFile>(Index)->IsDirectory;
+    const TRemoteFile * File = List->GetAs<TRemoteFile>(Index);
+    Result = (File != nullptr) && File->IsDirectory;
   }
   return Result;
 }

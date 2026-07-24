@@ -1340,6 +1340,10 @@ void TSCPFileSystem::CustomReadFile(const UnicodeString & AFileName,
 
     File = CreateRemoteFile(FOutput->GetString(LineIndex), ALinkedByFile);
   }
+  if (File == nullptr)
+  {
+    throw Exception(FMTLOAD(FILE_NOT_EXISTS, AFileName));
+  }
 }
 
 void TSCPFileSystem::DeleteFile(const UnicodeString & AFileName,
