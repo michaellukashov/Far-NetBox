@@ -137,15 +137,15 @@ private:
   UnicodeString FPuttygenPath;
   UnicodeString FApplyCommandCommand;
   int32_t FApplyCommandParams{0};
-
-  bool FCustomPanelModeDetailed{false};
   bool FFullScreenDetailed{false};
+  bool FCustomPanelModeDetailed{false};
   UnicodeString FColumnTypesDetailed;
   UnicodeString FColumnWidthsDetailed;
   UnicodeString FStatusColumnTypesDetailed;
   UnicodeString FStatusColumnWidthsDetailed;
 
 private:
+
   int32_t FarConfirmations() const;
 };
 
