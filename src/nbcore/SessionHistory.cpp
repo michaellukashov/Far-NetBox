@@ -1,12 +1,12 @@
 #include "stdafx.h"
-
 #include <Common.h>
 #include "SessionHistory.h"
 
 namespace nb {
 
-UnicodeString EncodeSessionParam(
-  const UnicodeString & SessionName, const UnicodeString & RemoteDirectory)
+static ISessionContext * g_logger = nullptr;
+
+UnicodeString EncodeSessionParam(const UnicodeString & SessionName, const UnicodeString & RemoteDirectory)
 {
   UnicodeString Result = L"netbox://" + EncodeUrlString(SessionName);
   if (!RemoteDirectory.IsEmpty())
@@ -39,7 +39,6 @@ TSessionHistoryEntry DecodeSessionParam(const UnicodeString & Param)
   }
   else if (Param.SubString(1, 7).LowerCase() == L"netbox:")
   {
-    // Fallback to old format: netbox:SessionName\1RemoteDirectory
     UnicodeString Remaining = Param.SubString(8, Param.Length() - 7);
     const int32_t DelimPos = Remaining.Pos(L'\1');
     if (DelimPos > 0)
@@ -54,6 +53,27 @@ TSessionHistoryEntry DecodeSessionParam(const UnicodeString & Param)
     Result.Valid = !Result.SessionName.IsEmpty();
   }
   return Result;
+}
+
+void SetSessionLogger(ISessionContext * Logger)
+{
+  g_logger = Logger;
+}
+
+void LogSessionEvent(const UnicodeString & Event)
+{
+  if (g_logger != nullptr)
+  {
+    g_logger->LogEvent(Event);
+  }
+}
+
+void LogSessionEvent(ISessionContext * SessionContext, const UnicodeString & Text)
+{
+  if (SessionContext != nullptr)
+  {
+    SessionContext->LogEvent(Text);
+  }
 }
 
 } // namespace nb
