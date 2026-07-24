@@ -1,5 +1,6 @@
 #pragma once
 
+#include <atomic>
 #include <Interface.h>
 #include "FarPlugin.h"
 #include <FileOperationProgress.h>
@@ -35,6 +36,7 @@ constexpr const char * LOCAL_SYNC_HISTORY = "WinscpLocalSync";
 constexpr const char * MOVE_TO_HISTORY = "WinscpMoveTo";
 constexpr const char * WINSCP_FILE_MASK_HISTORY = "WinscpFileMask";
 constexpr const char * MAKE_SESSION_FOLDER_HISTORY = "WinscpSessionFolder";
+constexpr const char * EDIT_NEW_FILE_HISTORY = "WinscpEditNewFile";
 
 #if defined(__BORLANDC__)
 // for Properties dialog
@@ -313,6 +315,7 @@ private:
   UnicodeString GetFileNameHash(const UnicodeString & AFileName) const;
   int32_t GetFilesRemote(TObjectList * PanelItems, bool Move,
     UnicodeString & DestPath, OPERATION_MODES OpMode);
+  void EditNewFile();
 
 private:
   TTerminalQueue * GetQueue();
@@ -335,6 +338,7 @@ private:
   gsl::owner<TList *> FPanelItems{nullptr};
   UnicodeString FSavedFindFolder;
   UnicodeString FOriginalEditFile;
+  UnicodeString FOriginalEditRemoteFile;
   UnicodeString FLastEditFile;
   UnicodeString FLastMultipleEditFile;
   UnicodeString FLastMultipleEditFileTitle;
@@ -359,12 +363,12 @@ private:
   UnicodeString FNewSessionsFolder;
   UnicodeString FPrevSessionName;
   UnicodeString FFocusFileName;
-  bool FQueueStatusInvalidated{false};
-  bool FQueueItemInvalidated{false};
-  bool FRefreshLocalDirectory{false};
-  bool FRefreshRemoteDirectory{false};
-  bool FQueueEventPending{false};
-  bool FReloadDirectory{false};
+  std::atomic<bool> FQueueStatusInvalidated{false};
+  std::atomic<bool> FQueueItemInvalidated{false};
+  std::atomic<bool> FRefreshLocalDirectory{false};
+  std::atomic<bool> FRefreshRemoteDirectory{false};
+  std::atomic<bool> FQueueEventPending{false};
+  std::atomic<bool> FReloadDirectory{false};
   bool FLastMultipleEditReadOnly{false};
   bool FNoProgress{false};
   bool FSynchronizationCompare{false};
