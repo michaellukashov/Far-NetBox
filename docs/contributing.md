@@ -193,7 +193,7 @@ The output must contain `5.01`. If it shows `6.00`, the binary requires Windows 
 
 ### Architecture Reference
 
-For the full API shim inventory, build configuration details, and how to add new stubs, see [`docs/windows-xp-compatibility.md`](windows-xp-compatibility.md).
+For the full API shim inventory, build configuration details, and how to add new stubs, see [`.ai-factory/windows-xp-compatibility.md`](../.ai-factory/windows-xp-compatibility.md).
 
 
 

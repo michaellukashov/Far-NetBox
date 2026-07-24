@@ -8,7 +8,7 @@ Build Far-NetBox from source and install it as a Far Manager 3.0 plugin.
 
 | Requirement | Version | Notes |
 |-------------|---------|-------|
-| Windows | 7+ | WinXP compatibility maintained; see [`docs/windows-xp-compatibility.md`](windows-xp-compatibility.md) |
+| Windows | 7+ | WinXP compatibility maintained; see [`.ai-factory/windows-xp-compatibility.md`](../.ai-factory/windows-xp-compatibility.md) |
 | Visual Studio | 2022 (17.x) | Community, Professional, or Enterprise |
 | CMake | 3.15+ | Ninja generator recommended |
 | NASM | 2.15+ | For OpenSSL assembly (x86/x64) |
