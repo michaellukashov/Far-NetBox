@@ -7691,6 +7691,8 @@ protected:
   TFarCheckBox * CalculateSizeCheck{nullptr};
   TFarText * FileMaskText{nullptr};
   TFarEdit * FileMaskEdit{nullptr};
+  TFarCheckBox * UseTempDirCheck{nullptr};
+  TFarEdit * TempDirEdit{nullptr};
   TFarComboBox * SpeedCombo{nullptr};
 
   void ValidateMaskComboExit(TObject * Sender);
@@ -7930,6 +7932,25 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
 
   GetDialog()->SetNextItemPosition(ipNewLine);
 
+  UseTempDirCheck = MakeOwnedObject<TFarCheckBox>(GetDialog());
+  Add(UseTempDirCheck);
+  UseTempDirCheck->SetLeft(1);
+  UseTempDirCheck->SetCaption(GetMsg(NB_TRANSFER_USE_TEMP_DIR));
+
+  GetDialog()->SetNextItemPosition(ipNewLine);
+
+  Text = MakeOwnedObject<TFarText>(GetDialog());
+  Add(Text);
+  Text->SetLeft(1);
+  Text->SetCaption(GetMsg(NB_TRANSFER_TEMP_DIR));
+  Text->SetEnabledDependency(UseTempDirCheck);
+
+  TempDirEdit = MakeOwnedObject<TFarEdit>(GetDialog());
+  Add(TempDirEdit);
+  TempDirEdit->SetLeft(20);
+  TempDirEdit->SetWidth(TMWidth - 18);
+  TempDirEdit->SetEnabledDependency(UseTempDirCheck);
+
   Separator = MakeOwnedObject<TFarSeparator>(GetDialog());
   Separator->SetPosition(FileMaskEdit->GetBottom() + 1);
   Separator->SetLeft(0);
@@ -8024,6 +8045,9 @@ void TCopyParamsContainer::SetParams(const TCopyParamType & Value)
 
   SpeedCombo->SetText(SetSpeedLimit(Value.GetCPSLimit()));
 
+  UseTempDirCheck->SetChecked(!Value.GetTempPath().IsEmpty());
+  TempDirEdit->SetText(Value.GetTempPath().IsEmpty() ? SystemTemporaryDirectory() : Value.GetTempPath());
+
   FParams = Value;
 }
 
@@ -8083,6 +8107,15 @@ TCopyParamType TCopyParamsContainer::GetParams() const
 
   Result.GetIncludeFileMask().Masks(FileMaskEdit->GetText());
   Result.SetPreserveTime(PreserveTimeCheck->GetChecked());
+
+  if (UseTempDirCheck->GetChecked())
+  {
+    Result.SetTempPath(TempDirEdit->GetText());
+  }
+  else
+  {
+    Result.SetTempPath(UnicodeString());
+  }
   Result.SetCalculateSize(CalculateSizeCheck->GetChecked());
 
   Result.SetCPSLimit(GetSpeedLimit(SpeedCombo->GetText()));

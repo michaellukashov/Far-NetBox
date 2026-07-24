@@ -50,6 +50,7 @@ void TCopyParamType::Default()
   SetFileMask(L"");
   GetIncludeFileMask().Masks("");
   SetTransferSkipList(nullptr);
+  FTempPath.Clear();
   SetTransferResumeFile("");
   SetClearArchive(false);
   SetRemoveCtrlZ(false);
@@ -595,6 +596,7 @@ void TCopyParamType::Assign(const TCopyParamType * Source)
   COPY(FileMask);
   COPY(IncludeFileMask);
   COPY(TransferSkipList);
+  COPY2(TempPath);
   COPY(TransferResumeFile);
   COPY(ClearArchive);
   COPY(RemoveCtrlZ);
@@ -955,6 +957,7 @@ void TCopyParamType::Load(THierarchicalStorage * Storage)
   }
   SetTransferSkipList(nullptr);
   SetTransferResumeFile("");
+  FTempPath = Storage->ReadString("TempPath", FTempPath);
   SetClearArchive(Storage->ReadBool("ClearArchive", GetClearArchive()));
   SetRemoveCtrlZ(Storage->ReadBool("RemoveCtrlZ", GetRemoveCtrlZ()));
   SetRemoveBOM(Storage->ReadBool("RemoveBOM", GetRemoveBOM()));
@@ -1012,6 +1015,7 @@ void TCopyParamType::Save(THierarchicalStorage * Storage, const TCopyParamType *
   Storage->DeleteValue(L"NegativeExclude"); // obsolete
   DebugAssert(FTransferSkipList == nullptr);
   DebugAssert(FTransferResumeFile.IsEmpty());
+  WRITE_DATA_EX(String, "TempPath", TempPath, );
   WRITE_DATA(Bool, ClearArchive);
   WRITE_DATA(Bool, RemoveCtrlZ);
   WRITE_DATA(Bool, RemoveBOM);
@@ -1067,6 +1071,7 @@ bool TCopyParamType::operator ==(const TCopyParamType & rhs) const
     C2(ExcludeHiddenFiles) &&
     C2(ExcludeEmptyDirectories) &&
     C2(Size) &&
+    C2(TempPath) &&
     C2(PartOffset) &&
     C2(PartSize) &&
     C2(OnceDoneOperation) &&
