@@ -3831,7 +3831,11 @@ void TWinSCPFileSystem::SaveSession()
   {
     GetSessionData()->SetRemoteDirectory(FTerminal->GetCurrentDirectory());
 
-    TSessionData * Data = nb::dyn_cast_or_null<TSessionData>(GetStoredSessions()->FindByName(GetSessionData()->GetName()));
+    TStoredSessionList * StoredSessions = GetStoredSessions();
+    if (!StoredSessions)
+      return;
+
+    TSessionData * Data = nb::dyn_cast_or_null<TSessionData>(StoredSessions->FindByName(GetSessionData()->GetName()));
     if (Data)
     {
       bool Changed = false;
@@ -3844,7 +3848,7 @@ void TWinSCPFileSystem::SaveSession()
       if (Changed)
       {
         // modified only, implicit
-        GetStoredSessions()->Save(false, false);
+        StoredSessions->Save(false, false);
       }
     }
   }
