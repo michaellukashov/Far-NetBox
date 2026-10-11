@@ -258,6 +258,7 @@ void TCustomFarPlugin::SetStartupInfo(const struct PluginStartupInfo * Info)
 
 void TCustomFarPlugin::ExitFAR()
 {
+  Finalize();
 }
 
 void TCustomFarPlugin::GetPluginInfo(struct PluginInfo * Info)
@@ -2101,12 +2102,24 @@ void TCustomFarPlugin::Initialize()
 
 void TCustomFarPlugin::Finalize()
 {
-#if 0
-  // TODO: move to DestroyFarPlugin
-  TGlobalsIntf * Intf = GetGlobals();
-  delete Intf;
-  ::SetGlobals(nullptr);
-#endif //if 0
+  {
+    std::lock_guard<std::mutex> lock(FSynchroMutex);
+    FSynchroRequests.clear();
+  }
+
+  while (FOpenedPlugins && FOpenedPlugins->GetCount() > 0)
+  {
+    TCustomFarFileSystem * FileSystem = FOpenedPlugins->GetAs<TCustomFarFileSystem>(0);
+    try__finally
+    {
+      CloseFileSystem(FileSystem);
+    }
+    __finally
+    {
+    } end_try__finally
+  }
+
+  FTIdleThread.reset();
 }
 
 uint32_t TCustomFarFileSystem::FInstances = 0;

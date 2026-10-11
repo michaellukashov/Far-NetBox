@@ -171,6 +171,11 @@ static bool StoredSessionsInitialized = false;
 
 TStoredSessionList * GetStoredSessions(bool * JustLoaded)
 {
+  if (!CoreMainCriticalSection)
+  {
+    if (JustLoaded != nullptr) *JustLoaded = false;
+    return nullptr;
+  }
   const TGuard Guard(*CoreMainCriticalSection);
 #define SET_LOADED(Value) do { if (JustLoaded != nullptr) *JustLoaded = Value; } while(0)
   static TStoredSessionList * StoredSessions = nullptr;
@@ -203,6 +208,8 @@ TStoredSessionList * GetStoredSessions(bool * JustLoaded)
 
 void DeleteStoredSessions()
 {
+  if (!CoreMainCriticalSection)
+    return;
   const TGuard Guard(*CoreMainCriticalSection);
   if (StoredSessionsInitialized)
   {
