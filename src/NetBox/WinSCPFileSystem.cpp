@@ -3445,6 +3445,10 @@ int32_t TWinSCPFileSystem::UploadFiles(bool Move, OPERATION_MODES OpMode, bool E
         FLAGMASK(!Ask, cpNoConfirmation) |
         FLAGMASK(Edit, cpTemporary);
         // | FLAGMASK(CopyParam.GetNewerOnly(), cpNewerOnly);
+      if (Edit)
+      {
+        KeepRemoteFileRights(CopyParam, DestPath);
+      }
       FTerminal->CopyToRemote(FFileList.get(), DestPath, &CopyParam, Params, nullptr);
     }
     __finally
@@ -5285,6 +5289,54 @@ void TWinSCPFileSystem::EditViewCopyParam(TCopyParamType & CopyParam)
   CopyParam.SetResumeSupport(rsOff);
   CopyParam.SetReplaceInvalidChars(true);
   CopyParam.SetFileMask(L"");
+}
+
+void TWinSCPFileSystem::KeepRemoteFileRights(TCopyParamType & CopyParam,
+  const UnicodeString & DestPath)
+{
+  // SCP cannot upload file contents without also sending a file mode
+  // (the "C" line), and that mode is taken from the transfer settings
+  // (rw-r--r-- by default), not from the remote file. When "-p" is used
+  // (Preserve timestamp), OpenSSH scp applies the mode even to an existing
+  // file, so saving an edited script used to strip its executable bits.
+  // Unless the user explicitly asked to set permissions, send the remote
+  // file's current mode instead. Other protocols use CopyParam rights only
+  // when PreserveRights is set, so they are not affected.
+  if ((FTerminal == nullptr) || (FTerminal->GetFSProtocol() != cfsSCP) ||
+      CopyParam.GetPreserveRights() ||
+      (FFileList == nullptr) || (FFileList->GetCount() != 1))
+  {
+    return;
+  }
+
+  // Same name derivation as TTerminal::Source uses for the upload
+  const UnicodeString DestFileName = FTerminal->ChangeFileName(&CopyParam,
+    base::ExtractFileName(FFileList->GetString(0), false), osLocal, true);
+  const UnicodeString RemoteFilePath = base::UnixCombinePaths(DestPath, DestFileName);
+  try
+  {
+    std::unique_ptr<TRemoteFile> RemoteFile(FTerminal->TryReadFile(RemoteFilePath));
+    const TRemoteFile * Target = RemoteFile.get();
+    if ((Target != nullptr) && Target->GetIsSymLink())
+    {
+      // Mode of a symlink itself is meaningless (usually 0777),
+      // scp would apply it to the link target
+      Target = Target->GetLinkedFile();
+    }
+    if ((Target != nullptr) && !Target->GetIsDirectory() &&
+        (Target->GetRightsConst() != nullptr) &&
+        !Target->GetRightsConst()->GetIsUndef())
+    {
+      CopyParam.SetRights(*Target->GetRightsConst());
+      FTerminal->LogEvent(FORMAT("Keeping permissions %s of edited file \"%s\"",
+        Target->GetRightsConst()->GetOctal().c_str(), RemoteFilePath.c_str()));
+    }
+  }
+  catch (Exception & E)
+  {
+    FTerminal->LogEvent(FORMAT("Cannot read permissions of edited file \"%s\", using defaults: %s",
+      RemoteFilePath.c_str(), E.Message.c_str()));
+  }
 }
 
 void TWinSCPFileSystem::MultipleEdit()

@@ -225,6 +225,7 @@ protected:
   void MultipleEdit();
   void MultipleEdit(const UnicodeString Directory, const UnicodeString AFileName, const TRemoteFile * AFile);
   void EditViewCopyParam(TCopyParamType & CopyParam);
+  void KeepRemoteFileRights(TCopyParamType & CopyParam, const UnicodeString & DestPath);
   bool SynchronizeBrowsing(const UnicodeString & NewPath);
   void UpdatePanelDirectoryParam();
   bool IsEditHistoryEmpty() const;
